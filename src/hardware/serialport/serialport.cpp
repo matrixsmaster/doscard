@@ -31,7 +31,7 @@
 #include "serialport.h"
 #include "directserial.h"
 #include "serialdummy.h"
-#include "softmodem.h"
+//#include "softmodem.h"
 #include "nullmodem.h"
 
 #include "cpu.h"

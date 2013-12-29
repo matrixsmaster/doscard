@@ -176,14 +176,10 @@ g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURC
 mv -f build/gus.Tpo build/gus.Po
 g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT mpu401.o -MD -MP -MF build/mpu401.Tpo -c -o mpu401.o mpu401.cpp
 mv -f build/mpu401.Tpo build/mpu401.Po
-g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT ipx.o -MD -MP -MF build/ipx.Tpo -c -o ipx.o ipx.cpp
-mv -f build/ipx.Tpo build/ipx.Po
-g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT ipxserver.o -MD -MP -MF build/ipxserver.Tpo -c -o ipxserver.o ipxserver.cpp
-mv -f build/ipxserver.Tpo build/ipxserver.Po
 g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT dbopl.o -MD -MP -MF build/dbopl.Tpo -c -o dbopl.o dbopl.cpp
 mv -f build/dbopl.Tpo build/dbopl.Po
 rm -f libhardware.a
-ar cru libhardware.a adlib.o dma.o gameblaster.o hardware.o iohandler.o joystick.o keyboard.o memory.o mixer.o pcspeaker.o pci_bus.o pic.o sblaster.o tandy_sound.o timer.o vga.o vga_attr.o vga_crtc.o vga_dac.o vga_draw.o vga_gfx.o vga_other.o vga_memory.o vga_misc.o vga_seq.o vga_xga.o vga_s3.o vga_tseng.o vga_paradise.o cmos.o disney.o gus.o mpu401.o ipx.o ipxserver.o dbopl.o 
+ar cru libhardware.a adlib.o dma.o gameblaster.o hardware.o iohandler.o joystick.o keyboard.o memory.o mixer.o pcspeaker.o pci_bus.o pic.o sblaster.o tandy_sound.o timer.o vga.o vga_attr.o vga_crtc.o vga_dac.o vga_draw.o vga_gfx.o vga_other.o vga_memory.o vga_misc.o vga_seq.o vga_xga.o vga_s3.o vga_tseng.o vga_paradise.o cmos.o disney.o gus.o mpu401.o dbopl.o 
 ranlib libhardware.a
 
 cd serialport
