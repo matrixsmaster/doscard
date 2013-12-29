@@ -5,6 +5,8 @@ find . -type f -name '*.a' | xargs -n1 rm -rfv
 find . -type f -name '*.o' | xargs -n1 rm -rfv
 rm -f dosbox
 
+[ "x$1" = "xclean" ] && exit 0
+
 cd cpu
 mkdir build
 echo CPU
