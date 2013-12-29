@@ -248,16 +248,8 @@ rm -f libints.a
 ar cru libints.a mouse.o xms.o ems.o int10.o int10_char.o int10_memory.o int10_misc.o int10_modes.o int10_vesa.o int10_pal.o int10_put_pixel.o int10_video_state.o int10_vptable.o bios.o bios_disk.o bios_keyboard.o 
 ranlib libints.a
 
-cd ../libs/gui_tk
-mkdir build
-echo GTK
-g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT gui_tk.o -MD -MP -MF build/gui_tk.Tpo -c -o gui_tk.o gui_tk.cpp
-mv -f build/gui_tk.Tpo build/gui_tk.Po
-rm -f libgui_tk.a
-ar cru libgui_tk.a gui_tk.o 
-ranlib libgui_tk.a
 
-cd ../../misc
+cd ../misc
 mkdir build
 echo MSC
 g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT cross.o -MD -MP -MF build/cross.Tpo -c -o cross.o cross.cpp
@@ -313,5 +305,5 @@ mkdir build
 echo MAIN
 g++ -DHAVE_CONFIG_H -I. -I..  -I../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT dosbox.o -MD -MP -MF build/dosbox.Tpo -c -o dosbox.o dosbox.cpp
 mv -f build/dosbox.Tpo build/dosbox.Po
-g++  -g -O2   -o dosbox dosbox.o  cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a libs/gui_tk/libgui_tk.a -lSDL_sound  -L/usr/lib -lSDL -lpng -lz -lSDL_net -lX11
+g++  -g -O2   -o dosbox dosbox.o  cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a -lSDL_sound  -L/usr/lib -lSDL -lpng -lz -lX11
 ls
