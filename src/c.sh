@@ -26,12 +26,8 @@ g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURC
 mv -f build/core_simple.Tpo build/core_simple.Po
 g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT core_prefetch.o -MD -MP -MF build/core_prefetch.Tpo -c -o core_prefetch.o core_prefetch.cpp
 mv -f build/core_prefetch.Tpo build/core_prefetch.Po
-g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT core_dyn_x86.o -MD -MP -MF build/core_dyn_x86.Tpo -c -o core_dyn_x86.o core_dyn_x86.cpp
-mv -f build/core_dyn_x86.Tpo build/core_dyn_x86.Po
-g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT core_dynrec.o -MD -MP -MF build/core_dynrec.Tpo -c -o core_dynrec.o core_dynrec.cpp
-mv -f build/core_dynrec.Tpo build/core_dynrec.Po
 rm -f libcpu.a
-ar cru libcpu.a callback.o cpu.o flags.o modrm.o core_full.o paging.o core_normal.o core_simple.o core_prefetch.o core_dyn_x86.o core_dynrec.o 
+ar cru libcpu.a callback.o cpu.o flags.o modrm.o core_full.o paging.o core_normal.o core_simple.o core_prefetch.o 
 ranlib libcpu.a
 
 cd ../fpu
