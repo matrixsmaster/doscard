@@ -48,10 +48,8 @@ g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURC
 mv -f build/debug_gui.Tpo build/debug_gui.Po
 g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT debug_disasm.o -MD -MP -MF build/debug_disasm.Tpo -c -o debug_disasm.o debug_disasm.cpp
 mv -f build/debug_disasm.Tpo build/debug_disasm.Po
-g++ -DHAVE_CONFIG_H -I. -I../..  -I../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT debug_win32.o -MD -MP -MF build/debug_win32.Tpo -c -o debug_win32.o debug_win32.cpp
-mv -f build/debug_win32.Tpo build/debug_win32.Po
 rm -f libdebug.a
-ar cru libdebug.a debug.o debug_gui.o debug_disasm.o debug_win32.o 
+ar cru libdebug.a debug.o debug_gui.o debug_disasm.o
 ranlib libdebug.a
 
 cd ../dos
@@ -199,14 +197,12 @@ g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU
 mv -f build/serialdummy.Tpo build/serialdummy.Po
 g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT serialport.o -MD -MP -MF build/serialport.Tpo -c -o serialport.o serialport.cpp
 mv -f build/serialport.Tpo build/serialport.Po
-g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT softmodem.o -MD -MP -MF build/softmodem.Tpo -c -o softmodem.o softmodem.cpp
-mv -f build/softmodem.Tpo build/softmodem.Po
 g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT misc_util.o -MD -MP -MF build/misc_util.Tpo -c -o misc_util.o misc_util.cpp
 mv -f build/misc_util.Tpo build/misc_util.Po
 g++ -DHAVE_CONFIG_H -I. -I../../..  -I../../../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT nullmodem.o -MD -MP -MF build/nullmodem.Tpo -c -o nullmodem.o nullmodem.cpp
 mv -f build/nullmodem.Tpo build/nullmodem.Po
 rm -f libserial.a
-ar cru libserial.a directserial.o libserial.o serialdummy.o serialport.o softmodem.o misc_util.o nullmodem.o 
+ar cru libserial.a directserial.o libserial.o serialdummy.o serialport.o misc_util.o nullmodem.o 
 ranlib libserial.a
 
 cd ../../ints
@@ -305,5 +301,5 @@ mkdir build
 echo MAIN
 g++ -DHAVE_CONFIG_H -I. -I..  -I../include -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -g -O2 -MT dosbox.o -MD -MP -MF build/dosbox.Tpo -c -o dosbox.o dosbox.cpp
 mv -f build/dosbox.Tpo build/dosbox.Po
-g++  -g -O2   -o dosbox dosbox.o  cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a -lSDL_sound  -L/usr/lib -lSDL -lpng -lz -lX11
+g++  -g -O2   -o dosbox dosbox.o  cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a -lSDL_sound  -L/usr/lib -lSDL -lpng -lz -lX11 -lcurses
 ls
