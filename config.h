@@ -37,7 +37,7 @@
 /* #undef C_CORE_INLINE */
 
 /* Define to 1 to enable internal debugger, requires libcurses */
-/* #undef C_DEBUG */
+//#define C_DEBUG 1
 
 /* Define to 1 if you want serial passthrough support (Win32, Posix and OS/2).
    */
@@ -54,7 +54,7 @@
 #define C_FPU 1
 
 /* Define to 1 to use a x86 assembly fpu core */
-#define C_FPU_X86 1
+//#define C_FPU_X86 1
 
 /* Determines if the compilers supports attributes for structures. */
 #define C_HAS_ATTRIBUTE 1
@@ -85,7 +85,7 @@
 #define C_SET_PRIORITY 1
 
 /* Define to 1 to enable screenshots, requires libpng */
-#define C_SSHOT 1
+//#define C_SSHOT 1
 
 /* The type of cpu this target has */
 #define C_TARGETCPU X86_64
@@ -172,7 +172,7 @@
 #define PACKAGE_NAME "dosbox"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "dosbox SVN"
+#define PACKAGE_STRING "dosbox Ex3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "dosbox"
@@ -181,7 +181,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "SVN"
+#define PACKAGE_VERSION "Ex3"
 
 /* The size of `int *', as computed by sizeof. */
 #define SIZEOF_INT_P 8
@@ -208,7 +208,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "SVN"
+#define VERSION "Ex3"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
