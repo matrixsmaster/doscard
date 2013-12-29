@@ -13,7 +13,6 @@
 		<project>dosint</project>
 		<project>dosmisc</project>
 		<project>dosserport</project>
-		<project>libsdl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
