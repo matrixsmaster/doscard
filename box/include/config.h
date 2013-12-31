@@ -172,7 +172,7 @@
 #define PACKAGE_NAME "dosbox"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "dosbox Ex3"
+#define PACKAGE_STRING "dosbox Ex4"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "dosbox"
@@ -181,7 +181,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "Ex3"
+#define PACKAGE_VERSION "Ex4"
 
 /* The size of `int *', as computed by sizeof. */
 #define SIZEOF_INT_P 8
@@ -208,7 +208,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "Ex3"
+#define VERSION "Ex4"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
