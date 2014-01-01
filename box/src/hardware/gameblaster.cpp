@@ -496,3 +496,4 @@ void CMS_Init(Section* sec) {
 void CMS_ShutDown(Section* sec) {
 	delete test;	       
 }
+

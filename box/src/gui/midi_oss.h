@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#if 0
 #include <fcntl.h>
 #define SEQ_MIDIPUTC    5
 
@@ -71,6 +72,4 @@ public:
 
 MidiHandler_oss Midi_oss;
 
-
-
-
+#endif

@@ -842,7 +842,7 @@ static void DSP_DoCommand(void) {
 		DSP_PrepareDMA_Old(DSP_DMA_8,true,false);
 		break;
 	case 0x38:  /* Write to SB MIDI Output */
-		if (sb.midi == true) MIDI_RawOutByte(sb.dsp.in.data[0]);
+//		if (sb.midi == true) MIDI_RawOutByte(sb.dsp.in.data[0]);
 		break;
 	case 0x40:	/* Set Timeconstant */
 		sb.freq=(1000000 / (256 - sb.dsp.in.data[0]));
@@ -1621,8 +1621,9 @@ public:
 		autoexecline.Install(temp.str());
 
 		/* Soundblaster midi interface */
-		if (!MIDI_Available()) sb.midi = false;
-		else sb.midi = true;
+		sb.midi = false;
+//		if (!MIDI_Available()) sb.midi = false;
+//		else sb.midi = true;
 	}	
 	
 	~SBLASTER() {

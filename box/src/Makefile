@@ -4,7 +4,8 @@ CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
 CC_FLAG := -g -O2
 CC_INCL := -I$(MNDIR)/../include -I. -I/usr/include/SDL
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
-LD_LIBS := -lSDL_sound -lSDL -lpng -lz -lX11 -lcurses
+LD_LIBS := -lSDL_sound -lSDL -lpng -lz -lX11
+## -lcurses
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp core_prefetch.cpp
 LFPU_SRC := fpu.cpp

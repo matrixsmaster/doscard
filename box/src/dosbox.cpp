@@ -478,8 +478,8 @@ void DOSBOX_Init(void) {
 	Pint->SetMinMax(0,100);
 	Pint->Set_help("How many milliseconds of data to keep on top of the blocksize.");
 
-	secprop=control->AddSection_prop("midi",&MIDI_Init,true);//done
-	secprop->AddInitFunction(&MPU401_Init,true);//done
+//	secprop=control->AddSection_prop("midi",&MIDI_Init,true);//done
+//	secprop->AddInitFunction(&MPU401_Init,true);//done
 	
 	const char* mputypes[] = { "intelligent", "uart", "none",0};
 	// FIXME: add some way to offer the actually available choices.
@@ -579,20 +579,18 @@ void DOSBOX_Init(void) {
 	Pint->Set_values(rates);
 	Pint->Set_help("Sample rate of the PC-Speaker sound generation.");
 
-	secprop->AddInitFunction(&TANDYSOUND_Init,true);//done
-	const char* tandys[] = { "auto", "on", "off", 0};
-	Pstring = secprop->Add_string("tandy",Property::Changeable::WhenIdle,"auto");
-	Pstring->Set_values(tandys);
-	Pstring->Set_help("Enable Tandy Sound System emulation. For 'auto', emulation is present only if machine is set to 'tandy'.");
-	
-	Pint = secprop->Add_int("tandyrate",Property::Changeable::WhenIdle,44100);
-	Pint->Set_values(rates);
-	Pint->Set_help("Sample rate of the Tandy 3-Voice generation.");
+//	secprop->AddInitFunction(&TANDYSOUND_Init,true);//done
+//	const char* tandys[] = { "auto", "on", "off", 0};
+//	Pstring = secprop->Add_string("tandy",Property::Changeable::WhenIdle,"auto");
+//	Pstring->Set_values(tandys);
+//	Pstring->Set_help("Enable Tandy Sound System emulation. For 'auto', emulation is present only if machine is set to 'tandy'.");
+//	Pint = secprop->Add_int("tandyrate",Property::Changeable::WhenIdle,44100);
+//	Pint->Set_values(rates);
+//	Pint->Set_help("Sample rate of the Tandy 3-Voice generation.");
 
-	secprop->AddInitFunction(&DISNEY_Init,true);//done
-	
-	Pbool = secprop->Add_bool("disney",Property::Changeable::WhenIdle,true);
-	Pbool->Set_help("Enable Disney Sound Source emulation. (Covox Voice Master and Speech Thing compatible).");
+//	secprop->AddInitFunction(&DISNEY_Init,true);//done
+//	Pbool = secprop->Add_bool("disney",Property::Changeable::WhenIdle,true);
+//	Pbool->Set_help("Enable Disney Sound Source emulation. (Covox Voice Master and Speech Thing compatible).");
 
 	secprop=control->AddSection_prop("joystick",&BIOS_Init,false);//done
 	secprop->AddInitFunction(&INT10_Init);

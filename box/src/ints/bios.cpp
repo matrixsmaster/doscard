@@ -95,17 +95,17 @@ static bool Tandy_InitializeSB() {
 
 static bool Tandy_InitializeTS() {
 	/* see if Tandy DAC module available and at what port/IRQ/DMA */
-	Bitu tsport, tsirq, tsdma;
-	if (TS_Get_Address(tsport, tsirq, tsdma)) {
-		tandy_dac.port=(Bit16u)(tsport&0xffff);
-		tandy_dac.irq =(Bit8u)(tsirq&0xff);
-		tandy_dac.dma =(Bit8u)(tsdma&0xff);
-		return true;
-	} else {
+//	Bitu tsport, tsirq, tsdma;
+//	if (TS_Get_Address(tsport, tsirq, tsdma)) {
+//		tandy_dac.port=(Bit16u)(tsport&0xffff);
+//		tandy_dac.irq =(Bit8u)(tsirq&0xff);
+//		tandy_dac.dma =(Bit8u)(tsdma&0xff);
+//		return true;
+//	} else {
 		/* no Tandy DAC accessible */
 		tandy_dac.port=0;
 		return false;
-	}
+//	}
 }
 
 /* check if Tandy DAC is still playing */

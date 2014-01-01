@@ -24,6 +24,8 @@
 #include "pic.h"
 #include "setup.h"
 
+#if 0
+
 #define DISNEY_BASE 0x0378
 
 #define DISNEY_SIZE 128
@@ -397,3 +399,4 @@ void DISNEY_Init(Section* sec) {
 	test = new DISNEY(sec);
 	sec->AddDestroyFunction(&DISNEY_ShutDown,true);
 }
+#endif

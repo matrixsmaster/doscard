@@ -1,25 +1,19 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
+//32bit machine?
+//#define HOST_32BIT
+#define HOST_64BIT
 
+#define SIZEOF_UNSIGNED_CHAR 1
+#define SIZEOF_UNSIGNED_INT 4
+#define SIZEOF_UNSIGNED_SHORT 2
+#define SIZEOF_UNSIGNED_LONG_LONG 8
 
-/*
- *  Copyright (C) 2002-2013  The DOSBox Team
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
+#ifdef HOST_32BIT
+#define SIZEOF_INT_P 4
+#define SIZEOF_UNSIGNED_LONG 4
+#else
+#define SIZEOF_INT_P 8
+#define SIZEOF_UNSIGNED_LONG 8
+#endif
 
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
@@ -88,7 +82,7 @@
 //#define C_SSHOT 1
 
 /* The type of cpu this target has */
-#define C_TARGETCPU X86_64
+//#define C_TARGETCPU X86_64
 
 /* Define to 1 to use a unaligned memory access */
 #define C_UNALIGNED_MEMORY 1
@@ -183,23 +177,20 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "Ex4"
 
+#if 0
 /* The size of `int *', as computed by sizeof. */
 #define SIZEOF_INT_P 8
-
 /* The size of `unsigned char', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_CHAR 1
-
 /* The size of `unsigned int', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_INT 4
-
 /* The size of `unsigned long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG 8
-
 /* The size of `unsigned long long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG_LONG 8
-
 /* The size of `unsigned short', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_SHORT 2
+#endif
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -307,5 +298,3 @@ typedef         double     Real64;
   typedef Bit64u Bitu;
   typedef Bit64s Bits;
 #endif
-
-

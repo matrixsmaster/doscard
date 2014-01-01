@@ -29,6 +29,7 @@
 #include "shell.h"
 #include "math.h"
 #include "regs.h"
+
 using namespace std;
 
 //Extra bits of precision over normal gus

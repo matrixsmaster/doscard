@@ -22,6 +22,7 @@
 #include <string>
 #include <algorithm>
 
+#if 0
 #include "SDL.h"
 
 #include "dosbox.h"
@@ -227,3 +228,4 @@ void MIDI_Init(Section * sec) {
 	test = new MIDI(sec);
 	sec->AddDestroyFunction(&MIDI_Destroy,true);
 }
+#endif

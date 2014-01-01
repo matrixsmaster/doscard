@@ -31,6 +31,8 @@
 #include <cstring>
 #include <math.h>
 
+#if 0
+
 #define MAX_OUTPUT 0x7fff
 #define STEP 0x10000
 
@@ -584,3 +586,4 @@ void TANDYSOUND_Init(Section* sec) {
 	test = new TANDYSOUND(sec);
 	sec->AddDestroyFunction(&TANDYSOUND_ShutDown,true);
 }
+#endif
