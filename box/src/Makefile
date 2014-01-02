@@ -7,24 +7,22 @@ CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 LD_LIBS := -lSDL_sound -lSDL -lpng -lz -lX11
 ## -lcurses
 
-LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp core_prefetch.cpp
-LFPU_SRC := fpu.cpp
+LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp
 LDBG_SRC := debug.cpp debug_gui.cpp debug_disasm.cpp
 LDOS_SRC := dos.cpp dos_devices.cpp dos_execute.cpp dos_files.cpp dos_ioctl.cpp dos_memory.cpp dos_misc.cpp dos_classes.cpp dos_programs.cpp 
-LDOS_SRC += dos_tables.cpp drives.cpp drive_virtual.cpp drive_local.cpp drive_cache.cpp drive_fat.cpp drive_iso.cpp dos_mscdex.cpp dos_keyboard_layout.cpp cdrom.cpp 
-LDOS_SRC += cdrom_image.cpp
+LDOS_SRC += dos_tables.cpp drives.cpp drive_virtual.cpp drive_local.cpp drive_cache.cpp drive_fat.cpp drive_iso.cpp dos_mscdex.cpp 
+LDOS_SRC += dos_keyboard_layout.cpp cdrom.cpp cdrom_image.cpp
 LTTY_SRC := directserial.cpp libserial.cpp serialdummy.cpp serialport.cpp misc_util.cpp nullmodem.cpp
 LHDW_SRC := adlib.cpp dma.cpp gameblaster.cpp hardware.cpp iohandler.cpp joystick.cpp keyboard.cpp memory.cpp mixer.cpp pcspeaker.cpp pci_bus.cpp 
-LHDW_SRC += pic.cpp sblaster.cpp tandy_sound.cpp timer.cpp vga.cpp vga_attr.cpp vga_crtc.cpp vga_dac.cpp vga_draw.cpp vga_gfx.cpp vga_other.cpp vga_memory.cpp 
-LHDW_SRC += vga_misc.cpp vga_seq.cpp vga_xga.cpp vga_s3.cpp vga_tseng.cpp vga_paradise.cpp cmos.cpp disney.cpp gus.cpp mpu401.cpp dbopl.cpp
+LHDW_SRC += pic.cpp sblaster.cpp timer.cpp vga.cpp vga_attr.cpp vga_crtc.cpp vga_dac.cpp vga_draw.cpp vga_gfx.cpp vga_other.cpp vga_memory.cpp 
+LHDW_SRC += vga_misc.cpp vga_seq.cpp vga_xga.cpp vga_s3.cpp vga_tseng.cpp vga_paradise.cpp cmos.cpp gus.cpp dbopl.cpp
 LIRQ_SRC := mouse.cpp xms.cpp ems.cpp int10.cpp int10_char.cpp int10_memory.cpp int10_misc.cpp int10_modes.cpp int10_vesa.cpp int10_pal.cpp 
 LIRQ_SRC += int10_put_pixel.cpp int10_video_state.cpp int10_vptable.cpp bios.cpp bios_disk.cpp bios_keyboard.cpp
-LGUI_SRC := sdlmain.cpp sdl_mapper.cpp render.cpp render_scalers.cpp midi.cpp sdl_gui.cpp
+LGUI_SRC := sdlmain.cpp sdl_mapper.cpp render.cpp render_scalers.cpp
 LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 LMSC_SRC := cross.cpp messages.cpp programs.cpp setup.cpp support.cpp
 
 LCPU_LIB := cpu/libcpu.a
-LFPU_LIB := fpu/libfpu.a
 LDBG_LIB := debug/libdebug.a
 LDOS_LIB := dos/libdos.a
 LTTY_LIB := hardware/serialport/libserial.a
@@ -34,10 +32,9 @@ LGUI_LIB := gui/libgui.a
 LSHL_LIB := shell/libshell.a
 LMSC_LIB := misc/libmisc.a
 
-APP_LIBS := $(LCPU_LIB) $(LDBG_LIB) $(LDOS_LIB) $(LFPU_LIB) $(LHDW_LIB) $(LGUI_LIB) $(LIRQ_LIB) $(LMSC_LIB) $(LSHL_LIB) $(LTTY_LIB)
+APP_LIBS := $(LCPU_LIB) $(LDBG_LIB) $(LDOS_LIB) $(LHDW_LIB) $(LGUI_LIB) $(LIRQ_LIB) $(LMSC_LIB) $(LSHL_LIB) $(LTTY_LIB)
 
 LCPU_INS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))
-LFPU_INS := $(addprefix fpu/,$(LFPU_SRC:.cpp=.o))
 LDBG_INS := $(addprefix debug/,$(LDBG_SRC:.cpp=.o))
 LDOS_INS := $(addprefix dos/,$(LDOS_SRC:.cpp=.o))
 LTTY_INS := $(addprefix hardware/serialport/,$(LTTY_SRC:.cpp=.o))
@@ -47,21 +44,15 @@ LGUI_INS := $(addprefix gui/,$(LGUI_SRC:.cpp=.o))
 LSHL_INS := $(addprefix shell/,$(LSHL_SRC:.cpp=.o))
 LMSC_INS := $(addprefix misc/,$(LMSC_SRC:.cpp=.o))
 
-##buildlib := rm -f $(1) ; ar cru $(1) $(2) ; ranlib $(1)
 
 all:	$(APP)
 .PHONY:	all
 
-$(APP): lcpu lfpu ldebug ldos ltty lhdw lirq lgui lshell lmisc $(APP).o
+$(APP): lcpu ldebug ldos ltty lhdw lirq lgui lshell lmisc $(APP).o
 	g++ $(CC_FLAG) -o $(APP) $(APP).o $(APP_LIBS) $(LD_LIBS)
-
-##lcpu:	$(LCPU_INS)
-##	$(call buildlib,LCPU_LIB,LCPU_INS)
 
 lcpu:	$(LCPU_INS)
 	rm -f $(LCPU_LIB) ; ar cru $(LCPU_LIB) $(LCPU_INS) ; ranlib $(LCPU_LIB)
-lfpu:	$(LFPU_INS)
-	rm -f $(LFPU_LIB) ; ar cru $(LFPU_LIB) $(LFPU_INS) ; ranlib $(LFPU_LIB)
 ldebug:	$(LDBG_INS)
 	rm -f $(LDBG_LIB) ; ar cru $(LDBG_LIB) $(LDBG_INS) ; ranlib $(LDBG_LIB)
 ldos:	$(LDOS_INS)

@@ -242,6 +242,7 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused){
 	SDL_WM_SetCaption(title,VERSION);
 }
 
+#if 0
 static unsigned char logo[32*32*4]= {
 #include "dosbox_logo.h"
 };
@@ -258,7 +259,7 @@ static void GFX_SetIcon() {
 	SDL_WM_SetIcon(logos,NULL);
 #endif
 }
-
+#endif
 
 static void KillSwitch(bool pressed) {
 	if (!pressed)
@@ -1090,7 +1091,7 @@ static void OutputString(Bitu x,Bitu y,const char * text,Bit32u color,Bit32u col
 	}
 }
 
-#include "dosbox_splash.h"
+//#include "dosbox_splash.h"
 
 //extern void UI_Run(bool);
 void Restart(bool pressed);
@@ -1101,7 +1102,7 @@ static void GUI_StartUp(Section * sec) {
 	sdl.active=false;
 	sdl.updating=false;
 
-	GFX_SetIcon();
+//	GFX_SetIcon();
 
 	sdl.desktop.lazy_fullscreen=false;
 	sdl.desktop.lazy_fullscreen_req=false;
@@ -1284,6 +1285,11 @@ static void GUI_StartUp(Section * sec) {
 //#endif
 
 /* Please leave the Splash screen stuff in working order in DOSBox. We spend a lot of time making DOSBox. */
+
+/*    Sorry, guys! We really want to leave your splash screen, but we have a small amount of memory on chip
+ * 		and every byte of ROM is on account. We're really sorry :(
+ */
+#if 0
 	SDL_Surface* splash_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 640, 400, 32, rmask, gmask, bmask, 0);
 	if (splash_surf) {
 		SDL_FillRect(splash_surf, NULL, SDL_MapRGB(splash_surf->format, 0, 0, 0));
@@ -1343,6 +1349,7 @@ static void GUI_StartUp(Section * sec) {
 		delete [] tmpbufp;
 
 	}
+#endif
 
 	/* Get some Event handlers */
 	MAPPER_AddHandler(KillSwitch,MK_f9,MMOD1,"shutdown","ShutDown");
@@ -1818,8 +1825,8 @@ static void erasemapperfile() {
 }
 
 
-//extern void UI_Init(void);
-int main(int argc, char* argv[]) {
+int startapp(int argc, char* argv[]) {
+	printf("startapp()\n");
 	try {
 		CommandLine com_line(argc,argv);
 		Config myconf(&com_line);

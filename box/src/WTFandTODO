@@ -1,0 +1,34 @@
+WTF?!
+The main goal of this project is creation of embeddable version of DosBox,
+which may relatively easily run on something really low-cost. Like STM32
+microcontrollers.
+So the first thing needed to be done is truncation of source code tree.
+The vanilla dosbox compiled on $(see gcc.ver) weights 10.8 MB*
+Current version (on the same machine with the same toolchain) weights 8.3 MB*
+and still counting down.
+This is a fun weekend project, so don't expect anything really usable :)
+But if you want to run your beloved DOOM on a homebrew USB-stick-sized picoPC
+(which will cost you around $15) -- feel free to contribute and share the fun! 
+*-----
+	Unstripped versions
+
+TODO
+
+0. Write TODO
+
+1. Truncate the code tree to exclude everything unneeded
+
+2. Decide what to do with SDL.
+	Pros: SDL has well-maintained code and it's really simple to write your
+	own hardware driver and put it to the tree.
+	Cons: SDL has weight. There's not so much things to do with this fact.
+
+3. Refactor code. It's highly improbable that we will want to merge something
+from upstream DosBox due to fact of everything we want is already working.
+
+4. Select a chip to port this thing into and draw the schematics (and PCB
+layers of course)
+
+5. Write the ld script for a chip selected (arm/chip/load.ld)
+6. Write our own crt0 replace for this chip (arm/chip/start.S)
+

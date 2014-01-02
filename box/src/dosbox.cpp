@@ -47,6 +47,8 @@ Config * control;
 MachineType machine;
 SVGACards svgaCard;
 
+int startapp(int argc, char* argv[]);
+
 /* The whole load of startups for all the subfunctions */
 void MSG_Init(Section_prop *);
 void LOG_StartUp(void);
@@ -710,4 +712,11 @@ void DOSBOX_Init(void) {
 	MSG_Add("CONFIG_SUGGESTED_VALUES", "Possible values");
 
 	control->SetStartUp(&SHELL_Init);
+}
+
+//We really need main() entry point defined in top-level module
+int main(int argc, char* argv[])
+{
+	printf("\nentry point()\n");
+	return (startapp(argc,argv));
 }
