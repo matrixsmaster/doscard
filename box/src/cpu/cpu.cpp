@@ -2358,6 +2358,7 @@ public:
 			CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
 		} else if (cputype == "386") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
+#if 0
 		} else if (cputype == "386_prefetch") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
 			if (core == "normal") {
@@ -2370,10 +2371,12 @@ public:
 			} else {
 				E_Exit("prefetch queue emulation requires the normal core setting.");
 			}
+#endif
 		} else if (cputype == "386_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_386SLOW;
 		} else if (cputype == "486_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
+#if 0
 		} else if (cputype == "486_prefetch") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
 			if (core == "normal") {
@@ -2386,6 +2389,7 @@ public:
 			} else {
 				E_Exit("prefetch queue emulation requires the normal core setting.");
 			}
+#endif
 		} else if (cputype == "pentium_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_PENTIUMSLOW;
 		}

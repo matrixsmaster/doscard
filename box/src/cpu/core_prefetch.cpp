@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#if 0
 #include <stdio.h>
 
 #include "dosbox.h"
@@ -311,4 +311,4 @@ Bits CPU_Core_Prefetch_Trap_Run(void) {
 void CPU_Core_Prefetch_Init(void) {
 
 }
-
+#endif
