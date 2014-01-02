@@ -1,7 +1,7 @@
 APP	:= dosbox
 MNDIR	:= $(shell pwd)
 CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
-CC_FLAG := -g -O2
+CC_FLAG := -g -O2 -finstrument-functions
 CC_INCL := -I$(MNDIR)/../include -I. -I/usr/include/SDL
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 LD_LIBS := -lSDL_sound -lSDL -lpng -lz -lX11
@@ -49,7 +49,8 @@ all:	$(APP)
 .PHONY:	all
 
 $(APP): lcpu ldebug ldos ltty lhdw lirq lgui lshell lmisc $(APP).o
-	g++ $(CC_FLAG) -o $(APP) $(APP).o $(APP_LIBS) $(LD_LIBS)
+	g++ -c instrument.cpp -o instrument.o
+	g++ $(CC_FLAG) -o $(APP) $(APP).o instrument.o $(APP_LIBS) $(LD_LIBS)
 
 lcpu:	$(LCPU_INS)
 	rm -f $(LCPU_LIB) ; ar cru $(LCPU_LIB) $(LCPU_INS) ; ranlib $(LCPU_LIB)
