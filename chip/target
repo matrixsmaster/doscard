@@ -1,0 +1,7 @@
+Planning system may run on chip STM32F401VC
+package: LQFP-100
+RAM: 64KB SRAM
+ROM: 256KB Flash
+CLK: 84 MHz (21 MHz Crystal with 4x PLL multiplier)
+
+http://www.compel.ru/infosheet/ST/STM32F401VCT6/

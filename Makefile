@@ -1,5 +1,6 @@
 APP = doscard
 
+ARMCPU = -mcpu=cortex-m3 -mthumb
 ARMCXX = arm-linux-gnueabi-g++
 ARMCXXFLAGS = -g -Os -Wall $(ARMCPU)
 
@@ -14,3 +15,4 @@ $(APP):	main.o
 
 clean:
 	rm -f *.o
+	rm -f $(APP)
