@@ -1,0 +1,270 @@
+dosbox.o: In function `Normal_Loop':
+rm -f gui/libgui.a ; ar cru gui/libgui.a gui/sdlmain.o gui/sdl_mapper.o gui/render.o gui/render_scalers.o ; ranlib gui/libgui.a
+/mnt/lambda/aSVN/doscard/trunk/box/src/dosbox.cpp:166: undefined reference to `SDL_GetTicks'
+rm -f shell/libshell.a ; ar cru shell/libshell.a shell/shell.o shell/shell_batch.o shell/shell_cmds.o shell/shell_misc.o ; ranlib shell/libshell.a
+/mnt/lambda/aSVN/doscard/trunk/box/src/dosbox.cpp:234: undefined reference to `SDL_Delay'
+rm -f misc/libmisc.a ; ar cru misc/libmisc.a misc/cross.o misc/messages.o misc/programs.o misc/setup.o misc/support.o ; ranlib misc/libmisc.a
+/mnt/lambda/aSVN/doscard/trunk/box/src/dosbox.cpp:235: undefined reference to `SDL_GetTicks'
+g++ -g -c instrument.cpp -o instrument.o
+/mnt/lambda/aSVN/doscard/trunk/box/src/dosbox.cpp:160: undefined reference to `SDL_GetTicks'
+dosbox.o: In function `DOSBOX_RealInit':
+g++ -g -O2 -o dosbox dosbox.o instrument.o cpu/libcpu.a debug/libdebug.a dos/libdos.a hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a -L../../libsdl/build/.libs/ -L../../SDL_sound/.libs/ -Wl,-static -lSDL_sound -Wl,-Bdynamic -lX11 -lpthread
+/mnt/lambda/aSVN/doscard/trunk/box/src/dosbox.cpp:284: undefined reference to `SDL_GetTicks'
+dos/libdos.a(dos_programs.o): In function `MOUNT::Run()':
+dos_programs.cpp:(.text._ZN5MOUNT3RunEv[MOUNT::Run()]+0x182): undefined reference to `SDL_CDNumDrives'
+dos_programs.cpp:(.text._ZN5MOUNT3RunEv[MOUNT::Run()]+0x1b3): undefined reference to `SDL_CDName'
+dos/libdos.a(cdrom.o): In function `CDROM_GetMountType(char*, int)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:160: undefined reference to `SDL_CDNumDrives'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:169: undefined reference to `SDL_CDName'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::LoadUnloadMedia(bool)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:142: undefined reference to `SDL_CDEject'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::StopAudio()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:135: undefined reference to `SDL_CDClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:136: undefined reference to `SDL_CDOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:137: undefined reference to `SDL_CDStop'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::PauseAudio(bool)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:128: undefined reference to `SDL_CDResume'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:129: undefined reference to `SDL_CDPause'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::PlayAudioSector(unsigned long, unsigned long)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:120: undefined reference to `SDL_CDClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:121: undefined reference to `SDL_CDOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:122: undefined reference to `SDL_CDPlay'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::GetMediaTrayStatus(bool&, bool&, bool&)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:109: undefined reference to `SDL_CDStatus'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:114: undefined reference to `SDL_CDStatus'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::GetAudioStatus(bool&, bool&)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:101: undefined reference to `SDL_CDStatus'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:105: undefined reference to `SDL_CDStatus'
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::GetAudioSub(unsigned char&, unsigned char&, unsigned char&, SMSF&, SMSF&)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:90: undefined reference to `SDL_CDStatus'
+dos/libdos.a(cdrom.o):/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:97: more undefined references to `SDL_CDStatus' follow
+dos/libdos.a(cdrom.o): In function `CDROM_Interface_SDL::SetDevice(char*, int)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:50: undefined reference to `SDL_CDNumDrives'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:60: undefined reference to `SDL_CDName'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:62: undefined reference to `SDL_CDOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:63: undefined reference to `SDL_CDStatus'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:53: undefined reference to `SDL_CDOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:54: undefined reference to `SDL_CDStatus'
+dos/libdos.a(cdrom.o): In function `~CDROM_Interface_SDL':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:41: undefined reference to `SDL_CDClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:41: undefined reference to `SDL_CDClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom.cpp:41: undefined reference to `SDL_CDClose'
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image::CDAudioCallBack(unsigned long)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:326: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:342: undefined reference to `SDL_mutexV'
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image::PlayAudioSector(unsigned long, unsigned long)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:230: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:243: undefined reference to `SDL_mutexV'
+dos/libdos.a(cdrom_image.o): In function `~CDROM_Interface_Image':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:155: undefined reference to `SDL_DestroyMutex'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:155: undefined reference to `SDL_DestroyMutex'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:155: undefined reference to `SDL_DestroyMutex'
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:140: undefined reference to `SDL_CreateMutex'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:140: undefined reference to `SDL_CreateMutex'
+hardware/libhardware.a(mixer.o): In function `MixerChannel::FillUp()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:340: undefined reference to `SDL_LockAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:347: undefined reference to `SDL_UnlockAudio'
+hardware/libhardware.a(mixer.o): In function `MixerChannel::Enable(bool)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:136: undefined reference to `SDL_LockAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:138: undefined reference to `SDL_UnlockAudio'
+hardware/libhardware.a(mixer.o): In function `MIXER_Mix':
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:386: undefined reference to `SDL_LockAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:391: undefined reference to `SDL_UnlockAudio'
+hardware/libhardware.a(mixer.o): In function `MIXER_Init(Section*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:641: undefined reference to `SDL_OpenAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:653: undefined reference to `SDL_PauseAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/hardware/mixer.cpp:643: undefined reference to `SDL_GetError'
+gui/libgui.a(sdlmain.o): In function `Mouse_AutoLock(bool)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:851: undefined reference to `SDL_ShowCursor'
+gui/libgui.a(sdlmain.o): In function `GFX_CaptureMouse()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:423: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:424: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:426: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:427: undefined reference to `SDL_ShowCursor'
+gui/libgui.a(sdlmain.o): In function `GFX_GetRGB(unsigned char, unsigned char, unsigned char)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:586: undefined reference to `SDL_MapRGB'
+gui/libgui.a(sdlmain.o): In function `GFX_SetPalette(unsigned long, unsigned long, GFX_PalEntry*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:573: undefined reference to `SDL_SetPalette'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:577: undefined reference to `SDL_SetPalette'
+gui/libgui.a(sdlmain.o): In function `GFX_EndUpdate(unsigned short const*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:534: undefined reference to `SDL_UnlockSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:535: undefined reference to `SDL_UpperBlit'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:540: undefined reference to `SDL_Flip'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:561: undefined reference to `SDL_UnlockYUVOverlay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:562: undefined reference to `SDL_DisplayYUVOverlay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:557: undefined reference to `SDL_UpdateRects'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:538: undefined reference to `SDL_UnlockSurface'
+gui/libgui.a(sdlmain.o): In function `GFX_StartUpdate(unsigned char*&, unsigned long&)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:499: undefined reference to `SDL_LockSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:514: undefined reference to `SDL_LockYUVOverlay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:504: undefined reference to `SDL_LockSurface'
+gui/libgui.a(sdlmain.o): In function `GFX_TearDown()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:312: undefined reference to `SDL_FreeSurface'
+gui/libgui.a(sdlmain.o): In function `GFX_GetBestMode(unsigned long)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:204: undefined reference to `SDL_VideoModeOK'
+gui/libgui.a(sdlmain.o): In function `GFX_SetTitle(int, long, bool)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:151: undefined reference to `SDL_WM_SetCaption'
+gui/libgui.a(sdlmain.o): In function `PauseDOSBox':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:167: undefined reference to `SDL_Delay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:169: undefined reference to `SDL_PollEvent'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:174: undefined reference to `SDL_WaitEvent'
+gui/libgui.a(sdlmain.o): In function `GFX_Events()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:919: undefined reference to `SDL_GetTicks'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:926: undefined reference to `SDL_PollEvent'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:967: undefined reference to `SDL_WaitEvent'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:922: undefined reference to `SDL_JoystickUpdate'
+gui/libgui.a(sdlmain.o): In function `GFX_UpdateSDLCaptureState()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:434: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:435: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:437: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:438: undefined reference to `SDL_ShowCursor'
+gui/libgui.a(sdlmain.o): In function `GFX_SetSize(unsigned long, unsigned long, unsigned long, double, double, void (*)(GFX_CallBackFunctions_t))':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:331: undefined reference to `SDL_FreeSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:356: undefined reference to `SDL_SetVideoMode'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:416: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:397: undefined reference to `SDL_FreeYUVOverlay'
+gui/libgui.a(sdlmain.o): In function `GFX_SetupSurfaceScaled':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:289: undefined reference to `SDL_SetVideoMode'
+gui/libgui.a(sdlmain.o): In function `GFX_SetSize(unsigned long, unsigned long, unsigned long, double, double, void (*)(GFX_CallBackFunctions_t))':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:402: undefined reference to `SDL_CreateYUVOverlay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:350: undefined reference to `SDL_SetVideoMode'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:351: undefined reference to `SDL_GetError'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:362: undefined reference to `SDL_SetVideoMode'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:364: undefined reference to `SDL_GetError'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:390: undefined reference to `SDL_CreateRGBSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:358: undefined reference to `SDL_GetError'
+gui/libgui.a(sdlmain.o): In function `GFX_SetupSurfaceScaled':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:302: undefined reference to `SDL_SetVideoMode'
+gui/libgui.a(sdlmain.o): In function `GUI_StartUp':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:727: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:744: undefined reference to `SDL_SetVideoMode'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:751: undefined reference to `SDL_WM_SetCaption'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:842: undefined reference to `SDL_GetModState'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:711: undefined reference to `SDL_GetVideoInfo'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:745: undefined reference to `SDL_GetError'
+gui/libgui.a(sdlmain.o): In function `restart_program(std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > >&)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1159: undefined reference to `SDL_CloseAudio'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1160: undefined reference to `SDL_Delay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1161: undefined reference to `SDL_Quit'
+gui/libgui.a(sdlmain.o): In function `startapp(int, char**)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1299: undefined reference to `SDL_Init'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1307: undefined reference to `SDL_InitSubSystem'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1312: undefined reference to `SDL_NumJoysticks'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1417: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1418: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1420: undefined reference to `SDL_Quit'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1301: undefined reference to `SDL_GetError'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1412: undefined reference to `SDL_WM_GrabInput'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdlmain.cpp:1413: undefined reference to `SDL_ShowCursor'
+gui/libgui.a(sdl_mapper.o): In function `BIND_MappingEvents()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2163: undefined reference to `SDL_PollEvent'
+gui/libgui.a(sdl_mapper.o): In function `MAPPER_RunInternal()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2315: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2316: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2325: undefined reference to `SDL_SetVideoMode'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2329: undefined reference to `SDL_SetPalette'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2339: undefined reference to `SDL_JoystickEventState'
+gui/libgui.a(sdl_mapper.o): In function `DrawButtons':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:1670: undefined reference to `SDL_FillRect'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:1671: undefined reference to `SDL_LockSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:1675: undefined reference to `SDL_UnlockSurface'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:1676: undefined reference to `SDL_Flip'
+gui/libgui.a(sdl_mapper.o): In function `MAPPER_RunInternal()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2347: undefined reference to `SDL_Delay'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2350: undefined reference to `SDL_JoystickEventState'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2353: undefined reference to `SDL_ShowCursor'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2326: undefined reference to `SDL_GetError'
+gui/libgui.a(sdl_mapper.o): In function `MAPPER_StartUp(Section*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2436: undefined reference to `SDL_GetWMInfo'
+gui/libgui.a(sdl_mapper.o): In function `CStickBindGroup':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:638: undefined reference to `SDL_JoystickOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:644: undefined reference to `SDL_JoystickNumAxes'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:645: undefined reference to `SDL_JoystickNumButtons'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:646: undefined reference to `SDL_JoystickNumHats'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:658: undefined reference to `SDL_JoystickName'
+gui/libgui.a(sdl_mapper.o): In function `CreateBindGroups':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2252: undefined reference to `SDL_JoystickEventState'
+gui/libgui.a(sdl_mapper.o): In function `InitializeJoysticks':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2193: undefined reference to `SDL_NumJoysticks'
+gui/libgui.a(sdl_mapper.o): In function `MAPPER_Init()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2362: undefined reference to `SDL_GetModState'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2372: undefined reference to `SDL_GetModState'
+gui/libgui.a(sdl_mapper.o): In function `InitializeJoysticks':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2201: undefined reference to `SDL_JoystickOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2203: undefined reference to `SDL_JoystickNumAxes'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2206: undefined reference to `SDL_JoystickClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2209: undefined reference to `SDL_JoystickOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2211: undefined reference to `SDL_JoystickNumAxes'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2214: undefined reference to `SDL_JoystickClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2232: undefined reference to `SDL_JoystickOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2234: undefined reference to `SDL_JoystickNumAxes'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2234: undefined reference to `SDL_JoystickNumButtons'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2203: undefined reference to `SDL_JoystickNumButtons'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:2211: undefined reference to `SDL_JoystickNumButtons'
+gui/libgui.a(sdl_mapper.o): In function `CKeyBind::BindName(char*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:463: undefined reference to `SDL_GetKeyName'
+gui/libgui.a(sdl_mapper.o): In function `CStickBindGroup::BindStart()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:864: undefined reference to `SDL_JoystickName'
+gui/libgui.a(sdl_mapper.o): In function `~CStickBindGroup':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:661: undefined reference to `SDL_JoystickClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:661: undefined reference to `SDL_JoystickClose'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:661: undefined reference to `SDL_JoystickClose'
+gui/libgui.a(sdl_mapper.o): In function `CStickBindGroup':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:638: undefined reference to `SDL_JoystickOpen'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:644: undefined reference to `SDL_JoystickNumAxes'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:645: undefined reference to `SDL_JoystickNumButtons'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:646: undefined reference to `SDL_JoystickNumHats'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:658: undefined reference to `SDL_JoystickName'
+gui/libgui.a(sdl_mapper.o): In function `CStickBindGroup::ActivateJoystickBoundEvents()':
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:770: undefined reference to `SDL_JoystickGetButton'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:783: undefined reference to `SDL_JoystickGetAxis'
+/mnt/lambda/aSVN/doscard/trunk/box/src/gui/sdl_mapper.cpp:815: undefined reference to `SDL_JoystickGetHat'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `findErrorForCurrentThread':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:268: undefined reference to `SDL_ThreadID'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:270: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:275: undefined reference to `SDL_mutexV'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:279: undefined reference to `SDL_mutexV'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `__Sound_SetError':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:342: undefined reference to `SDL_ThreadID'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:344: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:347: undefined reference to `SDL_mutexV'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `Sound_FreeSample':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:705: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:727: undefined reference to `SDL_mutexV'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `init_sample':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:548: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:553: undefined reference to `SDL_mutexV'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:521: undefined reference to `SDL_GetError'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `Sound_NewSampleFromMem':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:679: undefined reference to `SDL_RWFromMem'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:681: undefined reference to `SDL_GetError'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `Sound_NewSampleFromFile':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:656: undefined reference to `SDL_RWFromFile'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:658: undefined reference to `SDL_GetError'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `Sound_Quit':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:222: undefined reference to `SDL_DestroyMutex'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:240: undefined reference to `SDL_mutexP'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:247: undefined reference to `SDL_mutexV'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:248: undefined reference to `SDL_DestroyMutex'
+../../SDL_sound/.libs//libSDL_sound.a(SDL_sound.o): In function `Sound_Init':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:187: undefined reference to `SDL_InitSubSystem'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:189: undefined reference to `SDL_CreateMutex'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/SDL_sound.c:190: undefined reference to `SDL_CreateMutex'
+../../SDL_sound/.libs//libSDL_sound.a(wav.o): In function `WAV_open_internal':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/wav.c:693: undefined reference to `SDL_ReadLE32'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/wav.c:694: undefined reference to `SDL_ReadLE32'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/wav.c:695: undefined reference to `SDL_ReadLE32'
+../../SDL_sound/.libs//libSDL_sound.a(shn.o): In function `SHN_open':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/shn.c:615: undefined reference to `SDL_SetError'
+../../SDL_sound/.libs//libSDL_sound.a(aiff.o): In function `AIFF_open':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/aiff.c:462: undefined reference to `SDL_ReadLE32'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/aiff.c:463: undefined reference to `SDL_ReadBE32'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/aiff.c:465: undefined reference to `SDL_ReadLE32'
+../../SDL_sound/.libs//libSDL_sound.a(instrum_dls.o): In function `LoadRIFF':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/timidity/instrum_dls.c:179: undefined reference to `SDL_ReadLE32'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/timidity/instrum_dls.c:180: undefined reference to `SDL_ReadLE32'
+../../SDL_sound/.libs//libSDL_sound.a(common.o): In function `open_file':
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/timidity/common.c:57: undefined reference to `SDL_RWFromFile'
+/mnt/lambda/aSVN/doscard/trunk/SDL_sound/decoders/timidity/common.c:81: undefined reference to `SDL_RWFromFile'
+collect2: ld returned 1 exit status

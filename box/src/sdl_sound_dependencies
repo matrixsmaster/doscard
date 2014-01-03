@@ -1,0 +1,25 @@
+dos/libdos.a(cdrom_image.o): In function `CDROM_Image_Init(Section*)':
+rm -f gui/libgui.a ; ar cru gui/libgui.a gui/sdlmain.o gui/sdl_mapper.o gui/render.o gui/render_scalers.o ; ranlib gui/libgui.a
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:750: undefined reference to `Sound_Init'
+rm -f shell/libshell.a ; ar cru shell/libshell.a shell/shell.o shell/shell_batch.o shell/shell_cmds.o shell/shell_misc.o ; ranlib shell/libshell.a
+dos/libdos.a(cdrom_image.o): In function `CDROM_Image_Destroy(Section*)':
+rm -f misc/libmisc.a ; ar cru misc/libmisc.a misc/cross.o misc/messages.o misc/programs.o misc/setup.o misc/support.o ; ranlib misc/libmisc.a
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:744: undefined reference to `Sound_Quit'
+g++ -g -c instrument.cpp -o instrument.o
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image::AudioFile::getLength()':
+g++ -g -O2 -o dosbox dosbox.o instrument.o cpu/libcpu.a debug/libdebug.a dos/libdos.a hardware/libhardware.a gui/libgui.a ints/libints.a misc/libmisc.a shell/libshell.a hardware/serialport/libserial.a -L../../libsdl/build/.libs/ -L../../SDL_sound/.libs/ -Wl,-static -lSDL  -Wl,-Bdynamic -lX11 -lpthread
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:116: undefined reference to `Sound_Seek'
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image::AudioFile::read(unsigned char*, int, int)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:90: undefined reference to `Sound_SetBufferSize'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:94: undefined reference to `Sound_Seek'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:98: undefined reference to `Sound_Decode'
+dos/libdos.a(cdrom_image.o): In function `AudioFile':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:76: undefined reference to `Sound_NewSampleFromFile'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:76: undefined reference to `Sound_NewSampleFromFile'
+dos/libdos.a(cdrom_image.o): In function `~AudioFile':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:84: undefined reference to `Sound_FreeSample'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:84: undefined reference to `Sound_FreeSample'
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:84: undefined reference to `Sound_FreeSample'
+dos/libdos.a(cdrom_image.o): In function `CDROM_Interface_Image::LoadCueSheet(char*)':
+/mnt/lambda/aSVN/doscard/trunk/box/src/dos/cdrom_image.cpp:536: undefined reference to `Sound_AvailableDecoders'
+collect2: ld returned 1 exit status

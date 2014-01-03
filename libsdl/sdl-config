@@ -42,14 +42,14 @@ while test $# -gt 0; do
       echo 1.2.15
       ;;
     --cflags)
-      echo -I${prefix}/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
+      echo -I${prefix}/include/SDL -D_GNU_SOURCE=1
       ;;
-    --libs)
-      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL  -lpthread
-      ;;
-    --static-libs)
-#    --libs|--static-libs)
-      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL  -lpthread  -lm -ldl -lpthread
+#    --libs)
+#      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL 
+#      ;;
+#    --static-libs)
+    --libs|--static-libs)
+      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL   -lm -ldl
       ;;
     *)
       echo "${usage}" 1>&2

@@ -138,7 +138,7 @@
 /* #undef HAVE_CLOCK_GETTIME */
 /* #undef HAVE_GETPAGESIZE */
 #define HAVE_MPROTECT 1
-#define HAVE_SEM_TIMEDWAIT 1
+/* #undef HAVE_SEM_TIMEDWAIT */
 
 #else
 /* We may need some replacement for stdarg.h here */
@@ -153,15 +153,15 @@
 /* #undef SDL_FILE_DISABLED */
 /* #undef SDL_JOYSTICK_DISABLED */
 /* #undef SDL_LOADSO_DISABLED */
-/* #undef SDL_THREADS_DISABLED */
+#define SDL_THREADS_DISABLED 1
 /* #undef SDL_TIMERS_DISABLED */
 /* #undef SDL_VIDEO_DISABLED */
 
 /* Enable various audio drivers */
 #define SDL_AUDIO_DRIVER_ALSA 1
 #define SDL_AUDIO_DRIVER_ALSA_DYNAMIC "libasound.so.2"
-#define SDL_AUDIO_DRIVER_ARTS 1
-#define SDL_AUDIO_DRIVER_ARTS_DYNAMIC "libartsc.so.0"
+/* #undef SDL_AUDIO_DRIVER_ARTS */
+/* #undef SDL_AUDIO_DRIVER_ARTS_DYNAMIC */
 /* #undef SDL_AUDIO_DRIVER_BAUDIO */
 /* #undef SDL_AUDIO_DRIVER_BSD */
 /* #undef SDL_AUDIO_DRIVER_COREAUDIO */
@@ -235,8 +235,8 @@
 /* #undef SDL_THREAD_DC */
 /* #undef SDL_THREAD_OS2 */
 /* #undef SDL_THREAD_PTH */
-#define SDL_THREAD_PTHREAD 1
-#define SDL_THREAD_PTHREAD_RECURSIVE_MUTEX 1
+/* #undef SDL_THREAD_PTHREAD */
+/* #undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX */
 /* #undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP */
 /* #undef SDL_THREAD_SPROC */
 /* #undef SDL_THREAD_WIN32 */
