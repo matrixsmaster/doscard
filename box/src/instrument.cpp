@@ -12,9 +12,6 @@
 #include <pthread.h>
 #include "../include/config.h"
 
-//#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
-#define PROFILE_UNIQUE_CALL_LIST 1
-//#define PROFILE_TREE_CALL_TRACE 1
 
 #define PROFILE_OUT_FILENAME "boxprofile"
 #define PROFILE_LIST_GROW_BY 8192
