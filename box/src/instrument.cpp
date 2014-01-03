@@ -25,7 +25,8 @@ static FILE* fd = NULL;
 //	void* child;
 //} * tree = NULL;
 static Bitu* list = NULL;
-static unsigned long long index = 0;
+static Bit64u* weight = NULL;
+static Bit64u index = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void __attribute__ ((constructor)) profile_create()
@@ -34,7 +35,8 @@ void __attribute__ ((constructor)) profile_create()
 	fd = fopen(PROFILE_OUT_FILENAME,"w");
 #elif (PROFILE_UNIQUE_CALL_LIST)
 	list = reinterpret_cast<Bitu*> (malloc(PROFILE_LIST_GROW_BY*sizeof(Bitu)));
-	if (!list) {
+	weight = reinterpret_cast<Bit64u*> (malloc(PROFILE_LIST_GROW_BY*sizeof(Bit64u)));
+	if ((!list) || (!weight)) {
 		fprintf(stderr,"[PROFILE]: FATAL: Unable to allocate list memory!\n");
 		abort();
 	}
@@ -60,8 +62,9 @@ void __attribute__ ((destructor)) profile_destroy()
 //		printf("%p\n",ptr);
 		fprintf(fd,"%p\n",ptr);
 	}
-	free(list);
 	fclose(fd);
+	free(weight);
+	free(list);
 #elif (PROFILE_TREE_CALL_TRACE)
 #endif
 	printf("[PROFILE]: Exit\n");
@@ -76,20 +79,31 @@ extern "C" void __cyg_profile_func_enter(void *this_fn, void *call_site)
 	pthread_mutex_lock(&mutex);
 	if (index > 1) {
 		for (Bit64u i=index-1; i>0; i--)
-//		for (Bit64u i=0; i<index; i++)
 			if (list[i] == reinterpret_cast<Bitu> (this_fn)) {
+				weight[i]++; //we don't care of overflows -> it will create more dynamics :)
+				if ((i < index-1) && (weight[i+1] < weight[i])) {
+					//swap
+					Bit64u xw = weight[i];
+					weight[i] = weight[i+1];
+					weight[i+1] = xw;
+					Bitu xl = list[i];
+					list[i] = list[i+1];
+					list[i+1] = xl;
+				}
 				pthread_mutex_unlock(&mutex);
 				return;
 			}
 	}
 	if ((++index) % PROFILE_LIST_GROW_BY == 0) {
 		list = reinterpret_cast<Bitu*> (realloc(list,(index+PROFILE_LIST_GROW_BY)*sizeof(Bitu)));
-		if (list == NULL) {
+		weight = reinterpret_cast<Bit64u*> (realloc(weight,(index+PROFILE_LIST_GROW_BY)*sizeof(Bit64u)));
+		if ((!list) || (!weight)) {
 			fprintf(stderr,"\n[PROFILE]: FATAL: OUT OF MEMORY!\n");
 			abort();
 		}
 	}
 	list[index-1] = reinterpret_cast<Bitu> (this_fn);
+	weight[index-1] = 1;
 	pthread_mutex_unlock(&mutex);
 #elif (PROFILE_TREE_CALL_TRACE)
 #endif
