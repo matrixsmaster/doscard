@@ -17,6 +17,10 @@ TODO
 0. Write TODO
 
 1. Truncate the code tree to exclude everything unneeded
+	Scalers: this thing is really useful but render_scalers.o only weights > 3MB
+	and so that's a real problem! In our setup we will scale image down to fit
+	the small cheap 320x240 TFT display instead of enhancing quality to show on
+	full-wall-sized plasma TV.
 
 2. Decide what to do with SDL.
 	Pros: SDL has well-maintained code and it's really simple to write your

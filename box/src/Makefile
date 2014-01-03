@@ -1,9 +1,9 @@
 APP	:= dosbox
 MNDIR	:= $(shell pwd)
 CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
-CC_FLAG := -g -O2 -finstrument-functions
+CC_FLAG := -g -O2
 CC_INCL := -I$(MNDIR)/../include -I. -I/usr/include/SDL
-CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
+CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
 LD_LIBS := -lSDL_sound -lSDL -lX11 -lpthread
 ## -lcurses
 
