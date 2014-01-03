@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "../include/config.h"
 
 //#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
@@ -22,7 +23,7 @@ static struct {
 } * tree = NULL;
 static Bitu* list = NULL;
 static unsigned long long index = 0;
-volatile int mutex = 0;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void __attribute__ ((constructor)) profile_create()
 {
@@ -63,10 +64,13 @@ extern "C" void __cyg_profile_func_enter(void *this_fn, void *call_site)
 #if (PROFILE_SIMPLE_FILE_CALL_TRACE)
 	if (fd) fprintf(fd,"> %p %p\n",this_fn,call_site);
 #elif (PROFILE_UNIQUE_CALL_LIST)
-	while (mutex) ;
-	mutex = 1;
+	if (!list) return;
+	pthread_mutex_lock(&mutex);
 	for (unsigned long long i=0; i<index; i++)
-		if (list[i] == reinterpret_cast<Bitu> (this_fn)) return;
+		if (list[i] == reinterpret_cast<Bitu> (this_fn)) {
+			pthread_mutex_unlock(&mutex);
+			return;
+		}
 	if ((++index) % PROFILE_LIST_GROW_BY == 0) {
 		list = reinterpret_cast<Bitu*> (realloc(list,(index+PROFILE_LIST_GROW_BY)*sizeof(Bitu)));
 		if (list == NULL) {
@@ -75,7 +79,7 @@ extern "C" void __cyg_profile_func_enter(void *this_fn, void *call_site)
 		}
 	}
 	list[index] = reinterpret_cast<Bitu> (this_fn);
-	mutex = 0;
+	pthread_mutex_unlock(&mutex);
 #elif (PROFILE_TREE_CALL_TRACE)
 #endif
 }
