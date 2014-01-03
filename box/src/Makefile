@@ -4,7 +4,9 @@ CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
 CC_FLAG := -g -O2
 CC_INCL := -I$(MNDIR)/../include -I. -I/usr/include/SDL
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
-LD_LIBS := -lSDL_sound -lSDL -lX11 -lpthread
+LD_STAT := -lSDL -lSDL_sound
+LD_BDYN := -lX11 -lpthread -lvga -ldirectfb
+LD_LIBS := -L../../libsdl/build/.libs/ -L../../SDL_sound/.libs/ -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 ## -lcurses
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp

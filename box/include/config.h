@@ -15,6 +15,15 @@
 #define SIZEOF_UNSIGNED_LONG 8
 #endif
 
+//#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
+//#define PROFILE_UNIQUE_CALL_LIST 1
+//#define PROFILE_TREE_CALL_TRACE 1
+
+/* Define to 1 to enable internal debugger, requires libcurses */
+//#define C_DEBUG 1
+/* Define to 1 to enable heavy debugging, also have to enable C_DEBUG */
+//#define C_HEAVY_DEBUG 1
+
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
@@ -30,25 +39,12 @@
 /* Define to 1 to use inlined memory functions in cpu core */
 /* #undef C_CORE_INLINE */
 
-/* Define to 1 to enable internal debugger, requires libcurses */
-//#define C_DEBUG 1
-
 /* Define to 1 if you want serial passthrough support (Win32, Posix and OS/2).
    */
 #define C_DIRECTSERIAL 1
 
-/* Define to 1 to use x86 dynamic cpu core */
-/* #undef C_DYNAMIC_X86 */
-
-/* Define to 1 to use recompiling cpu core. Can not be used together with the
-   dynamic-x86 core */
-/* #undef C_DYNREC */
-
 /* Define to 1 to enable floating point emulation */
 #define C_FPU 1
-
-/* Define to 1 to use a x86 assembly fpu core */
-//#define C_FPU_X86 1
 
 /* Determines if the compilers supports attributes for structures. */
 #define C_HAS_ATTRIBUTE 1
@@ -58,31 +54,16 @@
 #define C_HAS_BUILTIN_EXPECT 1
 
 /* Define to 1 if you have the mprotect function */
-#define C_HAVE_MPROTECT 1
-
-/* Define to 1 to enable heavy debugging, also have to enable C_DEBUG */
-/* #undef C_HEAVY_DEBUG */
-
-/* Define to 1 to enable IPX over Internet networking, requires SDL_net */
-//#define C_IPX 1
-
-/* Define to 1 to enable internal modem support, requires SDL_net */
-//#define C_MODEM 1
-
-/* Define to 1 to use opengl display output support */
-/* #undef C_OPENGL */
+//#define C_HAVE_MPROTECT 1
 
 /* Define to 1 to enable SDL_sound support */
 #define C_SDL_SOUND 1
 
 /* Define to 1 if you have setpriority support */
-#define C_SET_PRIORITY 1
+//#define C_SET_PRIORITY 1
 
 /* Define to 1 to enable screenshots, requires libpng */
 //#define C_SSHOT 1
-
-/* The type of cpu this target has */
-//#define C_TARGETCPU X86_64
 
 /* Define to 1 to use a unaligned memory access */
 #define C_UNALIGNED_MEMORY 1
@@ -156,42 +137,6 @@
 /* Compiling on OS/2 EMX */
 /* #undef OS2 */
 
-/* Name of package */
-#define PACKAGE "dosbox"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT ""
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "dosbox"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "dosbox Ex4"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "dosbox"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL ""
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "Ex4"
-
-#if 0
-/* The size of `int *', as computed by sizeof. */
-#define SIZEOF_INT_P 8
-/* The size of `unsigned char', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_CHAR 1
-/* The size of `unsigned int', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_INT 4
-/* The size of `unsigned long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG 8
-/* The size of `unsigned long long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG_LONG 8
-/* The size of `unsigned short', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_SHORT 2
-#endif
-
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
@@ -199,7 +144,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "Ex4"
+#define VERSION "Ex5"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

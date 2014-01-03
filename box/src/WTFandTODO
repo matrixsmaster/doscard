@@ -4,13 +4,19 @@ which may relatively easily run on something really low-cost. Like STM32
 microcontrollers.
 So the first thing needed to be done is truncation of source code tree.
 The vanilla dosbox compiled on $(see gcc.ver) weights 10.8 MB*
-Current version (on the same machine with the same toolchain) weights 8.3 MB*
+Current version (on the same machine with the same toolchain) weights 7.8 MB*
 and still counting down.
 This is a fun weekend project, so don't expect anything really usable :)
-But if you want to run your beloved DOOM on a homebrew USB-stick-sized picoPC
-(which will cost you around $15) -- feel free to contribute and share the fun! 
+But if you want to run your beloved DOOM** or even a full Win95 install on a 
+homebrew USB-stick-sized picoPC (which will cost you around $15) -- feel free
+to contribute and share the fun! 
 *-----
 	Unstripped versions
+**----
+	Yes, I know about over 9000 implementations of DOOM or Quake engines, but
+	it's not what I want to see. Porting a full DOS makes it possible to run
+	heavy old programs (not only a games) without a pain of porting.
+
 
 TODO
 
@@ -21,6 +27,10 @@ TODO
 	and so that's a real problem! In our setup we will scale image down to fit
 	the small cheap 320x240 TFT display instead of enhancing quality to show on
 	full-wall-sized plasma TV.
+	Debug: debugger usability in embedded systems is a hard question. Moreover,
+	internal DosBox debugger makes it not possible to run some DPMI apps.
+	For example, Win95 crashes after showing a desktop. The solution for now
+	is to leave the code on place, but undef all C_DEBUG defines.
 
 2. Decide what to do with SDL.
 	Pros: SDL has well-maintained code and it's really simple to write your

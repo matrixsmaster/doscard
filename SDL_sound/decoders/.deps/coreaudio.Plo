@@ -1,0 +1,3 @@
+coreaudio.lo: coreaudio.c ../config.h
+
+../config.h:

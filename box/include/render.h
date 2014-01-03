@@ -23,7 +23,7 @@
 // 1: complex scalers off, scaler cache off, all simple scalers on
 // 2: complex scalers off, scaler cache on
 // 3: complex scalers on
-#define RENDER_USE_ADVANCED_SCALERS 3
+#define RENDER_USE_ADVANCED_SCALERS 0
 
 #include "../src/gui/render_scalers.h"
 
