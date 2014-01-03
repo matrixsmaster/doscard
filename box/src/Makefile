@@ -4,7 +4,7 @@ CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
 CC_FLAG := -g -O2 -finstrument-functions
 CC_INCL := -I$(MNDIR)/../include -I. -I/usr/include/SDL
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
-LD_LIBS := -lSDL_sound -lSDL -lpng -lz -lX11
+LD_LIBS := -lSDL_sound -lSDL -lX11 -lpthread
 ## -lcurses
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp
@@ -49,8 +49,9 @@ all:	$(APP)
 .PHONY:	all
 
 $(APP): lcpu ldebug ldos ltty lhdw lirq lgui lshell lmisc $(APP).o
-	g++ -c instrument.cpp -o instrument.o
+	g++ -g -c instrument.cpp -o instrument.o
 	g++ $(CC_FLAG) -o $(APP) $(APP).o instrument.o $(APP_LIBS) $(LD_LIBS)
+.PHONY:	$(APP)
 
 lcpu:	$(LCPU_INS)
 	rm -f $(LCPU_LIB) ; ar cru $(LCPU_LIB) $(LCPU_INS) ; ranlib $(LCPU_LIB)
