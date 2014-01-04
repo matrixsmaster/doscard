@@ -38,12 +38,6 @@
 #include "control.h"
 
 
-#if defined(OS2)
-#define INCL DOSFILEMGR
-#define INCL_DOSERRORS
-#include "os2.h"
-#endif
-
 #if C_DEBUG
 Bitu DEBUG_EnableDebugger(void);
 #endif
@@ -173,11 +167,12 @@ public:
 		}
 		/* Show list of cdroms */
 		if (cmd->FindExist("-cd",false)) {
-			int num = SDL_CDNumDrives();
-   			WriteOut(MSG_Get("PROGRAM_MOUNT_CDROMS_FOUND"),num);
-			for (int i=0; i<num; i++) {
-				WriteOut("%2d. %s\n",i,SDL_CDName(i));
-			};
+			WriteOut("SDL and IOCTL drives not found. Are you joking you want to mount real CD on DosCard?!\n");
+//			int num = SDL_CDNumDrives();
+//   		WriteOut(MSG_Get("PROGRAM_MOUNT_CDROMS_FOUND"),num);
+//			for (int i=0; i<num; i++) {
+//				WriteOut("%2d. %s\n",i,SDL_CDName(i));
+//			};
 			return;
 		}
 
@@ -248,33 +243,6 @@ public:
 			//os2: some special drive check
 			//rest: substiture ~ for home
 			bool failed = false;
-#if defined (WIN32) || defined(OS2)
-			/* Removing trailing backslash if not root dir so stat will succeed */
-			if(temp_line.size() > 3 && temp_line[temp_line.size()-1]=='\\') temp_line.erase(temp_line.size()-1,1);
-			if (stat(temp_line.c_str(),&test)) {
-#endif
-#if defined(WIN32)
-// Nothing to do here.
-#elif defined (OS2)
-				if (temp_line.size() <= 2) // Seems to be a drive.
-				{
-					failed = true;
-					HFILE cdrom_fd = 0;
-					ULONG ulAction = 0;
-
-					APIRET rc = DosOpen((unsigned char*)temp_line.c_str(), &cdrom_fd, &ulAction, 0L, FILE_NORMAL, OPEN_ACTION_OPEN_IF_EXISTS,
-						OPEN_FLAGS_DASD | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READONLY, 0L);
-					DosClose(cdrom_fd);
-					if (rc != NO_ERROR && rc != ERROR_NOT_READY)
-					{
-						failed = true;
-					} else {
-						failed = false;
-					}
-				}
-			}
-			if (failed) {
-#else
 			if (stat(temp_line.c_str(),&test)) {
 				failed = true;
 				Cross::ResolveHomedir(temp_line);
@@ -282,63 +250,19 @@ public:
 				if(!stat(temp_line.c_str(),&test)) failed = false;
 			}
 			if(failed) {
-#endif
 				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"),temp_line.c_str());
 				return;
 			}
 			/* Not a switch so a normal directory/file */
 			if (!(test.st_mode & S_IFDIR)) {
-#ifdef OS2
-				HFILE cdrom_fd = 0;
-				ULONG ulAction = 0;
-
-				APIRET rc = DosOpen((unsigned char*)temp_line.c_str(), &cdrom_fd, &ulAction, 0L, FILE_NORMAL, OPEN_ACTION_OPEN_IF_EXISTS,
-					OPEN_FLAGS_DASD | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READONLY, 0L);
-				DosClose(cdrom_fd);
-				if (rc != NO_ERROR && rc != ERROR_NOT_READY) {
 				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_2"),temp_line.c_str());
 				return;
-			}
-#else
-				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_2"),temp_line.c_str());
-				return;
-#endif
 			}
 
 			if (temp_line[temp_line.size()-1]!=CROSS_FILESPLIT) temp_line+=CROSS_FILESPLIT;
 			Bit8u bit8size=(Bit8u) sizes[1];
 			if (type=="cdrom") {
-				int num = -1;
-				cmd->FindInt("-usecd",num,true);
 				int error = 0;
-				if (cmd->FindExist("-aspi",false)) {
-					MSCDEX_SetCDInterface(CDROM_USE_ASPI, num);
-				} else if (cmd->FindExist("-ioctl_dio",false)) {
-					MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DIO, num);
-				} else if (cmd->FindExist("-ioctl_dx",false)) {
-					MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DX, num);
-#if defined (WIN32)
-				} else if (cmd->FindExist("-ioctl_mci",false)) {
-					MSCDEX_SetCDInterface(CDROM_USE_IOCTL_MCI, num);
-#endif
-				} else if (cmd->FindExist("-noioctl",false)) {
-					MSCDEX_SetCDInterface(CDROM_USE_SDL, num);
-				} else {
-#if defined (WIN32)
-					// Check OS
-					OSVERSIONINFO osi;
-					osi.dwOSVersionInfoSize = sizeof(osi);
-					GetVersionEx(&osi);
-					if ((osi.dwPlatformId==VER_PLATFORM_WIN32_NT) && (osi.dwMajorVersion>5)) {
-						// Vista/above
-						MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DX, num);
-					} else {
-						MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DIO, num);
-					}
-#else
-					MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DIO, num);
-#endif
-				}
 				newdrive  = new cdromDrive(drive,temp_line.c_str(),sizes[0],bit8size,sizes[2],0,mediaid,error);
 				// Check Mscdex, if it worked out...
 				switch (error) {
@@ -356,13 +280,7 @@ public:
 				}
 			} else {
 				/* Give a warning when mount c:\ or the / */
-#if defined (WIN32) || defined(OS2)
-				if( (temp_line == "c:\\") || (temp_line == "C:\\") || 
-				    (temp_line == "c:/") || (temp_line == "C:/")    )	
-					WriteOut(MSG_Get("PROGRAM_MOUNT_WARNING_WIN"));
-#else
 				if(temp_line == "/") WriteOut(MSG_Get("PROGRAM_MOUNT_WARNING_OTHER"));
-#endif
 				newdrive=new localDrive(temp_line.c_str(),sizes[0],bit8size,sizes[2],sizes[3],mediaid);
 			}
 		} else {

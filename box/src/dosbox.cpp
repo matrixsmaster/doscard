@@ -42,6 +42,7 @@
 #include "ints/int10.h"
 #include "render.h"
 #include "pci_bus.h"
+#include "xshell.h"
 
 Config * control;
 MachineType machine;
@@ -712,11 +713,4 @@ void DOSBOX_Init(void) {
 	MSG_Add("CONFIG_SUGGESTED_VALUES", "Possible values");
 
 	control->SetStartUp(&SHELL_Init);
-}
-
-//We really need main() entry point defined in top-level module
-int main(int argc, char* argv[])
-{
-	printf("\nentry point()\n");
-	return (startapp(argc,argv));
 }
