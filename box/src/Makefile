@@ -1,8 +1,8 @@
 LIBNAME	:= libdosbox
 MNDIR	:= $(shell pwd)
-CC_DEFS := -DHAVE_CONFIG_H -D_GNU_SOURCE=1 -D_REENTRANT
+CC_DEFS := -DHAVE_CONFIG_H
 CC_FLAG := -g -O2
-CC_INCL := -I$(MNDIR)/../include -I. -I$(MNDIR)/../../SDL2/include -I$(MNDIR)/../../SDL_sound -I$(MNDIR)/../../xshell
+CC_INCL := -I$(MNDIR)/../include -I. -I$(MNDIR)/../../xshell
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp
@@ -16,7 +16,8 @@ LHDW_SRC += pic.cpp sblaster.cpp timer.cpp vga.cpp vga_attr.cpp vga_crtc.cpp vga
 LHDW_SRC += vga_misc.cpp vga_seq.cpp vga_xga.cpp vga_s3.cpp vga_tseng.cpp vga_paradise.cpp cmos.cpp gus.cpp dbopl.cpp
 LIRQ_SRC := mouse.cpp xms.cpp ems.cpp int10.cpp int10_char.cpp int10_memory.cpp int10_misc.cpp int10_modes.cpp int10_vesa.cpp int10_pal.cpp 
 LIRQ_SRC += int10_put_pixel.cpp int10_video_state.cpp int10_vptable.cpp bios.cpp bios_disk.cpp bios_keyboard.cpp
-LGUI_SRC := sdlmain.cpp sdl_mapper.cpp render.cpp
+LGUI_SRC := render.cpp
+##sdlmain.cpp sdl_mapper.cpp 
 LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 LMSC_SRC := cross.cpp messages.cpp programs.cpp setup.cpp support.cpp
 

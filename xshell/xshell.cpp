@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/include/SDL.h>
+#include "dosbox.h"
 #include "xshell.h"
 
 /*
@@ -19,7 +20,8 @@
  *
  */
 
-int main()
+int main(int argc, char* argv[])
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Test","Test text",NULL);
+	return (startapp(argc,argv));
 }

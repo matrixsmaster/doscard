@@ -55,3 +55,4 @@ layers of course)
 5. Write the ld script for a chip selected (arm/chip/load.ld)
 6. Write our own crt0 replace for this chip (arm/chip/start.S)
 
+7. Made something with CDROM_ImageFile AudioFile - Using SDL_sound is just unreal.

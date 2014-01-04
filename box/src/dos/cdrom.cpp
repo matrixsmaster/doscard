@@ -26,7 +26,7 @@
 #include "cdrom.h"
 
 
-int CDROM_GetMountType(char* path, int forceCD) {
+int CDROM_GetMountType(char* path/*, int forceCD*/) {
 // 0 - physical CDROM (obsolete)
 // 1 - Iso file
 // 2 - subdirectory

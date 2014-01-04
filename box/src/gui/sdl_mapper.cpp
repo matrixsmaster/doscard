@@ -24,11 +24,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <assert.h>
-
-
-#include "SDL.h"
-#include "SDL_thread.h"
-
 #include "dosbox.h"
 #include "video.h"
 #include "keyboard.h"
@@ -36,6 +31,11 @@
 #include "support.h"
 #include "mapper.h"
 #include "setup.h"
+//Somehow including them at the top conflicts with something in setup.h
+#ifdef C_X11_XKB
+//#include "SDL_syswm.h"
+#include <X11/XKBlib.h>
+#endif
 
 enum {
 	CLR_BLACK=0,
@@ -2359,6 +2359,7 @@ void MAPPER_Init(void) {
 	CreateLayout();
 	CreateBindGroups();
 	if (!MAPPER_LoadBinds()) CreateDefaultBinds();
+#if 0
 	if (SDL_GetModState()&KMOD_CAPS) {
 		for (CBindList_it bit=caps_lock_event->bindlist.begin();bit!=caps_lock_event->bindlist.end();bit++) {
 #if SDL_VERSION_ATLEAST(1, 2, 14)
@@ -2379,12 +2380,9 @@ void MAPPER_Init(void) {
 #endif
 		}
 	}
-}
-//Somehow including them at the top conflicts with something in setup.h
-#ifdef C_X11_XKB
-#include "SDL_syswm.h"
-#include <X11/XKBlib.h>
 #endif
+}
+
 void MAPPER_StartUp(Section * sec) {
 	Section_prop * section=static_cast<Section_prop *>(sec);
 	mapper.sticks.num=0;

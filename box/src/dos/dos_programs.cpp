@@ -1235,7 +1235,7 @@ public:
 					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_ALREADY_MOUNTED"));
 					return;
 				}
-				MSCDEX_SetCDInterface(CDROM_USE_SDL, -1);
+//				MSCDEX_SetCDInterface(CDROM_USE_SDL, -1);
 				// create new drives for all images
 				std::vector<DOS_Drive*> isoDisks;
 				std::vector<std::string>::size_type i;

@@ -57,7 +57,7 @@
 //#define C_HAVE_MPROTECT 1
 
 /* Define to 1 to enable SDL_sound support */
-#define C_SDL_SOUND 1
+//#define C_SDL_SOUND 1
 
 /* Define to 1 if you have setpriority support */
 //#define C_SET_PRIORITY 1

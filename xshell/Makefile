@@ -1,5 +1,5 @@
 APP := xshell
-INCLUDES := -I.. -I.
+INCLUDES := -I. -I.. -I../box/include
 CXXFLAGS := -g -O2 -Wall $(INCLUDES)
 LD_STAT := -lSDL2
 LD_BDYN := -lX11 -lpthread -lrt

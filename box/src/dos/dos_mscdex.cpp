@@ -48,8 +48,8 @@
 #define	REQUEST_STATUS_ERROR	0x8000
 
 // Use cdrom Interface
-int useCdromInterface	= CDROM_USE_SDL;
-int forceCD				= -1;
+//int useCdromInterface	= CDROM_USE_SDL;
+//int forceCD				= -1;
 
 static Bitu MSCDEX_Strategy_Handler(void); 
 static Bitu MSCDEX_Interrupt_Handler(void);
@@ -254,7 +254,7 @@ int CMscdex::AddDrive(Bit16u _drive, char* physicalPath, Bit8u& subUnit)
 	// Set return type to ok
 	int result = 0;
 	// Get Mounttype and init needed cdrom interface
-	switch (CDROM_GetMountType(physicalPath,forceCD)) {
+	switch (CDROM_GetMountType(physicalPath/*,forceCD*/)) {
 	case 0x00:
 		LOG(LOG_MISC,LOG_NORMAL)("MSCDEX: Mounting physical cdrom: %s"	,physicalPath);
 		return 2;
@@ -272,7 +272,7 @@ int CMscdex::AddDrive(Bit16u _drive, char* physicalPath, Bit8u& subUnit)
 		return 6;
 	};
 
-	if (!cdrom[numDrives]->SetDevice(physicalPath,forceCD)) {
+	if (!cdrom[numDrives]->SetDevice(physicalPath,-1)) {
 //		delete cdrom[numDrives] ; mount seems to delete it
 		return 3;
 	}
@@ -1328,8 +1328,8 @@ bool MSCDEX_HasMediaChanged(Bit8u subUnit)
 }
 
 void MSCDEX_SetCDInterface(int intNr, int numCD) {
-	useCdromInterface = intNr;
-	forceCD	= numCD;
+//	useCdromInterface = intNr;
+//	forceCD	= numCD;
 }
 
 void MSCDEX_ShutDown(Section* /*sec*/) {

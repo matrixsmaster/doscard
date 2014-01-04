@@ -31,17 +31,24 @@
 #include "dosbox.h"
 #include "mem.h"
 #include "mixer.h"
-#include "SDL.h"
-#include "SDL_thread.h"
+#include "fake_threading.h"
 
-#if defined(C_SDL_SOUND)
-#include "SDL_sound.h"
-#endif
 
 #define RAW_SECTOR_SIZE		2352
 #define COOKED_SECTOR_SIZE	2048
 
-enum { CDROM_USE_SDL, CDROM_USE_ASPI, CDROM_USE_IOCTL_DIO, CDROM_USE_IOCTL_DX, CDROM_USE_IOCTL_MCI };
+//enum { CDROM_USE_SDL, CDROM_USE_ASPI, CDROM_USE_IOCTL_DIO, CDROM_USE_IOCTL_DX, CDROM_USE_IOCTL_MCI };
+
+#define CD_FPS	75
+#define FRAMES_TO_MSF(f, M,S,F)	{					\
+	int value = f;							\
+	*(F) = value%CD_FPS;						\
+	value /= CD_FPS;						\
+	*(S) = value%60;						\
+	value /= 60;							\
+	*(M) = value;							\
+}
+#define MSF_TO_FRAMES(M, S, F)	((M)*60*CD_FPS+(S)*CD_FPS+(F))
 
 typedef struct SMSF {
 	unsigned char min;
@@ -54,7 +61,7 @@ typedef struct SCtrl {
 	Bit8u	vol[4];			// channel volume
 } TCtrl;
 
-extern int CDROM_GetMountType(char* path, int force);
+extern int CDROM_GetMountType(char* path/*, int force*/);
 
 class CDROM_Interface
 {
@@ -179,7 +186,7 @@ static	void	CDAudioCallBack(Bitu len);
 static  struct imagePlayer {
 		CDROM_Interface_Image *cd;
 		MixerChannel   *channel;
-		SDL_mutex 	*mutex;
+		XSF_Mutex 	*mutex;
 		Bit8u   buffer[8192];
 		int     bufLen;
 		int     currFrame;	

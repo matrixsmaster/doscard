@@ -19,12 +19,11 @@
 #ifndef DOSBOX_TIMER_H
 #define DOSBOX_TIMER_H
 
-/* underlying clock rate in HZ */
-#include <SDL.h>
+#include <xshell.h>
 
 #define PIT_TICK_RATE 1193182
 
-#define GetTicks() SDL_GetTicks()
+#define GetTicks() XS_GetTicks()
 
 typedef void (*TIMER_TickHandler)(void);
 

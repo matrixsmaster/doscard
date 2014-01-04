@@ -37,6 +37,8 @@ enum MixerModes {
 	M_16M,M_16S
 };
 
+#define MIXER_FREQUENCY 11025
+
 #define MIXER_BUFSIZE (16*1024)
 #define MIXER_BUFMASK (MIXER_BUFSIZE-1)
 extern Bit8u MixTemp[MIXER_BUFSIZE];

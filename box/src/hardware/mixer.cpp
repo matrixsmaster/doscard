@@ -22,6 +22,7 @@
 	That should call the mixer start from there or something.
 */
 
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <math.h>
@@ -35,7 +36,6 @@
 #include <mmsystem.h>
 #endif
 
-#include "SDL.h"
 #include "mem.h"
 #include "pic.h"
 #include "dosbox.h"
@@ -47,7 +47,6 @@
 #include "mapper.h"
 #include "hardware.h"
 #include "programs.h"
-//#include "midi.h"
 
 #define MIXER_SSIZE 4
 #define MIXER_SHIFT 14
@@ -133,9 +132,9 @@ void MixerChannel::Enable(bool _yesno) {
 	enabled=_yesno;
 	if (enabled) {
 		freq_index=MIXER_REMAIN;
-		SDL_LockAudio();
+//		SDL_LockAudio();
 		if (done<mixer.done) done=mixer.done;
-		SDL_UnlockAudio();
+//		SDL_UnlockAudio();
 	}
 }
 
@@ -337,14 +336,14 @@ void MixerChannel::AddSamples_s32_nonnative(Bitu len,const Bit32s * data) {
 }
 
 void MixerChannel::FillUp(void) {
-	SDL_LockAudio();
+//	SDL_LockAudio();
 	if (!enabled || done<mixer.done) {
-		SDL_UnlockAudio();
+//		SDL_UnlockAudio();
 		return;
 	}
 	float index=PIC_TickIndex();
 	Mix((Bitu)(index*mixer.needed));
-	SDL_UnlockAudio();
+//	SDL_UnlockAudio();
 }
 
 extern bool ticksLocked;
@@ -383,12 +382,12 @@ static void MIXER_MixData(Bitu needed) {
 }
 
 static void MIXER_Mix(void) {
-	SDL_LockAudio();
+//	SDL_LockAudio();
 	MIXER_MixData(mixer.needed);
 	mixer.tick_remain+=mixer.tick_add;
 	mixer.needed+=(mixer.tick_remain>>MIXER_SHIFT);
 	mixer.tick_remain&=MIXER_REMAIN;
-	SDL_UnlockAudio();
+//	SDL_UnlockAudio();
 }
 
 static void MIXER_Mix_NoSound(void) {
@@ -411,7 +410,7 @@ static void MIXER_Mix_NoSound(void) {
 	mixer.done=0;
 }
 
-static void MIXER_CallBack(void * userdata, Uint8 *stream, int len) {
+static void MIXER_CallBack(void * userdata, uint8_t *stream, int len) {
 	Bitu need=(Bitu)len/MIXER_SSIZE;
 	Bit16s * output=(Bit16s *)stream;
 	Bitu reduce;
@@ -610,8 +609,9 @@ void MIXER_Init(Section* sec) {
 
 	Section_prop * section=static_cast<Section_prop *>(sec);
 	/* Read out config section */
-	mixer.freq=section->Get_int("rate");
-	mixer.nosound=section->Get_bool("nosound");
+	mixer.freq=MIXER_FREQUENCY;
+//	mixer.nosound=section->Get_bool("nosound");
+	mixer.nosound=true;
 	mixer.blocksize=section->Get_int("blocksize");
 
 	/* Initialize the internal stuff */
@@ -622,23 +622,22 @@ void MIXER_Init(Section* sec) {
 	mixer.mastervol[0]=1.0f;
 	mixer.mastervol[1]=1.0f;
 
-	/* Start the Mixer using SDL Sound at 22 khz */
-	SDL_AudioSpec spec;
-	SDL_AudioSpec obtained;
-
-	spec.freq=mixer.freq;
-	spec.format=AUDIO_S16SYS;
-	spec.channels=2;
-	spec.callback=MIXER_CallBack;
-	spec.userdata=NULL;
-	spec.samples=(Uint16)mixer.blocksize;
+//	SDL_AudioSpec spec;
+//	SDL_AudioSpec obtained;
+//
+//	spec.freq=mixer.freq;
+//	spec.format=AUDIO_S16SYS;
+//	spec.channels=2;
+//	spec.callback=MIXER_CallBack;
+//	spec.userdata=NULL;
+//	spec.samples=(Uint16)mixer.blocksize;
 
 	mixer.tick_remain=0;
 	if (mixer.nosound) {
 		LOG_MSG("MIXER:No Sound Mode Selected.");
 		mixer.tick_add=((mixer.freq) << MIXER_SHIFT)/1000;
 		TIMER_AddTickHandler(MIXER_Mix_NoSound);
-	} else if (SDL_OpenAudio(&spec, &obtained) <0 ) {
+	}/* else if (SDL_OpenAudio(&spec, &obtained) <0 ) {
 		mixer.nosound = true;
 		LOG_MSG("MIXER:Can't open audio: %s , running in nosound mode.",SDL_GetError());
 		mixer.tick_add=((mixer.freq) << MIXER_SHIFT)/1000;
@@ -651,7 +650,7 @@ void MIXER_Init(Section* sec) {
 		mixer.tick_add=(mixer.freq << MIXER_SHIFT)/1000;
 		TIMER_AddTickHandler(MIXER_Mix);
 		SDL_PauseAudio(0);
-	}
+	}*/
 	mixer.min_needed=section->Get_int("prebuffer");
 	if (mixer.min_needed>100) mixer.min_needed=100;
 	mixer.min_needed=(mixer.freq*mixer.min_needed)/1000;
