@@ -19,11 +19,13 @@
 #ifndef DOSBOX_TIMER_H
 #define DOSBOX_TIMER_H
 
-#include <xshell.h>
+#include "ldb.h"
 
 #define PIT_TICK_RATE 1193182
 
-#define GetTicks() XS_GetTicks()
+//#define GetTicks() XS_GetTicks()
+uint32_t GetTicks();
+extern LDB_CallbackFunc libdosbox_callbacks[];
 
 typedef void (*TIMER_TickHandler)(void);
 

@@ -465,3 +465,10 @@ void TIMER_Init(Section* sec) {
 	test = new TIMER(sec);
 	sec->AddDestroyFunction(&TIMER_Destroy);
 }
+
+uint32_t GetTicks()
+{
+	uint32_t r;
+	(*libdosbox_callbacks[DBCB_GetTicks])(&r,sizeof(r));
+	return r;
+}

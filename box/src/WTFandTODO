@@ -1,4 +1,4 @@
-WTF?!
+_________________________________WTF?!____________________________________
 The main goal of this project is creation of embeddable version of DosBox,
 which may relatively easily run on something really low-cost. Like STM32
 microcontrollers.
@@ -8,8 +8,8 @@ Current version (on the same machine with the same toolchain) weights 7.8 MB*
 and still counting down.
 This is a fun weekend project, so don't expect anything really usable :)
 But if you want to run your beloved DOOM** or even a full Win95 install on a 
-homebrew USB-stick-sized picoPC (which will cost you around $15) -- feel free
-to contribute and share the fun! 
+homebrew USB-stick-sized cardboard PC (which will cost you around $15) -- feel
+free to contribute and share the fun!
 *-----
 	Unstripped versions
 **----
@@ -18,7 +18,7 @@ to contribute and share the fun!
 	heavy old programs (not only a games) without a pain of porting.
 
 
-TODO
+_________________________________TODO________________________________________
 
 0. Write TODO
 
@@ -31,15 +31,17 @@ TODO
 	internal DosBox debugger makes it not possible to run some DPMI apps.
 	For example, Win95 crashes after showing a desktop. The solution for now
 	is to leave the code on place, but undef all C_DEBUG defines.
+	Hardware: I don't need GUS, EGA, CGA and many other things. The only things
+	I need is SVGA (s3) and SoundBlaster (which uses OPL, btw).
 
 2. Decide what to do with SDL.
 	Pros: SDL has well-maintained code and it's really simple to write your
 	own hardware driver and put it to the tree.
 	Cons: SDL has weight. There's not so much things to do with this fact.
 	SDL needs threads. I can't see any way to make SDL audio works without
-	threading enabled. DosBox uses pretty old SDL 1.2, with all of this 'surfaces' 
-	and other old stuff. So it would be useless to port OLD SDL to a custom
-	platform because a lifeline of 1.2 is near it's end.
+	threading enabled. Next, DosBox uses pretty old SDL 1.2, with all of this 
+	'surfaces' and other old stuff. So it would be useless to port OLD SDL to a 
+	custom platform because a lifeline of 1.2 is near it's end.
 	Conclusion: Wipe out SDL code and make my own wrapper to easily move between
 	debugging on a Core-i7 based gametop PC to running on a STM32 cardboard :)
 	Moreover, the new SDL 2.0 brings the new capability of running scaling code
@@ -48,6 +50,9 @@ TODO
 	
 3. Refactor code. It's highly improbable that we will want to merge something
 from upstream DosBox due to fact of everything we want is already working.
+I had decided that will be a lib, libdosbox. There will be two versions of this:
+(a) x86 GNU/Linux static or/and shared lib; and (b) embeddable library to just
+include in your hobby microcontroller project. Nice, isn't it?
 
 4. Select a chip to port this thing into and draw the schematics (and PCB
 layers of course)
@@ -56,3 +61,8 @@ layers of course)
 6. Write our own crt0 replace for this chip (arm/chip/start.S)
 
 7. Made something with CDROM_ImageFile AudioFile - Using SDL_sound is just unreal.
+
+...
+
+666. Wipe out all MacOS and WinDOS stuff. It's a lib, a Linux lib. And there's no
+way to use it under Doors, Windows, Walls, Ceilings or Floors OSs :)

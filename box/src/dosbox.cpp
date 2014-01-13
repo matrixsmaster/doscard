@@ -43,13 +43,13 @@
 #include "render.h"
 #include "pci_bus.h"
 #include "box_inits.h"
+#include "ldb.h"
 #include "xshell.h"
 
+LDB_CallbackFunc libdosbox_callbacks[];
 Config * control;
 MachineType machine;
 SVGACards svgaCard;
-
-int startapp(int argc, char* argv[]);
 
 static LoopHandler * loop;
 
@@ -641,4 +641,10 @@ void DOSBOX_Init(void) {
 	MSG_Add("CONFIG_SUGGESTED_VALUES", "Possible values");
 
 	control->SetStartUp(&SHELL_Init);
+}
+
+int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
+{
+	libdosbox_callbacks[t] = f;
+	return 0;
 }

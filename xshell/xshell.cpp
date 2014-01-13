@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/include/SDL.h>
-#include "dosbox.h"
+#include "ldb.h"
 #include "xshell.h"
 
 /*
@@ -20,8 +20,38 @@
  *
  */
 
+int XS_UpdateScreenBuffer(void* buf, size_t len)
+{
+	return 0;
+}
+
+int XS_UpdateSoundBuffer(void* buf, size_t len)
+{
+	return 0;
+}
+
+int XS_QueryUIEvents(void* buf, size_t len)
+{
+	return 0;
+}
+
+int XS_GetTicks(void* buf, size_t len)
+{
+	return 0;
+}
+
+void ldb_register()
+{
+	Dosbox_RegisterCallback(DBCB_GetTicks,&XS_GetTicks);
+	Dosbox_RegisterCallback(DBCB_PushScreen,&XS_UpdateScreenBuffer);
+	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
+	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
+}
+
 int main(int argc, char* argv[])
 {
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Test","Test text",NULL);
-	return (startapp(argc,argv));
+	printf("ALIVE!\n");
+	ldb_register();
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"SDL2","SDL2 Alive",NULL);
+	return (EXIT_SUCCESS);
 }

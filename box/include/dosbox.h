@@ -37,7 +37,7 @@ void DOSBOX_SetNormalLoop();
 
 void DOSBOX_Init(void);
 
-int startapp(int,char**);
+//int startapp(int,char**);
 
 class Config;
 extern Config * control;
