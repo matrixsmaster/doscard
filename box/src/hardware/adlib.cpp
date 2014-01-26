@@ -563,63 +563,6 @@ void OPL_Write(Bitu port,Bitu val,Bitu iolen) {
 	module->PortWrite( port, val, iolen );
 }
 
-/*
-	Save the current state of the operators as instruments in an reality adlib tracker file
-*/
-static void SaveRad() {
-	char b[16 * 1024];
-	int w = 0;
-
-	FILE* handle = OpenCaptureFile("RAD Capture",".rad");
-	if ( !handle )
-		return;
-	//Header
-	fwrite( "RAD by REALiTY!!", 1, 16, handle );
-	b[w++] = 0x10;		//version
-	b[w++] = 0x06;		//default speed and no description
-	//Write 18 instuments for all operators in the cache
-	for ( int i = 0; i < 18; i++ ) {
-		Bit8u* set = module->cache + ( i / 9 ) * 256;
-		Bitu offset = ((i % 9) / 3) * 8 + (i % 3);
-		Bit8u* base = set + offset;
-		b[w++] = 1 + i;		//instrument number
-		b[w++] = base[0x23];
-		b[w++] = base[0x20];
-		b[w++] = base[0x43];
-		b[w++] = base[0x40];
-		b[w++] = base[0x63];
-		b[w++] = base[0x60];
-		b[w++] = base[0x83];
-		b[w++] = base[0x80];
-		b[w++] = set[0xc0 + (i % 9)];
-		b[w++] = base[0xe3];
-		b[w++] = base[0xe0];
-	}
-	b[w++] = 0;		//instrument 0, no more instruments following
-	b[w++] = 1;		//1 pattern following
-	//Zero out the remaing part of the file a bit to make rad happy
-	for ( int i = 0; i < 64; i++ ) {
-		b[w++] = 0;
-	}
-	fwrite( b, 1, w, handle );
-	fclose( handle );
-};
-
-
-static void OPL_SaveRawEvent(bool pressed) {
-	if (!pressed)
-		return;
-//	SaveRad();return;
-	/* Check for previously opened wave file */
-	if ( module->capture ) {
-		delete module->capture;
-		module->capture = 0;
-		LOG_MSG("Stopped Raw OPL capturing.");
-	} else {
-		LOG_MSG("Preparing to capture Raw OPL, will start with first note played.");
-		module->capture = new Adlib::Capture( &module->cache );
-	}
-}
 
 namespace Adlib {
 
@@ -676,8 +619,6 @@ Module::Module( Section* configuration ) : Module_base(configuration) {
 	//0x228 range
 	WriteHandler[2].Install(base+8,OPL_Write,IO_MB, 2);
 	ReadHandler[2].Install(base+8,OPL_Read,IO_MB, 1);
-
-	MAPPER_AddHandler(OPL_SaveRawEvent,MK_f7,MMOD1|MMOD2,"caprawopl","Cap OPL");
 }
 
 Module::~Module() {

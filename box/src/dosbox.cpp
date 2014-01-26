@@ -46,7 +46,7 @@
 #include "ldb.h"
 #include "xshell.h"
 
-LDB_CallbackFunc libdosbox_callbacks[];
+LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
 Config * control;
 MachineType machine;
 SVGACards svgaCard;
@@ -215,7 +215,6 @@ static void DOSBOX_RealInit(Section * sec) {
 	DOSBOX_SetLoop(&Normal_Loop);
 	MSG_Init(section);
 
-	MAPPER_AddHandler(DOSBOX_UnlockSpeed, MK_f12, MMOD2,"speedlock","Speedlock");
 	std::string cmd_machine;
 	if (control->cmdline->FindString("-machine",cmd_machine,true)){
 		//update value in config (else no matching against suggested values
@@ -254,8 +253,6 @@ void DOSBOX_Init(void) {
 	Prop_bool* Pbool;
 	Prop_multival* Pmulti;
 	Prop_multival_remain* Pmulti_remain;
-
-	SDLNetInited = false;
 
 	// Some frequently used option sets
 	const char *rates[] = {  "44100", "48000", "32000","22050", "16000", "11025", "8000", "49716", 0 };

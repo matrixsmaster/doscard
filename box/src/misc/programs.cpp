@@ -302,20 +302,20 @@ void CONFIG::Run(void) {
 		
 		case P_RESTART:
 			if (securemode_check()) return;
-			if (pvars.size() == 0) restart_program(control->startup_params);
-			else {
-				std::vector<std::string> restart_params;
-				restart_params.push_back(control->cmdline->GetFileName());
-				for(size_t i = 0; i < pvars.size(); i++) {
-					restart_params.push_back(pvars[i]);
-					if (pvars[i].find(' ') != std::string::npos) {
-						pvars[i] = "\""+pvars[i]+"\""; // add back spaces
-					}
-				}
-				// the rest on the commandline, too
-				cmd->FillVector(restart_params);
-				restart_program(restart_params);
-			}
+//			if (pvars.size() == 0) restart_program(control->startup_params);
+//			else {
+//				std::vector<std::string> restart_params;
+//				restart_params.push_back(control->cmdline->GetFileName());
+//				for(size_t i = 0; i < pvars.size(); i++) {
+//					restart_params.push_back(pvars[i]);
+//					if (pvars[i].find(' ') != std::string::npos) {
+//						pvars[i] = "\""+pvars[i]+"\""; // add back spaces
+//					}
+//				}
+//				// the rest on the commandline, too
+//				cmd->FillVector(restart_params);
+//				restart_program(restart_params);
+//			}
 			return;
 		
 		case P_LISTCONF: {
