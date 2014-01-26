@@ -3,6 +3,9 @@
 
 #include <string.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "SDL2/include/SDL.h"
 #include "ldb.h"
 
 

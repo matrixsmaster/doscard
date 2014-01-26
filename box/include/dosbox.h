@@ -37,6 +37,8 @@ void DOSBOX_SetNormalLoop();
 
 void DOSBOX_Init(void);
 
+//int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
+
 //int startapp(int,char**);
 
 class Config;

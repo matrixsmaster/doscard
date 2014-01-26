@@ -10,6 +10,7 @@ enum LDB_CallbackType {
 	DBCB_PushSound = 2,
 	DBCB_PullUIEvents = 3
 };
+#define LDB_CALLBACKSQ 4
 
 typedef int (*LDB_CallbackFunc)(void*,size_t);
 
