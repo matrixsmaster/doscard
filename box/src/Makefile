@@ -11,8 +11,8 @@ LDOS_SRC := dos.cpp dos_devices.cpp dos_execute.cpp dos_files.cpp dos_ioctl.cpp 
 LDOS_SRC += dos_tables.cpp drives.cpp drive_virtual.cpp drive_local.cpp drive_cache.cpp drive_fat.cpp drive_iso.cpp dos_mscdex.cpp 
 LDOS_SRC += dos_keyboard_layout.cpp cdrom.cpp cdrom_image.cpp
 LTTY_SRC := directserial.cpp libserial.cpp serialdummy.cpp serialport.cpp misc_util.cpp nullmodem.cpp
-LHDW_SRC := adlib.cpp dma.cpp gameblaster.cpp iohandler.cpp joystick.cpp keyboard.cpp memory.cpp mixer.cpp pcspeaker.cpp pci_bus.cpp
-##hardware.cpp
+LHDW_SRC := adlib.cpp dma.cpp gameblaster.cpp iohandler.cpp keyboard.cpp memory.cpp mixer.cpp pcspeaker.cpp pci_bus.cpp
+##hardware.cpp joystick.cpp
 LHDW_SRC += pic.cpp sblaster.cpp timer.cpp vga.cpp vga_attr.cpp vga_crtc.cpp vga_dac.cpp vga_draw.cpp vga_gfx.cpp vga_other.cpp vga_memory.cpp 
 LHDW_SRC += vga_misc.cpp vga_seq.cpp vga_xga.cpp vga_s3.cpp vga_tseng.cpp vga_paradise.cpp cmos.cpp gus.cpp dbopl.cpp
 LIRQ_SRC := mouse.cpp xms.cpp ems.cpp int10.cpp int10_char.cpp int10_memory.cpp int10_misc.cpp int10_modes.cpp int10_vesa.cpp int10_pal.cpp 

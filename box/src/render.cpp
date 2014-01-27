@@ -31,10 +31,8 @@
 #include "hardware.h"
 #include "support.h"
 
-#include "render_scalers.h"
-
 Render_t render;
-ScalerLineHandler_t RENDER_DrawLine;
+RenderLineHandler_t RENDER_DrawLine;
 
 static void RENDER_CallBack( GFX_CallBackFunctions_t function );
 

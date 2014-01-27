@@ -19,17 +19,6 @@
 #ifndef DOSBOX_RENDER_H
 #define DOSBOX_RENDER_H
 
-// 0: complex scalers off, scaler cache off, some simple scalers off, memory requirements reduced
-// 1: complex scalers off, scaler cache off, all simple scalers on
-// 2: complex scalers off, scaler cache on
-// 3: complex scalers on
-#define RENDER_USE_ADVANCED_SCALERS 0
-
-#include "../src/gui/render_scalers.h"
-
-#define RENDER_SKIP_CACHE	16
-//Enable this for scalers to support 0 input for empty lines
-//#define RENDER_NULL_INPUT
 
 typedef struct {
 	struct { 
@@ -57,29 +46,29 @@ typedef struct {
 		double ratio;
 		float fps;
 	} src;
-	struct {
-		Bitu count;
-		Bitu max;
-		Bitu index;
-		Bit8u hadSkip[RENDER_SKIP_CACHE];
-	} frameskip;
-	struct {
-		Bitu size;
-		scalerMode_t inMode;
-		scalerMode_t outMode;
-		scalerOperation_t op;
-		bool clearCache;
-		bool forced;
-		ScalerLineHandler_t lineHandler;
-		ScalerLineHandler_t linePalHandler;
-		ScalerComplexHandler_t complexHandler;
-		Bitu blocks, lastBlock;
-		Bitu outPitch;
-		Bit8u *outWrite;
-		Bitu cachePitch;
-		Bit8u *cacheRead;
-		Bitu inHeight, inLine, outLine;
-	} scale;
+//	struct {
+//		Bitu count;
+//		Bitu max;
+//		Bitu index;
+//		Bit8u hadSkip[RENDER_SKIP_CACHE];
+//	} frameskip;
+//	struct {
+//		Bitu size;
+//		scalerMode_t inMode;
+//		scalerMode_t outMode;
+//		scalerOperation_t op;
+//		bool clearCache;
+//		bool forced;
+//		ScalerLineHandler_t lineHandler;
+//		ScalerLineHandler_t linePalHandler;
+//		ScalerComplexHandler_t complexHandler;
+//		Bitu blocks, lastBlock;
+//		Bitu outPitch;
+//		Bit8u *outWrite;
+//		Bitu cachePitch;
+//		Bit8u *cacheRead;
+//		Bitu inHeight, inLine, outLine;
+//	} scale;
 	RenderPal_t pal;
 	bool updating;
 	bool active;
@@ -87,8 +76,10 @@ typedef struct {
 	bool fullFrame;
 } Render_t;
 
+typedef void (*RenderLineHandler_t)(const void*);
+
 extern Render_t render;
-extern ScalerLineHandler_t RENDER_DrawLine;
+extern RenderLineHandler_t RENDER_DrawLine;
 void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool dblw,bool dblh);
 bool RENDER_StartUpdate(void);
 void RENDER_EndUpdate(bool abort);
