@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -648,12 +648,17 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 
 void* Dosbox_Run(void* p)
 {
-	printf("Dosbox_Run(): Enter\n");
+	LOG_MSG("Dosbox_Run(): Enter");
 	CommandLine com_line(0,NULL);
 	Config myconf(&com_line);
 	control = &myconf;
 	DOSBOX_Init();
-	printf("Dosbox_Run(): Exit\n");
+	LOG_MSG("DOSCARD version %s",VERSION);
+	LOG_MSG(COPYRIGHT_STRING_ORIGINAL);
+	LOG_MSG(COPYRIGHT_STRING_NEW);
+	LOG_MSG("Initializing subsystems...");
+	control->Init();
+	LOG_MSG("Dosbox_Run(): Exit");
 	return 0;
 }
 

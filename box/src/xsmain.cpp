@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -104,22 +105,6 @@ void GFX_ShowMsg(char const* format,...)
 	va_list msg;
 	va_start(msg,format);
 	vsprintf(buf,format,msg);
-        strcat(buf,"\n");
 	va_end(msg);
-	printf("%s",buf);
-}
-
-int startapp(int argc, char* argv[]) {
-	printf("startapp()\n");
-	DOSBOX_Init();
-#if C_DEBUG
-	DEBUG_SetupConsole();
-#endif
-	/* Display Welcometext in the console */
-	LOG_MSG("DOSBox version %s",VERSION);
-	LOG_MSG("Copyright 2002-2013 DOSBox Team, published under GNU GPL.");
-	LOG_MSG("---");
-	/* Init the keyMapper */
-	MAPPER_Init();
-	return 0;
+	printf("%s\n",buf);
 }

@@ -24,12 +24,6 @@
 /* Define to 1 to enable heavy debugging, also have to enable C_DEBUG */
 //#define C_HEAVY_DEBUG 1
 
-/* Define if building universal (internal helper macro) */
-/* #undef AC_APPLE_UNIVERSAL_BUILD */
-
-/* Compiling on BSD */
-/* #undef BSD */
-
 /* Determines if the compilers supports always_inline attribute. */
 #define C_ATTRIBUTE_ALWAYS_INLINE 1
 
@@ -83,12 +77,6 @@
 /* environ can be linked */
 #define ENVIRON_LINKED 1
 
-/* Define to 1 to use ALSA for MIDI */
-/* #undef HAVE_ALSA */
-
-/* Define to 1 if you have the <ddraw.h> header file. */
-/* #undef HAVE_DDRAW_H */
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
@@ -131,20 +119,15 @@
 /* Compiling on GNU/Linux */
 #define LINUX 1
 
-/* Compiling on Mac OS X */
-/* #undef MACOSX */
-
-/* Compiling on OS/2 EMX */
-/* #undef OS2 */
-
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 /* #undef TM_IN_SYS_TIME */
 
-/* Version number of package */
-#define VERSION "Ex5"
+#define VERSION "0.0.1"
+#define COPYRIGHT_STRING_ORIGINAL "Copyright 2002-2013 DOSBox Team, published under GNU GPL."
+#define 	COPYRIGHT_STRING_NEW  "Copyright 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -157,21 +140,6 @@
 /* #  undef WORDS_BIGENDIAN */
 # endif
 #endif
-
-/* Define to empty if `const' does not conform to ANSI C. */
-/* #undef const */
-
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-/* #undef inline */
-#endif
-
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
-
-/* Define to `int` if you don't have socklen_t */
-/* #undef socklen_t */
 
 #if C_ATTRIBUTE_ALWAYS_INLINE
 #define INLINE inline __attribute__((always_inline))
