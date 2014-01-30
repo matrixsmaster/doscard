@@ -645,3 +645,15 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 	libdosbox_callbacks[t] = f;
 	return 0;
 }
+
+void* Dosbox_Run(void* p)
+{
+	printf("Dosbox_Run(): Enter\n");
+	CommandLine com_line(0,NULL);
+	Config myconf(&com_line);
+	control = &myconf;
+	DOSBOX_Init();
+	printf("Dosbox_Run(): Exit\n");
+	return 0;
+}
+

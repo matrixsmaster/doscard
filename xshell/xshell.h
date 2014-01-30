@@ -5,14 +5,13 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "SDL2/include/SDL.h"
 #include "ldb.h"
 
-
-//LDB_CallbackFunc XS_UpdateScreenBuffer;
-//LDB_CallbackFunc XS_UpdateSoundBuffer;
-//LDB_CallbackFunc XS_QueryUIEvents;
-//LDB_CallbackFunc XS_GetTicks;
+#ifdef XSHELL_VERBOSE
+void xvrb(char const* format,...);
+#endif
 
 int XS_UpdateScreenBuffer(void* buf, size_t len);
 int XS_UpdateSoundBuffer(void* buf, size_t len);

@@ -15,5 +15,6 @@ enum LDB_CallbackType {
 typedef int (*LDB_CallbackFunc)(void*,size_t);
 
 int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
+void* Dosbox_Run(void*);
 
 #endif
