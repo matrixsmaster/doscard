@@ -126,8 +126,8 @@
 /* #undef TM_IN_SYS_TIME */
 
 #define VERSION "0.0.1"
-#define COPYRIGHT_STRING_ORIGINAL "Copyright 2002-2013 DOSBox Team, published under GNU GPL."
-#define 	COPYRIGHT_STRING_NEW  "Copyright 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
+#define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
+#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

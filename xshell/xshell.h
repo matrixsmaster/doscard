@@ -27,10 +27,6 @@
 #include "SDL2/include/SDL.h"
 #include "ldb.h"
 
-#ifdef XSHELL_VERBOSE
-void xvrb(char const* format,...);
-#endif
-
 int XS_UpdateScreenBuffer(void* buf, size_t len);
 int XS_UpdateSoundBuffer(void* buf, size_t len);
 int XS_QueryUIEvents(void* buf, size_t len);

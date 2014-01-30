@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/types.h>
-
 #include "cross.h"
 #include "dosbox.h"
 #include "video.h"

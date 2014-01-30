@@ -17,6 +17,7 @@
  */
 
 #include "xshell.h"
+#include "xsupport.h"
 
 /*
  * The Basic model:
@@ -36,55 +37,68 @@
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
+#ifdef XSHELL_VERBOSE
+	xnfo(2,"enter");
+#endif
 	return 0;
 }
 
 int XS_UpdateSoundBuffer(void* buf, size_t len)
 {
+#ifdef XSHELL_VERBOSE
+	xnfo(3,"enter");
+#endif
 	return 0;
 }
 
 int XS_QueryUIEvents(void* buf, size_t len)
 {
+#ifdef XSHELL_VERBOSE
+	xnfo(4,"enter");
+#endif
 	return 0;
 }
 
 int XS_GetTicks(void* buf, size_t len)
 {
+#ifdef XSHELL_VERBOSE
+	xnfo(5,"enter");
+#endif
 	return 0;
 }
 
-void ldb_register()
+static void XS_ldb_register()
 {
-#ifdef XSHELL_VERBOSE
-	xvrb("ldb_register()");
-#endif
 	Dosbox_RegisterCallback(DBCB_GetTicks,&XS_GetTicks);
 	Dosbox_RegisterCallback(DBCB_PushScreen,&XS_UpdateScreenBuffer);
 	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
 	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
+#ifdef XSHELL_VERBOSE
+	xnfo(6,"finished");
+#endif
 }
 
-#ifdef XSHELL_VERBOSE
-void xvrb(char const* format,...)
+static int XS_SDLInit()
 {
-	char buf[1024];
-	va_list msg;
-	va_start(msg,format);
-	vsprintf(buf,format,msg);
-	va_end(msg);
-	fprintf(stderr,"%s\n",buf);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"SDL2","SDLInit()",NULL);
+	return 0;
 }
-#endif
 
 int main(int argc, char* argv[])
 {
 	pthread_t dosbox;
-	printf("[XSHELL MAIN]: ALIVE!\n");
-	ldb_register();
-	dosbox = pthread_create(&dosbox,NULL,Dosbox_Run,NULL);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"SDL2","SDL2 Alive",NULL);
+	xnfo(1,"ALIVE!");
+
+	if (XS_SDLInit()) {
+		fprintf(stderr,"Unable to create SDL2 context!\n");
+		return (EXIT_FAILURE);
+	}
+	xnfo(1,"SDL2 context created successfully");
+
+	XS_ldb_register();
+	pthread_create(&dosbox,NULL,Dosbox_Run,NULL);
 	pthread_join(dosbox,NULL);
-	printf("[XSHELL MAIN]: EXIT\n");
+
+	xnfo(1,"QUIT");
 	return (EXIT_SUCCESS);
 }
