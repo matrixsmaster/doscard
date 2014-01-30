@@ -49,7 +49,7 @@ while test $# -gt 0; do
       ;;
     --static-libs)
 #    --libs|--static-libs)
-      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL2  -lpthread  -lm -ldl -lpthread -lrt
+      echo -L${exec_prefix}/lib -Wl,-rpath,${libdir} -lSDL2  -lpthread  -lm -ldl -lts -lpthread -lrt
       ;;
     *)
       echo "${usage}" 1>&2

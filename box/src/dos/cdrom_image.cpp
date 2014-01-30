@@ -30,12 +30,8 @@
 #include "drives.h"
 #include "support.h"
 #include "setup.h"
-
-#if !defined(WIN32)
 #include <libgen.h>
-#else
-#include <string.h>
-#endif
+
 
 using namespace std;
 

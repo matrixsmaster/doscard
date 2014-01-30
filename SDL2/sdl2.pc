@@ -11,5 +11,5 @@ Version: 2.0.1
 Requires:
 Conflicts:
 Libs: -L${libdir} -Wl,-rpath,${libdir} -lSDL2  -lpthread
-Libs.private: -lSDL2  -lpthread  -lm -ldl -lpthread -lrt
+Libs.private: -lSDL2  -lpthread  -lm -ldl -lts -lpthread -lrt
 Cflags: -I${includedir}/SDL2   -D_REENTRANT

@@ -350,7 +350,7 @@ extern bool ticksLocked;
 static inline bool Mixer_irq_important(void) {
 	/* In some states correct timing of the irqs is more important then 
 	 * non stuttering audo */
-	return (ticksLocked || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
+	return (ticksLocked);// || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
 }
 
 /* Mix a certain amount of new samples */
@@ -360,6 +360,7 @@ static void MIXER_MixData(Bitu needed) {
 		chan->Mix(needed);
 		chan=chan->next;
 	}
+	/*
 	if (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)) {
 		Bit16s convert[1024][2];
 		Bitu added=needed-mixer.done;
@@ -374,7 +375,7 @@ static void MIXER_MixData(Bitu needed) {
 			readpos=(readpos+1)&MIXER_BUFMASK;
 		}
 		CAPTURE_AddWave( mixer.freq, added, (Bit16s*)convert );
-	}
+	}*/
 	//Reset the the tick_add for constant speed
 	if( Mixer_irq_important() )
 		mixer.tick_add = ((mixer.freq) << MIXER_SHIFT)/1000;

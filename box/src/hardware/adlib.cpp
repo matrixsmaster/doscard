@@ -129,6 +129,7 @@ struct RawHeader {
 */
 
 //Table to map the opl register to one <127 for dro saving
+#if 0
 class Capture {
 	//127 entries to go from raw data to registers
 	Bit8u ToReg[127];
@@ -344,7 +345,7 @@ skipWrite:
 	}
 
 };
-
+#endif
 /*
 Chip
 */
@@ -410,9 +411,10 @@ Bit8u Chip::Read( ) {
 
 void Module::CacheWrite( Bit32u reg, Bit8u val ) {
 	//capturing?
+	/*
 	if ( capture ) {
 		capture->DoWrite( reg, val );
-	}
+	}*/
 	//Store it into the cache
 	cache[ reg ] = val;
 }
@@ -571,7 +573,7 @@ Module::Module( Section* configuration ) : Module_base(configuration) {
 	reg.dual[1] = 0;
 	reg.normal = 0;
 	handler = 0;
-	capture = 0;
+//	capture = 0;
 
 	Section_prop * section=static_cast<Section_prop *>(configuration);
 	Bitu base = section->Get_hex("sbbase");
@@ -622,9 +624,10 @@ Module::Module( Section* configuration ) : Module_base(configuration) {
 }
 
 Module::~Module() {
+	/*
 	if ( capture ) {
 		delete capture;
-	}
+	}*/
 	if ( handler ) {
 		delete handler;
 	}

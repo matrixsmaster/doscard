@@ -774,6 +774,7 @@ static Bitu INT15_Handler(void) {
 		}
 		break;
 	case 0x84:	/* BIOS - JOYSTICK SUPPORT (XT after 11/8/82,AT,XT286,PS) */
+#if 0
 		if (reg_dx == 0x0000) {
 			// Get Joystick button status
 			if (JOYSTICK_IsEnabled(0) || JOYSTICK_IsEnabled(1)) {
@@ -808,6 +809,9 @@ static Bitu INT15_Handler(void) {
 		} else {
 			LOG(LOG_BIOS,LOG_ERROR)("INT15:84:Unknown Bios Joystick functionality.");
 		}
+#else
+		LOG(LOG_BIOS,LOG_ERROR)("INT15:84:Deprecated Bios Joystick functionality.");
+#endif
 		break;
 	case 0x86:	/* BIOS - WAIT (AT,PS) */
 		{

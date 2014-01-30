@@ -7,7 +7,7 @@ LD_LIBS := -L../SDL2/build/.libs -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynam
 SUPPORTS := fake_threading.o
 
 all:	$(SUPPORTS) $(APP).o
-	g++ -g -o $(APP) $(APP).o $(LD_LIBS)
+	g++ -g -o $(APP) $(SUPPORTS) $(APP).o $(LD_LIBS)
 .PHONY:	all
 
 %.o:	%.cpp

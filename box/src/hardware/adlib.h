@@ -134,7 +134,7 @@ public:
 
 	Handler* handler;				//Handler that will generate the sound
 	RegisterCache cache;
-	Capture* capture;
+//	Capture* capture;
 	Chip	chip[2];
 
 	//Handle port writes

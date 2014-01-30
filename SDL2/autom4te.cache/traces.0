@@ -469,7 +469,7 @@ m4trace:configure.in:58: -1- AC_SUBST([WINDRES])
 m4trace:configure.in:58: -1- AC_SUBST_TRACE([WINDRES])
 m4trace:configure.in:58: -1- m4_pattern_allow([^WINDRES$])
 m4trace:configure.in:90: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:90: the top level])
 m4trace:configure.in:155: -1- AC_DEFINE_TRACE_LITERAL([const])
 m4trace:configure.in:155: -1- m4_pattern_allow([^const$])
@@ -486,7 +486,7 @@ m4trace:configure.in:157: -1- AH_OUTPUT([volatile], [/* Define to empty if the k
    code using `volatile\' can become incorrect without. Disable with care. */
 @%:@undef volatile])
 m4trace:configure.in:161: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:161: the top level])
 m4trace:configure.in:168: -1- AC_DEFINE_TRACE_LITERAL([SDL_DEFAULT_ASSERT_LEVEL])
 m4trace:configure.in:168: -1- m4_pattern_allow([^SDL_DEFAULT_ASSERT_LEVEL$])
@@ -505,13 +505,13 @@ m4trace:configure.in:177: -1- m4_pattern_allow([^SDL_DEFAULT_ASSERT_LEVEL$])
 m4trace:configure.in:177: -1- AH_OUTPUT([SDL_DEFAULT_ASSERT_LEVEL], [/* */
 @%:@undef SDL_DEFAULT_ASSERT_LEVEL])
 m4trace:configure.in:186: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:186: the top level])
 m4trace:configure.in:192: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:192: the top level])
 m4trace:configure.in:223: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:223: the top level])
 m4trace:configure.in:226: -1- AC_DEFINE_TRACE_LITERAL([HAVE_LIBC])
 m4trace:configure.in:226: -1- m4_pattern_allow([^HAVE_LIBC$])
@@ -591,10 +591,10 @@ m4trace:configure.in:243: -1- AH_OUTPUT([STACK_DIRECTION], [/* If using the C im
 @%:@undef STACK_DIRECTION])
 m4trace:configure.in:243: -1- AC_DEFINE_TRACE_LITERAL([STACK_DIRECTION])
 m4trace:configure.in:243: -1- m4_pattern_allow([^STACK_DIRECTION$])
-m4trace:configure.in:247: -1- AC_LIBSOURCE([memcmp.c])
 m4trace:configure.in:247: -1- AC_SUBST([LIB@&t@OBJS], ["$LIB@&t@OBJS memcmp.$ac_objext"])
 m4trace:configure.in:247: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
 m4trace:configure.in:247: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.in:247: -1- AC_LIBSOURCE([memcmp.c])
 m4trace:configure.in:249: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MEMCMP])
 m4trace:configure.in:249: -1- m4_pattern_allow([^HAVE_MEMCMP$])
 m4trace:configure.in:249: -1- AH_OUTPUT([HAVE_MEMCMP], [/* */
@@ -602,16 +602,16 @@ m4trace:configure.in:249: -1- AH_OUTPUT([HAVE_MEMCMP], [/* */
 m4trace:configure.in:251: -1- AC_SUBST([POW_LIB])
 m4trace:configure.in:251: -1- AC_SUBST_TRACE([POW_LIB])
 m4trace:configure.in:251: -1- m4_pattern_allow([^POW_LIB$])
-m4trace:configure.in:251: -1- AC_LIBSOURCE([strtod.c])
 m4trace:configure.in:251: -1- AC_SUBST([LIB@&t@OBJS], ["$LIB@&t@OBJS strtod.$ac_objext"])
 m4trace:configure.in:251: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
 m4trace:configure.in:251: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.in:251: -1- AC_LIBSOURCE([strtod.c])
 m4trace:configure.in:253: -1- AC_DEFINE_TRACE_LITERAL([HAVE_STRTOD])
 m4trace:configure.in:253: -1- m4_pattern_allow([^HAVE_STRTOD$])
 m4trace:configure.in:253: -1- AH_OUTPUT([HAVE_STRTOD], [/* */
 @%:@undef HAVE_STRTOD])
 m4trace:configure.in:256: -2- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:256: the top level])
 m4trace:configure.in:256: -2- AC_DEFINE_TRACE_LITERAL([HAVE_MPROTECT])
 m4trace:configure.in:256: -2- m4_pattern_allow([^HAVE_MPROTECT$])
@@ -756,175 +756,175 @@ m4trace:configure.in:270: -1- m4_pattern_allow([^HAVE_ICONV$])
 m4trace:configure.in:272: -1- AC_DEFINE_TRACE_LITERAL([HAVE_SA_SIGACTION])
 m4trace:configure.in:272: -1- m4_pattern_allow([^HAVE_SA_SIGACTION$])
 m4trace:configure.in:279: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:279: the top level])
 m4trace:configure.in:285: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 configure.in:285: the top level])
 m4trace:configure.in:300: -1- AC_DEFINE_TRACE_LITERAL([HAVE_GCC_ATOMICS])
 m4trace:configure.in:300: -1- m4_pattern_allow([^HAVE_GCC_ATOMICS$])
 m4trace:configure.in:300: -1- AH_OUTPUT([HAVE_GCC_ATOMICS], [/* */
 @%:@undef HAVE_GCC_ATOMICS])
 m4trace:configure.in:303: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 configure.in:303: the top level])
 m4trace:configure.in:312: -1- AC_DEFINE_TRACE_LITERAL([HAVE_GCC_SYNC_LOCK_TEST_AND_SET])
 m4trace:configure.in:312: -1- m4_pattern_allow([^HAVE_GCC_SYNC_LOCK_TEST_AND_SET$])
 m4trace:configure.in:312: -1- AH_OUTPUT([HAVE_GCC_SYNC_LOCK_TEST_AND_SET], [/* */
 @%:@undef HAVE_GCC_SYNC_LOCK_TEST_AND_SET])
 m4trace:configure.in:339: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:339: the top level])
 m4trace:configure.in:342: -1- AC_DEFINE_TRACE_LITERAL([SDL_ATOMIC_DISABLED])
 m4trace:configure.in:342: -1- m4_pattern_allow([^SDL_ATOMIC_DISABLED$])
 m4trace:configure.in:342: -1- AH_OUTPUT([SDL_ATOMIC_DISABLED], [/* */
 @%:@undef SDL_ATOMIC_DISABLED])
 m4trace:configure.in:345: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:345: the top level])
 m4trace:configure.in:348: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DISABLED])
 m4trace:configure.in:348: -1- m4_pattern_allow([^SDL_AUDIO_DISABLED$])
 m4trace:configure.in:348: -1- AH_OUTPUT([SDL_AUDIO_DISABLED], [/* */
 @%:@undef SDL_AUDIO_DISABLED])
 m4trace:configure.in:351: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:351: the top level])
 m4trace:configure.in:354: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DISABLED])
 m4trace:configure.in:354: -1- m4_pattern_allow([^SDL_VIDEO_DISABLED$])
 m4trace:configure.in:354: -1- AH_OUTPUT([SDL_VIDEO_DISABLED], [/* */
 @%:@undef SDL_VIDEO_DISABLED])
 m4trace:configure.in:357: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:357: the top level])
 m4trace:configure.in:360: -1- AC_DEFINE_TRACE_LITERAL([SDL_RENDER_DISABLED])
 m4trace:configure.in:360: -1- m4_pattern_allow([^SDL_RENDER_DISABLED$])
 m4trace:configure.in:360: -1- AH_OUTPUT([SDL_RENDER_DISABLED], [/* */
 @%:@undef SDL_RENDER_DISABLED])
 m4trace:configure.in:363: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:363: the top level])
 m4trace:configure.in:366: -1- AC_DEFINE_TRACE_LITERAL([SDL_EVENTS_DISABLED])
 m4trace:configure.in:366: -1- m4_pattern_allow([^SDL_EVENTS_DISABLED$])
 m4trace:configure.in:366: -1- AH_OUTPUT([SDL_EVENTS_DISABLED], [/* */
 @%:@undef SDL_EVENTS_DISABLED])
 m4trace:configure.in:369: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:369: the top level])
 m4trace:configure.in:372: -1- AC_DEFINE_TRACE_LITERAL([SDL_JOYSTICK_DISABLED])
 m4trace:configure.in:372: -1- m4_pattern_allow([^SDL_JOYSTICK_DISABLED$])
 m4trace:configure.in:372: -1- AH_OUTPUT([SDL_JOYSTICK_DISABLED], [/* */
 @%:@undef SDL_JOYSTICK_DISABLED])
 m4trace:configure.in:375: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:375: the top level])
 m4trace:configure.in:378: -1- AC_DEFINE_TRACE_LITERAL([SDL_HAPTIC_DISABLED])
 m4trace:configure.in:378: -1- m4_pattern_allow([^SDL_HAPTIC_DISABLED$])
 m4trace:configure.in:378: -1- AH_OUTPUT([SDL_HAPTIC_DISABLED], [/* */
 @%:@undef SDL_HAPTIC_DISABLED])
 m4trace:configure.in:381: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:381: the top level])
 m4trace:configure.in:384: -1- AC_DEFINE_TRACE_LITERAL([SDL_POWER_DISABLED])
 m4trace:configure.in:384: -1- m4_pattern_allow([^SDL_POWER_DISABLED$])
 m4trace:configure.in:384: -1- AH_OUTPUT([SDL_POWER_DISABLED], [/* */
 @%:@undef SDL_POWER_DISABLED])
 m4trace:configure.in:387: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:387: the top level])
 m4trace:configure.in:390: -1- AC_DEFINE_TRACE_LITERAL([SDL_FILESYSTEM_DISABLED])
 m4trace:configure.in:390: -1- m4_pattern_allow([^SDL_FILESYSTEM_DISABLED$])
 m4trace:configure.in:390: -1- AH_OUTPUT([SDL_FILESYSTEM_DISABLED], [/* */
 @%:@undef SDL_FILESYSTEM_DISABLED])
 m4trace:configure.in:393: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:393: the top level])
 m4trace:configure.in:396: -1- AC_DEFINE_TRACE_LITERAL([SDL_THREADS_DISABLED])
 m4trace:configure.in:396: -1- m4_pattern_allow([^SDL_THREADS_DISABLED$])
 m4trace:configure.in:396: -1- AH_OUTPUT([SDL_THREADS_DISABLED], [/* */
 @%:@undef SDL_THREADS_DISABLED])
 m4trace:configure.in:399: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:399: the top level])
 m4trace:configure.in:402: -1- AC_DEFINE_TRACE_LITERAL([SDL_TIMERS_DISABLED])
 m4trace:configure.in:402: -1- m4_pattern_allow([^SDL_TIMERS_DISABLED$])
 m4trace:configure.in:402: -1- AH_OUTPUT([SDL_TIMERS_DISABLED], [/* */
 @%:@undef SDL_TIMERS_DISABLED])
 m4trace:configure.in:405: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:405: the top level])
 m4trace:configure.in:408: -1- AC_DEFINE_TRACE_LITERAL([SDL_FILE_DISABLED])
 m4trace:configure.in:408: -1- m4_pattern_allow([^SDL_FILE_DISABLED$])
 m4trace:configure.in:408: -1- AH_OUTPUT([SDL_FILE_DISABLED], [/* */
 @%:@undef SDL_FILE_DISABLED])
 m4trace:configure.in:411: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:411: the top level])
 m4trace:configure.in:414: -1- AC_DEFINE_TRACE_LITERAL([SDL_LOADSO_DISABLED])
 m4trace:configure.in:414: -1- m4_pattern_allow([^SDL_LOADSO_DISABLED$])
 m4trace:configure.in:414: -1- AH_OUTPUT([SDL_LOADSO_DISABLED], [/* */
 @%:@undef SDL_LOADSO_DISABLED])
 m4trace:configure.in:417: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:417: the top level])
 m4trace:configure.in:420: -1- AC_DEFINE_TRACE_LITERAL([SDL_CPUINFO_DISABLED])
 m4trace:configure.in:420: -1- m4_pattern_allow([^SDL_CPUINFO_DISABLED$])
 m4trace:configure.in:420: -1- AH_OUTPUT([SDL_CPUINFO_DISABLED], [/* */
 @%:@undef SDL_CPUINFO_DISABLED])
 m4trace:configure.in:423: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:423: the top level])
 m4trace:configure.in:426: -1- AC_DEFINE_TRACE_LITERAL([SDL_ATOMIC_DISABLED])
 m4trace:configure.in:426: -1- m4_pattern_allow([^SDL_ATOMIC_DISABLED$])
 m4trace:configure.in:426: -1- AH_OUTPUT([SDL_ATOMIC_DISABLED], [/* */
 @%:@undef SDL_ATOMIC_DISABLED])
 m4trace:configure.in:429: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:429: the top level])
 m4trace:configure.in:432: -1- AC_DEFINE_TRACE_LITERAL([SDL_ASSEMBLY_ROUTINES])
 m4trace:configure.in:432: -1- m4_pattern_allow([^SDL_ASSEMBLY_ROUTINES$])
 m4trace:configure.in:432: -1- AH_OUTPUT([SDL_ASSEMBLY_ROUTINES], [/* */
 @%:@undef SDL_ASSEMBLY_ROUTINES])
 m4trace:configure.in:450: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:450: the top level])
 m4trace:configure.in:460: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:460: the top level])
 m4trace:configure.in:469: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:469: the top level])
 m4trace:configure.in:496: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:496: the top level])
 m4trace:configure.in:505: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 configure.in:505: the top level])
 m4trace:configure.in:525: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:525: the top level])
 m4trace:configure.in:534: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:534: the top level])
 m4trace:configure.in:561: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:561: the top level])
 m4trace:configure.in:570: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:570: the top level])
 m4trace:configure.in:597: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:597: the top level])
 m4trace:configure.in:607: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:607: the top level])
 m4trace:configure.in:621: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:621: the top level])
 m4trace:configure.in:636: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:636: the top level])
 m4trace:configure.in:651: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:651: the top level])
 m4trace:configure.in:664: -1- AC_DEFINE_TRACE_LITERAL([SDL_ALTIVEC_BLITTERS])
 m4trace:configure.in:664: -1- m4_pattern_allow([^SDL_ALTIVEC_BLITTERS$])
@@ -935,13 +935,13 @@ m4trace:configure.in:666: -1- m4_pattern_allow([^HAVE_ALTIVEC_H$])
 m4trace:configure.in:666: -1- AH_OUTPUT([HAVE_ALTIVEC_H], [/* */
 @%:@undef HAVE_ALTIVEC_H])
 m4trace:configure.in:677: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:677: the top level])
 m4trace:configure.in:695: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:695: the top level])
 m4trace:configure.in:704: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:704: the top level])
 m4trace:configure.in:704: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_OSS_SOUNDCARD_H])
 m4trace:configure.in:704: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_OSS_SOUNDCARD_H$])
@@ -952,22 +952,22 @@ m4trace:configure.in:715: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_OSS$])
 m4trace:configure.in:715: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_OSS], [/* */
 @%:@undef SDL_AUDIO_DRIVER_OSS])
 m4trace:configure.in:732: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:732: the top level])
 m4trace:configure.in:735: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/lang.m4:126: AC_LANG_SAVE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/lang.m4:125: AC_LANG_SAVE is expanded from...
 aclocal.m4:30: AM_PATH_ALSA is expanded from...
 configure.in:735: the top level])
 m4trace:configure.in:735: -1- _m4_warn([obsolete], [The macro `AC_LANG_C' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/c.m4:73: AC_LANG_C is expanded from...
+You should run autoupdate.], [../../lib/autoconf/c.m4:72: AC_LANG_C is expanded from...
 aclocal.m4:30: AM_PATH_ALSA is expanded from...
 configure.in:735: the top level])
 m4trace:configure.in:735: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 aclocal.m4:30: AM_PATH_ALSA is expanded from...
 configure.in:735: the top level])
 m4trace:configure.in:735: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/lang.m4:135: AC_LANG_RESTORE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/lang.m4:134: AC_LANG_RESTORE is expanded from...
 aclocal.m4:30: AM_PATH_ALSA is expanded from...
 configure.in:735: the top level])
 m4trace:configure.in:735: -1- AH_OUTPUT([HAVE_LIBASOUND], [/* Define to 1 if you have the `asound\' library (-lasound). */
@@ -981,7 +981,7 @@ m4trace:configure.in:735: -1- AC_SUBST([ALSA_LIBS])
 m4trace:configure.in:735: -1- AC_SUBST_TRACE([ALSA_LIBS])
 m4trace:configure.in:735: -1- m4_pattern_allow([^ALSA_LIBS$])
 m4trace:configure.in:742: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:742: the top level])
 m4trace:configure.in:746: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_ALSA])
 m4trace:configure.in:746: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ALSA$])
@@ -992,17 +992,17 @@ m4trace:configure.in:756: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ALSA_DYNAMIC$]
 m4trace:configure.in:756: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_ALSA_DYNAMIC], [/* */
 @%:@undef SDL_AUDIO_DRIVER_ALSA_DYNAMIC])
 m4trace:configure.in:769: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:769: the top level])
 m4trace:configure.in:772: -1- AC_SUBST([ESD_CONFIG])
 m4trace:configure.in:772: -1- AC_SUBST_TRACE([ESD_CONFIG])
 m4trace:configure.in:772: -1- m4_pattern_allow([^ESD_CONFIG$])
 m4trace:configure.in:772: -1- _m4_warn([obsolete], [The macro `AC_TRY_RUN' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2752: AC_TRY_RUN is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2764: AC_TRY_RUN is expanded from...
 aclocal.m4:543: AM_PATH_ESD is expanded from...
 configure.in:772: the top level])
 m4trace:configure.in:772: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 aclocal.m4:543: AM_PATH_ESD is expanded from...
 configure.in:772: the top level])
 m4trace:configure.in:772: -1- AC_SUBST([ESD_CFLAGS])
@@ -1012,7 +1012,7 @@ m4trace:configure.in:772: -1- AC_SUBST([ESD_LIBS])
 m4trace:configure.in:772: -1- AC_SUBST_TRACE([ESD_LIBS])
 m4trace:configure.in:772: -1- m4_pattern_allow([^ESD_LIBS$])
 m4trace:configure.in:775: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:775: the top level])
 m4trace:configure.in:779: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_ESD])
 m4trace:configure.in:779: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ESD$])
@@ -1023,13 +1023,13 @@ m4trace:configure.in:789: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ESD_DYNAMIC$])
 m4trace:configure.in:789: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_ESD_DYNAMIC], [/* */
 @%:@undef SDL_AUDIO_DRIVER_ESD_DYNAMIC])
 m4trace:configure.in:802: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:802: the top level])
 m4trace:configure.in:809: -1- AC_SUBST([PKG_CONFIG])
 m4trace:configure.in:809: -1- AC_SUBST_TRACE([PKG_CONFIG])
 m4trace:configure.in:809: -1- m4_pattern_allow([^PKG_CONFIG$])
 m4trace:configure.in:822: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:822: the top level])
 m4trace:configure.in:826: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_PULSEAUDIO])
 m4trace:configure.in:826: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_PULSEAUDIO$])
@@ -1040,16 +1040,16 @@ m4trace:configure.in:836: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_PULSEAUDIO_DYN
 m4trace:configure.in:836: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_PULSEAUDIO_DYNAMIC], [/* */
 @%:@undef SDL_AUDIO_DRIVER_PULSEAUDIO_DYNAMIC])
 m4trace:configure.in:856: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:856: the top level])
 m4trace:configure.in:859: -1- AC_SUBST([ARTSCONFIG])
 m4trace:configure.in:859: -1- AC_SUBST_TRACE([ARTSCONFIG])
 m4trace:configure.in:859: -1- m4_pattern_allow([^ARTSCONFIG$])
 m4trace:configure.in:869: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:869: the top level])
 m4trace:configure.in:880: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:880: the top level])
 m4trace:configure.in:884: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_ARTS])
 m4trace:configure.in:884: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ARTS$])
@@ -1060,10 +1060,10 @@ m4trace:configure.in:894: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_ARTS_DYNAMIC$]
 m4trace:configure.in:894: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_ARTS_DYNAMIC], [/* */
 @%:@undef SDL_AUDIO_DRIVER_ARTS_DYNAMIC])
 m4trace:configure.in:908: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:908: the top level])
 m4trace:configure.in:932: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:932: the top level])
 m4trace:configure.in:943: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_NAS_DYNAMIC])
 m4trace:configure.in:943: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_NAS_DYNAMIC$])
@@ -1074,10 +1074,10 @@ m4trace:configure.in:948: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_NAS$])
 m4trace:configure.in:948: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_NAS], [/* */
 @%:@undef SDL_AUDIO_DRIVER_NAS])
 m4trace:configure.in:960: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:960: the top level])
 m4trace:configure.in:978: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:978: the top level])
 m4trace:configure.in:989: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_SNDIO_DYNAMIC])
 m4trace:configure.in:989: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_SNDIO_DYNAMIC$])
@@ -1088,30 +1088,30 @@ m4trace:configure.in:994: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_SNDIO$])
 m4trace:configure.in:994: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_SNDIO], [/* */
 @%:@undef SDL_AUDIO_DRIVER_SNDIO])
 m4trace:configure.in:1006: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1006: the top level])
 m4trace:configure.in:1009: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_DISK])
 m4trace:configure.in:1009: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_DISK$])
 m4trace:configure.in:1009: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_DISK], [/* */
 @%:@undef SDL_AUDIO_DRIVER_DISK])
 m4trace:configure.in:1018: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1018: the top level])
 m4trace:configure.in:1021: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_DUMMY])
 m4trace:configure.in:1021: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_DUMMY$])
 m4trace:configure.in:1021: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_DUMMY], [/* */
 @%:@undef SDL_AUDIO_DRIVER_DUMMY])
 m4trace:configure.in:1036: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1036: the top level])
 m4trace:configure.in:1061: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1061: the top level])
 m4trace:configure.in:1084: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1084: the top level])
 m4trace:configure.in:1118: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1118: the top level])
 m4trace:configure.in:1133: -1- AC_SUBST([XMKMF])
 m4trace:configure.in:1133: -1- AC_SUBST_TRACE([XMKMF])
@@ -1133,7 +1133,7 @@ m4trace:configure.in:1134: -1- AC_SUBST([X_EXTRA_LIBS])
 m4trace:configure.in:1134: -1- AC_SUBST_TRACE([X_EXTRA_LIBS])
 m4trace:configure.in:1134: -1- m4_pattern_allow([^X_EXTRA_LIBS$])
 m4trace:configure.in:1142: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1142: the top level])
 m4trace:configure.in:1200: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11])
 m4trace:configure.in:1200: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11$])
@@ -1148,17 +1148,17 @@ m4trace:configure.in:1226: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_X
 m4trace:configure.in:1226: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT])
 m4trace:configure.in:1235: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1235: the top level])
 m4trace:configure.in:1235: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_CONST_PARAM_XEXTADDDISPLAY])
 m4trace:configure.in:1235: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_CONST_PARAM_XEXTADDDISPLAY$])
 m4trace:configure.in:1250: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1250: the top level])
 m4trace:configure.in:1250: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_CONST_PARAM_XDATA32])
 m4trace:configure.in:1250: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_CONST_PARAM_XDATA32$])
 m4trace:configure.in:1263: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1263: the top level])
 m4trace:configure.in:1263: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS])
 m4trace:configure.in:1263: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS$])
@@ -1167,7 +1167,7 @@ m4trace:configure.in:1278: -2- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_HAS_XKBKE
 m4trace:configure.in:1278: -2- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_HAS_XKBKEYCODETOKEYSYM], [/* Have XkbKeycodeToKeysym */
 @%:@undef SDL_VIDEO_DRIVER_X11_HAS_XKBKEYCODETOKEYSYM])
 m4trace:configure.in:1281: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1281: the top level])
 m4trace:configure.in:1293: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XCURSOR])
 m4trace:configure.in:1293: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XCURSOR$])
@@ -1178,7 +1178,7 @@ m4trace:configure.in:1305: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XCURSOR$]
 m4trace:configure.in:1305: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XCURSOR], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XCURSOR])
 m4trace:configure.in:1308: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1308: the top level])
 m4trace:configure.in:1320: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA])
 m4trace:configure.in:1320: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA$])
@@ -1189,7 +1189,7 @@ m4trace:configure.in:1332: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XINERAMA$
 m4trace:configure.in:1332: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XINERAMA], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XINERAMA])
 m4trace:configure.in:1335: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1335: the top level])
 m4trace:configure.in:1347: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2])
 m4trace:configure.in:1347: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2$])
@@ -1200,12 +1200,12 @@ m4trace:configure.in:1359: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XINPUT2$]
 m4trace:configure.in:1359: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XINPUT2], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XINPUT2])
 m4trace:configure.in:1362: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1362: the top level])
 m4trace:configure.in:1362: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_XINPUT2_SUPPORTS_MULTITOUCH])
 m4trace:configure.in:1362: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XINPUT2_SUPPORTS_MULTITOUCH$])
 m4trace:configure.in:1381: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1381: the top level])
 m4trace:configure.in:1393: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR])
 m4trace:configure.in:1393: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR$])
@@ -1216,7 +1216,7 @@ m4trace:configure.in:1405: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XRANDR$])
 m4trace:configure.in:1405: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XRANDR], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XRANDR])
 m4trace:configure.in:1408: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1408: the top level])
 m4trace:configure.in:1419: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XSS])
 m4trace:configure.in:1419: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XSS$])
@@ -1227,14 +1227,14 @@ m4trace:configure.in:1431: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XSCRNSAVE
 m4trace:configure.in:1431: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XSCRNSAVER], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XSCRNSAVER])
 m4trace:configure.in:1434: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1434: the top level])
 m4trace:configure.in:1443: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_XSHAPE])
 m4trace:configure.in:1443: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_XSHAPE$])
 m4trace:configure.in:1443: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_X11_XSHAPE], [/* */
 @%:@undef SDL_VIDEO_DRIVER_X11_XSHAPE])
 m4trace:configure.in:1447: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1447: the top level])
 m4trace:configure.in:1459: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_X11_DYNAMIC_XVIDMODE])
 m4trace:configure.in:1459: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_X11_DYNAMIC_XVIDMODE$])
@@ -1249,17 +1249,17 @@ m4trace:configure.in:1481: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_BWINDOW$])
 m4trace:configure.in:1481: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_BWINDOW], [/* */
 @%:@undef SDL_VIDEO_DRIVER_BWINDOW])
 m4trace:configure.in:1491: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1491: the top level])
 m4trace:configure.in:1499: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1499: the top level])
 m4trace:configure.in:1508: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_COCOA])
 m4trace:configure.in:1508: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_COCOA$])
 m4trace:configure.in:1508: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_COCOA], [/* */
 @%:@undef SDL_VIDEO_DRIVER_COCOA])
 m4trace:configure.in:1519: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1519: the top level])
 m4trace:configure.in:1525: -1- AC_SUBST([DIRECTFBCONFIG])
 m4trace:configure.in:1525: -1- AC_SUBST_TRACE([DIRECTFBCONFIG])
@@ -1268,7 +1268,7 @@ m4trace:configure.in:1527: -1- AC_SUBST([PKG_CONFIG])
 m4trace:configure.in:1527: -1- AC_SUBST_TRACE([PKG_CONFIG])
 m4trace:configure.in:1527: -1- m4_pattern_allow([^PKG_CONFIG$])
 m4trace:configure.in:1561: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1561: the top level])
 m4trace:configure.in:1564: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_DIRECTFB])
 m4trace:configure.in:1564: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_DIRECTFB$])
@@ -1283,7 +1283,7 @@ m4trace:configure.in:1582: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_DIRECTFB_DYNA
 m4trace:configure.in:1582: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_DIRECTFB_DYNAMIC], [/* */
 @%:@undef SDL_VIDEO_DRIVER_DIRECTFB_DYNAMIC])
 m4trace:configure.in:1596: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1596: the top level])
 m4trace:configure.in:1603: -1- AC_SUBST([PKG_CONFIG])
 m4trace:configure.in:1603: -1- AC_SUBST_TRACE([PKG_CONFIG])
@@ -1293,24 +1293,24 @@ m4trace:configure.in:1615: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_FUSIONSOUND$]
 m4trace:configure.in:1615: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_FUSIONSOUND], [/* */
 @%:@undef SDL_AUDIO_DRIVER_FUSIONSOUND])
 m4trace:configure.in:1620: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1620: the top level])
 m4trace:configure.in:1630: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_FUSIONSOUND_DYNAMIC])
 m4trace:configure.in:1630: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_FUSIONSOUND_DYNAMIC$])
 m4trace:configure.in:1630: -1- AH_OUTPUT([SDL_AUDIO_DRIVER_FUSIONSOUND_DYNAMIC], [/* */
 @%:@undef SDL_AUDIO_DRIVER_FUSIONSOUND_DYNAMIC])
 m4trace:configure.in:1646: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1646: the top level])
 m4trace:configure.in:1649: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_DRIVER_DUMMY])
 m4trace:configure.in:1649: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_DUMMY$])
 m4trace:configure.in:1649: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_DUMMY], [/* */
 @%:@undef SDL_VIDEO_DRIVER_DUMMY])
 m4trace:configure.in:1657: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1657: the top level])
 m4trace:configure.in:1666: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1666: the top level])
 m4trace:configure.in:1675: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_OPENGL])
 m4trace:configure.in:1675: -1- m4_pattern_allow([^SDL_VIDEO_OPENGL$])
@@ -1325,17 +1325,17 @@ m4trace:configure.in:1677: -1- m4_pattern_allow([^SDL_VIDEO_RENDER_OGL$])
 m4trace:configure.in:1677: -1- AH_OUTPUT([SDL_VIDEO_RENDER_OGL], [/* */
 @%:@undef SDL_VIDEO_RENDER_OGL])
 m4trace:configure.in:1684: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1684: the top level])
 m4trace:configure.in:1693: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1693: the top level])
 m4trace:configure.in:1701: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_OPENGL_EGL])
 m4trace:configure.in:1701: -1- m4_pattern_allow([^SDL_VIDEO_OPENGL_EGL$])
 m4trace:configure.in:1701: -1- AH_OUTPUT([SDL_VIDEO_OPENGL_EGL], [/* */
 @%:@undef SDL_VIDEO_OPENGL_EGL])
 m4trace:configure.in:1706: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1706: the top level])
 m4trace:configure.in:1715: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_OPENGL_ES])
 m4trace:configure.in:1715: -1- m4_pattern_allow([^SDL_VIDEO_OPENGL_ES$])
@@ -1346,7 +1346,7 @@ m4trace:configure.in:1716: -1- m4_pattern_allow([^SDL_VIDEO_RENDER_OGL_ES$])
 m4trace:configure.in:1716: -1- AH_OUTPUT([SDL_VIDEO_RENDER_OGL_ES], [/* */
 @%:@undef SDL_VIDEO_RENDER_OGL_ES])
 m4trace:configure.in:1721: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1721: the top level])
 m4trace:configure.in:1730: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_OPENGL_ES2])
 m4trace:configure.in:1730: -1- m4_pattern_allow([^SDL_VIDEO_OPENGL_ES2$])
@@ -1393,28 +1393,28 @@ m4trace:configure.in:1763: -1- m4_pattern_allow([^SDL_VIDEO_RENDER_OGL$])
 m4trace:configure.in:1763: -1- AH_OUTPUT([SDL_VIDEO_RENDER_OGL], [/* */
 @%:@undef SDL_VIDEO_RENDER_OGL])
 m4trace:configure.in:1779: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1779: the top level])
 m4trace:configure.in:1790: -1- AC_DEFINE_TRACE_LITERAL([SDL_INPUT_LINUXEV])
 m4trace:configure.in:1790: -1- m4_pattern_allow([^SDL_INPUT_LINUXEV$])
 m4trace:configure.in:1790: -1- AH_OUTPUT([SDL_INPUT_LINUXEV], [/* */
 @%:@undef SDL_INPUT_LINUXEV])
 m4trace:configure.in:1800: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1800: the top level])
 m4trace:configure.in:1812: -1- AC_DEFINE_TRACE_LITERAL([SDL_INPUT_LINUXKD])
 m4trace:configure.in:1812: -1- m4_pattern_allow([^SDL_INPUT_LINUXKD$])
 m4trace:configure.in:1812: -1- AH_OUTPUT([SDL_INPUT_LINUXKD], [/* */
 @%:@undef SDL_INPUT_LINUXKD])
 m4trace:configure.in:1820: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1820: the top level])
 m4trace:configure.in:1827: -1- AC_DEFINE_TRACE_LITERAL([HAVE_LIBUDEV_H])
 m4trace:configure.in:1827: -1- m4_pattern_allow([^HAVE_LIBUDEV_H$])
 m4trace:configure.in:1827: -1- AH_OUTPUT([HAVE_LIBUDEV_H], [/* */
 @%:@undef HAVE_LIBUDEV_H])
 m4trace:configure.in:1836: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1836: the top level])
 m4trace:configure.in:1839: -1- AC_SUBST([PKG_CONFIG])
 m4trace:configure.in:1839: -1- AC_SUBST_TRACE([PKG_CONFIG])
@@ -1424,47 +1424,47 @@ m4trace:configure.in:1849: -1- m4_pattern_allow([^HAVE_DBUS_DBUS_H$])
 m4trace:configure.in:1849: -1- AH_OUTPUT([HAVE_DBUS_DBUS_H], [/* */
 @%:@undef HAVE_DBUS_DBUS_H])
 m4trace:configure.in:1860: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1860: the top level])
 m4trace:configure.in:1865: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1865: the top level])
 m4trace:configure.in:1873: -1- AC_DEFINE_TRACE_LITERAL([SDL_INPUT_TSLIB])
 m4trace:configure.in:1873: -1- m4_pattern_allow([^SDL_INPUT_TSLIB$])
 m4trace:configure.in:1873: -1- AH_OUTPUT([SDL_INPUT_TSLIB], [/* */
 @%:@undef SDL_INPUT_TSLIB])
 m4trace:configure.in:1884: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1884: the top level])
 m4trace:configure.in:1888: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:1888: the top level])
 m4trace:configure.in:1956: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 configure.in:1956: the top level])
 m4trace:configure.in:1970: -1- AC_DEFINE_TRACE_LITERAL([SDL_THREAD_PTHREAD])
 m4trace:configure.in:1970: -1- m4_pattern_allow([^SDL_THREAD_PTHREAD$])
 m4trace:configure.in:1970: -1- AH_OUTPUT([SDL_THREAD_PTHREAD], [/* */
 @%:@undef SDL_THREAD_PTHREAD])
 m4trace:configure.in:1985: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1985: the top level])
 m4trace:configure.in:1985: -1- AC_DEFINE_TRACE_LITERAL([SDL_THREAD_PTHREAD_RECURSIVE_MUTEX])
 m4trace:configure.in:1985: -1- m4_pattern_allow([^SDL_THREAD_PTHREAD_RECURSIVE_MUTEX$])
 m4trace:configure.in:1985: -1- AH_OUTPUT([SDL_THREAD_PTHREAD_RECURSIVE_MUTEX], [/* */
 @%:@undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX])
 m4trace:configure.in:1996: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:1996: the top level])
 m4trace:configure.in:1996: -1- AC_DEFINE_TRACE_LITERAL([SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP])
 m4trace:configure.in:1996: -1- m4_pattern_allow([^SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP$])
 m4trace:configure.in:1996: -1- AH_OUTPUT([SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP], [/* */
 @%:@undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP])
 m4trace:configure.in:2012: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2012: the top level])
 m4trace:configure.in:2024: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2675: AC_TRY_LINK is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2687: AC_TRY_LINK is expanded from...
 configure.in:2024: the top level])
 m4trace:configure.in:2024: -1- AC_DEFINE_TRACE_LITERAL([HAVE_SEM_TIMEDWAIT])
 m4trace:configure.in:2024: -1- m4_pattern_allow([^HAVE_SEM_TIMEDWAIT$])
@@ -1485,35 +1485,35 @@ m4trace:configure.in:2061: -1- m4_pattern_allow([^HAVE_PTHREAD_SET_NAME_NP$])
 m4trace:configure.in:2061: -1- AH_OUTPUT([HAVE_PTHREAD_SET_NAME_NP], [/* */
 @%:@undef HAVE_PTHREAD_SET_NAME_NP])
 m4trace:configure.in:2104: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2104: the top level])
 m4trace:configure.in:2119: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2119: the top level])
 m4trace:configure.in:2140: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:2140: the top level])
 m4trace:configure.in:2163: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:2163: the top level])
 m4trace:configure.in:2168: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2168: the top level])
 m4trace:configure.in:2182: -1- AC_DEFINE_TRACE_LITERAL([SDL_LOADSO_DLOPEN])
 m4trace:configure.in:2182: -1- m4_pattern_allow([^SDL_LOADSO_DLOPEN$])
 m4trace:configure.in:2182: -1- AH_OUTPUT([SDL_LOADSO_DLOPEN], [/* */
 @%:@undef SDL_LOADSO_DLOPEN])
 m4trace:configure.in:2211: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2211: the top level])
 m4trace:configure.in:2242: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2242: the top level])
 m4trace:configure.in:2274: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2274: the top level])
 m4trace:configure.in:2306: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:2602: AC_TRY_COMPILE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:2614: AC_TRY_COMPILE is expanded from...
 configure.in:2306: the top level])
 m4trace:configure.in:2314: -1- AC_DEFINE_TRACE_LITERAL([SDL_JOYSTICK_USBHID_MACHINE_JOYSTICK_H])
 m4trace:configure.in:2314: -1- m4_pattern_allow([^SDL_JOYSTICK_USBHID_MACHINE_JOYSTICK_H$])
@@ -1524,7 +1524,7 @@ m4trace:configure.in:2318: -1- m4_pattern_allow([^SDL_JOYSTICK_USBHID$])
 m4trace:configure.in:2318: -1- AH_OUTPUT([SDL_JOYSTICK_USBHID], [/* */
 @%:@undef SDL_JOYSTICK_USBHID])
 m4trace:configure.in:2334: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:2334: the top level])
 m4trace:configure.in:2339: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CLOCK_GETTIME])
 m4trace:configure.in:2339: -1- m4_pattern_allow([^HAVE_CLOCK_GETTIME$])
@@ -1535,7 +1535,7 @@ m4trace:configure.in:2344: -1- m4_pattern_allow([^HAVE_CLOCK_GETTIME$])
 m4trace:configure.in:2344: -1- AH_OUTPUT([HAVE_CLOCK_GETTIME], [/* */
 @%:@undef HAVE_CLOCK_GETTIME])
 m4trace:configure.in:2364: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:2364: the top level])
 m4trace:configure.in:2435: -1- AC_DEFINE_TRACE_LITERAL([SDL_AUDIO_DRIVER_SUNAUDIO])
 m4trace:configure.in:2435: -1- m4_pattern_allow([^SDL_AUDIO_DRIVER_SUNAUDIO$])
@@ -1574,7 +1574,7 @@ m4trace:configure.in:2527: -1- m4_pattern_allow([^SDL_VIDEO_DRIVER_WINDOWS$])
 m4trace:configure.in:2527: -1- AH_OUTPUT([SDL_VIDEO_DRIVER_WINDOWS], [/* */
 @%:@undef SDL_VIDEO_DRIVER_WINDOWS])
 m4trace:configure.in:2531: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:207: AC_HELP_STRING is expanded from...
 configure.in:2531: the top level])
 m4trace:configure.in:2534: -1- AC_DEFINE_TRACE_LITERAL([SDL_VIDEO_RENDER_D3D])
 m4trace:configure.in:2534: -1- m4_pattern_allow([^SDL_VIDEO_RENDER_D3D$])
