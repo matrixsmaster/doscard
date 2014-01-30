@@ -1,6 +1,7 @@
 APP := xshell
 INCLUDES := -I. -I.. -I../box/include
-CXXFLAGS := -g -O2 -Wall $(INCLUDES)
+DEFINES := -DXSHELL_VERBOSE=1
+CXXFLAGS := -g -O2 -Wall $(INCLUDES) $(DEFINES)
 LD_STAT := -ldosbox -lSDL2
 LD_BDYN := -lX11 -lpthread -lrt
 LD_LIBS := -L../SDL2/build/.libs -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)

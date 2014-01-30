@@ -28,6 +28,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void __attribute__ ((constructor)) profile_create()
 {
+	printf("[PROFILE]: Started\n");
 #if (PROFILE_SIMPLE_FILE_CALL_TRACE)
 	fd = fopen(PROFILE_OUT_FILENAME,"w");
 #elif (PROFILE_UNIQUE_CALL_LIST)
@@ -39,8 +40,9 @@ void __attribute__ ((constructor)) profile_create()
 	}
 	index = 0;
 #elif (PROFILE_TREE_CALL_TRACE)
+#else
+	printf("[PROFILE]: Stub mode\n");
 #endif
-	printf("[PROFILE]: Started\n");
 }
 
 void __attribute__ ((destructor)) profile_destroy()
