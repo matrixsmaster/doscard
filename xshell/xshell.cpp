@@ -31,14 +31,19 @@
  * or may be just a timer's interrupt handler; audio output controller may be implemented
  * as simple timer interrupt, which updates the other timer's values to change duty
  * cycle of PWM generated; keyboard handler is a pin change interrupt handler too;
- * all of this parts will never affect the main code)
+ * all of this parts will never directly affect the main code)
  *
+ * Excessive debug output needed for future stress tests and profiling. So better I'll
+ * write it now :)
  */
+
+SDL_Window *wnd;
+SDL_Renderer *ren;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(2,"enter");
+	xnfo(0,2,"len=%d",len);
 #endif
 	return 0;
 }
@@ -46,7 +51,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 int XS_UpdateSoundBuffer(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(3,"enter");
+	xnfo(0,3,"len=%d",len);
 #endif
 	return 0;
 }
@@ -54,7 +59,7 @@ int XS_UpdateSoundBuffer(void* buf, size_t len)
 int XS_QueryUIEvents(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(4,"enter");
+	xnfo(0,4,"len=%d",len);
 #endif
 	return 0;
 }
@@ -62,7 +67,7 @@ int XS_QueryUIEvents(void* buf, size_t len)
 int XS_GetTicks(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(5,"enter");
+	xnfo(0,5,"len=%d",len);
 #endif
 	return 0;
 }
@@ -74,31 +79,85 @@ static void XS_ldb_register()
 	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
 	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
 #ifdef XSHELL_VERBOSE
-	xnfo(6,"finished");
+	xnfo(0,6,"finished");
 #endif
 }
 
 static int XS_SDLInit()
 {
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"SDL2","SDLInit()",NULL);
+	wnd = NULL;
+	ren = NULL;
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
+		xnfo(1,7,"SDL2 Init Error");
+		return 1;
+	}
+	if (SDL_CreateWindowAndRenderer(XSHELL_DEF_WND_W,XSHELL_DEF_WND_H,
+			SDL_WINDOW_OPENGL,&wnd,&ren)) {
+		xnfo(1,7,"CreateWindowAndRenderer() failed.");
+		return 2;
+	}
+	if (SDL_SetRenderDrawColor(ren,0,0,0,255)) {
+		xnfo(1,7,"SetRenderDrawColor() failed.");
+		return 10;
+	}
+	SDL_SetWindowTitle(wnd,XSHELL_CAPTION);
+	SDL_RenderClear(ren);
+	SDL_RenderPresent(ren);
+#ifdef XSHELL_VERBOSE
+	xnfo(0,7,"Init OK");
+#endif
 	return 0;
+}
+
+static void XS_SDLKill()
+{
+#ifdef XSHELL_VERBOSE
+	xnfo(0,8,"enter");
+#endif
+	if (ren) SDL_DestroyRenderer(ren);
+	if (wnd) SDL_DestroyWindow(wnd);
+	SDL_Quit();
+}
+
+void* XS_SDLoop(void* p)
+{
+	SDL_Event e;
+	for(;;) {
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT) return 0;
+		}
+		SDL_RenderClear(ren);
+		SDL_RenderPresent(ren);
+	}
 }
 
 int main(int argc, char* argv[])
 {
-	pthread_t dosbox;
-	xnfo(1,"ALIVE!");
+	pthread_t dosbox,sdloop;
+	xnfo(0,1,"ALIVE!");
 
-	if (XS_SDLInit()) {
-		fprintf(stderr,"Unable to create SDL2 context!\n");
-		return (EXIT_FAILURE);
-	}
-	xnfo(1,"SDL2 context created successfully");
+	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
+	xnfo(0,1,"SDL2 context created successfully");
 
 	XS_ldb_register();
-	pthread_create(&dosbox,NULL,Dosbox_Run,NULL);
-	pthread_join(dosbox,NULL);
 
-	xnfo(1,"QUIT");
+	if (pthread_create(&dosbox,NULL,Dosbox_Run,NULL))
+		xnfo(-1,1,"Unable to create DOS thread!");
+	xnfo(0,1,"DOSBox Thread running!");
+	if (pthread_create(&sdloop,NULL,XS_SDLoop,NULL))
+		xnfo(-1,1,"Unable to create SDL thread!");
+	xnfo(0,1,"SDLoop Thread running!");
+
+	if (pthread_join(dosbox,NULL)) xnfo(-1,1,"Threading error!");
+	xnfo(0,1,"DOSBox Thread Exited");
+
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"XShell",
+			"Main thread exited. You can close the window now!",NULL);
+
+	if (pthread_join(sdloop,NULL)) xnfo(-1,1,"Threading error!");
+	xnfo(0,1,"SDLoop Thread Exited");
+
+	XS_SDLKill();
+	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);
 }

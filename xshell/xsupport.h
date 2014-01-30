@@ -25,13 +25,18 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define XS_CONTEXT_COUNT 7
+#define XS_CONTEXT_COUNT 9
 static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
 		"Undefined context","XSHELL MAIN","XS_UpdateScreenBuffer",
 		"XS_UpdateSoundBuffer","XS_QueryUIEvents","XS_GetTicks",
-		"XS_ldb_register"
+		"XS_ldb_register","XS_SDLInit","XS_SDLKill"
 };
 
-void xnfo(int ctx, char const* format,...);
+/*
+ * xnfo(int sev, int ctx, char const* format,...)
+ * sev: severity (-1-fatal; 0-info; 1-error;)
+ * ctx: context (function number)
+ */
+void xnfo(int sev, int ctx, char const* format,...);
 
 #endif /* XSUPPORT_H_ */

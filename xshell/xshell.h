@@ -27,6 +27,10 @@
 #include "SDL2/include/SDL.h"
 #include "ldb.h"
 
+#define XSHELL_CAPTION "DOSCARD XShell"
+#define XSHELL_DEF_WND_W 640
+#define XSHELL_DEF_WND_H 480
+
 int XS_UpdateScreenBuffer(void* buf, size_t len);
 int XS_UpdateSoundBuffer(void* buf, size_t len);
 int XS_QueryUIEvents(void* buf, size_t len);

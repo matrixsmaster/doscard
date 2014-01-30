@@ -62,6 +62,9 @@ layers of course)
 
 7. Made something with CDROM_ImageFile AudioFile - Using SDL_sound is just unreal.
 
+8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
+we surely didn't have a "normal" disk filesystem.
+
 ...
 
 666. Wipe out all MacOS and WinDOS stuff. It's a lib, a Linux lib. And there's no

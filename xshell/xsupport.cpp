@@ -18,7 +18,8 @@
 
 #include "xsupport.h"
 
-void xnfo(int ctx, char const* format,...)
+
+void xnfo(int sev, int ctx, char const* format,...)
 {
 	char buf[256];
 	char buff[320];
@@ -29,5 +30,15 @@ void xnfo(int ctx, char const* format,...)
 	ctx = ((ctx < 1) || (ctx >= XS_CONTEXT_COUNT))? 0:ctx;
 	sprintf(buff,"[%s]: ",xs_contexts[ctx]);
 	strcat(buff,buf);
-	fprintf(stderr,"%s\n",buff);
+	switch (sev) {
+	case -1:
+		fprintf(stderr,"FATAL: %s\n",buff);
+		abort();
+		break;
+	case 1:
+		fprintf(stdout,"Error: %s\n",buff);
+		break;
+	default:
+		fprintf(stdout,"%s\n",buff);
+	}
 }
