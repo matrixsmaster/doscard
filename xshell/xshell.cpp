@@ -119,21 +119,22 @@ static void XS_SDLKill()
 	SDL_Quit();
 }
 
-void* XS_SDLoop(void* p)
+static void XS_SDLoop()
 {
 	SDL_Event e;
 	for(;;) {
 		while (SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) return 0;
+			if (e.type == SDL_QUIT) return;
 		}
 		SDL_RenderClear(ren);
 		SDL_RenderPresent(ren);
+		SDL_Delay(5);
 	}
 }
 
 int main(int argc, char* argv[])
 {
-	pthread_t dosbox,sdloop;
+	pthread_t dosbox;
 	xnfo(0,1,"ALIVE!");
 
 	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
@@ -144,18 +145,11 @@ int main(int argc, char* argv[])
 	if (pthread_create(&dosbox,NULL,Dosbox_Run,NULL))
 		xnfo(-1,1,"Unable to create DOS thread!");
 	xnfo(0,1,"DOSBox Thread running!");
-	if (pthread_create(&sdloop,NULL,XS_SDLoop,NULL))
-		xnfo(-1,1,"Unable to create SDL thread!");
-	xnfo(0,1,"SDLoop Thread running!");
+
+	XS_SDLoop();
 
 	if (pthread_join(dosbox,NULL)) xnfo(-1,1,"Threading error!");
 	xnfo(0,1,"DOSBox Thread Exited");
-
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"XShell",
-			"Main thread exited. You can close the window now!",NULL);
-
-	if (pthread_join(sdloop,NULL)) xnfo(-1,1,"Threading error!");
-	xnfo(0,1,"SDLoop Thread Exited");
 
 	XS_SDLKill();
 	xnfo(0,1,"QUIT");

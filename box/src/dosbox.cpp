@@ -60,7 +60,12 @@ Bit32s ticksDone;
 Bit32u ticksScheduled;
 bool ticksLocked;
 
-static Bitu Normal_Loop(void) {
+void DOSBOX_SetLoop(LoopHandler * handler) { loop=handler; }
+void DOSBOX_SetNormalLoop() { loop=Normal_Loop; }
+void DOSBOX_RunMachine() { while (!(*loop)()); }
+
+static Bitu Normal_Loop(void)
+{
 	Bits ret;
 	while (1) {
 		if (PIC_RunQueue()) {
@@ -79,10 +84,9 @@ static Bitu Normal_Loop(void) {
 			if (ticksRemain>0) {
 				TIMER_AddTick();
 				ticksRemain--;
-			} else goto increaseticks;
+			} else break;
 		}
 	}
-increaseticks:
 	if (GCC_UNLIKELY(ticksLocked)) {
 		ticksRemain=5;
 		/* Reset any auto cycle guessing for this frame */
@@ -160,28 +164,12 @@ increaseticks:
 			}
 		} else {
 			ticksAdded = 0;
-			SDL_Delay(1);
 			ticksDone -= GetTicks() - ticksNew;
 			if (ticksDone < 0)
 				ticksDone = 0;
 		}
 	}
 	return 0;
-}
-
-void DOSBOX_SetLoop(LoopHandler * handler) {
-	loop=handler;
-}
-
-void DOSBOX_SetNormalLoop() {
-	loop=Normal_Loop;
-}
-
-void DOSBOX_RunMachine(void){
-	Bitu ret;
-	do {
-		ret=(*loop)();
-	} while (!ret);
 }
 
 static void DOSBOX_UnlockSpeed( bool pressed ) {
@@ -205,7 +193,8 @@ static void DOSBOX_UnlockSpeed( bool pressed ) {
 	}
 }
 
-static void DOSBOX_RealInit(Section * sec) {
+static void DOSBOX_RealInit(Section * sec)
+{
 	Section_prop * section=static_cast<Section_prop *>(sec);
 	/* Initialize some dosbox internals */
 
@@ -244,7 +233,8 @@ static void DOSBOX_RealInit(Section * sec) {
 }
 
 
-void DOSBOX_Init(void) {
+void DOSBOX_Init(void)
+{
 	Section_prop * secprop;
 	Section_line * secline;
 	Prop_int* Pint;
@@ -507,47 +497,9 @@ void DOSBOX_Init(void) {
 	Pint->Set_values(rates);
 	Pint->Set_help("Sample rate of the PC-Speaker sound generation.");
 
-//	secprop->AddInitFunction(&TANDYSOUND_Init,true);//done
-//	const char* tandys[] = { "auto", "on", "off", 0};
-//	Pstring = secprop->Add_string("tandy",Property::Changeable::WhenIdle,"auto");
-//	Pstring->Set_values(tandys);
-//	Pstring->Set_help("Enable Tandy Sound System emulation. For 'auto', emulation is present only if machine is set to 'tandy'.");
-//	Pint = secprop->Add_int("tandyrate",Property::Changeable::WhenIdle,44100);
-//	Pint->Set_values(rates);
-//	Pint->Set_help("Sample rate of the Tandy 3-Voice generation.");
-
-//	secprop->AddInitFunction(&DISNEY_Init,true);//done
-//	Pbool = secprop->Add_bool("disney",Property::Changeable::WhenIdle,true);
-//	Pbool->Set_help("Enable Disney Sound Source emulation. (Covox Voice Master and Speech Thing compatible).");
-
 	secprop=control->AddSection_prop("joystick",&BIOS_Init,false);//done
 	secprop->AddInitFunction(&INT10_Init);
 	secprop->AddInitFunction(&MOUSE_Init); //Must be after int10 as it uses CurMode
-//	secprop->AddInitFunction(&JOYSTICK_Init);
-	const char* joytypes[] = { "auto", "2axis", "4axis", "4axis_2", "fcs", "ch", "none",0};
-	Pstring = secprop->Add_string("joysticktype",Property::Changeable::WhenIdle,"auto");
-	Pstring->Set_values(joytypes);
-	Pstring->Set_help(
-		"Type of joystick to emulate: auto (default), none,\n"
-		"2axis (supports two joysticks),\n"
-		"4axis (supports one joystick, first joystick used),\n"
-		"4axis_2 (supports one joystick, second joystick used),\n"
-		"fcs (Thrustmaster), ch (CH Flightstick).\n"
-		"none disables joystick emulation.\n"
-		"auto chooses emulation depending on real joystick(s).\n"
-		"(Remember to reset dosbox's mapperfile if you saved it earlier)");
-
-	Pbool = secprop->Add_bool("timed",Property::Changeable::WhenIdle,true);
-	Pbool->Set_help("enable timed intervals for axis. Experiment with this option, if your joystick drifts (away).");
-
-	Pbool = secprop->Add_bool("autofire",Property::Changeable::WhenIdle,false);
-	Pbool->Set_help("continuously fires as long as you keep the button pressed.");
-	
-	Pbool = secprop->Add_bool("swap34",Property::Changeable::WhenIdle,false);
-	Pbool->Set_help("swap the 3rd and the 4th axis. can be useful for certain joysticks.");
-
-	Pbool = secprop->Add_bool("buttonwrap",Property::Changeable::WhenIdle,false);
-	Pbool->Set_help("enable button wrapping at the number of emulated buttons.");
 
 	secprop=control->AddSection_prop("serial",&SERIAL_Init,true);
 	const char* serials[] = { "dummy", "disabled", "modem", "nullmodem",
@@ -618,11 +570,6 @@ void DOSBOX_Init(void) {
 	secprop->AddInitFunction(&MSCDEX_Init);
 	secprop->AddInitFunction(&DRIVES_Init);
 	secprop->AddInitFunction(&CDROM_Image_Init);
-#if C_IPX
-	secprop=control->AddSection_prop("ipx",&IPX_Init,true);
-	Pbool = secprop->Add_bool("ipx",Property::Changeable::WhenIdle, false);
-	Pbool->Set_help("Enable ipx over UDP/IP emulation.");
-#endif
 //	secprop->AddInitFunction(&CREDITS_Init);
 
 	//TODO ?
@@ -658,6 +605,8 @@ void* Dosbox_Run(void* p)
 	LOG_MSG(COPYRIGHT_STRING_NEW);
 	LOG_MSG("Initializing subsystems...");
 	control->Init();
+	LOG_MSG("Startup...");
+	control->StartUp();
 	LOG_MSG("Dosbox_Run(): Exit");
 	return 0;
 }
