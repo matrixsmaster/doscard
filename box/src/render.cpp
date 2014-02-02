@@ -20,7 +20,6 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <math.h>
-
 #include "dosbox.h"
 #include "video.h"
 #include "render.h"
@@ -34,7 +33,22 @@
 Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
 
-static void RENDER_CallBack( GFX_CallBackFunctions_t function );
+static void RENDER_CallBack(GFX_CallBackFunctions_t function);
+
+static inline void LDB_SendDWord(Bit32u x)
+{
+	(*libdosbox_callbacks[DBCB_PushScreen])(&x,4);
+}
+
+static inline void LDB_SendWord(Bit16u x)
+{
+	(*libdosbox_callbacks[DBCB_PushScreen])(&x,2);
+}
+
+static inline void LDB_SendByte(Bit8u x)
+{
+	(*libdosbox_callbacks[DBCB_PushScreen])(&x,1);
+}
 
 void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue)
 {
@@ -45,16 +59,38 @@ void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue)
 	if (render.pal.last<entry) render.pal.last=entry;
 }
 
-static void RENDER_EmptyLineHandler(const void * src) { }
-
-static void RENDER_StartLineHandler(const void * s)
+static void RENDER_StartLineHandler(const void * src)
 {
-	if (!s) return;
-}
-
-static void RENDER_FinishLineHandler(const void * s)
-{
-
+	if (!src) return;
+	Bit8u* px8 = ((Bit8u*)src);
+	Bit32u x,s;
+	for (x=0; x<render.src.width; x++) {
+		switch (render.src.bpp) {
+		case 8:
+			s = px8[x];
+			LDB_SendByte(render.pal.rgb[s].blue);
+			LDB_SendByte(render.pal.rgb[s].green);
+			LDB_SendByte(render.pal.rgb[s].red);
+			break;
+		case 15:
+			s = ((Bit16u*)px8)[x];
+			LDB_SendByte(((s & 0x001f) * 0x21) >> 2);
+			LDB_SendByte(((s & 0x03e0) * 0x21) >> 7);
+			LDB_SendByte(((s & 0x7c00) * 0x21) >> 12);
+			break;
+		case 16:
+			s = ((Bit16u*)px8)[x];
+			LDB_SendByte(((s & 0x001f) * 0x21) >> 2);
+			LDB_SendByte(((s & 0x07e0) * 0x41) >> 9);
+			LDB_SendByte(((s & 0xf800) * 0x21) >> 13);
+			break;
+		case 32:
+			LDB_SendByte((((Bit32u*)src)[x]) & 255);
+			LDB_SendByte((((Bit32u*)src)[x] >> 8) & 255);
+			LDB_SendByte((((Bit32u*)src)[x] >> 16) & 255);
+			break;
+		}
+	}
 }
 
 bool RENDER_StartUpdate(void)
@@ -62,6 +98,9 @@ bool RENDER_StartUpdate(void)
 	//TODO: return false if busy (can we be busy and want to draw simultaneously in
 	//a single-threaded env??
 	RENDER_DrawLine = RENDER_StartLineHandler;
+	Bit32u hdr = ((Bit16u)render.src.width) << 16;
+	hdr |= ((Bit16u)render.src.height);
+	LDB_SendDWord(hdr);
 	return true;
 }
 
@@ -69,8 +108,10 @@ void RENDER_EndUpdate(bool abort)
 {
 	if (abort) {
 		//Do NOT update anything
+		LDB_SendByte(0);
 	} else {
 		//normal update
+		LDB_SendByte(0xff);
 	}
 }
 
@@ -87,5 +128,5 @@ void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool 
 
 void RENDER_Init(Section * sec)
 {
-
+	LDB_SendDWord(0xAABBCCDD);
 }

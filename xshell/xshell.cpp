@@ -46,6 +46,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
 	xnfo(0,2,"len=%d",len);
+	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
 #endif
 	return 0;
 }
@@ -85,11 +86,11 @@ int XS_GetTicks(void* buf, size_t len)
 	if (!clkbeg) {
 		clkbeg = new uint32_t;
 		xnfo(0,5,"Clocks start point set to %d:%d",r.tv_sec,r.tv_nsec);
-		*clkbeg = r.tv_sec * 1000 + (r.tv_nsec / 1000000 / clkres->tv_nsec);
+		*clkbeg = r.tv_sec * 1000 + (r.tv_nsec / 1000000);// / clkres->tv_nsec);
 		xnfo(0,5,"|-> %d ms",*clkbeg);
 		*val = 0;
 	} else {
-		*val = r.tv_sec * 1000 + (r.tv_nsec / 1000000 / clkres->tv_nsec);
+		*val = r.tv_sec * 1000 + (r.tv_nsec / 1000000);
 		*val -= *clkbeg;
 	}
 	return 0;
