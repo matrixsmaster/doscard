@@ -26,6 +26,7 @@
 //#define GetTicks() XS_GetTicks()
 uint32_t GetTicks();
 extern LDB_CallbackFunc libdosbox_callbacks[];
+void TIMER_Delay(Bitu c);
 
 typedef void (*TIMER_TickHandler)(void);
 

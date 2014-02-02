@@ -78,6 +78,7 @@ static void XS_ldb_register()
 	Dosbox_RegisterCallback(DBCB_PushScreen,&XS_UpdateScreenBuffer);
 	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
 	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
+	Dosbox_RegisterCallback(DBCB_PushMessage,&XS_Message);
 #ifdef XSHELL_VERBOSE
 	xnfo(0,6,"finished");
 #endif
@@ -112,7 +113,7 @@ static int XS_SDLInit()
 static void XS_SDLKill()
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(0,8,"enter");
+	xnfo(0,8,"killing...");
 #endif
 	if (ren) SDL_DestroyRenderer(ren);
 	if (wnd) SDL_DestroyWindow(wnd);
@@ -122,6 +123,7 @@ static void XS_SDLKill()
 static void XS_SDLoop()
 {
 	SDL_Event e;
+	xnfo(0,9,"Loop begins");
 	for(;;) {
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) return;
@@ -130,6 +132,15 @@ static void XS_SDLoop()
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	}
+}
+
+int XS_Message(void* buf, size_t len)
+{
+#ifdef XSHELL_VERBOSE
+	xnfo(0,10,"len=%d",len);
+#endif
+	if (buf && len) xnfo(0,10,"%s",buf);
+	return 0;
 }
 
 int main(int argc, char* argv[])

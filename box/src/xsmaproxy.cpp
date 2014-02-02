@@ -33,11 +33,3 @@
 #include "setup.h"
 
 
-void MAPPER_AddHandler(MAPPER_Handler * handler,MapKeys key,Bitu mods,char const * const eventname,char const * const buttonname)
-{
-	LOG_MSG("MAPPER_AddHandler()");
-}
-
-void Mouse_AutoLock(bool enable)
-{
-}

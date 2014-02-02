@@ -35,5 +35,6 @@ int XS_UpdateScreenBuffer(void* buf, size_t len);
 int XS_UpdateSoundBuffer(void* buf, size_t len);
 int XS_QueryUIEvents(void* buf, size_t len);
 int XS_GetTicks(void* buf, size_t len);
+int XS_Message(void* buf, size_t len);
 
 #endif /* XSHELL_H_ */

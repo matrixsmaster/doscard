@@ -1767,7 +1767,7 @@ Bitu DEBUG_Loop(void) {
 	Bit16u oldCS	= SegValue(cs);
 	Bit32u oldEIP	= reg_eip;
 	PIC_runIRQs();
-	SDL_Delay(1);
+	TIMER_Delay(1);
 	if ((oldCS!=SegValue(cs)) || (oldEIP!=reg_eip)) {
 		CBreakpoint::AddBreakpoint(oldCS,oldEIP,true);
 		CBreakpoint::ActivateBreakpoints(SegPhys(cs)+reg_eip,true);

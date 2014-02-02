@@ -472,3 +472,8 @@ uint32_t GetTicks()
 	(*libdosbox_callbacks[DBCB_GetTicks])(&r,sizeof(r));
 	return r;
 }
+
+void TIMER_Delay(Bitu c)
+{
+	//TODO
+}

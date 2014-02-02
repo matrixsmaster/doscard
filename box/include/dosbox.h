@@ -21,6 +21,7 @@
 #define DOSBOX_DOSBOX_H
 
 #include "config.h"
+#include "ldb.h"
 
 GCC_ATTRIBUTE(noreturn) void E_Exit(const char * message,...) GCC_ATTRIBUTE( __format__(__printf__, 1, 2));
 
@@ -36,10 +37,6 @@ void DOSBOX_SetLoop(LoopHandler * handler);
 void DOSBOX_SetNormalLoop();
 
 void DOSBOX_Init(void);
-
-//int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
-
-//int startapp(int,char**);
 
 class Config;
 extern Config * control;
@@ -64,6 +61,7 @@ enum SVGACards {
 extern SVGACards svgaCard;
 extern MachineType machine;
 extern bool SDLNetInited;
+extern LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
 
 #define IS_TANDY_ARCH ((machine==MCH_TANDY) || (machine==MCH_PCJR))
 #define IS_EGAVGA_ARCH ((machine==MCH_EGA) || (machine==MCH_VGA))

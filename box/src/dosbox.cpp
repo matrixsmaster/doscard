@@ -59,6 +59,7 @@ static Bit32u ticksAdded;
 Bit32s ticksDone;
 Bit32u ticksScheduled;
 bool ticksLocked;
+static Bitu Normal_Loop(void);
 
 void DOSBOX_SetLoop(LoopHandler * handler) { loop=handler; }
 void DOSBOX_SetNormalLoop() { loop=Normal_Loop; }
@@ -164,6 +165,7 @@ static Bitu Normal_Loop(void)
 			}
 		} else {
 			ticksAdded = 0;
+			TIMER_Delay(1);
 			ticksDone -= GetTicks() - ticksNew;
 			if (ticksDone < 0)
 				ticksDone = 0;
