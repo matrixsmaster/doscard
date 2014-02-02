@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include <stdio.h> //vsprintf
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/types.h>

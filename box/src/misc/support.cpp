@@ -18,20 +18,20 @@
 
 
 #include <string.h>
+#include <stdio.h> //vsprintf
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <string.h>
 #include <algorithm>
 #include <cctype>
 #include <string>
-  
 #include "dosbox.h"
 #include "debug.h"
 #include "support.h"
 #include "video.h"
+#include "ldb.h"
 
 
 void upcase(std::string &str) {

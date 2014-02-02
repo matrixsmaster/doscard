@@ -65,6 +65,8 @@ layers of course)
 8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
 we surely didn't have a "normal" disk filesystem.
 
+9. Move all of the libdosbox code into it's own namespace.
+
 ...
 
 666. Wipe out all MacOS and WinDOS stuff. It's a lib, a Linux lib. And there's no

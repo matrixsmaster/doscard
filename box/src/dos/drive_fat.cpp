@@ -17,7 +17,6 @@
  */
 
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -28,6 +27,7 @@
 #include "cross.h"
 #include "bios.h"
 #include "bios_disk.h"
+#include "ldb.h"
 
 #define IMGTYPE_FLOPPY 0
 #define IMGTYPE_ISO    1

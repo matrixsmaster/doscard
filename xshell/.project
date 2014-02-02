@@ -3,6 +3,7 @@
 	<name>xshell</name>
 	<comment></comment>
 	<projects>
+		<project>dosbox</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

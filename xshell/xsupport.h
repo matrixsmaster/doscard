@@ -30,7 +30,7 @@ static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
 		"Undefined context","XSHELL MAIN","XS_UpdateScreenBuffer",
 		"XS_UpdateSoundBuffer","XS_QueryUIEvents","XS_GetTicks",
 		"XS_ldb_register","XS_SDLInit","XS_SDLKill","XS_SDLoop",
-		"XS_Message","XS_DrawFrame"
+		"XS_Message"
 };
 
 /*

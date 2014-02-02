@@ -22,6 +22,9 @@
 #ifndef DOSBOX_LIBDOSBOX_H_
 #define DOSBOX_LIBDOSBOX_H_
 
+#define DISPLAY_INIT_SIGNATURE 0xFFABCD00
+#define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
+
 enum LDB_CallbackType {
 	DBCB_GetTicks = 0,
 	DBCB_PushScreen = 1,
@@ -36,7 +39,15 @@ typedef int (*LDB_CallbackFunc)(void*,size_t);
 int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
-#define DISPLAY_INIT_SIGNATURE 0xFFABCD00
-#define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
+typedef struct {
+	//
+} DBFILE;
+
+DBFILE* dbfopen(const char* p, const char* m);
+void dbfclose(DBFILE* f);
+size_t dbfread(void* p, size_t sz, size_t q, DBFILE* f);
+size_t dbfwrite(const void* p, size_t sz, size_t q, DBFILE* f);
+uint32_t dbfseek(DBFILE* f, uint64_t off, int wh);
+uint64_t dbftell(DBFILE* f);
 
 #endif

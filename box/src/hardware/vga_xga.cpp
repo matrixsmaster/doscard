@@ -22,9 +22,9 @@
 #include "inout.h"
 #include "vga.h"
 #include <math.h>
-#include <stdio.h>
 #include "callback.h"
 #include "cpu.h"		// for 0x3da delay
+#include "ldb.h"
 
 #define XGA_SCREEN_WIDTH	vga.s3.xga_screen_width
 #define XGA_COLOR_MODE		vga.s3.xga_color_mode

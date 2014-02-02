@@ -17,7 +17,6 @@
  */
 
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "dosbox.h"
@@ -27,9 +26,8 @@
 #include "control.h"
 #include <list>
 #include <string>
+
 using namespace std;
-
-
 
 #define LINE_IN_MAXLEN 2048
 

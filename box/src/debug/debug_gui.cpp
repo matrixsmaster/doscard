@@ -23,14 +23,13 @@
 #include "control.h"
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <curses.h>
 #include <string.h>
-
 #include "support.h"
 #include "regs.h"
 #include "debug.h"
 #include "debug_inc.h"
+#include "ldb.h"
 
 struct _LogGroup {
 	char const* front;

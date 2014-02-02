@@ -27,9 +27,9 @@
 #include <sstream>
 #include <list>
 #include <stdlib.h>
-#include <stdio.h>
 #include <limits>
 #include <limits.h>
+#include "ldb.h"
 
 using namespace std;
 static std::string current_config_dir; // Set by parseconfigfile so Prop_path can use it to construct the realpath

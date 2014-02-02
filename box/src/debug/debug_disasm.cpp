@@ -64,11 +64,11 @@ Any comments/updates/bug reports to:
 */
 #include "dosbox.h"
 #if C_DEBUG
-#include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include "mem.h"
+#include "ldb.h"
 
 typedef Bit8u  UINT8;
 typedef Bit16u UINT16;

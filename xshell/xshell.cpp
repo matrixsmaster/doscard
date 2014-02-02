@@ -69,9 +69,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #ifdef XSHELL_VERBOSE
 				xnfo(0,2,"End-Of-Frame received (0x%02X)",*b);
 #endif
-				if (*b == 0xff) XS_DrawFrame();
-				else xnfo(0,2,"Bad Frame (aborted)");
+				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
 				disp_fsm = 1;
+				SDL_UnlockMutex(frame_mutex);
 			} else {
 				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
 				if (++pxclock > 2) {
@@ -108,6 +108,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #endif
 				frame_dirty = true;
 			}
+			SDL_LockMutex(frame_mutex);
 		}
 		break;
 	default:
@@ -223,20 +224,20 @@ static void XS_SDLoop()
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) return;
 		}
-		if (frame_dirty) {
+		if (framebuf && frame_mutex) {
 			if (SDL_LockMutex(frame_mutex)) xnfo(-1,9,"Couldn't lock frame mutex");
-			if (frame_sdl) SDL_DestroyTexture(frame_sdl);
-			frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
-					SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
-			frame_dirty = false;
-			SDL_UnlockMutex(frame_mutex);
-			SDL_Delay(1);
-		}
-		if (frame_sdl) {
-			if (SDL_LockMutex(frame_mutex)) xnfo(-1,9,"Couldn't lock frame mutex");
-			SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
-			SDL_RenderClear(ren);
-			SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
+			if (frame_dirty) {
+
+				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
+				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
+						SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
+				frame_dirty = false;
+			}
+			if (frame_sdl) {
+				SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
+				SDL_RenderClear(ren);
+				SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
+			}
 			SDL_UnlockMutex(frame_mutex);
 		}
 		SDL_RenderPresent(ren);
@@ -251,13 +252,6 @@ int XS_Message(void* buf, size_t len)
 #endif
 	if (buf && len) xnfo(0,10,"%s",buf);
 	return 0;
-}
-
-static void XS_DrawFrame()
-{
-//	if (SDL_LockMutex(frame_mutex)) xnfo(-1,11,"Lock failed");
-//	SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
-//	SDL_UnlockMutex(frame_mutex);
 }
 
 int main(int argc, char* argv[])

@@ -22,7 +22,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <string.h>
 #include "programs.h"
 #include "callback.h"
@@ -31,6 +30,7 @@
 #include "cross.h"
 #include "control.h"
 #include "shell.h"
+#include "ldb.h"
 
 Bitu call_program;
 
