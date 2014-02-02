@@ -37,8 +37,10 @@
  * write it now :)
  */
 
-SDL_Window *wnd;
-SDL_Renderer *ren;
+SDL_Window *wnd = NULL;
+SDL_Renderer *ren = NULL;
+struct timespec* clkres = NULL;
+uint32_t* clkbeg = NULL;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -66,9 +68,30 @@ int XS_QueryUIEvents(void* buf, size_t len)
 
 int XS_GetTicks(void* buf, size_t len)
 {
+	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
+	struct timespec r;
 #ifdef XSHELL_VERBOSE
 	xnfo(0,5,"len=%d",len);
 #endif
+	if ((!buf) || (len < 4)) return -1;
+	if (!clkres) {
+		clkres = new struct timespec;
+		clock_getres(CLOCK_MONOTONIC,clkres);
+		xnfo(0,5,"Resolution is %d:%d",clkres->tv_sec,clkres->tv_nsec);
+		if (clkres->tv_nsec > 1000000)
+			xnfo(-1,5,"CLOCK_MONOTONIC resolution is too low!");
+	}
+	clock_gettime(CLOCK_MONOTONIC,&r);
+	if (!clkbeg) {
+		clkbeg = new uint32_t;
+		xnfo(0,5,"Clocks start point set to %d:%d",r.tv_sec,r.tv_nsec);
+		*clkbeg = r.tv_sec * 1000 + (r.tv_nsec / 1000000 / clkres->tv_nsec);
+		xnfo(0,5,"|-> %d ms",*clkbeg);
+		*val = 0;
+	} else {
+		*val = r.tv_sec * 1000 + (r.tv_nsec / 1000000 / clkres->tv_nsec);
+		*val -= *clkbeg;
+	}
 	return 0;
 }
 
@@ -86,8 +109,6 @@ static void XS_ldb_register()
 
 static int XS_SDLInit()
 {
-	wnd = NULL;
-	ren = NULL;
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		xnfo(1,7,"SDL2 Init Error");
 		return 1;

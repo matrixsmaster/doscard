@@ -23,7 +23,6 @@
 
 #include "serialport.h"
 #include "directserial.h"
-#include "misc_util.h"
 #include "pic.h"
 
 #include "libserial.h"
