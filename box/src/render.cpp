@@ -39,12 +39,12 @@ static inline void LDB_SendDWord(Bit32u x)
 {
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,4);
 }
-
+/*
 static inline void LDB_SendWord(Bit16u x)
 {
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,2);
 }
-
+*/
 static inline void LDB_SendByte(Bit8u x)
 {
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,1);
@@ -98,6 +98,7 @@ bool RENDER_StartUpdate(void)
 	//TODO: return false if busy (can we be busy and want to draw simultaneously in
 	//a single-threaded env??
 	RENDER_DrawLine = RENDER_StartLineHandler;
+	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
 	hdr |= ((Bit16u)render.src.height);
 	LDB_SendDWord(hdr);
@@ -128,5 +129,5 @@ void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool 
 
 void RENDER_Init(Section * sec)
 {
-	LDB_SendDWord(0xAABBCCDD);
+	LDB_SendDWord(DISPLAY_INIT_SIGNATURE);
 }

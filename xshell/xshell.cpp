@@ -37,10 +37,20 @@
  * write it now :)
  */
 
-SDL_Window *wnd = NULL;
-SDL_Renderer *ren = NULL;
-struct timespec* clkres = NULL;
-uint32_t* clkbeg = NULL;
+static SDL_Window *wnd = NULL;
+static SDL_Renderer *ren = NULL;
+static struct timespec* clkres = NULL;
+static uint32_t* clkbeg = NULL;
+static uint8_t disp_fsm = 0;
+static uint8_t pxclock;
+static uint16_t lcd_w,lcd_h;
+static uint32_t frame_cnt,cur_pixel;
+static uint32_t* framebuf = NULL;
+static SDL_Texture* frame_sdl = NULL;
+static bool frame_dirty = false;
+static SDL_mutex* frame_mutex = NULL;
+
+static void XS_DrawFrame();
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -48,6 +58,62 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 	xnfo(0,2,"len=%d",len);
 	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
 #endif
+	if (!buf) return -1;
+	uint32_t* dw;
+	uint8_t* b;
+	switch (len) {
+	case 1:
+		b = reinterpret_cast<uint8_t*>(buf);
+		if (disp_fsm == 2) {
+			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
+#ifdef XSHELL_VERBOSE
+				xnfo(0,2,"End-Of-Frame received (0x%02X)",*b);
+#endif
+				if (*b == 0xff) XS_DrawFrame();
+				else xnfo(0,2,"Bad Frame (aborted)");
+				disp_fsm = 1;
+			} else {
+				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
+				if (++pxclock > 2) {
+					pxclock = 0;
+					framebuf[frame_cnt++] = cur_pixel;
+				}
+			}
+		}
+		break;
+	case 4:
+		dw = reinterpret_cast<uint32_t*>(buf);
+		if (*dw == DISPLAY_INIT_SIGNATURE) {
+			xnfo(0,2,"Signature received");
+			if (!disp_fsm) disp_fsm = 1;
+			else xnfo(-1,2,"Double init!");
+		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
+			disp_fsm = 1;
+		} else if (disp_fsm == 1) {
+			uint16_t old_w = lcd_w;
+			uint16_t old_h = lcd_h;
+			lcd_w = (*dw >> 16);
+			lcd_h = *dw & 0xffff;
+#ifdef XSHELL_VERBOSE
+			xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
+#endif
+			pxclock = 0;
+			frame_cnt = 0;
+			disp_fsm = 2;
+			if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
+				framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,
+						sizeof(uint32_t)*lcd_w*lcd_h));
+#ifdef XSHELL_VERBOSE
+				xnfo(0,2,"Framebuffer resized");
+#endif
+				frame_dirty = true;
+			}
+		}
+		break;
+	default:
+		xnfo(0,2,"Unsupported transfer length (%d)",len);
+		return 1;
+	}
 	return 0;
 }
 
@@ -119,6 +185,8 @@ static int XS_SDLInit()
 		xnfo(1,7,"CreateWindowAndRenderer() failed.");
 		return 2;
 	}
+	lcd_w = XSHELL_DEF_WND_W;
+	lcd_h = XSHELL_DEF_WND_H;
 	if (SDL_SetRenderDrawColor(ren,0,0,0,255)) {
 		xnfo(1,7,"SetRenderDrawColor() failed.");
 		return 10;
@@ -126,6 +194,9 @@ static int XS_SDLInit()
 	SDL_SetWindowTitle(wnd,XSHELL_CAPTION);
 	SDL_RenderClear(ren);
 	SDL_RenderPresent(ren);
+
+	frame_mutex = SDL_CreateMutex();
+
 #ifdef XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
 #endif
@@ -139,6 +210,8 @@ static void XS_SDLKill()
 #endif
 	if (ren) SDL_DestroyRenderer(ren);
 	if (wnd) SDL_DestroyWindow(wnd);
+	if (frame_sdl) SDL_DestroyTexture(frame_sdl);
+	if (frame_mutex) SDL_DestroyMutex(frame_mutex);
 	SDL_Quit();
 }
 
@@ -150,7 +223,22 @@ static void XS_SDLoop()
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT) return;
 		}
-		SDL_RenderClear(ren);
+		if (frame_dirty) {
+			if (SDL_LockMutex(frame_mutex)) xnfo(-1,9,"Couldn't lock frame mutex");
+			if (frame_sdl) SDL_DestroyTexture(frame_sdl);
+			frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
+					SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
+			frame_dirty = false;
+			SDL_UnlockMutex(frame_mutex);
+			SDL_Delay(1);
+		}
+		if (frame_sdl) {
+			if (SDL_LockMutex(frame_mutex)) xnfo(-1,9,"Couldn't lock frame mutex");
+			SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
+			SDL_RenderClear(ren);
+			SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
+			SDL_UnlockMutex(frame_mutex);
+		}
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	}
@@ -163,6 +251,13 @@ int XS_Message(void* buf, size_t len)
 #endif
 	if (buf && len) xnfo(0,10,"%s",buf);
 	return 0;
+}
+
+static void XS_DrawFrame()
+{
+//	if (SDL_LockMutex(frame_mutex)) xnfo(-1,11,"Lock failed");
+//	SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
+//	SDL_UnlockMutex(frame_mutex);
 }
 
 int main(int argc, char* argv[])

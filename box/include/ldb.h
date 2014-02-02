@@ -36,4 +36,7 @@ typedef int (*LDB_CallbackFunc)(void*,size_t);
 int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
+#define DISPLAY_INIT_SIGNATURE 0xFFABCD00
+#define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
+
 #endif
