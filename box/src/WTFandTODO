@@ -67,6 +67,8 @@ we surely didn't have a "normal" disk filesystem.
 
 9. Move all of the libdosbox code into it's own namespace.
 
+10. Clean up all the files in INCLUDE directory!
+
 ...
 
 666. Wipe out all MacOS and WinDOS stuff. It's a lib, a Linux lib. And there's no
