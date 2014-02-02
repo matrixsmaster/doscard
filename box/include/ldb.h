@@ -17,6 +17,7 @@
  */
 
 #include <inttypes.h>
+#include <unistd.h>
 #include <string.h>
 
 #ifndef DOSBOX_LIBDOSBOX_H_
@@ -40,7 +41,7 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
 typedef struct {
-	//
+	uint8_t hand;
 } DBFILE;
 
 DBFILE* dbfopen(const char* p, const char* m);
@@ -49,5 +50,10 @@ size_t dbfread(void* p, size_t sz, size_t q, DBFILE* f);
 size_t dbfwrite(const void* p, size_t sz, size_t q, DBFILE* f);
 uint32_t dbfseek(DBFILE* f, uint64_t off, int wh);
 uint64_t dbftell(DBFILE* f);
+int dbfileno(DBFILE* f);
+int dbfeof(DBFILE* f);
+int dbftruncate(DBFILE* f, off_t len);
+char *dbfgets(char *s, int n, DBFILE *f);
+int dbfprintf(DBFILE *f, const char *fmt, ...);
 
 #endif

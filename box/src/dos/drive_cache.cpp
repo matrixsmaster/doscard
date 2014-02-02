@@ -16,27 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <vector>
+#include <iterator>
+#include <algorithm>
+#include <stdio.h>
 #include "drives.h"
 #include "dos_inc.h"
 #include "support.h"
 #include "cross.h"
 
-// STL stuff
-#include <vector>
-#include <iterator>
-#include <algorithm>
-
-#if defined (WIN32)   /* Win 32 */
-#define WIN32_LEAN_AND_MEAN        // Exclude rarely-used stuff from 
-#include <windows.h>
-#endif
-
-#if defined (OS2)
-#define INCL_DOSERRORS
-#define INCL_DOSFILEMGR
-#include <os2.h>
-#endif
 
 int fileInfoCounter = 0;
 

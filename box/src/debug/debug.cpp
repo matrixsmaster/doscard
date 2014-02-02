@@ -2200,52 +2200,47 @@ CDebugVar* CDebugVar::FindVar(PhysPt pt)
 bool CDebugVar::SaveVars(char* name) {
 	if (varList.size()>65535) return false;
 
-	FILE* f = fopen(name,"wb+");
+ DBFILE* f = dbfopen(name,"wb+");
 	if (!f) return false;
 
 	// write number of vars
-	Bit16u num = (Bit16u)varList.size();
-	fwrite(&num,1,sizeof(num),f);
+	Bit16u num = (Bit16u)varList.size(); dbfwrite(&num,1,sizeof(num),f);
 
 	std::list<CDebugVar*>::iterator i;
 	CDebugVar* bp;
 	for(i=varList.begin(); i != varList.end(); i++) {
 		bp = static_cast<CDebugVar*>(*i);
-		// name
-		fwrite(bp->GetName(),1,16,f);
+		// name dbfwrite(bp->GetName(),1,16,f);
 		// adr
-		PhysPt adr = bp->GetAdr();
-		fwrite(&adr,1,sizeof(adr),f);
-	};
-	fclose(f);
+		PhysPt adr = bp->GetAdr(); dbfwrite(&adr,1,sizeof(adr),f);
+	}; dbfclose(f);
 	return true;
 };
 
 bool CDebugVar::LoadVars(char* name)
 {
-	FILE* f = fopen(name,"rb");
+ DBFILE* f = dbfopen(name,"rb");
 	if (!f) return false;
 
 	// read number of vars
 	Bit16u num;
-	if (fread(&num,sizeof(num),1,f) != 1) return false;
+	if ( dbfread(&num,sizeof(num),1,f) != 1) return false;
 
 	for (Bit16u i=0; i<num; i++) {
 		char name[16];
 		// name
-		if (fread(name,16,1,f) != 1) break;
+		if ( dbfread(name,16,1,f) != 1) break;
 		// adr
 		PhysPt adr;
-		if (fread(&adr,sizeof(adr),1,f) != 1) break;
+		if ( dbfread(&adr,sizeof(adr),1,f) != 1) break;
 		// insert
 		InsertVariable(name,adr);
-	};
-	fclose(f);
+	}; dbfclose(f);
 	return true;
 };
 
 static void SaveMemory(Bit16u seg, Bit32u ofs1, Bit32u num) {
-	FILE* f = fopen("MEMDUMP.TXT","wt");
+ DBFILE* f = dbfopen("MEMDUMP.TXT","wt");
 	if (!f) {
 		DEBUG_ShowMsg("DEBUG: Memory dump failed.\n");
 		return;
@@ -2276,13 +2271,12 @@ static void SaveMemory(Bit16u seg, Bit32u ofs1, Bit32u num) {
 			strcat(buffer,temp);
 		}
 		fprintf(f,"%s\n",buffer);
-	}
-	fclose(f);
+	} dbfclose(f);
 	DEBUG_ShowMsg("DEBUG: Memory dump success.\n");
 }
 
 static void SaveMemoryBin(Bit16u seg, Bit32u ofs1, Bit32u num) {
-	FILE* f = fopen("MEMDUMP.BIN","wb");
+ DBFILE* f = dbfopen("MEMDUMP.BIN","wb");
 	if (!f) {
 		DEBUG_ShowMsg("DEBUG: Memory binary dump failed.\n");
 		return;
@@ -2290,16 +2284,13 @@ static void SaveMemoryBin(Bit16u seg, Bit32u ofs1, Bit32u num) {
 
 	for (Bitu x = 0; x < num;x++) {
 		Bit8u val;
-		if (mem_readb_checked(GetAddress(seg,ofs1+x),&val)) val=0;
-		fwrite(&val,1,1,f);
-	}
-
-	fclose(f);
+		if (mem_readb_checked(GetAddress(seg,ofs1+x),&val)) val=0; dbfwrite(&val,1,1,f);
+	} dbfclose(f);
 	DEBUG_ShowMsg("DEBUG: Memory dump binary success.\n");
 }
 
 static void OutputVecTable(char* filename) {
-	FILE* f = fopen(filename, "wt");
+ DBFILE* f = dbfopen(filename, "wt");
 	if (!f)
 	{
 		DEBUG_ShowMsg("DEBUG: Output of interrupt vector table failed.\n");
@@ -2307,9 +2298,7 @@ static void OutputVecTable(char* filename) {
 	}
 
 	for (int i=0; i<256; i++)
-		fprintf(f,"INT %02X:  %04X:%04X\n", i, mem_readw(i*4+2), mem_readw(i*4));
-
-	fclose(f);
+		fprintf(f,"INT %02X:  %04X:%04X\n", i, mem_readw(i*4+2), mem_readw(i*4)); dbfclose(f);
 	DEBUG_ShowMsg("DEBUG: Interrupt vector table written to %s.\n", filename);
 }
 

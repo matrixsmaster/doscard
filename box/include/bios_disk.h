@@ -19,7 +19,7 @@
 #ifndef DOSBOX_BIOS_DISK_H
 #define DOSBOX_BIOS_DISK_H
 
-#include <stdio.h>
+//#include <stdio.h>
 #ifndef DOSBOX_MEM_H
 #include "mem.h"
 #endif
@@ -54,12 +54,12 @@ public:
 	void Get_Geometry(Bit32u * getHeads, Bit32u *getCyl, Bit32u *getSect, Bit32u *getSectSize);
 	Bit8u GetBiosType(void);
 	Bit32u getSectSize(void);
-	imageDisk(FILE *imgFile, Bit8u *imgName, Bit32u imgSizeK, bool isHardDisk);
-	~imageDisk() { if(diskimg != NULL) { fclose(diskimg); }	};
+	imageDisk(DBFILE* imgFile, Bit8u *imgName, Bit32u imgSizeK, bool isHardDisk);
+	~imageDisk() { if(diskimg != NULL) { dbfclose(diskimg); }	};
 
 	bool hardDrive;
 	bool active;
-	FILE *diskimg;
+	DBFILE* diskimg;
 	Bit8u diskname[512];
 	Bit8u floppytype;
 

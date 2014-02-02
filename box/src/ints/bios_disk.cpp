@@ -163,8 +163,8 @@ Bit8u imageDisk::Read_AbsoluteSector(Bit32u sectnum, void * data) {
 
 	bytenum = sectnum * sector_size;
 
-	if (bytenum!=current_fpos) fseek(diskimg,bytenum,SEEK_SET);
-	size_t ret=fread(data, 1, sector_size, diskimg);
+	if (bytenum!=current_fpos) dbfseek(diskimg,bytenum,SEEK_SET);
+	size_t ret= dbfread(data, 1, sector_size, diskimg);
 	current_fpos=bytenum+ret;
 
 	return 0x00;
@@ -186,22 +186,22 @@ Bit8u imageDisk::Write_AbsoluteSector(Bit32u sectnum, void *data) {
 
 	//LOG_MSG("Writing sectors to %ld at bytenum %d", sectnum, bytenum);
 
-	if (bytenum!=current_fpos) fseek(diskimg,bytenum,SEEK_SET);
-	size_t ret=fwrite(data, sector_size, 1, diskimg);
+	if (bytenum!=current_fpos) dbfseek(diskimg,bytenum,SEEK_SET);
+	size_t ret= dbfwrite(data, sector_size, 1, diskimg);
 	current_fpos=bytenum+ret;
 
 	return ((ret>0)?0x00:0x05);
 
 }
 
-imageDisk::imageDisk(FILE *imgFile, Bit8u *imgName, Bit32u imgSizeK, bool isHardDisk) {
+imageDisk::imageDisk( DBFILE*imgFile, Bit8u *imgName, Bit32u imgSizeK, bool isHardDisk) {
 	heads = 0;
 	cylinders = 0;
 	sectors = 0;
 	sector_size = 512;
 	current_fpos = 0;
 	diskimg = imgFile;
-	fseek(diskimg,0,SEEK_SET);
+ dbfseek(diskimg,0,SEEK_SET);
 	
 	memset(diskname,0,512);
 	if(strlen((const char *)imgName) > 511) {

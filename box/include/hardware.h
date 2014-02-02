@@ -20,7 +20,7 @@
 #ifndef DOSBOX_HARDWARE_H
 #define DOSBOX_HARDWARE_H
 
-#include <stdio.h>
+//#include <stdio.h>
 
 class Section;
 enum OPL_Mode {
@@ -43,7 +43,7 @@ bool SB_Get_Address(Bitu& sbaddr, Bitu& sbirq, Bitu& sbdma);
 bool TS_Get_Address(Bitu& tsaddr, Bitu& tsirq, Bitu& tsdma);
 
 extern Bit8u adlib_commandreg;
-FILE * OpenCaptureFile(const char * type,const char * ext);
+DBFILE*  OpenCaptureFile(const char * type,const char * ext);
 
 void CAPTURE_AddWave(Bit32u freq, Bit32u len, Bit16s * data);
 #define CAPTURE_FLAG_DBLW	0x1

@@ -35,17 +35,18 @@ struct MessageBlock {
 	string name;
 	string val;
 	MessageBlock(const char* _name, const char* _val):
-	name(_name),val(_val){}
+		name(_name),val(_val){}
 };
 
 static list<MessageBlock> Lang;
 typedef list<MessageBlock>::iterator itmb;
 
-void MSG_Add(const char * _name, const char* _val) {
+void MSG_Add(const char * _name, const char* _val)
+{
 	/* Find the message */
 	for(itmb tel=Lang.begin();tel!=Lang.end();tel++) {
 		if((*tel).name==_name) { 
-//			LOG_MSG("double entry for %s",_name); //Message file might be loaded before default text messages
+			//			LOG_MSG("double entry for %s",_name); //Message file might be loaded before default text messages
 			return;
 		}
 	}
@@ -53,7 +54,8 @@ void MSG_Add(const char * _name, const char* _val) {
 	Lang.push_back(MessageBlock(_name,_val));
 }
 
-void MSG_Replace(const char * _name, const char* _val) {
+void MSG_Replace(const char * _name, const char* _val)
+{
 	/* Find the message */
 	for(itmb tel=Lang.begin();tel!=Lang.end();tel++) {
 		if((*tel).name==_name) { 
@@ -65,10 +67,11 @@ void MSG_Replace(const char * _name, const char* _val) {
 	Lang.push_back(MessageBlock(_name,_val));
 }
 
-static void LoadMessageFile(const char * fname) {
+static void LoadMessageFile(const char * fname)
+{
 	if (!fname) return;
 	if(*fname=='\0') return;//empty string=no languagefile
-	FILE * mfile=fopen(fname,"rt");
+	DBFILE* mfile= dbfopen(fname,"rt");
 	/* This should never happen and since other modules depend on this use a normal printf */
 	if (!mfile) {
 		E_Exit("MSG:Can't load messages: %s",fname);
@@ -78,7 +81,7 @@ static void LoadMessageFile(const char * fname) {
 	char string[LINE_IN_MAXLEN*10];
 	/* Start out with empty strings */
 	name[0]=0;string[0]=0;
-	while(fgets(linein, LINE_IN_MAXLEN, mfile)!=0) {
+	while (dbfgets(linein, LINE_IN_MAXLEN, mfile)!=0) {
 		/* Parse the read line */
 		/* First remove characters 10 and 13 from the line */
 		char * parser=linein;
@@ -94,7 +97,7 @@ static void LoadMessageFile(const char * fname) {
 		if (linein[0]==':') {
 			string[0]=0;
 			strcpy(name,linein+1);
-		/* End of string marker */
+			/* End of string marker */
 		} else if (linein[0]=='.') {
 			/* Replace/Add the string to the internal languagefile */
 			/* Remove last newline (marker is \n.\n) */
@@ -102,15 +105,15 @@ static void LoadMessageFile(const char * fname) {
 			if(ll && string[ll - 1] == '\n') string[ll - 1] = 0; //Second if should not be needed, but better be safe.
 			MSG_Replace(name,string);
 		} else {
-		/* Normal string to be added */
+			/* Normal string to be added */
 			strcat(string,linein);
 			strcat(string,"\n");
 		}
-	}
-	fclose(mfile);
+	} dbfclose(mfile);
 }
 
-const char * MSG_Get(char const * msg) {
+const char * MSG_Get(char const * msg)
+{
 	for(itmb tel=Lang.begin();tel!=Lang.end();tel++){	
 		if((*tel).name==msg)
 		{
@@ -121,17 +124,18 @@ const char * MSG_Get(char const * msg) {
 }
 
 
-bool MSG_Write(const char * location) {
-	FILE* out=fopen(location,"w+t");
+bool MSG_Write(const char * location)
+{
+	DBFILE* out= dbfopen(location,"w+t");
 	if(out==NULL) return false;//maybe an error?
-	for(itmb tel=Lang.begin();tel!=Lang.end();tel++){
-		fprintf(out,":%s\n%s\n.\n",(*tel).name.c_str(),(*tel).val.c_str());
-	}
-	fclose(out);
+	for(itmb tel=Lang.begin();tel!=Lang.end();tel++)
+		dbfprintf(out,":%s\n%s\n.\n",(*tel).name.c_str(),(*tel).val.c_str());
+	dbfclose(out);
 	return true;
 }
 
-void MSG_Init(Section_prop * section) {
+void MSG_Init(Section_prop * section)
+{
 	std::string file_name;
 	if (control->cmdline->FindString("-lang",file_name,true)) {
 		LoadMessageFile(file_name.c_str());

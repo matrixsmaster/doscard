@@ -27,7 +27,7 @@ LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.o))
-LIB_OBJS += render.o xsmain.o dosbox.o
+LIB_OBJS += render.o xsmain.o xsfio.o dosbox.o
 
 
 all:	$(LIB_OBJS)

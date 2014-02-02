@@ -98,7 +98,7 @@ typedef char *(* MODULE_StartHandler)(MODULE_FindHandler find_handler);
 #define MODULE_START_PROC "ModuleStart"
 
 #ifdef MODULE_START_FUNCTION
-#include <stdio.h>
+//#include <stdio.h>
 
 #define GET_FUNCTION(a)													\
 	if (!find_handler(#a ,(void * *) &a)) {								\

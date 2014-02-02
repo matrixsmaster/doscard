@@ -24,7 +24,7 @@
 #include "dosbox.h"
 #endif
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string>

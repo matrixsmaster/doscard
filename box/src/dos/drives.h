@@ -51,7 +51,7 @@ class localDrive : public DOS_Drive {
 public:
 	localDrive(const char * startdir,Bit16u _bytes_sector,Bit8u _sectors_cluster,Bit16u _total_clusters,Bit16u _free_clusters,Bit8u _mediaid);
 	virtual bool FileOpen(DOS_File * * file,char * name,Bit32u flags);
-	virtual FILE *GetSystemFilePtr(char const * const name, char const * const type);
+	virtual DBFILE*GetSystemFilePtr(char const * const name, char const * const type);
 	virtual bool GetSystemFilename(char* sysName, char const * const dosName);
 	virtual bool FileCreate(DOS_File * * file,char * name,Bit16u attributes);
 	virtual bool FileUnlink(char * name);

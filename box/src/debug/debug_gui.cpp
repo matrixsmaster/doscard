@@ -44,7 +44,7 @@ static list<string> logBuff;
 static list<string>::iterator logBuffPos = logBuff.end();
 
 static _LogGroup loggrp[LOG_MAX]={{"",true},{0,false}};
-static FILE* debuglog;
+static DBFILE* debuglog;
 
 extern int old_cursor_state;
 
@@ -195,13 +195,13 @@ static void MakePairs(void) {
 	init_pair(PAIR_GREY_RED, COLOR_WHITE/*| FOREGROUND_INTENSITY */, COLOR_RED);
 }
 static void LOG_Destroy(Section*) {
-	if(debuglog) fclose(debuglog);
+	if(debuglog) dbfclose(debuglog);
 }
 
 static void LOG_Init(Section * sec) {
 	Section_prop * sect=static_cast<Section_prop *>(sec);
 	const char * blah=sect->Get_string("logfile");
-	if(blah && blah[0] &&(debuglog = fopen(blah,"wt+"))){
+	if(blah && blah[0] &&(debuglog = dbfopen(blah,"wt+"))){
 	}else{
 		debuglog=0;
 	}

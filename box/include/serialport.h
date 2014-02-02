@@ -126,7 +126,7 @@ class CSerial {
 public:
 
 #if SERIAL_DEBUG
-	FILE * debugfp;
+	DBFILE*  debugfp;
 	bool dbg_modemcontrol; // RTS,CTS,DTR,DSR,RI,CD
 	bool dbg_serialtraffic;
 	bool dbg_register;

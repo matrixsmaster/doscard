@@ -141,7 +141,7 @@ class Capture {
 	Bit8u delayShift8;
 	RawHeader header;
 
-	FILE*	handle;				//File used for writing
+ DBFILE*	handle;				//File used for writing
 	Bit32u	startTicks;			//Start used to check total raw length on end
 	Bit32u	lastTicks;			//Last ticks when last last cmd was added
 	Bit8u	buf[1024];	//16 added for delay commands and what not
@@ -190,8 +190,7 @@ class Capture {
 		delayShift8 = RawUsed+1; 
 	}
 
-	void ClearBuf( void ) {
-		fwrite( buf, 1, bufUsed, handle );
+	void ClearBuf( void ) { dbfwrite( buf, 1, bufUsed, handle );
 		header.commands += bufUsed / 2;
 		bufUsed = 0;
 	}
@@ -258,9 +257,7 @@ class Capture {
 			var_write( &header.versionLow, header.versionLow );
 			var_write( &header.commands, header.commands );
 			var_write( &header.milliseconds, header.milliseconds );
-			fseek( handle, 0, SEEK_SET );
-			fwrite( &header, 1, sizeof( header ), handle );
-			fclose( handle );
+ dbfseek( handle, 0, SEEK_SET ); dbfwrite( &header, 1, sizeof( header ), handle ); dbfclose( handle );
 			handle = 0;
 		}
 	}
@@ -321,10 +318,8 @@ skipWrite:
 		if (!handle)
 			return false;
 		InitHeader();
-		//Prepare space at start of the file for the header
-		fwrite( &header, 1, sizeof(header), handle );
-		/* write the Raw To Reg table */
-		fwrite( &ToReg, 1, RawUsed, handle );
+		//Prepare space at start of the file for the header dbfwrite( &header, 1, sizeof(header), handle );
+		/* write the Raw To Reg table */ dbfwrite( &ToReg, 1, RawUsed, handle );
 		/* Write the cache of last commands */
 		WriteCache( );
 		/* Write the command that triggered this */

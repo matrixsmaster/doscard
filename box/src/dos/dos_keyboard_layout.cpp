@@ -37,7 +37,7 @@
 #endif
 
 
-static FILE* OpenDosboxFile(const char* name) {
+static DBFILE* OpenDosboxFile(const char* name) {
 	Bit8u drive;
 	char fullname[DOS_PATHLENGTH];
 
@@ -48,13 +48,13 @@ static FILE* OpenDosboxFile(const char* name) {
 			// try to open file on mounted drive first
 			ldp=dynamic_cast<localDrive*>(Drives[drive]);
 			if (ldp) {
-				FILE *tmpfile=ldp->GetSystemFilePtr(fullname, "rb");
+ DBFILE*tmpfile=ldp->GetSystemFilePtr(fullname, "rb");
 				if (tmpfile != NULL) return tmpfile;
 			}
 		}
 		catch(...) {}
 	}
-	FILE *tmpfile=fopen(name, "rb");
+ DBFILE*tmpfile= dbfopen(name, "rb");
 	return tmpfile;
 }
 
@@ -149,46 +149,42 @@ void keyboard_layout::read_keyboard_file(Bit32s specific_layout) {
 }
 
 static Bit32u read_kcl_file(const char* kcl_file_name, const char* layout_id, bool first_id_only) {
-	FILE* tempfile = OpenDosboxFile(kcl_file_name);
+ DBFILE* tempfile = OpenDosboxFile(kcl_file_name);
 	if (tempfile==0) return 0;
 
 	static Bit8u rbuf[8192];
 
 	// check ID-bytes of file
-	Bit32u dr=(Bit32u)fread(rbuf, sizeof(Bit8u), 7, tempfile);
-	if ((dr<7) || (rbuf[0]!=0x4b) || (rbuf[1]!=0x43) || (rbuf[2]!=0x46)) {
-		fclose(tempfile);
+	Bit32u dr=(Bit32u) dbfread(rbuf, sizeof(Bit8u), 7, tempfile);
+	if ((dr<7) || (rbuf[0]!=0x4b) || (rbuf[1]!=0x43) || (rbuf[2]!=0x46)) { dbfclose(tempfile);
 		return 0;
 	}
 
-	fseek(tempfile, 7+rbuf[6], SEEK_SET);
+ dbfseek(tempfile, 7+rbuf[6], SEEK_SET);
 
 	for (;;) {
-		Bit32u cur_pos=(Bit32u)(ftell(tempfile));
-		dr=(Bit32u)fread(rbuf, sizeof(Bit8u), 5, tempfile);
+		Bit32u cur_pos=(Bit32u)( dbftell(tempfile));
+		dr=(Bit32u) dbfread(rbuf, sizeof(Bit8u), 5, tempfile);
 		if (dr<5) break;
 		Bit16u len=host_readw(&rbuf[0]);
 
 		Bit8u data_len=rbuf[2];
 
 		char lng_codes[258];
-		fseek(tempfile, -2, SEEK_CUR);
+ dbfseek(tempfile, -2, SEEK_CUR);
 		// get all language codes for this layout
-		for (Bitu i=0; i<data_len;) {
-			fread(rbuf, sizeof(Bit8u), 2, tempfile);
+		for (Bitu i=0; i<data_len;) { dbfread(rbuf, sizeof(Bit8u), 2, tempfile);
 			Bit16u lcnum=host_readw(&rbuf[0]);
 			i+=2;
 			Bitu lcpos=0;
-			for (;i<data_len;) {
-				fread(rbuf, sizeof(Bit8u), 1, tempfile);
+			for (;i<data_len;) { dbfread(rbuf, sizeof(Bit8u), 1, tempfile);
 				i++;
 				if (((char)rbuf[0])==',') break;
 				lng_codes[lcpos++]=(char)rbuf[0];
 			}
 			lng_codes[lcpos]=0;
 			if (strcasecmp(lng_codes, layout_id)==0) {
-				// language ID found in file, return file position
-				fclose(tempfile);
+				// language ID found in file, return file position dbfclose(tempfile);
 				return cur_pos;
 			}
 			if (first_id_only) break;
@@ -200,10 +196,8 @@ static Bit32u read_kcl_file(const char* kcl_file_name, const char* layout_id, bo
 				}
 			}
 		}
-		fseek(tempfile, cur_pos+3+len, SEEK_SET);
-	}
-
-	fclose(tempfile);
+ dbfseek(tempfile, cur_pos+3+len, SEEK_SET);
+	} dbfclose(tempfile);
 	return 0;
 }
 
@@ -269,7 +263,7 @@ Bitu keyboard_layout::read_keyboard_file(const char* keyboard_file_name, Bit32s 
 	char nbuf[512];
 	read_buf_size = 0;
 	sprintf(nbuf, "%s.kl", keyboard_file_name);
-	FILE* tempfile = OpenDosboxFile(nbuf);
+ DBFILE* tempfile = OpenDosboxFile(nbuf);
 	if (tempfile==NULL) {
 		// try keyboard layout libraries next
 		if ((start_pos=read_kcl_file("keyboard.sys",keyboard_file_name,true))) {
@@ -307,22 +301,20 @@ Bitu keyboard_layout::read_keyboard_file(const char* keyboard_file_name, Bit32s 
 			return KEYB_FILENOTFOUND;
 		}
 		if (tempfile) {
-			fseek(tempfile, start_pos+2, SEEK_SET);
-			read_buf_size=(Bit32u)fread(read_buf, sizeof(Bit8u), 65535, tempfile);
-			fclose(tempfile);
+ dbfseek(tempfile, start_pos+2, SEEK_SET);
+			read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
 		}
 		start_pos=0;
 	} else {
 		// check ID-bytes of file
-		Bit32u dr=(Bit32u)fread(read_buf, sizeof(Bit8u), 4, tempfile);
+		Bit32u dr=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 4, tempfile);
 		if ((dr<4) || (read_buf[0]!=0x4b) || (read_buf[1]!=0x4c) || (read_buf[2]!=0x46)) {
 			LOG(LOG_BIOS,LOG_ERROR)("Invalid keyboard layout file %s",keyboard_file_name);
 			return KEYB_INVALIDFILE;
 		}
 		
-		fseek(tempfile, 0, SEEK_SET);
-		read_buf_size=(Bit32u)fread(read_buf, sizeof(Bit8u), 65535, tempfile);
-		fclose(tempfile);
+ dbfseek(tempfile, 0, SEEK_SET);
+		read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
 	}
 
 	Bit8u data_len,submappings;
@@ -621,7 +613,7 @@ Bit16u keyboard_layout::extract_codepage(const char* keyboard_file_name) {
 
 	char nbuf[512];
 	sprintf(nbuf, "%s.kl", keyboard_file_name);
-	FILE* tempfile = OpenDosboxFile(nbuf);
+ DBFILE* tempfile = OpenDosboxFile(nbuf);
 	if (tempfile==NULL) {
 		// try keyboard layout libraries next
 		if ((start_pos=read_kcl_file("keyboard.sys",keyboard_file_name,true))) {
@@ -660,22 +652,20 @@ Bit16u keyboard_layout::extract_codepage(const char* keyboard_file_name) {
 			return 437;
 		}
 		if (tempfile) {
-			fseek(tempfile, start_pos+2, SEEK_SET);
-			read_buf_size=(Bit32u)fread(read_buf, sizeof(Bit8u), 65535, tempfile);
-			fclose(tempfile);
+ dbfseek(tempfile, start_pos+2, SEEK_SET);
+			read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
 		}
 		start_pos=0;
 	} else {
 		// check ID-bytes of file
-		Bit32u dr=(Bit32u)fread(read_buf, sizeof(Bit8u), 4, tempfile);
+		Bit32u dr=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 4, tempfile);
 		if ((dr<4) || (read_buf[0]!=0x4b) || (read_buf[1]!=0x4c) || (read_buf[2]!=0x46)) {
 			LOG(LOG_BIOS,LOG_ERROR)("Invalid keyboard layout file %s",keyboard_file_name);
 			return 437;
 		}
 
-		fseek(tempfile, 0, SEEK_SET);
-		read_buf_size=(Bit32u)fread(read_buf, sizeof(Bit8u), 65535, tempfile);
-		fclose(tempfile);
+ dbfseek(tempfile, 0, SEEK_SET);
+		read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
 	}
 
 	Bit8u data_len,submappings;
@@ -738,7 +728,7 @@ Bitu keyboard_layout::read_codepage_file(const char* codepage_file_name, Bit32s 
 
 	char nbuf[512];
 	sprintf(nbuf, "%s", cp_filename);
-	FILE* tempfile=OpenDosboxFile(nbuf);
+ DBFILE* tempfile=OpenDosboxFile(nbuf);
 	if (tempfile==NULL) {
 		size_t strsz=strlen(nbuf);
 		if (strsz) {
@@ -782,7 +772,7 @@ Bitu keyboard_layout::read_codepage_file(const char* codepage_file_name, Bit32s 
 		found_at_pos=0x29;
 		size_of_cpxdata=cpi_buf_size;
 	} else {
-		Bit32u dr=(Bit32u)fread(cpi_buf, sizeof(Bit8u), 5, tempfile);
+		Bit32u dr=(Bit32u) dbfread(cpi_buf, sizeof(Bit8u), 5, tempfile);
 		// check if file is valid
 		if (dr<5) {
 			LOG(LOG_BIOS,LOG_ERROR)("Codepage file %s invalid",cp_filename);
@@ -799,17 +789,12 @@ Bitu keyboard_layout::read_codepage_file(const char* codepage_file_name, Bit32s 
 			}
 			// check if compressed cpi file
 			Bit8u next_byte=0;
-			for (Bitu i=0; i<100; i++) {
-				fread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
-				while (next_byte==0x55) {
-					fread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
-					if (next_byte==0x50) {
-						fread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
-						if (next_byte==0x58) {
-							fread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
+			for (Bitu i=0; i<100; i++) { dbfread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
+				while (next_byte==0x55) { dbfread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
+					if (next_byte==0x50) { dbfread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
+						if (next_byte==0x58) { dbfread(&next_byte, sizeof(Bit8u), 1, tempfile);	found_at_pos++;
 							if (next_byte==0x21) {
-								// read version ID
-								fread(&next_byte, sizeof(Bit8u), 1, tempfile);
+								// read version ID dbfread(&next_byte, sizeof(Bit8u), 1, tempfile);
 								found_at_pos++;
 								upxfound=true;
 								break;
@@ -826,13 +811,13 @@ Bitu keyboard_layout::read_codepage_file(const char* codepage_file_name, Bit32s 
 				if (next_byte<10) E_Exit("UPX-compressed cpi file, but upx-version too old");
 
 				// read in compressed CPX-file
-				fseek(tempfile, 0, SEEK_SET);
-				size_of_cpxdata=(Bitu)fread(cpi_buf, sizeof(Bit8u), 65536, tempfile);
+ dbfseek(tempfile, 0, SEEK_SET);
+				size_of_cpxdata=(Bitu) dbfread(cpi_buf, sizeof(Bit8u), 65536, tempfile);
 			}
 		} else {
 			// standard uncompressed cpi-file
-			fseek(tempfile, 0, SEEK_SET);
-			cpi_buf_size=(Bit32u)fread(cpi_buf, sizeof(Bit8u), 65536, tempfile);
+ dbfseek(tempfile, 0, SEEK_SET);
+			cpi_buf_size=(Bit32u) dbfread(cpi_buf, sizeof(Bit8u), 65536, tempfile);
 		}
 	}
 
