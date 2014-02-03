@@ -91,11 +91,14 @@ void GFX_SetPalette(Bitu start,Bitu count,GFX_PalEntry * entries)
 
 static void GUI_StartUp(Section * sec)
 {
-
 }
 
 void GFX_Events()
 {
+	LDB_UIEvent evt;
+	while ((*libdosbox_callbacks[DBCB_PullUIEvents])(&evt,sizeof(LDB_UIEvent))) {
+		//
+	}
 }
 
 void GFX_ShowMsg(char const* format,...)

@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <vector>
 #include "xshell.h"
 #include "xsupport.h"
 
@@ -37,6 +38,8 @@
  * write it now :)
  */
 
+using namespace std;
+
 static SDL_Window *wnd = NULL;
 static SDL_Renderer *ren = NULL;
 static struct timespec* clkres = NULL;
@@ -49,6 +52,7 @@ static uint32_t* framebuf = NULL;
 static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
 static SDL_mutex* frame_mutex = NULL;
+static vector<LDB_UIEvent> evt_fifo;
 
 static void XS_DrawFrame();
 
@@ -131,7 +135,7 @@ int XS_QueryUIEvents(void* buf, size_t len)
 #ifdef XSHELL_VERBOSE
 	xnfo(0,4,"len=%d",len);
 #endif
-	return 0;
+	return (evt_fifo.size());
 }
 
 int XS_GetTicks(void* buf, size_t len)

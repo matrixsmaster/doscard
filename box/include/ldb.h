@@ -47,6 +47,14 @@ typedef int (*LDB_CallbackFunc)(void*,size_t);
 int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
+enum LDB_UIEventE {
+	LDB_UIE_QUIT = 0
+};
+
+typedef struct {
+	LDB_UIEventE t;
+} LDB_UIEvent;
+
 typedef struct {
 	char* name;
 #ifdef LDB_EMBEDDED
