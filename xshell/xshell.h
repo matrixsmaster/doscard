@@ -21,12 +21,17 @@
 
 #include <string.h>
 #include <inttypes.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
 #include "SDL2/include/SDL.h"
 #include "ldb.h"
+
+#ifdef LDB_EMBEDDED
+#error LDB_EMBEDDED is defined
+#endif
 
 #define XSHELL_CAPTION "DOSCARD XShell"
 #define XSHELL_DEF_WND_W 640
@@ -37,5 +42,6 @@ int XS_UpdateSoundBuffer(void* buf, size_t len);
 int XS_QueryUIEvents(void* buf, size_t len);
 int XS_GetTicks(void* buf, size_t len);
 int XS_Message(void* buf, size_t len);
+int XS_FIO(void* buf, size_t len);
 
 #endif /* XSHELL_H_ */

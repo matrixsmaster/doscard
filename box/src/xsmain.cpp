@@ -103,7 +103,7 @@ void GFX_ShowMsg(char const* format,...)
 	char buf[512];
 	va_list msg;
 	va_start(msg,format);
-	vsprintf(buf,format,msg);
+	vsnprintf(buf,511,format,msg);
 	va_end(msg);
 	(*libdosbox_callbacks[DBCB_PushMessage])(buf,sizeof(buf));
 }

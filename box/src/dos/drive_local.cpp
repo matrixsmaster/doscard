@@ -136,8 +136,7 @@ DBFILE* localDrive::GetSystemFilePtr(char const * const name, char const * const
 	strcat(newname,name);
 	CROSS_FILENAME(newname);
 	dirCache.ExpandName(newname);
-
-	return dbfopen(newname,type);
+	return (dbfopen(newname,type));
 }
 
 bool localDrive::GetSystemFilename(char *sysName, char const * const dosName) {

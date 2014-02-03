@@ -23,6 +23,12 @@
 #ifndef DOSBOX_LIBDOSBOX_H_
 #define DOSBOX_LIBDOSBOX_H_
 
+//#define LDB_EMBEDDED
+
+#ifndef LDB_EMBEDDED
+#include <stdio.h>
+#endif
+
 #define DISPLAY_INIT_SIGNATURE 0xFFABCD00
 #define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
 
@@ -31,9 +37,10 @@ enum LDB_CallbackType {
 	DBCB_PushScreen = 1,
 	DBCB_PushSound = 2,
 	DBCB_PullUIEvents = 3,
-	DBCB_PushMessage = 4
+	DBCB_PushMessage = 4,
+	DBCB_FileIOReq = 5
 };
-#define LDB_CALLBACKSQ 5
+#define LDB_CALLBACKSQ 6
 
 typedef int (*LDB_CallbackFunc)(void*,size_t);
 
@@ -41,19 +48,36 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
 typedef struct {
+	char* name;
+#ifdef LDB_EMBEDDED
 	uint8_t hand;
+	uint8_t op;
+#else
+	char* op;
+	FILE* rf;
+#endif
+	int16_t todo;
+	uint32_t p_x,p_y;
+	void* buf;
 } DBFILE;
+
+#define LDB_FOP_NEW 0x80
+#define LDB_FOP_READ 0x01
+#define LDB_FOP_WRITE 0x02
+#define LDB_FOP_BEGIN 0x04
+#define LDB_FOP_WRAPP 0x08
+#define LDB_FOP_TRUNC 0x10
 
 DBFILE* dbfopen(const char* p, const char* m);
 void dbfclose(DBFILE* f);
-size_t dbfread(void* p, size_t sz, size_t q, DBFILE* f);
-size_t dbfwrite(const void* p, size_t sz, size_t q, DBFILE* f);
-uint32_t dbfseek(DBFILE* f, uint64_t off, int wh);
+uint32_t dbfread(void* p, uint32_t sz, uint32_t q, DBFILE* f);
+uint32_t dbfwrite(const void* p, uint32_t sz, uint32_t q, DBFILE* f);
+int32_t dbfseek(DBFILE* f, uint64_t off, int32_t wh);
 uint64_t dbftell(DBFILE* f);
-int dbfileno(DBFILE* f);
-int dbfeof(DBFILE* f);
-int dbftruncate(DBFILE* f, off_t len);
-char *dbfgets(char *s, int n, DBFILE *f);
-int dbfprintf(DBFILE *f, const char *fmt, ...);
+//int dbfileno(DBFILE* f);
+int32_t dbfeof(DBFILE* f);
+int32_t dbftruncate(DBFILE* f, int64_t len);
+//char *dbfgets(char *s, int n, DBFILE *f);
+int32_t dbfprintf(DBFILE *f, const char *fmt, ...);
 
 #endif

@@ -25,12 +25,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define XS_CONTEXT_COUNT 12
+#define XS_CONTEXT_COUNT 13
 static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
 		"Undefined context","XSHELL MAIN","XS_UpdateScreenBuffer",
 		"XS_UpdateSoundBuffer","XS_QueryUIEvents","XS_GetTicks",
 		"XS_ldb_register","XS_SDLInit","XS_SDLKill","XS_SDLoop",
-		"XS_Message"
+		"XS_Message","XS_FIO"
 };
 
 /*

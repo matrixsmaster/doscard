@@ -69,6 +69,8 @@ void MSG_Replace(const char * _name, const char* _val)
 
 static void LoadMessageFile(const char * fname)
 {
+	LOG_MSG("LoadMessageFile(): STUB");
+#if 0
 	if (!fname) return;
 	if(*fname=='\0') return;//empty string=no languagefile
 	DBFILE* mfile= dbfopen(fname,"rt");
@@ -109,7 +111,9 @@ static void LoadMessageFile(const char * fname)
 			strcat(string,linein);
 			strcat(string,"\n");
 		}
-	} dbfclose(mfile);
+	}
+	dbfclose(mfile);
+#endif
 }
 
 const char * MSG_Get(char const * msg)

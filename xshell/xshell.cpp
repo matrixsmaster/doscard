@@ -170,6 +170,7 @@ static void XS_ldb_register()
 	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
 	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
 	Dosbox_RegisterCallback(DBCB_PushMessage,&XS_Message);
+	Dosbox_RegisterCallback(DBCB_FileIOReq,&XS_FIO);
 #ifdef XSHELL_VERBOSE
 	xnfo(0,6,"finished");
 #endif
@@ -251,6 +252,64 @@ int XS_Message(void* buf, size_t len)
 	xnfo(0,10,"len=%d",len);
 #endif
 	if (buf && len) xnfo(0,10,"%s",buf);
+	return 0;
+}
+
+int XS_FIO(void* buf, size_t len)
+{
+#ifdef XSHELL_VERBOSE
+	xnfo(0,11,"len=%d",len);
+#endif
+	if ((!buf) || (len < sizeof(DBFILE))) return -1;
+	DBFILE* f = reinterpret_cast<DBFILE*>(buf);
+	if ((f->todo) && (!f->rf)) return -1;
+	uint64_t* x;
+	int64_t* sx;
+#ifdef XSHELL_VERBOSE
+	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
+			f->name,f->todo,f->p_x,f->p_y,f->buf);
+#endif
+	switch (f->todo) {
+	case 0:
+		//open
+		f->rf = fopen(f->name,f->op);
+		break;
+	case 1:
+		//close
+		if (f->rf) fclose(f->rf);
+		break;
+	case 2:
+		//fread
+		return (fread(f->buf,f->p_x,f->p_y,f->rf));
+	case 3:
+		//fwrite
+		return (fwrite(f->buf,f->p_x,f->p_y,f->rf));
+	case 4:
+		//fseek
+		if (f->p_y != 8) return -1;
+		x = reinterpret_cast<uint64_t*>(f->buf);
+		return (fseek(f->rf,*x,f->p_x));
+	case 5:
+		//ftell
+		if (f->p_y != 8) return 0;
+		x = reinterpret_cast<uint64_t*>(f->buf);
+		*x = ftell(f->rf);
+		break;
+	case 6:
+		//feof
+		return (feof(f->rf));
+	case 7:
+		//ftruncate
+		if (f->p_y != 8) return -1;
+		sx = reinterpret_cast<int64_t*>(f->buf);
+		return (ftruncate(fileno(f->rf),*sx));
+	default:
+		xnfo(1,11,"Unknown operation %d for file '%s'",f->todo,f->name);
+		return -1;
+	}
+#ifdef XSHELL_VERBOSE
+	xnfo(0,11,"default return");
+#endif
 	return 0;
 }
 
