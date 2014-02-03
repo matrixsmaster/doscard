@@ -16,22 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <limits>
+#include <stdio.h>
 #include <sstream>
-#include <vector>
-#include <sys/stat.h>
-#include <libgen.h>
 #include "cdrom.h"
 #include "drives.h"
 #include "support.h"
 #include "setup.h"
-
 
 using namespace std;
 
@@ -40,28 +30,42 @@ using namespace std;
 
 CDROM_Interface_Image::BinaryFile::BinaryFile(const char *filename, bool &error)
 {
+	/*
 	file = new ifstream(filename, ios::in | ios::binary);
 	error = (file == NULL) || (file->fail());
+	*/
+	file = dbfopen(filename,"rb");
+	error = (file == NULL);
 }
 
 CDROM_Interface_Image::BinaryFile::~BinaryFile()
 {
-	delete file;
+//	delete file;
+	dbfclose(file);
 }
 
 bool CDROM_Interface_Image::BinaryFile::read(Bit8u *buffer, int seek, int count)
 {
+	/*
 	file->seekg(seek, ios::beg);
 	file->read((char*)buffer, count);
 	return !(file->fail());
+	*/
+	dbfseek(file,seek,SEEK_SET);
+	return (dbfread(buffer,count,1,file) > 0);
 }
 
 int CDROM_Interface_Image::BinaryFile::getLength()
 {
+	/*
 	file->seekg(0, ios::end);
 	int length = (int)file->tellg();
 	if (file->fail()) return -1;
 	return length;
+	*/
+	dbfseek(file,0,SEEK_END);
+	int l = static_cast<int>(dbftell(file));
+	return l;
 }
 
 #if defined(C_SDL_SOUND)
@@ -444,15 +448,17 @@ bool CDROM_Interface_Image::LoadCueSheet(char *cuefile)
 	char tmp[MAX_FILENAME_LENGTH];	// dirname can change its argument
 	safe_strncpy(tmp, cuefile, MAX_FILENAME_LENGTH);
 	string pathname(dirname(tmp));
-	ifstream in;
-	in.open(cuefile, ios::in);
-	if (in.fail()) return false;
+//	ifstream in;
+//	in.open(cuefile, ios::in);
+	DBFILE* in = dbfopen(cuefile,"r");
+//	if (in.fail()) return false;
 	
-	while(!in.eof()) {
+	while (!dbfeof(in)) {
 		// get next line
 		char buf[MAX_LINE_LENGTH];
-		in.getline(buf, MAX_LINE_LENGTH);
-		if (in.fail() && !in.eof()) return false;  // probably a binary file
+//		in.getline(buf, MAX_LINE_LENGTH);
+		int r = dbfngetl(buf,MAX_LINE_LENGTH,in);
+		if (r < 1) goto lcs_errout;  // probably a binary file
 		istringstream line(buf);
 		
 		string command;
@@ -550,10 +556,10 @@ bool CDROM_Interface_Image::LoadCueSheet(char *cuefile)
 		// failure
 		else success = false;
 
-		if (!success) return false;
+		if (!success) goto lcs_errout;
 	}
 	// add last track
-	if (!AddTrack(track, shift, prestart, totalPregap, currPregap)) return false;
+	if (!AddTrack(track, shift, prestart, totalPregap, currPregap)) goto lcs_errout;
 	
 	// add leadout track
 	track.number++;
@@ -561,9 +567,12 @@ bool CDROM_Interface_Image::LoadCueSheet(char *cuefile)
 	track.start = 0;
 	track.length = 0;
 	track.file = NULL;
-	if(!AddTrack(track, shift, 0, totalPregap, 0)) return false;
+	if(!AddTrack(track, shift, 0, totalPregap, 0)) goto lcs_errout;
 
 	return true;
+lcs_errout:
+	dbfclose(in);
+	return false;
 }
 
 bool CDROM_Interface_Image::AddTrack(Track &curr, int &shift, int prestart, int &totalPregap, int currPregap)
@@ -680,7 +689,7 @@ bool CDROM_Interface_Image::GetRealFileName(string &filename, string &pathname)
 	return false;
 }
 
-bool CDROM_Interface_Image::GetCueKeyword(string &keyword, istream &in)
+bool CDROM_Interface_Image::GetCueKeyword(string &keyword, std::istringstream &in)
 {
 	in >> keyword;
 	for(Bitu i = 0; i < keyword.size(); i++) keyword[i] = toupper(keyword[i]);
@@ -688,7 +697,7 @@ bool CDROM_Interface_Image::GetCueKeyword(string &keyword, istream &in)
 	return true;
 }
 
-bool CDROM_Interface_Image::GetCueFrame(int &frames, istream &in)
+bool CDROM_Interface_Image::GetCueFrame(int &frames, std::istringstream &in)
 {
 	string msf;
 	in >> msf;
@@ -699,7 +708,7 @@ bool CDROM_Interface_Image::GetCueFrame(int &frames, istream &in)
 	return success;
 }
 
-bool CDROM_Interface_Image::GetCueString(string &str, istream &in)
+bool CDROM_Interface_Image::GetCueString(string &str, std::istringstream &in)
 {
 	int pos = (int)in.tellg();
 	in >> str;

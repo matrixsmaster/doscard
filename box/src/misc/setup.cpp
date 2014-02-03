@@ -16,19 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <string>
+#include <list>
+#include <stdlib.h>
+#include <limits>
+#include <limits.h>
+#include <sstream>
 #include "dosbox.h"
 #include "cross.h"
 #include "setup.h"
 #include "control.h"
 #include "support.h"
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <list>
-#include <stdlib.h>
-#include <limits>
-#include <limits.h>
 #include "ldb.h"
 
 using namespace std;
@@ -789,7 +787,10 @@ Section* Config::GetSectionFromProperty(char const * const prop) const{
 }
 
 
-bool Config::ParseConfigFile(char const * const configfilename){
+bool Config::ParseConfigFile(char const * const configfilename)
+{
+	return false;
+#if 0
 	//static bool first_configfile = true;
 	ifstream in(configfilename);
 	if (!in) return false;
@@ -844,6 +845,7 @@ bool Config::ParseConfigFile(char const * const configfilename){
 	}
 	current_config_dir.clear();//So internal changes don't use the path information
 	return true;
+#endif
 }
 
 /*const char* Config::GetPrimaryConfigFile() {

@@ -16,36 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <vector>
+#include <list>
+#include <string>
 
 #ifndef DOSBOX_SETUP_H
 #define DOSBOX_SETUP_H
-
-#ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
-#pragma warning ( disable : 4290 )
-#endif
-
-
-#ifndef CH_LIST
-#define CH_LIST
-#include <list>
-#endif
-
-#ifndef CH_VECTOR
-#define CH_VECTOR
-#include <vector>
-#endif
-
-#ifndef CH_STRING
-#define CH_STRING
-#include <string>
-#endif
-
-#ifndef CH_CSTDIO
-#define CH_CSTDIO
-#include <cstdio>
-#endif
-
 
 class Hex {
 private:

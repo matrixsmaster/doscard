@@ -24,14 +24,19 @@
 
 #include <string.h>
 #include <string>
-#include <iostream>
 #include <vector>
-#include <fstream>
-#include <sstream>
+#include <cctype>
+#include <cmath>
+#include <limits>
+#include <vector>
+//#include <sstream>
+#include <sys/stat.h>
+#include <libgen.h>
 #include "dosbox.h"
 #include "mem.h"
 #include "mixer.h"
 #include "fake_threading.h"
+#include "ldb.h"
 
 
 #define RAW_SECTOR_SIZE		2352
@@ -127,7 +132,7 @@ private:
 		int getLength();
 	private:
 		BinaryFile();
-		std::ifstream *file;
+		DBFILE* file;
 	};
 	
 	#if defined(C_SDL_SOUND)
@@ -203,9 +208,9 @@ static  struct imagePlayer {
 	// cue sheet processing
 	bool	LoadCueSheet(char *cuefile);
 	bool	GetRealFileName(std::string& filename, std::string& pathname);
-	bool	GetCueKeyword(std::string &keyword, std::istream &in);
-	bool	GetCueFrame(int &frames, std::istream &in);
-	bool	GetCueString(std::string &str, std::istream &in);
+	bool	GetCueKeyword(std::string &keyword, std::istringstream &in);
+	bool	GetCueFrame(int &frames, std::istringstream &in);
+	bool	GetCueString(std::string &str, std::istringstream &in);
 	bool	AddTrack(Track &curr, int &shift, int prestart, int &totalPregap, int currPregap);
 
 static	int	refCount;

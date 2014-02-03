@@ -167,3 +167,19 @@ int32_t dbfprintf(DBFILE *f, const char *fmt, ...)
 	dbfwrite(buf,strlen(buf),1,f);
 	return 0;
 }
+
+int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
+{
+	if ((!f) || (!buf) || (n < 1)) return -1;
+	int cnt = 0;
+	char cc;
+	while (!dbfeof(f)) {
+		if (dbfread(&cc,1,1,f) != 1) return -1;
+		//printable chars + TAB
+		if ((cc == '\t') || ((cc >= 32) && (cc <= 126))) {
+			buf[cnt++] = cc;
+			if (cnt >= n) break;
+		} else break;
+	}
+	return cnt;
+}
