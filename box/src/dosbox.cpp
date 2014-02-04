@@ -59,6 +59,7 @@ static Bit32u ticksAdded;
 Bit32s ticksDone;
 Bit32u ticksScheduled;
 bool ticksLocked;
+
 static Bitu Normal_Loop(void);
 
 void DOSBOX_SetLoop(LoopHandler * handler) { loop=handler; }
@@ -608,7 +609,14 @@ void* Dosbox_Run(void* p)
 	LOG_MSG("Initializing subsystems...");
 	control->Init();
 	LOG_MSG("Startup...");
-	control->StartUp();
+	/*that's really ugly way to control the quit state of VM
+	 * but original Box was written in that way in mind, so...*/
+	try {
+		control->StartUp();
+	}
+	catch (int) {
+		LOG_MSG("Dosbox_Run(): killer exception catch");
+	}
 	LOG_MSG("Dosbox_Run(): Exit");
 	return 0;
 }

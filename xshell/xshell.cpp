@@ -19,6 +19,7 @@
 #include <vector>
 #include "xshell.h"
 #include "xsupport.h"
+#include "xskbd.h"
 
 /*
  * The Basic model:
@@ -53,14 +54,15 @@ static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
 static SDL_mutex* frame_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
+static SDL_mutex* evt_mutex = NULL;
 
 static void XS_DrawFrame();
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
 #ifdef XSHELL_VERBOSE
-	xnfo(0,2,"len=%d",len);
-	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
+//	xnfo(0,2,"len=%d",len);
+//	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
 #endif
 	if (!buf) return -1;
 	uint32_t* dw;
@@ -135,7 +137,16 @@ int XS_QueryUIEvents(void* buf, size_t len)
 #ifdef XSHELL_VERBOSE
 	xnfo(0,4,"len=%d",len);
 #endif
-	return (evt_fifo.size());
+	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
+	if (SDL_LockMutex(evt_mutex)) xnfo(-1,4,"Couldn't lock event buffer mutex!");
+	int r = evt_fifo.size();
+	if (!evt_fifo.empty()) {
+		LDB_UIEvent e = evt_fifo.back();
+		evt_fifo.pop_back();
+		memcpy(buf,&e,sizeof(LDB_UIEvent));
+	}
+	SDL_UnlockMutex(evt_mutex);
+	return r;
 }
 
 int XS_GetTicks(void* buf, size_t len)
@@ -202,6 +213,7 @@ static int XS_SDLInit()
 	SDL_RenderPresent(ren);
 
 	frame_mutex = SDL_CreateMutex();
+	evt_mutex = SDL_CreateMutex();
 
 #ifdef XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
@@ -218,21 +230,45 @@ static void XS_SDLKill()
 	if (wnd) SDL_DestroyWindow(wnd);
 	if (frame_sdl) SDL_DestroyTexture(frame_sdl);
 	if (frame_mutex) SDL_DestroyMutex(frame_mutex);
+	if (evt_mutex) SDL_DestroyMutex(evt_mutex);
 	SDL_Quit();
 }
 
 static void XS_SDLoop()
 {
 	SDL_Event e;
+	LDB_UIEvent mye;
+	int r;
+	bool exit = false;
 	xnfo(0,9,"Loop begins");
-	for(;;) {
-		while (SDL_PollEvent(&e)) {
-			if (e.type == SDL_QUIT) return;
+	while (!exit) {
+		r = SDL_TryLockMutex(evt_mutex);
+		if (r == SDL_MUTEX_TIMEDOUT) goto loop_frame;
+		else if (r) xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
+		while ((!exit) && (SDL_PollEvent(&e))) {
+			memset(&mye,0,sizeof(mye));
+			switch (e.type) {
+			case SDL_QUIT:
+				exit = true;
+				mye.t = LDB_UIE_QUIT;
+				break;
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				break;
+			default: continue;
+			}
+			evt_fifo.insert(evt_fifo.begin(),mye);
+#ifdef XSHELL_VERBOSE
+			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
+#endif
 		}
+		SDL_UnlockMutex(evt_mutex);
+loop_frame:
 		if (framebuf && frame_mutex) {
-			if (SDL_LockMutex(frame_mutex)) xnfo(-1,9,"Couldn't lock frame mutex");
+			r = SDL_TryLockMutex(frame_mutex);
+			if (r == SDL_MUTEX_TIMEDOUT) continue;
+			else if (r) xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
 			if (frame_dirty) {
-
 				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
 				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
 						SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);

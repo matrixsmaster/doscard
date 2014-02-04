@@ -23,6 +23,8 @@
 #ifndef DOSBOX_LIBDOSBOX_H_
 #define DOSBOX_LIBDOSBOX_H_
 
+#include "keyboard.h"
+
 //#define LDB_EMBEDDED
 
 #ifndef LDB_EMBEDDED
@@ -48,12 +50,11 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
 enum LDB_UIEventE {
-	LDB_UIE_QUIT = 0,
-	LDB_UIE_KBD = 1,
-	LDB_UIE_MOUSE = 2
+	LDB_UIE_NONE = 0,
+	LDB_UIE_QUIT = 1,
+	LDB_UIE_KBD = 2,
+	LDB_UIE_MOUSE = 3
 };
-
-
 
 typedef struct {
 	LDB_UIEventE t; 	//event type

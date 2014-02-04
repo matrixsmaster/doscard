@@ -129,7 +129,7 @@ struct SHELL_Cmd {
 
 /* Object to manage lines in the autoexec.bat The lines get removed from
  * the file if the object gets destroyed. The environment is updated
- * as well if the line set a a variable */
+ * as well if the line set a variable */
 class AutoexecObject{
 private:
 	bool installed;

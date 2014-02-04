@@ -102,9 +102,10 @@ void GFX_Events()
 			KEYBOARD_AddKey(evt.key,evt.pressed);
 			break;
 		case LDB_UIE_MOUSE:
+			LOG_MSG("Mouse event: STUB");
 			break;
 		case LDB_UIE_QUIT:
-			break;
+			throw 1;
 		default:
 			LOG_MSG("Unknown event (type %d) received",static_cast<int>(evt.t));
 			break;
