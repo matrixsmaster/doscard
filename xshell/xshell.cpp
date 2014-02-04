@@ -238,36 +238,35 @@ static void XS_SDLoop()
 {
 	SDL_Event e;
 	LDB_UIEvent mye;
-	int r;
-	bool exit = false;
 	xnfo(0,9,"Loop begins");
-	while (!exit) {
-		r = SDL_TryLockMutex(evt_mutex);
-		if (r == SDL_MUTEX_TIMEDOUT) goto loop_frame;
-		else if (r) xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
-		while ((!exit) && (SDL_PollEvent(&e))) {
+	for(;;) {
+		if (SDL_LockMutex(evt_mutex))
+			xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
+		while (SDL_PollEvent(&e)) {
 			memset(&mye,0,sizeof(mye));
 			switch (e.type) {
 			case SDL_QUIT:
-				exit = true;
 				mye.t = LDB_UIE_QUIT;
 				break;
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				break;
+//				break;
 			default: continue;
 			}
 			evt_fifo.insert(evt_fifo.begin(),mye);
 #ifdef XSHELL_VERBOSE
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
 #endif
+			if (mye.t == LDB_UIE_QUIT) {
+				SDL_UnlockMutex(evt_mutex);
+				return;
+			}
 		}
 		SDL_UnlockMutex(evt_mutex);
 loop_frame:
 		if (framebuf && frame_mutex) {
-			r = SDL_TryLockMutex(frame_mutex);
-			if (r == SDL_MUTEX_TIMEDOUT) continue;
-			else if (r) xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
+			if (SDL_LockMutex(frame_mutex))
+				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
 			if (frame_dirty) {
 				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
 				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
@@ -368,6 +367,7 @@ int main(int argc, char* argv[])
 	xnfo(0,1,"DOSBox Thread running!");
 
 	XS_SDLoop();
+	xnfo(0,1,"SDLoop() Exited");
 
 	if (pthread_join(dosbox,NULL)) xnfo(-1,1,"Threading error!");
 	xnfo(0,1,"DOSBox Thread Exited");
