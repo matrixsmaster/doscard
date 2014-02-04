@@ -97,7 +97,18 @@ void GFX_Events()
 {
 	LDB_UIEvent evt;
 	while ((*libdosbox_callbacks[DBCB_PullUIEvents])(&evt,sizeof(LDB_UIEvent))) {
-		//
+		switch (evt.t) {
+		case LDB_UIE_KBD:
+			KEYBOARD_AddKey(evt.key,evt.pressed);
+			break;
+		case LDB_UIE_MOUSE:
+			break;
+		case LDB_UIE_QUIT:
+			break;
+		default:
+			LOG_MSG("Unknown event (type %d) received",static_cast<int>(evt.t));
+			break;
+		}
 	}
 }
 

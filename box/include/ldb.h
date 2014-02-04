@@ -48,11 +48,18 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
 void* Dosbox_Run(void*);
 
 enum LDB_UIEventE {
-	LDB_UIE_QUIT = 0
+	LDB_UIE_QUIT = 0,
+	LDB_UIE_KBD = 1,
+	LDB_UIE_MOUSE = 2
 };
 
+
+
 typedef struct {
-	LDB_UIEventE t;
+	LDB_UIEventE t; 	//event type
+	KBD_KEYS key;		//keyboard key
+	int32_t m_x,m_y,m_b;//mouse X Y and buttons
+	bool pressed;		//is pressed?
 } LDB_UIEvent;
 
 typedef struct {
