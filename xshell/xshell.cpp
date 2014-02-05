@@ -41,22 +41,21 @@
 
 using namespace std;
 
-static SDL_Window *wnd = NULL;
-static SDL_Renderer *ren = NULL;
+static SDL_Thread* dosbox = NULL;
+static SDL_Window* wnd = NULL;
+static SDL_Renderer* ren = NULL;
 static struct timespec* clkres = NULL;
 static uint32_t* clkbeg = NULL;
 static uint8_t disp_fsm = 0;
 static uint8_t pxclock;
 static uint16_t lcd_w,lcd_h;
-static uint32_t frame_cnt,cur_pixel;
+static uint32_t frame_cnt,cur_pixel,frame_crc;
 static uint32_t* framebuf = NULL;
 static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
 static SDL_mutex* frame_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
 static SDL_mutex* evt_mutex = NULL;
-
-static void XS_DrawFrame();
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -72,9 +71,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		b = reinterpret_cast<uint8_t*>(buf);
 		if (disp_fsm == 2) {
 			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
-#ifdef XSHELL_VERBOSE
-				xnfo(0,2,"End-Of-Frame received (0x%02X)",*b);
-#endif
+//#ifdef XSHELL_VERBOSE
+				xnfo(0,2,"End-Of-Frame received (0x%02X) CRC=%d",*b,frame_crc);
+//#endif
 				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
 				disp_fsm = 1;
 				SDL_UnlockMutex(frame_mutex);
@@ -83,10 +82,12 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 				if (++pxclock > 2) {
 					pxclock = 0;
 					framebuf[frame_cnt++] = cur_pixel;
+					frame_crc += cur_pixel;
 				}
 			}
 		}
 		break;
+
 	case 4:
 		dw = reinterpret_cast<uint32_t*>(buf);
 		if (*dw == DISPLAY_INIT_SIGNATURE) {
@@ -96,25 +97,26 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
 			disp_fsm = 1;
 		} else if (disp_fsm == 1) {
+			if (SDL_LockMutex(frame_mutex))
+				xnfo(-1,2,"Couldn't lock frame mutex: %s",SDL_GetError());
 			uint16_t old_w = lcd_w;
 			uint16_t old_h = lcd_h;
 			lcd_w = (*dw >> 16);
 			lcd_h = *dw & 0xffff;
-#ifdef XSHELL_VERBOSE
+//#ifdef XSHELL_VERBOSE
 			xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
-#endif
+//#endif
 			pxclock = 0;
 			frame_cnt = 0;
+			frame_crc = 0;
 			disp_fsm = 2;
 			if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
-				framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,
-						sizeof(uint32_t)*lcd_w*lcd_h));
-#ifdef XSHELL_VERBOSE
-				xnfo(0,2,"Framebuffer resized");
-#endif
+				framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*lcd_w*lcd_h));
 				frame_dirty = true;
+//#ifdef XSHELL_VERBOSE
+				xnfo(0,2,"Framebuffer resized");
+//#endif
 			}
-			SDL_LockMutex(frame_mutex);
 		}
 		break;
 	default:
@@ -214,6 +216,8 @@ static int XS_SDLInit()
 
 	frame_mutex = SDL_CreateMutex();
 	evt_mutex = SDL_CreateMutex();
+	if ((!frame_mutex) || (!evt_mutex))
+		xnfo(-1,7,"Frame or Event mutex couldn't be created");
 
 #ifdef XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
@@ -241,14 +245,19 @@ static void XS_SDLoop()
 	int i;
 	xnfo(0,9,"Loop begins");
 	for(;;) {
+
+		/* Event Processing*/
 		if (SDL_LockMutex(evt_mutex))
 			xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
 		while (SDL_PollEvent(&e)) {
+
 			memset(&mye,0,sizeof(mye));
 			switch (e.type) {
+
 			case SDL_QUIT:
 				mye.t = LDB_UIE_QUIT;
 				break;
+
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				mye.t = LDB_UIE_KBD;
@@ -261,22 +270,27 @@ static void XS_SDLoop()
 						break;
 					}
 				break;
+
 			default: continue;
 			}
+
 			evt_fifo.insert(evt_fifo.begin(),mye);
-#ifdef XSHELL_VERBOSE
+//#ifdef XSHELL_VERBOSE
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
-#endif
+//#endif
 			if (mye.t == LDB_UIE_QUIT) {
 				SDL_UnlockMutex(evt_mutex);
 				return;
 			}
 		}
 		SDL_UnlockMutex(evt_mutex);
-		if (framebuf && frame_mutex) {
-			if (SDL_LockMutex(frame_mutex))
-				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
+
+		/* Frame Processing*/
+		if (SDL_LockMutex(frame_mutex))
+			xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
+		if (framebuf) {
 			if (frame_dirty) {
+				xnfo(0,9,"frame is dirty");
 				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
 				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
 						SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
@@ -287,8 +301,10 @@ static void XS_SDLoop()
 				SDL_RenderClear(ren);
 				SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
 			}
-			SDL_UnlockMutex(frame_mutex);
 		}
+		SDL_UnlockMutex(frame_mutex);
+
+		/* Update Window*/
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	}
@@ -321,6 +337,7 @@ int XS_FIO(void* buf, size_t len)
 	case 0:
 		//open
 		f->rf = fopen(f->name,f->op);
+		if (!f->rf) return -1;
 		break;
 	case 1:
 		//close
@@ -363,7 +380,7 @@ int XS_FIO(void* buf, size_t len)
 
 int main(int argc, char* argv[])
 {
-	pthread_t dosbox;
+	int r;
 	xnfo(0,1,"ALIVE!");
 
 	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
@@ -371,15 +388,15 @@ int main(int argc, char* argv[])
 
 	XS_ldb_register();
 
-	if (pthread_create(&dosbox,NULL,Dosbox_Run,NULL))
-		xnfo(-1,1,"Unable to create DOS thread!");
+	dosbox = SDL_CreateThread(Dosbox_Run,"DosBoxThread",NULL);
+	if (!dosbox) xnfo(-1,1,"Unable to create DOS thread!");
 	xnfo(0,1,"DOSBox Thread running!");
 
 	XS_SDLoop();
 	xnfo(0,1,"SDLoop() Exited");
 
-	if (pthread_join(dosbox,NULL)) xnfo(-1,1,"Threading error!");
-	xnfo(0,1,"DOSBox Thread Exited");
+	SDL_WaitThread(dosbox,&r);
+	xnfo(0,1,"DOSBox Thread Exited (%d)",r);
 
 	XS_SDLKill();
 	xnfo(0,1,"QUIT");

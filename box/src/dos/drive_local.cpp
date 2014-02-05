@@ -540,13 +540,15 @@ void localFile::FlagReadOnlyMedium(void)
 	read_only_medium = true;
 }
 
+//FIXME: THATS FOR TESTING PURPOSES ONLY!!!!
+#include <stdio.h>
 bool localFile::UpdateDateTimeFromHost(void)
 {
 	if(!open) return false;
 	struct stat temp_stat;
-//	fstat(fileno(fhandle),&temp_stat);
+	fstat(fileno(fhandle->rf),&temp_stat);
+//	memset(&temp_stat,0,sizeof(temp_stat));
 	LOG_MSG("localFile::UpdateDateTimeFromHost(): no stat");
-	memset(&temp_stat,0,sizeof(temp_stat));
 	struct tm * ltime;
 	if((ltime=localtime(&temp_stat.st_mtime))!=0) {
 		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);

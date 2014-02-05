@@ -1,7 +1,7 @@
 LIBNAME	:= libdosbox
 MNDIR	:= $(shell pwd)
 CC_DEFS := -DHAVE_CONFIG_H
-CC_FLAG := -g -O0
+CC_FLAG := -g -O2
 CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
 

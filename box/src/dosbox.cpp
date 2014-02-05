@@ -596,7 +596,7 @@ int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 	return 0;
 }
 
-void* Dosbox_Run(void* p)
+int Dosbox_Run(void* p)
 {
 	LOG_MSG("Dosbox_Run(): Enter");
 	CommandLine com_line(0,NULL);
