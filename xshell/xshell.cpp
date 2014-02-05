@@ -255,7 +255,7 @@ static void XS_SDLoop()
 				mye.pressed = (e.type == SDL_KEYDOWN);
 				mye.key = KBD_NONE;
 				//FIXME: use key-list!
-				for (i=0; i<XSKBD_KEYCODES_Q; i++)
+				for (i=0; i<(sizeof(XShellKeyboardMap)/sizeof(XShellKeyboardPair)); i++)
 					if (XShellKeyboardMap[i].sdl == e.key.keysym.scancode) {
 						mye.key = XShellKeyboardMap[i].db;
 						break;

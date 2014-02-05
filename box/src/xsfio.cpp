@@ -176,10 +176,9 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 	while (!dbfeof(f)) {
 		if (dbfread(&cc,1,1,f) != 1) return -1;
 		//printable chars + TAB
-		if ((cc == '\t') || ((cc >= 32) && (cc <= 126))) {
-			buf[cnt++] = cc;
-			if (cnt >= n) break;
-		} else break;
+		if ((!cc) || (cc == '\n')) break;
+		buf[cnt++] = cc;
+		if (cnt >= n) break;
 	}
 	return cnt;
 }

@@ -22,14 +22,12 @@
 #include "SDL2/include/SDL.h"
 #include "keyboard.h"
 
-#define XSKBD_KEYCODES_Q 46
-
 typedef struct {
 	KBD_KEYS db; //dosbox key
 	SDL_Scancode sdl; //sdl key
 } XShellKeyboardPair;
 
-static const XShellKeyboardPair XShellKeyboardMap[XSKBD_KEYCODES_Q] = {
+static const XShellKeyboardPair XShellKeyboardMap[] = {
 
 		{KBD_0,			SDL_SCANCODE_0},
 		{KBD_1,			SDL_SCANCODE_1},
@@ -68,16 +66,59 @@ static const XShellKeyboardPair XShellKeyboardMap[XSKBD_KEYCODES_Q] = {
 		{KBD_x,			SDL_SCANCODE_X},
 		{KBD_y,			SDL_SCANCODE_Y},
 		{KBD_z,			SDL_SCANCODE_Z},
+
+		{KBD_grave,		SDL_SCANCODE_GRAVE},
+		{KBD_minus,		SDL_SCANCODE_MINUS},
+		{KBD_equals,	SDL_SCANCODE_EQUALS},
+		{KBD_backslash,	SDL_SCANCODE_BACKSLASH},
+		{KBD_leftbracket,SDL_SCANCODE_LEFTBRACKET},
+		{KBD_rightbracket,SDL_SCANCODE_RIGHTBRACKET},
+		{KBD_semicolon,	SDL_SCANCODE_SEMICOLON},
+		//{KBD_quote,		},
+		{KBD_period,	SDL_SCANCODE_PERIOD},
+		{KBD_comma,		SDL_SCANCODE_COMMA},
+		{KBD_slash,		SDL_SCANCODE_SLASH},
+		//{KBD_extra_lt_gt,},
+
 		{KBD_enter,		SDL_SCANCODE_RETURN},
 		{KBD_backspace,	SDL_SCANCODE_BACKSPACE},
 		{KBD_space,		SDL_SCANCODE_SPACE},
 		{KBD_tab,		SDL_SCANCODE_TAB},
+		{KBD_esc,		SDL_SCANCODE_ESCAPE},
+
+		{KBD_f1,		SDL_SCANCODE_F1},
+		{KBD_f2,		SDL_SCANCODE_F2},
+		{KBD_f3,		SDL_SCANCODE_F3},
+		{KBD_f4,		SDL_SCANCODE_F4},
+		{KBD_f5,		SDL_SCANCODE_F5},
+		{KBD_f6,		SDL_SCANCODE_F6},
+		{KBD_f7,		SDL_SCANCODE_F7},
+		{KBD_f8,		SDL_SCANCODE_F8},
+		{KBD_f9,		SDL_SCANCODE_F9},
+		{KBD_f10,		SDL_SCANCODE_F10},
+		{KBD_f11,		SDL_SCANCODE_F11},
+		{KBD_f12,		SDL_SCANCODE_F12},
+
 		{KBD_leftalt,	SDL_SCANCODE_LALT},
 		{KBD_rightalt,	SDL_SCANCODE_RALT},
 		{KBD_leftctrl,	SDL_SCANCODE_LCTRL},
 		{KBD_rightctrl, SDL_SCANCODE_RCTRL},
 		{KBD_leftshift,	SDL_SCANCODE_LSHIFT},
-		{KBD_rightshift,SDL_SCANCODE_RSHIFT}
+		{KBD_rightshift,SDL_SCANCODE_RSHIFT},
+
+		{KBD_printscreen,SDL_SCANCODE_PRINTSCREEN},
+		{KBD_pause,		SDL_SCANCODE_PAUSE},
+		{KBD_insert,	SDL_SCANCODE_INSERT},
+
+		{KBD_home,		SDL_SCANCODE_HOME},
+		{KBD_end,		SDL_SCANCODE_END},
+		{KBD_pageup,	SDL_SCANCODE_PAGEUP},
+		{KBD_pagedown,	SDL_SCANCODE_PAGEDOWN},
+		{KBD_delete,	SDL_SCANCODE_DELETE},
+	    {KBD_right,		SDL_SCANCODE_RIGHT},
+	    {KBD_left,		SDL_SCANCODE_LEFT},
+	    {KBD_down,		SDL_SCANCODE_DOWN},
+	    {KBD_up,		SDL_SCANCODE_UP}
 };
 
 #endif /* XSKBD_H_ */

@@ -443,7 +443,7 @@ bool CDROM_Interface_Image::LoadCueSheet(char *cuefile)
 	int currPregap = 0;
 	int totalPregap = 0;
 	int prestart = 0;
-	bool success;
+	bool success = false;
 	bool canAddTrack = false;
 	char tmp[MAX_FILENAME_LENGTH];	// dirname can change its argument
 	safe_strncpy(tmp, cuefile, MAX_FILENAME_LENGTH);
@@ -458,7 +458,11 @@ bool CDROM_Interface_Image::LoadCueSheet(char *cuefile)
 		char buf[MAX_LINE_LENGTH];
 //		in.getline(buf, MAX_LINE_LENGTH);
 		int r = dbfngetl(buf,MAX_LINE_LENGTH,in);
-		if (r < 1) goto lcs_errout;  // probably a binary file
+		if (r < 1) {
+			if (!success) goto lcs_errout;
+			else break; //normal ending
+		}
+		//success = true;
 		istringstream line(buf);
 		
 		string command;
