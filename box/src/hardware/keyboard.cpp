@@ -217,9 +217,13 @@ static Bitu read_p64(Bitu port,Bitu iolen) {
 	return status;
 }
 
-void KEYBOARD_AddKey(KBD_KEYS keytype,bool pressed) {
-	Bit8u ret=0;bool extend=false;
+void KEYBOARD_AddKey(KBD_KEYS keytype,bool pressed)
+{
+	Bit8u ret=0;
+	bool extend=false;
+
 	switch (keytype) {
+	case KBD_NONE: return;
 	case KBD_esc:ret=1;break;
 	case KBD_1:ret=2;break;
 	case KBD_2:ret=3;break;

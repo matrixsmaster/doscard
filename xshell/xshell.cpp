@@ -238,6 +238,7 @@ static void XS_SDLoop()
 {
 	SDL_Event e;
 	LDB_UIEvent mye;
+	int i;
 	xnfo(0,9,"Loop begins");
 	for(;;) {
 		if (SDL_LockMutex(evt_mutex))
@@ -250,7 +251,16 @@ static void XS_SDLoop()
 				break;
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-//				break;
+				mye.t = LDB_UIE_KBD;
+				mye.pressed = (e.type == SDL_KEYDOWN);
+				mye.key = KBD_NONE;
+				//FIXME: use key-list!
+				for (i=0; i<XSKBD_KEYCODES_Q; i++)
+					if (XShellKeyboardMap[i].sdl == e.key.keysym.scancode) {
+						mye.key = XShellKeyboardMap[i].db;
+						break;
+					}
+				break;
 			default: continue;
 			}
 			evt_fifo.insert(evt_fifo.begin(),mye);
@@ -263,7 +273,6 @@ static void XS_SDLoop()
 			}
 		}
 		SDL_UnlockMutex(evt_mutex);
-loop_frame:
 		if (framebuf && frame_mutex) {
 			if (SDL_LockMutex(frame_mutex))
 				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());

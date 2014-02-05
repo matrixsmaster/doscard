@@ -19,6 +19,65 @@
 #ifndef XSKBD_H_
 #define XSKBD_H_
 
+#include "SDL2/include/SDL.h"
 #include "keyboard.h"
+
+#define XSKBD_KEYCODES_Q 46
+
+typedef struct {
+	KBD_KEYS db; //dosbox key
+	SDL_Scancode sdl; //sdl key
+} XShellKeyboardPair;
+
+static const XShellKeyboardPair XShellKeyboardMap[XSKBD_KEYCODES_Q] = {
+
+		{KBD_0,			SDL_SCANCODE_0},
+		{KBD_1,			SDL_SCANCODE_1},
+		{KBD_2,			SDL_SCANCODE_2},
+		{KBD_3,			SDL_SCANCODE_3},
+		{KBD_4,			SDL_SCANCODE_4},
+		{KBD_5,			SDL_SCANCODE_5},
+		{KBD_6,			SDL_SCANCODE_6},
+		{KBD_7,			SDL_SCANCODE_7},
+		{KBD_8,			SDL_SCANCODE_8},
+		{KBD_9,			SDL_SCANCODE_9},
+
+		{KBD_a,			SDL_SCANCODE_A},
+		{KBD_b,			SDL_SCANCODE_B},
+		{KBD_c,			SDL_SCANCODE_C},
+		{KBD_d,			SDL_SCANCODE_D},
+		{KBD_e,			SDL_SCANCODE_E},
+		{KBD_f,			SDL_SCANCODE_F},
+		{KBD_g,			SDL_SCANCODE_G},
+		{KBD_h,			SDL_SCANCODE_H},
+		{KBD_i,			SDL_SCANCODE_I},
+		{KBD_j,			SDL_SCANCODE_J},
+		{KBD_k,			SDL_SCANCODE_K},
+		{KBD_l,			SDL_SCANCODE_L},
+		{KBD_m,			SDL_SCANCODE_M},
+		{KBD_n,			SDL_SCANCODE_N},
+		{KBD_o,			SDL_SCANCODE_O},
+		{KBD_p,			SDL_SCANCODE_P},
+		{KBD_q,			SDL_SCANCODE_Q},
+		{KBD_r,			SDL_SCANCODE_R},
+		{KBD_s,			SDL_SCANCODE_S},
+		{KBD_t,			SDL_SCANCODE_T},
+		{KBD_u,			SDL_SCANCODE_U},
+		{KBD_v,			SDL_SCANCODE_V},
+		{KBD_w,			SDL_SCANCODE_W},
+		{KBD_x,			SDL_SCANCODE_X},
+		{KBD_y,			SDL_SCANCODE_Y},
+		{KBD_z,			SDL_SCANCODE_Z},
+		{KBD_enter,		SDL_SCANCODE_RETURN},
+		{KBD_backspace,	SDL_SCANCODE_BACKSPACE},
+		{KBD_space,		SDL_SCANCODE_SPACE},
+		{KBD_tab,		SDL_SCANCODE_TAB},
+		{KBD_leftalt,	SDL_SCANCODE_LALT},
+		{KBD_rightalt,	SDL_SCANCODE_RALT},
+		{KBD_leftctrl,	SDL_SCANCODE_LCTRL},
+		{KBD_rightctrl, SDL_SCANCODE_RCTRL},
+		{KBD_leftshift,	SDL_SCANCODE_LSHIFT},
+		{KBD_rightshift,SDL_SCANCODE_RSHIFT}
+};
 
 #endif /* XSKBD_H_ */
