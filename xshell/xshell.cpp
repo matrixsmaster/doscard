@@ -56,6 +56,7 @@ static bool frame_dirty = false;
 static SDL_mutex* frame_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
 static SDL_mutex* evt_mutex = NULL;
+static int frame_block = 0;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -71,9 +72,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		b = reinterpret_cast<uint8_t*>(buf);
 		if (disp_fsm == 2) {
 			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
-//#ifdef XSHELL_VERBOSE
+#ifdef XSHELL_VERBOSE
 				xnfo(0,2,"End-Of-Frame received (0x%02X) CRC=%d",*b,frame_crc);
-//#endif
+#endif
 				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
 				disp_fsm = 1;
 				SDL_UnlockMutex(frame_mutex);
@@ -103,9 +104,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 			uint16_t old_h = lcd_h;
 			lcd_w = (*dw >> 16);
 			lcd_h = *dw & 0xffff;
-//#ifdef XSHELL_VERBOSE
+#ifdef XSHELL_VERBOSE
 			xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
-//#endif
+#endif
 			pxclock = 0;
 			frame_cnt = 0;
 			frame_crc = 0;
@@ -113,9 +114,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 			if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
 				framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*lcd_w*lcd_h));
 				frame_dirty = true;
-//#ifdef XSHELL_VERBOSE
+#ifdef XSHELL_VERBOSE
 				xnfo(0,2,"Framebuffer resized");
-//#endif
+#endif
 			}
 		}
 		break;
@@ -259,6 +260,11 @@ static void XS_SDLoop()
 				break;
 
 			case SDL_KEYDOWN:
+				if (e.key.keysym.scancode == SDL_SCANCODE_PAUSE) {
+					frame_block ^= 1;
+					xnfo(0,9,"frame_block=%d",frame_block);
+					continue;
+				}
 			case SDL_KEYUP:
 				mye.t = LDB_UIE_KBD;
 				mye.pressed = (e.type == SDL_KEYDOWN);
@@ -286,27 +292,29 @@ static void XS_SDLoop()
 		SDL_UnlockMutex(evt_mutex);
 
 		/* Frame Processing*/
-		if (SDL_LockMutex(frame_mutex))
-			xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
-		if (framebuf) {
-			if (frame_dirty) {
-				xnfo(0,9,"frame is dirty");
-				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
-				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
-						SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
-				frame_dirty = false;
+		if (!frame_block) {
+			if (SDL_LockMutex(frame_mutex))
+				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
+			if (framebuf) {
+				if (frame_dirty) {
+					xnfo(0,9,"frame is dirty");
+					if (frame_sdl) SDL_DestroyTexture(frame_sdl);
+					frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
+							SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
+					frame_dirty = false;
+				}
+				if (frame_sdl) {
+					SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
+					SDL_RenderClear(ren);
+					SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
+				}
 			}
-			if (frame_sdl) {
-				SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
-				SDL_RenderClear(ren);
-				SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
-			}
-		}
-		SDL_UnlockMutex(frame_mutex);
+			SDL_UnlockMutex(frame_mutex);
 
-		/* Update Window*/
-		SDL_RenderPresent(ren);
-		SDL_Delay(5);
+			/* Update Window*/
+			SDL_RenderPresent(ren);
+			SDL_Delay(5);
+		}
 	}
 }
 
