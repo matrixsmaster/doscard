@@ -548,7 +548,7 @@ bool localFile::UpdateDateTimeFromHost(void)
 	struct stat temp_stat;
 	fstat(fileno(fhandle->rf),&temp_stat);
 //	memset(&temp_stat,0,sizeof(temp_stat));
-	LOG_MSG("localFile::UpdateDateTimeFromHost(): no stat");
+	LOG_MSG("FIXME: localFile::UpdateDateTimeFromHost()");
 	struct tm * ltime;
 	if((ltime=localtime(&temp_stat.st_mtime))!=0) {
 		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);
