@@ -14,6 +14,20 @@
 #define XSHELL_DEF_WND_W 640
 #define XSHELL_DEF_WND_H 480
 
+enum LDB_UIEventE {
+	LDB_UIE_NONE = 0,
+	LDB_UIE_QUIT = 1,
+	LDB_UIE_KBD = 2,
+	LDB_UIE_MOUSE = 3
+};
+
+typedef struct {
+	LDB_UIEventE t; 	//event type
+	SDL_Scancode key;		//keyboard key
+	int32_t m_x,m_y,m_b;//mouse X Y and buttons
+	bool pressed;		//is pressed?
+} LDB_UIEvent;
+
 using namespace std;
 
 static SDL_Thread* dosbox = NULL;
@@ -28,9 +42,9 @@ static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
 static SDL_mutex* frame_mutex = NULL;
 static SDL_mutex* evt_mutex = NULL;
+static vector<LDB_UIEvent> evt_fifo;
 static int frame_block = 0;
 static bool quit = false;
-static uint32_t ffsize = 0;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -89,6 +103,23 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 	return 0;
 }
 
+int XS_QueryUIEvents(void* buf, size_t len)
+{
+	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
+	if (SDL_LockMutex(evt_mutex)) {
+		printf("XSQUE: Couldn't lock event buffer mutex!\n");
+		abort();
+	}
+	int r = evt_fifo.size();
+	if (!evt_fifo.empty()) {
+		LDB_UIEvent e = evt_fifo.back();
+		evt_fifo.pop_back();
+		memcpy(buf,&e,sizeof(LDB_UIEvent));
+	}
+	SDL_UnlockMutex(evt_mutex);
+	return r;
+}
+
 static int XS_SDLInit()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -132,6 +163,7 @@ static void XS_SDLKill()
 static void XS_SDLoop()
 {
 	SDL_Event e;
+	LDB_UIEvent mye;
 	printf("Loop begins\n");
 	for(;;) {
 
@@ -141,39 +173,31 @@ static void XS_SDLoop()
 			abort();
 		}
 		while (SDL_PollEvent(&e)) {
+			memset(&mye,0,sizeof(mye));
 			switch (e.type) {
+
 			case SDL_QUIT:
-				quit = true;
-				SDL_UnlockMutex(evt_mutex);
-				return;
+				mye.t = LDB_UIE_QUIT;
+				break;
 
 			case SDL_KEYDOWN:
-				switch (e.key.keysym.scancode) {
-				case SDL_SCANCODE_PAUSE:
+				if (e.key.keysym.scancode == SDL_SCANCODE_PAUSE) {
 					frame_block ^= 1;
 					printf("frame_block=%d\n",frame_block);
-					break;
-				case SDL_SCANCODE_1:
-					ffsize = (640 << 16) | 480;
-					printf("640x480\n");
-					break;
-				case SDL_SCANCODE_2:
-					ffsize = (640 << 16) | 400;
-					printf("640x400\n");
-					break;
-				case SDL_SCANCODE_3:
-					ffsize = (320 << 16) | 200;
-					printf("320x200\n");
-					break;
-				case SDL_SCANCODE_4:
-					ffsize = (800 << 16) | 600;
-					printf("800x600\n");
-					break;
-				default: break;
+					continue;
 				}
+			case SDL_KEYUP:
+				mye.t = LDB_UIE_KBD;
+				mye.pressed = (e.type == SDL_KEYDOWN);
+				mye.key = e.key.keysym.scancode;
 				break;
 
 			default: continue;
+			}
+			evt_fifo.insert(evt_fifo.begin(),mye);
+			if (mye.t == LDB_UIE_QUIT) {
+				SDL_UnlockMutex(evt_mutex);
+				return;
 			}
 		}
 		SDL_UnlockMutex(evt_mutex);
@@ -212,17 +236,48 @@ int TestThread(void*)
 	uint32_t x = DISPLAY_INIT_SIGNATURE;
 	uint32_t i,j;
 	uint8_t b;
+	LDB_UIEvent mye;
+	uint32_t ffsize = 0;
 	XS_UpdateScreenBuffer(&x,4);
 	for(;;) {
-		if (SDL_LockMutex(evt_mutex)) {
-			printf("TT: Couldn't lock event buffer mutex: %s\n",SDL_GetError());
-			abort();
-		}
-		x = ffsize;
-		if (quit) return 2;
-		SDL_UnlockMutex(evt_mutex);
+		while (XS_QueryUIEvents(&mye,sizeof(mye))) {
+			switch (mye.t) {
+			case LDB_UIE_QUIT:
+				quit = true;
+				SDL_UnlockMutex(evt_mutex);
+				return -1;
 
-		XS_UpdateScreenBuffer(&x,4);
+			case LDB_UIE_KBD:
+				switch (mye.key) {
+				case SDL_SCANCODE_PAUSE:
+					frame_block ^= 1;
+					printf("frame_block=%d\n",frame_block);
+					break;
+				case SDL_SCANCODE_1:
+					ffsize = (640 << 16) | 480;
+					printf("640x480\n");
+					break;
+				case SDL_SCANCODE_2:
+					ffsize = (640 << 16) | 400;
+					printf("640x400\n");
+					break;
+				case SDL_SCANCODE_3:
+					ffsize = (320 << 16) | 200;
+					printf("320x200\n");
+					break;
+				case SDL_SCANCODE_4:
+					ffsize = (800 << 16) | 600;
+					printf("800x600\n");
+					break;
+				default: break;
+				}
+				break;
+
+				default: continue;
+			}
+		}
+
+		XS_UpdateScreenBuffer(&ffsize,4);
 		for (i=0; i<(x&0xffff); i++)
 			for (j=0; j<(x>>16); j++) {
 				b = random() & 255;
@@ -231,9 +286,10 @@ int TestThread(void*)
 		b = 0xff;
 		XS_UpdateScreenBuffer(&b,1); //eof
 
-		do x = abs(random());
-		while (x > 200000);
+		x = abs(random());
+		while (x > 200000) x >>= 1;
 		usleep(x);
+		if (quit) return 2;
 	}
 	return 1;
 }
