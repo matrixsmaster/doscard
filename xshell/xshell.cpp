@@ -57,6 +57,7 @@ static SDL_mutex* frame_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
 static SDL_mutex* evt_mutex = NULL;
 static int frame_block = 0;
+SDL_atomic_t at_flag;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -77,7 +78,10 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #endif
 				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
 				disp_fsm = 1;
-				SDL_UnlockMutex(frame_mutex);
+//				SDL_UnlockMutex(frame_mutex);
+
+				SDL_AtomicIncRef(&at_flag);
+				if (SDL_AtomicGet(&at_flag) > 2) SDL_AtomicSet(&at_flag,0);
 			} else {
 				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
 				if (++pxclock > 2) {
@@ -98,8 +102,11 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
 			disp_fsm = 1;
 		} else if (disp_fsm == 1) {
-			if (SDL_LockMutex(frame_mutex))
-				xnfo(-1,2,"Couldn't lock frame mutex: %s",SDL_GetError());
+//			if (SDL_LockMutex(frame_mutex))
+//				xnfo(-1,2,"Couldn't lock frame mutex: %s",SDL_GetError());
+
+			while (!(SDL_AtomicGet(&at_flag))) ;
+
 			uint16_t old_w = lcd_w;
 			uint16_t old_h = lcd_h;
 			lcd_w = (*dw >> 16);
@@ -141,14 +148,20 @@ int XS_QueryUIEvents(void* buf, size_t len)
 	xnfo(0,4,"len=%d",len);
 #endif
 	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
-	if (SDL_LockMutex(evt_mutex)) xnfo(-1,4,"Couldn't lock event buffer mutex!");
+//	if (SDL_LockMutex(frame_mutex)) xnfo(-1,4,"Couldn't lock event buffer mutex!");
+
+	while (!SDL_AtomicGet(&at_flag)) ;
+
 	int r = evt_fifo.size();
 	if (!evt_fifo.empty()) {
 		LDB_UIEvent e = evt_fifo.back();
 		evt_fifo.pop_back();
 		memcpy(buf,&e,sizeof(LDB_UIEvent));
 	}
-	SDL_UnlockMutex(evt_mutex);
+//	SDL_UnlockMutex(frame_mutex);
+
+	SDL_AtomicIncRef(&at_flag);
+	if (SDL_AtomicGet(&at_flag) > 2) SDL_AtomicSet(&at_flag,0);
 	return r;
 }
 
@@ -220,6 +233,8 @@ static int XS_SDLInit()
 	if ((!frame_mutex) || (!evt_mutex))
 		xnfo(-1,7,"Frame or Event mutex couldn't be created");
 
+	SDL_AtomicSet(&at_flag,0);
+
 #ifdef XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
 #endif
@@ -248,8 +263,10 @@ static void XS_SDLoop()
 	for(;;) {
 
 		/* Event Processing*/
-		if (SDL_LockMutex(evt_mutex))
-			xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
+//		if (SDL_LockMutex(evt_mutex))
+//			xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
+		while (SDL_AtomicGet(&at_flag)) ;
+
 		while (SDL_PollEvent(&e)) {
 
 			memset(&mye,0,sizeof(mye));
@@ -285,16 +302,17 @@ static void XS_SDLoop()
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
 //#endif
 			if (mye.t == LDB_UIE_QUIT) {
-				SDL_UnlockMutex(evt_mutex);
+//				SDL_UnlockMutex(frame_mutex);
+				SDL_AtomicSet(&at_flag,1);
 				return;
 			}
 		}
-		SDL_UnlockMutex(evt_mutex);
+//		SDL_UnlockMutex(evt_mutex);
 
 		/* Frame Processing*/
 		if (!frame_block) {
-			if (SDL_LockMutex(frame_mutex))
-				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
+//			if (SDL_LockMutex(frame_mutex))
+//				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
 			if (framebuf) {
 				if (frame_dirty) {
 					xnfo(0,9,"frame is dirty");
@@ -309,12 +327,12 @@ static void XS_SDLoop()
 					SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
 				}
 			}
-			SDL_UnlockMutex(frame_mutex);
-
-			/* Update Window*/
-			SDL_RenderPresent(ren);
-			SDL_Delay(5);
 		}
+//		SDL_UnlockMutex(frame_mutex);
+		SDL_AtomicSet(&at_flag,1);
+		/* Update Window*/
+		SDL_RenderPresent(ren);
+		SDL_Delay(5);
 	}
 }
 
