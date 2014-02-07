@@ -60,8 +60,10 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		if (disp_fsm == 2) {
 			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
 				disp_fsm = 1;
-//				SDL_UnlockMutex(frame_mutex);
-				SDL_AtomicSet(&at_flag,0);
+
+				SDL_UnlockMutex(frame_mutex);
+//				SDL_AtomicSet(&at_flag,0);
+
 			} else {
 				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
 				if (++pxclock > 2) {
@@ -81,11 +83,12 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
 			disp_fsm = 1;
 		} else if (disp_fsm == 1) {
-//			if (SDL_LockMutex(frame_mutex)) {
-//				printf("XSUSB: Couldn't lock frame mutex: %s\n",SDL_GetError());
-//				abort();
-//			}
-			while (SDL_AtomicGet(&at_flag) != 2) usleep(5);
+			if (SDL_LockMutex(frame_mutex)) {
+				printf("XSUSB: Couldn't lock frame mutex: %s\n",SDL_GetError());
+				abort();
+			}
+
+//			while (SDL_AtomicGet(&at_flag) != 2) usleep(5);
 			printf("update\n");
 
 			uint16_t old_w = lcd_w;
@@ -113,12 +116,12 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 int XS_QueryUIEvents(void* buf, size_t len)
 {
 	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
-//	if (SDL_LockMutex(frame_mutex)) {
-//		printf("XSQUE: Couldn't lock event buffer mutex!\n");
-//		abort();
-//	}
+	if (SDL_LockMutex(frame_mutex)) {
+		printf("XSQUE: Couldn't lock event buffer mutex!\n");
+		abort();
+	}
 
-	while (SDL_AtomicGet(&at_flag) != 1) usleep(10);
+//	while (SDL_AtomicGet(&at_flag) != 1) usleep(10);
 	printf("query\n");
 
 	int r = evt_fifo.size();
@@ -127,9 +130,9 @@ int XS_QueryUIEvents(void* buf, size_t len)
 		evt_fifo.pop_back();
 		memcpy(buf,&e,sizeof(LDB_UIEvent));
 	}
-//	SDL_UnlockMutex(frame_mutex);
+	SDL_UnlockMutex(frame_mutex);
 
-	SDL_AtomicSet(&at_flag,2);
+//	SDL_AtomicSet(&at_flag,2);
 	return r;
 }
 
@@ -207,11 +210,11 @@ static void XS_SDLoop()
 	for(;;) {
 
 		/* Event Processing*/
-//		if (SDL_LockMutex(frame_mutex)) {
-//			printf("Couldn't lock event buffer mutex: %s\n",SDL_GetError());
-//			abort();
-//		}
-		while (SDL_AtomicGet(&at_flag)) usleep(2);
+		if (SDL_LockMutex(frame_mutex)) {
+			printf("Couldn't lock event buffer mutex: %s\n",SDL_GetError());
+			abort();
+		}
+//		while (SDL_AtomicGet(&at_flag)) usleep(2);
 		printf("loop\n");
 
 		while (SDL_PollEvent(&e)) {
@@ -264,8 +267,8 @@ static void XS_SDLoop()
 				}
 			}
 		}
-//			SDL_UnlockMutex(frame_mutex);
-		SDL_AtomicSet(&at_flag,1);
+		SDL_UnlockMutex(frame_mutex);
+//		SDL_AtomicSet(&at_flag,1);
 
 			/* Update Window*/
 			SDL_RenderPresent(ren);
