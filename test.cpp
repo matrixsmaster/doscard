@@ -45,6 +45,8 @@ static SDL_mutex* evt_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
 static int frame_block = 0;
 static bool quit = false;
+static struct timespec* clkres = NULL;
+static uint32_t* clkbeg = NULL;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -120,6 +122,30 @@ int XS_QueryUIEvents(void* buf, size_t len)
 	return r;
 }
 
+int XS_GetTicks(void* buf, size_t len)
+{
+	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
+	struct timespec r;
+	if ((!buf) || (len < 4)) return -1;
+	if (!clkres) {
+		clkres = new struct timespec;
+		clock_getres(CLOCK_MONOTONIC,clkres);
+		if (clkres->tv_nsec > 1000000)
+			printf("CLOCK_MONOTONIC resolution is too low!\n");
+	}
+	clock_gettime(CLOCK_MONOTONIC,&r);
+	if (!clkbeg) {
+		clkbeg = new uint32_t;
+		printf("Clocks start point set to %d:%d\n",r.tv_sec,r.tv_nsec);
+		*clkbeg = r.tv_sec * 1000 + (r.tv_nsec / 1000000);// / clkres->tv_nsec);
+		*val = 0;
+	} else {
+		*val = r.tv_sec * 1000 + (r.tv_nsec / 1000000);
+		*val -= *clkbeg;
+	}
+	return 0;
+}
+
 static int XS_SDLInit()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -166,6 +192,7 @@ static void XS_SDLoop()
 	LDB_UIEvent mye;
 	printf("Loop begins\n");
 	for(;;) {
+		printf("loop\n");
 
 		/* Event Processing*/
 		if (SDL_LockMutex(evt_mutex)) {
@@ -226,7 +253,7 @@ static void XS_SDLoop()
 
 			/* Update Window*/
 			SDL_RenderPresent(ren);
-			SDL_Delay(5);
+			SDL_Delay(1);
 		}
 	}
 }
@@ -240,19 +267,16 @@ int TestThread(void*)
 	uint32_t ffsize = 0;
 	XS_UpdateScreenBuffer(&x,4);
 	for(;;) {
+		printf("thread\n");
 		while (XS_QueryUIEvents(&mye,sizeof(mye))) {
+			if (mye.pressed) continue; //switch on release
 			switch (mye.t) {
 			case LDB_UIE_QUIT:
 				quit = true;
-				SDL_UnlockMutex(evt_mutex);
 				return -1;
 
 			case LDB_UIE_KBD:
 				switch (mye.key) {
-				case SDL_SCANCODE_PAUSE:
-					frame_block ^= 1;
-					printf("frame_block=%d\n",frame_block);
-					break;
 				case SDL_SCANCODE_1:
 					ffsize = (640 << 16) | 480;
 					printf("640x480\n");
@@ -277,6 +301,7 @@ int TestThread(void*)
 			}
 		}
 
+		XS_GetTicks(&x,4);
 		XS_UpdateScreenBuffer(&ffsize,4);
 		for (i=0; i<(x&0xffff); i++)
 			for (j=0; j<(x>>16); j++) {
@@ -285,9 +310,12 @@ int TestThread(void*)
 			}
 		b = 0xff;
 		XS_UpdateScreenBuffer(&b,1); //eof
+		XS_GetTicks(&j,4);
+		printf("Buffer generation took %d usec.\n",j-x);
 
 		x = abs(random());
-		while (x > 200000) x >>= 1;
+		while (x > 20000) x >>= 1;
+		while (x < 1000) x <<= 1;
 		usleep(x);
 		if (quit) return 2;
 	}
