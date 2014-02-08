@@ -292,6 +292,23 @@ static void XS_SDLoop()
 					}
 				break;
 
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+				mye.pressed = (e.button.state == SDL_PRESSED);
+				switch (e.button.button) {
+				case SDL_BUTTON_LEFT:	mye.m.button = 1; break;
+				case SDL_BUTTON_RIGHT:	mye.m.button = 2; break;
+				default:				mye.m.button = 3; break;
+				}
+				//no break
+			case SDL_MOUSEMOTION:
+				mye.t = LDB_UIE_MOUSE;
+				mye.m.rel.x = static_cast<float>(e.motion.xrel);
+				mye.m.rel.y = static_cast<float>(e.motion.yrel);
+				mye.m.abs.x = static_cast<float>(e.motion.x);
+				mye.m.abs.y = static_cast<float>(e.motion.y);
+				break;
+
 			default: continue;
 			}
 
@@ -346,10 +363,10 @@ int XS_FIO(void* buf, size_t len)
 	if ((f->todo) && (!f->rf)) return -1;
 	uint64_t* x;
 	int64_t* sx;
-#if XSHELL_VERBOSE
+//#if XSHELL_VERBOSE
 	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
 			f->name,f->todo,f->p_x,f->p_y,f->buf);
-#endif
+//#endif
 	switch (f->todo) {
 	case 0:
 		//open

@@ -305,13 +305,13 @@ void DOSBOX_Init(void)
 
 	secprop=control->AddSection_prop("cpu",&CPU_Init,true);//done
 	const char* cores[] = { "auto", "normal", "simple",0 };
-	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"auto");
+	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"normal");
 	Pstring->Set_values(cores);
 	Pstring->Set_help("CPU Core used in emulation. auto will switch to dynamic if available and\n"
 		"appropriate.");
 
 	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", 0};
-	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"486_slow");
+	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"pentium_slow");
 	Pstring->Set_values(cputype_values);
 	Pstring->Set_help("CPU Type used in emulation. auto is the fastest choice.");
 
@@ -377,23 +377,23 @@ void DOSBOX_Init(void)
 //	secprop=control->AddSection_prop("midi",&MIDI_Init,true);//done
 //	secprop->AddInitFunction(&MPU401_Init,true);//done
 	
-	const char* mputypes[] = { "intelligent", "uart", "none",0};
-	// FIXME: add some way to offer the actually available choices.
-	const char *devices[] = { "default", "win32", "alsa", "oss", "coreaudio", "coremidi","none", 0};
-	Pstring = secprop->Add_string("mpu401",Property::Changeable::WhenIdle,"intelligent");
-	Pstring->Set_values(mputypes);
-	Pstring->Set_help("Type of MPU-401 to emulate.");
-
-	Pstring = secprop->Add_string("mididevice",Property::Changeable::WhenIdle,"default");
-	Pstring->Set_values(devices);
-	Pstring->Set_help("Device that will receive the MIDI data from MPU-401.");
-
-	Pstring = secprop->Add_string("midiconfig",Property::Changeable::WhenIdle,"");
-	Pstring->Set_help("Special configuration options for the device driver. This is usually the id of the device you want to use.\n"
-	                  "  or in the case of coreaudio, you can specify a soundfont here.\n"
-	                  "  When using a Roland MT-32 rev. 0 as midi output device, some games may require a delay in order to prevent 'buffer overflow' issues.\n"
-	                  "  In that case, add 'delaysysex', for example: midiconfig=2 delaysysex\n"
-	                  "  See the README/Manual for more details.");
+//	const char* mputypes[] = { "intelligent", "uart", "none",0};
+//	// FIXME: add some way to offer the actually available choices.
+//	const char *devices[] = { "default", "win32", "alsa", "oss", "coreaudio", "coremidi","none", 0};
+//	Pstring = secprop->Add_string("mpu401",Property::Changeable::WhenIdle,"intelligent");
+//	Pstring->Set_values(mputypes);
+//	Pstring->Set_help("Type of MPU-401 to emulate.");
+//
+//	Pstring = secprop->Add_string("mididevice",Property::Changeable::WhenIdle,"default");
+//	Pstring->Set_values(devices);
+//	Pstring->Set_help("Device that will receive the MIDI data from MPU-401.");
+//
+//	Pstring = secprop->Add_string("midiconfig",Property::Changeable::WhenIdle,"");
+//	Pstring->Set_help("Special configuration options for the device driver. This is usually the id of the device you want to use.\n"
+//	                  "  or in the case of coreaudio, you can specify a soundfont here.\n"
+//	                  "  When using a Roland MT-32 rev. 0 as midi output device, some games may require a delay in order to prevent 'buffer overflow' issues.\n"
+//	                  "  In that case, add 'delaysysex', for example: midiconfig=2 delaysysex\n"
+//	                  "  See the README/Manual for more details.");
 
 #if C_DEBUG
 	secprop=control->AddSection_prop("debug",&DEBUG_Init);

@@ -38,9 +38,12 @@
 #include "cpu.h"
 #include "cross.h"
 #include "control.h"
+#include "render.h"
 
 extern const char* RunningProgram;
 extern bool CPU_CycleAutoAdjust;
+extern Render_t render;
+static bool mouse_wanted = false;
 
 void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 {
@@ -103,7 +106,15 @@ void GFX_Events()
 			KEYBOARD_AddKey(evt.key,evt.pressed);
 			break;
 		case LDB_UIE_MOUSE:
-			LOG_MSG("Mouse event: STUB");
+			if (!mouse_wanted) break;
+			if (evt.m.button--) {
+				if (evt.pressed) Mouse_ButtonPressed(evt.m.button);
+				else Mouse_ButtonReleased(evt.m.button);
+			} else {
+				evt.m.abs.x /= static_cast<float>(render.src.width);
+				evt.m.abs.y /= static_cast<float>(render.src.height);
+				Mouse_CursorMoved(evt.m.rel.x,evt.m.rel.y,evt.m.abs.x,evt.m.abs.y,true);
+			}
 			break;
 		case LDB_UIE_QUIT:
 			throw 1;
@@ -131,4 +142,6 @@ void MAPPER_AddHandler(MAPPER_Handler * handler,MapKeys key,Bitu mods,char const
 
 void Mouse_AutoLock(bool enable)
 {
+	LOG_MSG("Mouse_AutoLock(): mouse wanted = %d\n",enable);
+	mouse_wanted = enable;
 }

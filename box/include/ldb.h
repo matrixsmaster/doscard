@@ -58,10 +58,19 @@ enum LDB_UIEventE {
 };
 
 typedef struct {
+	float x,y;
+} LDBFloat2D;
+
+typedef struct {
+	LDBFloat2D rel,abs;
+	uint8_t button;
+} LDB_MOUSEINF;
+
+typedef struct {
 	LDB_UIEventE t; 	//event type
 	KBD_KEYS key;		//keyboard key
-	int32_t m_x,m_y,m_b;//mouse X Y and buttons
 	bool pressed;		//is pressed?
+	LDB_MOUSEINF m;		//mouse info
 } LDB_UIEvent;
 
 typedef struct {

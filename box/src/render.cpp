@@ -33,6 +33,7 @@
 Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
 static bool init_ok;
+static uint32_t frmsk_cnt;
 
 static void RENDER_CallBack(GFX_CallBackFunctions_t function);
 
@@ -94,13 +95,18 @@ static void RENDER_StartLineHandler(const void * src)
 	}
 }
 
+static void RENDER_EmptyLineHandler(const void * src)
+{
+}
+
 bool RENDER_StartUpdate(void)
 {
 	if (!init_ok) {
 		init_ok = true;
+		frmsk_cnt = 0;
 		return false;
 	}
-	RENDER_DrawLine = RENDER_StartLineHandler;
+	RENDER_DrawLine = (frmsk_cnt < 3)? RENDER_EmptyLineHandler:RENDER_StartLineHandler;
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
 	hdr |= ((Bit16u)render.src.height);
@@ -110,13 +116,15 @@ bool RENDER_StartUpdate(void)
 
 void RENDER_EndUpdate(bool abort)
 {
-	if (abort) {
+	if ((abort) || (frmsk_cnt < 3)) {
 		//Do NOT update anything
 		LDB_SendDWord(DISPLAY_ABOR_SIGNATURE);
 	} else {
 		//normal update
 		LDB_SendByte(0x01);
 	}
+	if (frmsk_cnt < 3) frmsk_cnt++;
+	else frmsk_cnt = 0;
 }
 
 void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool dblw,bool dblh)
