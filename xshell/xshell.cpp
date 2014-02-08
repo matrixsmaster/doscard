@@ -53,9 +53,7 @@ static uint32_t frame_cnt,cur_pixel,frame_crc;
 static uint32_t* framebuf = NULL;
 static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
-static SDL_mutex* frame_mutex = NULL;
 static vector<LDB_UIEvent> evt_fifo;
-static SDL_mutex* evt_mutex = NULL;
 static int frame_block = 0;
 SDL_atomic_t at_flag;
 
@@ -78,10 +76,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #endif
 				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
 				disp_fsm = 1;
-//				SDL_UnlockMutex(frame_mutex);
-
 				SDL_AtomicIncRef(&at_flag);
-
 			} else {
 				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
 				if (++pxclock > 2) {
@@ -99,12 +94,11 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 			xnfo(0,2,"Signature received");
 			if (!disp_fsm) disp_fsm = 1;
 			else xnfo(-1,2,"Double init!");
+
 		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
 			disp_fsm = 1;
-		} else if (disp_fsm == 1) {
-//			if (SDL_LockMutex(frame_mutex))
-//				xnfo(-1,2,"Couldn't lock frame mutex: %s",SDL_GetError());
 
+		} else if (disp_fsm == 1) {
 			while ((SDL_AtomicGet(&at_flag))) ;
 
 			uint16_t old_w = lcd_w;
@@ -148,20 +142,14 @@ int XS_QueryUIEvents(void* buf, size_t len)
 	xnfo(0,4,"len=%d",len);
 #endif
 	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
-//	if (SDL_LockMutex(frame_mutex)) xnfo(-1,4,"Couldn't lock event buffer mutex!");
-
 	if (SDL_AtomicGet(&at_flag)) return 0;
-
 	int r = evt_fifo.size();
 	if (!evt_fifo.empty()) {
 		LDB_UIEvent e = evt_fifo.back();
 		evt_fifo.pop_back();
 		memcpy(buf,&e,sizeof(LDB_UIEvent));
 	}
-//	SDL_UnlockMutex(frame_mutex);
-
 	SDL_AtomicIncRef(&at_flag);
-
 	return r;
 }
 
@@ -209,12 +197,12 @@ static void XS_ldb_register()
 
 static int XS_SDLInit()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING)) {
+	if (SDL_Init(SDL_INIT_VIDEO)) {
 		xnfo(1,7,"SDL2 Init Error");
 		return 1;
 	}
 	if (SDL_CreateWindowAndRenderer(XSHELL_DEF_WND_W,XSHELL_DEF_WND_H,
-			SDL_WINDOW_OPENGL,&wnd,&ren)) {
+			SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE,&wnd,&ren)) {
 		xnfo(1,7,"CreateWindowAndRenderer() failed.");
 		return 2;
 	}
@@ -227,14 +215,7 @@ static int XS_SDLInit()
 	SDL_SetWindowTitle(wnd,XSHELL_CAPTION);
 	SDL_RenderClear(ren);
 	SDL_RenderPresent(ren);
-
-	frame_mutex = SDL_CreateMutex();
-	evt_mutex = SDL_CreateMutex();
-	if ((!frame_mutex) || (!evt_mutex))
-		xnfo(-1,7,"Frame or Event mutex couldn't be created");
-
 	SDL_AtomicSet(&at_flag,0);
-
 #ifdef XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
 #endif
@@ -249,8 +230,6 @@ static void XS_SDLKill()
 	if (ren) SDL_DestroyRenderer(ren);
 	if (wnd) SDL_DestroyWindow(wnd);
 	if (frame_sdl) SDL_DestroyTexture(frame_sdl);
-	if (frame_mutex) SDL_DestroyMutex(frame_mutex);
-	if (evt_mutex) SDL_DestroyMutex(evt_mutex);
 	SDL_Quit();
 }
 
@@ -258,15 +237,13 @@ static void XS_SDLoop()
 {
 	SDL_Event e;
 	LDB_UIEvent mye;
-	int i;
+	uint32_t i;
+	bool quit = false;
 	xnfo(0,9,"Loop begins");
-	for(;;) {
-
-		/* Event Processing*/
-//		if (SDL_LockMutex(evt_mutex))
-//			xnfo(-1,9,"Couldn't lock event buffer mutex: %s",SDL_GetError());
+	do {
 		while (!SDL_AtomicGet(&at_flag)) ;
 
+		/* Event Processing*/
 		while (SDL_PollEvent(&e)) {
 
 			memset(&mye,0,sizeof(mye));
@@ -274,6 +251,7 @@ static void XS_SDLoop()
 
 			case SDL_QUIT:
 				mye.t = LDB_UIE_QUIT;
+				quit = true;
 				break;
 
 			case SDL_KEYDOWN:
@@ -282,6 +260,7 @@ static void XS_SDLoop()
 					xnfo(0,9,"frame_block=%d",frame_block);
 					continue;
 				}
+				//no break
 			case SDL_KEYUP:
 				mye.t = LDB_UIE_KBD;
 				mye.pressed = (e.type == SDL_KEYDOWN);
@@ -298,21 +277,13 @@ static void XS_SDLoop()
 			}
 
 			evt_fifo.insert(evt_fifo.begin(),mye);
-//#ifdef XSHELL_VERBOSE
+#ifdef XSHELL_VERBOSE
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
-//#endif
-			if (mye.t == LDB_UIE_QUIT) {
-//				SDL_UnlockMutex(frame_mutex);
-				SDL_AtomicSet(&at_flag,0);
-				return;
-			}
+#endif
 		}
-//		SDL_UnlockMutex(evt_mutex);
 
 		/* Frame Processing*/
 		if (!frame_block) {
-//			if (SDL_LockMutex(frame_mutex))
-//				xnfo(-1,9,"Couldn't lock frame mutex: %s",SDL_GetError());
 			if (framebuf) {
 				if (frame_dirty) {
 					xnfo(0,9,"frame is dirty");
@@ -328,12 +299,12 @@ static void XS_SDLoop()
 				}
 			}
 		}
-//		SDL_UnlockMutex(frame_mutex);
 		SDL_AtomicSet(&at_flag,0);
+
 		/* Update Window*/
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
-	}
+	} while (!quit);
 }
 
 int XS_Message(void* buf, size_t len)
