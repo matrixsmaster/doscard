@@ -59,9 +59,9 @@ SDL_atomic_t at_flag;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
-#ifdef XSHELL_VERBOSE
-//	xnfo(0,2,"len=%d",len);
-//	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
+#if XSHELL_VERBOSE > 2
+	xnfo(0,2,"len=%d",len);
+	if (buf) xnfo(0,2,"buf[0] = 0x%02X",((uint8_t*)buf)[0]);
 #endif
 	if (!buf) return -1;
 	uint32_t* dw;
@@ -71,10 +71,10 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		b = reinterpret_cast<uint8_t*>(buf);
 		if (disp_fsm == 2) {
 			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 				xnfo(0,2,"End-Of-Frame received (0x%02X) CRC=%d",*b,frame_crc);
 #endif
-				if (*b != 0xff) xnfo(0,2,"Bad Frame (aborted)");
+				if (*b != 0x01) xnfo(0,2,"Bad Frame (wrong stop byte)");
 				disp_fsm = 1;
 				SDL_AtomicIncRef(&at_flag);
 			} else {
@@ -90,35 +90,49 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 	case 4:
 		dw = reinterpret_cast<uint32_t*>(buf);
-		if (*dw == DISPLAY_INIT_SIGNATURE) {
+		switch (*dw) {
+		case DISPLAY_INIT_SIGNATURE:
 			xnfo(0,2,"Signature received");
 			if (!disp_fsm) disp_fsm = 1;
 			else xnfo(-1,2,"Double init!");
+			break;
 
-		} else if (*dw == DISPLAY_NFRM_SIGNATURE) {
+		case DISPLAY_NFRM_SIGNATURE:
 			disp_fsm = 1;
+			break;
 
-		} else if (disp_fsm == 1) {
-			while ((SDL_AtomicGet(&at_flag))) ;
+		case DISPLAY_ABOR_SIGNATURE:
+			if (disp_fsm) {
+				disp_fsm = 1;
+				xnfo(0,2,"Frame abort");
+				SDL_AtomicIncRef(&at_flag);
+			} else
+				xnfo(-1,2,"Frame abort received in wrong state. Data corrupted.");
+			break;
 
-			uint16_t old_w = lcd_w;
-			uint16_t old_h = lcd_h;
-			lcd_w = (*dw >> 16);
-			lcd_h = *dw & 0xffff;
-#ifdef XSHELL_VERBOSE
-			xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
+		default:
+			if (disp_fsm == 1) {
+				while ((SDL_AtomicGet(&at_flag))) ;
+
+				uint16_t old_w = lcd_w;
+				uint16_t old_h = lcd_h;
+				lcd_w = (*dw >> 16);
+				lcd_h = *dw & 0xffff;
+#if XSHELL_VERBOSE
+				xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
 #endif
-			pxclock = 0;
-			frame_cnt = 0;
-			frame_crc = 0;
-			disp_fsm = 2;
-			if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
-				framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*lcd_w*lcd_h));
-				frame_dirty = true;
-#ifdef XSHELL_VERBOSE
-				xnfo(0,2,"Framebuffer resized");
-#endif
-			}
+				pxclock = 0;
+				frame_cnt = 0;
+				frame_crc = 0;
+				disp_fsm = 2;
+				if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
+					framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*lcd_w*lcd_h));
+					frame_dirty = true;
+					xnfo(0,2,"Framebuffer resized to %dx%d",lcd_w,lcd_h);
+				}
+			} else
+				xnfo(1,2,"Unknown dword received: 0x%08X (pxclk=%d frame_cnt=%d)",*dw,pxclock,frame_cnt);
+			break;
 		}
 		break;
 	default:
@@ -130,7 +144,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 int XS_UpdateSoundBuffer(void* buf, size_t len)
 {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,3,"len=%d",len);
 #endif
 	return 0;
@@ -138,7 +152,7 @@ int XS_UpdateSoundBuffer(void* buf, size_t len)
 
 int XS_QueryUIEvents(void* buf, size_t len)
 {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,4,"len=%d",len);
 #endif
 	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
@@ -155,12 +169,13 @@ int XS_QueryUIEvents(void* buf, size_t len)
 
 int XS_GetTicks(void* buf, size_t len)
 {
-	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
-	struct timespec r;
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,5,"len=%d",len);
 #endif
 	if ((!buf) || (len < 4)) return -1;
+	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
+#if 0
+	struct timespec r;
 	if (!clkres) {
 		clkres = new struct timespec;
 		clock_getres(CLOCK_MONOTONIC,clkres);
@@ -180,6 +195,10 @@ int XS_GetTicks(void* buf, size_t len)
 		*val -= *clkbeg;
 	}
 	return 0;
+#else
+	*val = SDL_GetTicks();
+	return 0;
+#endif
 }
 
 static void XS_ldb_register()
@@ -190,7 +209,7 @@ static void XS_ldb_register()
 	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
 	Dosbox_RegisterCallback(DBCB_PushMessage,&XS_Message);
 	Dosbox_RegisterCallback(DBCB_FileIOReq,&XS_FIO);
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 	xnfo(0,6,"finished");
 #endif
 }
@@ -216,7 +235,7 @@ static int XS_SDLInit()
 	SDL_RenderClear(ren);
 	SDL_RenderPresent(ren);
 	SDL_AtomicSet(&at_flag,0);
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 	xnfo(0,7,"Init OK");
 #endif
 	return 0;
@@ -224,7 +243,7 @@ static int XS_SDLInit()
 
 static void XS_SDLKill()
 {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 	xnfo(0,8,"killing...");
 #endif
 	if (ren) SDL_DestroyRenderer(ren);
@@ -277,26 +296,26 @@ static void XS_SDLoop()
 			}
 
 			evt_fifo.insert(evt_fifo.begin(),mye);
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
 #endif
 		}
 
 		/* Frame Processing*/
-		if (!frame_block) {
-			if (framebuf) {
-				if (frame_dirty) {
-					xnfo(0,9,"frame is dirty");
-					if (frame_sdl) SDL_DestroyTexture(frame_sdl);
-					frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
-							SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
-					frame_dirty = false;
-				}
-				if (frame_sdl) {
-					SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
-					SDL_RenderClear(ren);
-					SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
-				}
+		if ((!frame_block) && (framebuf)) {
+			if (frame_dirty) {
+#if XSHELL_VERBOSE
+				xnfo(0,9,"frame is dirty");
+#endif
+				if (frame_sdl) SDL_DestroyTexture(frame_sdl);
+				frame_sdl = SDL_CreateTexture(ren,SDL_PIXELFORMAT_ARGB8888,
+						SDL_TEXTUREACCESS_STREAMING,lcd_w,lcd_h);
+				frame_dirty = false;
+			}
+			if (frame_sdl) {
+				SDL_UpdateTexture(frame_sdl,NULL,framebuf,lcd_w*sizeof(uint32_t));
+				SDL_RenderClear(ren);
+				SDL_RenderCopy(ren,frame_sdl,NULL,NULL);
 			}
 		}
 		SDL_AtomicSet(&at_flag,0);
@@ -305,11 +324,12 @@ static void XS_SDLoop()
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	} while (!quit);
+	SDL_AtomicSet(&at_flag,0);
 }
 
 int XS_Message(void* buf, size_t len)
 {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,10,"len=%d",len);
 #endif
 	if (buf && len) xnfo(0,10,"%s",buf);
@@ -318,7 +338,7 @@ int XS_Message(void* buf, size_t len)
 
 int XS_FIO(void* buf, size_t len)
 {
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,11,"len=%d",len);
 #endif
 	if ((!buf) || (len < sizeof(DBFILE))) return -1;
@@ -326,7 +346,7 @@ int XS_FIO(void* buf, size_t len)
 	if ((f->todo) && (!f->rf)) return -1;
 	uint64_t* x;
 	int64_t* sx;
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
 			f->name,f->todo,f->p_x,f->p_y,f->buf);
 #endif
@@ -369,7 +389,7 @@ int XS_FIO(void* buf, size_t len)
 		xnfo(1,11,"Unknown operation %d for file '%s'",f->todo,f->name);
 		return -1;
 	}
-#ifdef XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 	xnfo(0,11,"default return");
 #endif
 	return 0;

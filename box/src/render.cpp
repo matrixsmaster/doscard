@@ -32,6 +32,7 @@
 
 Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
+static bool init_ok;
 
 static void RENDER_CallBack(GFX_CallBackFunctions_t function);
 
@@ -95,8 +96,10 @@ static void RENDER_StartLineHandler(const void * src)
 
 bool RENDER_StartUpdate(void)
 {
-	//TODO: return false if busy (can we be busy and want to draw simultaneously in
-	//a single-threaded env??
+	if (!init_ok) {
+		init_ok = true;
+		return false;
+	}
 	RENDER_DrawLine = RENDER_StartLineHandler;
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
@@ -109,10 +112,10 @@ void RENDER_EndUpdate(bool abort)
 {
 	if (abort) {
 		//Do NOT update anything
-		LDB_SendByte(0);
+		LDB_SendDWord(DISPLAY_ABOR_SIGNATURE);
 	} else {
 		//normal update
-		LDB_SendByte(0xff);
+		LDB_SendByte(0x01);
 	}
 }
 
@@ -130,4 +133,5 @@ void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool 
 void RENDER_Init(Section * sec)
 {
 	LDB_SendDWord(DISPLAY_INIT_SIGNATURE);
+	init_ok = false;
 }

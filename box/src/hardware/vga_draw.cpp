@@ -819,7 +819,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 		return;
 
 	vga.draw.address_line = vga.config.hlines_skip;
-	if (vga.draw.lines_scaled < 1) vga.draw.lines_scaled = 1;
+//	if (vga.draw.lines_scaled < 1) vga.draw.lines_scaled = 1;
 	if (IS_EGAVGA_ARCH) {
 		vga.draw.split_line = (Bitu)((vga.config.line_compare+1)/vga.draw.lines_scaled);
 		if ((svgaCard==SVGA_S3Trio) && (vga.config.line_compare==0)) vga.draw.split_line=0;

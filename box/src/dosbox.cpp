@@ -282,7 +282,7 @@ void DOSBOX_Init(void)
 	secprop->AddInitFunction(&PAGING_Init);//done
 	secprop->AddInitFunction(&MEM_Init);//done
 //	secprop->AddInitFunction(&HARDWARE_Init);//done
-	Pint = secprop->Add_int("memsize", Property::Changeable::WhenIdle,16);
+	Pint = secprop->Add_int("memsize", Property::Changeable::WhenIdle,31);
 	Pint->SetMinMax(1,63);
 	Pint->Set_help(
 		"Amount of memory DOSBox has in megabytes.\n"
@@ -303,40 +303,15 @@ void DOSBOX_Init(void)
 	Pbool = secprop->Add_bool("aspect",Property::Changeable::Always,false);
 	Pbool->Set_help("Do aspect correction, if your output method doesn't support scaling this can slow things down!.");
 
-	Pmulti = secprop->Add_multi("scaler",Property::Changeable::Always," ");
-	Pmulti->SetValue("normal2x");
-	Pmulti->Set_help("Scaler used to enlarge/enhance low resolution modes. If 'forced' is appended,\n"
-	                 "then the scaler will be used even if the result might not be desired.");
-	Pstring = Pmulti->GetSection()->Add_string("type",Property::Changeable::Always,"normal2x");
-
-	const char *scalers[] = { 
-		"none", "normal2x", "normal3x",
-#if RENDER_USE_ADVANCED_SCALERS>2
-		"advmame2x", "advmame3x", "advinterp2x", "advinterp3x", "hq2x", "hq3x", "2xsai", "super2xsai", "supereagle",
-#endif
-#if RENDER_USE_ADVANCED_SCALERS>0
-		"tv2x", "tv3x", "rgb2x", "rgb3x", "scan2x", "scan3x",
-#endif
-		0 };
-	Pstring->Set_values(scalers);
-
-	const char* force[] = { "", "forced", 0 };
-	Pstring = Pmulti->GetSection()->Add_string("force",Property::Changeable::Always,"");
-	Pstring->Set_values(force);
-
 	secprop=control->AddSection_prop("cpu",&CPU_Init,true);//done
-	const char* cores[] = { "auto",
-#if (C_DYNAMIC_X86) || (C_DYNREC)
-		"dynamic",
-#endif
-		"normal", "simple",0 };
+	const char* cores[] = { "auto", "normal", "simple",0 };
 	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"auto");
 	Pstring->Set_values(cores);
 	Pstring->Set_help("CPU Core used in emulation. auto will switch to dynamic if available and\n"
 		"appropriate.");
 
-	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", "386_prefetch", 0};
-	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"auto");
+	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", 0};
+	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"486_slow");
 	Pstring->Set_values(cputype_values);
 	Pstring->Set_help("CPU Type used in emulation. auto is the fastest choice.");
 
@@ -354,8 +329,8 @@ void DOSBOX_Init(void)
 		"                  handle.");
 
 	const char* cyclest[] = { "auto","fixed","max","%u",0 };
-	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::Always,"auto");
-	Pmulti_remain->SetValue("auto");
+	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::Always,"max");
+	Pmulti_remain->SetValue("max");
 	Pstring->Set_values(cyclest);
 
 	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::Always,"");

@@ -57,6 +57,7 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 
 	if(paused) strcat(title," PAUSED");
 //	SDL_WM_SetCaption(title,VERSION);
+	GFX_ShowMsg("TITLE [%s]",title);
 }
 
 void GFX_ResetScreen(void)
