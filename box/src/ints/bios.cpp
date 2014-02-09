@@ -25,7 +25,6 @@
 #include "callback.h"
 #include "inout.h"
 #include "pic.h"
-#include "hardware.h"
 #include "pci_bus.h"
 #include "joystick.h"
 #include "mouse.h"
@@ -34,6 +33,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 
+namespace dosbox {
 
 /* if mem_systems 0 then size_extended is reported as the real size else 
  * zero is reported. ems and xms can increase or decrease the other_memsystems
@@ -1308,4 +1308,6 @@ void BIOS_Destroy(Section* /*sec*/){
 void BIOS_Init(Section* sec) {
 	test = new BIOS(sec);
 	sec->AddDestroyFunction(&BIOS_Destroy,false);
+}
+
 }

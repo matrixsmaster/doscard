@@ -36,6 +36,8 @@
 
 #include "cpu.h"
 
+namespace dosbox {
+
 #define LOG_SER(x) log_ser 
 
 bool device_COM::Read(Bit8u * data,Bit16u * size) {
@@ -1289,4 +1291,6 @@ void SERIAL_Init (Section * sec) {
 	if (testSerialPortsBaseclass) delete testSerialPortsBaseclass;
 	testSerialPortsBaseclass = new SERIALPORTS (sec);
 	sec->AddDestroyFunction (&SERIAL_Destroy, true);
+}
+
 }

@@ -24,8 +24,10 @@
 #include "regs.h"
 #include "mem.h"
 #include "dos_inc.h" /* for Drives[] */
-#include "../dos/drives.h"
+#include "drives.h"
 #include "mapper.h"
+
+namespace dosbox {
 
 #define MAX_DISK_IMAGES 4
 
@@ -536,4 +538,6 @@ void BIOS_SetupDisks(void) {
 	MAPPER_AddHandler(swapInNextDisk,MK_f4,MMOD1,"swapimg","Swap Image");
 	killRead = false;
 	swapping_requested = false;
+}
+
 }

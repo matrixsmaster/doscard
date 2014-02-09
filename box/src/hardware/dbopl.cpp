@@ -32,14 +32,13 @@
 	//DUNNO Keyon in 4op, switch to 2op without keyoff.
 */
 
-
-
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "dosbox.h"
 #include "dbopl.h"
 
+namespace dosbox {
 
 #ifndef PI
 #define PI 3.14159265358979323846
@@ -1508,4 +1507,5 @@ void Handler::Init( Bitu rate ) {
 }
 
 
-};		//Namespace DBOPL
+}		//Namespace DBOPL
+}		//Namespace DosBox

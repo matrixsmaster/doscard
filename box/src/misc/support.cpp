@@ -28,11 +28,11 @@
 #include <cctype>
 #include <string>
 #include "dosbox.h"
-#include "debug.h"
 #include "support.h"
 #include "video.h"
 #include "ldb.h"
 
+namespace dosbox {
 
 void upcase(std::string &str) {
 	int (*tf)(int) = std::toupper;
@@ -181,4 +181,6 @@ void E_Exit(const char * format,...) {
 	strcat(buf,"\n");
 
 	throw(buf);
+}
+
 }

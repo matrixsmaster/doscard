@@ -26,6 +26,8 @@
 #include "paging.h"
 #include "setup.h"
 
+namespace dosbox {
+
 DmaController *DmaControllers[2];
 
 #define EMM_PAGEFRAME4K	((0xE000*16)/4096)
@@ -401,4 +403,6 @@ void DMA_Init(Section* sec) {
 	for (i=0;i<LINK_START;i++) {
 		ems_board_mapping[i]=i;
 	}
+}
+
 }

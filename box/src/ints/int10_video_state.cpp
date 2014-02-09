@@ -22,6 +22,8 @@
 #include "inout.h"
 #include "int10.h"
 
+namespace dosbox {
+
 Bitu INT10_VideoState_GetSize(Bitu state) {
 	// state: bit0=hardware, bit1=bios data, bit2=color regs/dac state
 	if ((state&7)==0) return 0;
@@ -380,4 +382,6 @@ bool INT10_VideoState_Restore(Bitu state,RealPt buffer) {
 	}
 
 	return true;
+}
+
 }

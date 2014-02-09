@@ -21,6 +21,8 @@
 #include "inout.h"
 #include "vga.h"
 
+namespace dosbox {
+
 #define seq(blah) vga.seq.blah
 
 Bitu read_p3c4(Bitu /*port*/,Bitu /*iolen*/) {
@@ -158,3 +160,4 @@ void VGA_SetupSEQ(void) {
 	}
 }
 
+}

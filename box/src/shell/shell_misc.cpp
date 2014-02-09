@@ -26,6 +26,8 @@
 #include "callback.h"
 #include "support.h"
 
+namespace dosbox {
+
 void DOS_Shell::ShowPrompt(void) {
 	Bit8u drive=DOS_GetDefaultDrive()+'A';
 	char dir[DOS_PATHLENGTH];
@@ -599,4 +601,6 @@ char * DOS_Shell::Which(char * name) {
 		}
 	}
 	return 0;
+}
+
 }

@@ -19,6 +19,8 @@
 #include "adlib.h"
 #include "dosbox.h"
 
+namespace dosbox {
+
 //Use 8 handlers based on a small logatirmic wavetabe and an exponential table for volume
 #define WAVE_HANDLER	10
 //Use a logarithmic wavetable with an exponential table for volume
@@ -254,4 +256,5 @@ struct Handler : public Adlib::Handler {
 };
 
 
-};		//Namespace
+} //dbopl
+} //dosbox

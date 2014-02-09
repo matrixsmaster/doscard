@@ -30,6 +30,7 @@
 #include "dosbox.h"
 #include "opl.h"
 
+namespace dosbox {
 
 static fltype recipsamp;	// inverse of sampling rate
 static Bit16s wavtable[WAVEPREC*3];	// wave form table
@@ -1458,4 +1459,6 @@ void adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 #endif
 
 	}
+}
+
 }

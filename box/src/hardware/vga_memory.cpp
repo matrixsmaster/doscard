@@ -27,6 +27,7 @@
 #include "inout.h"
 #include "setup.h"
 
+namespace dosbox {
 
 #ifndef C_VGARAM_CHECKED
 #define C_VGARAM_CHECKED 1
@@ -963,4 +964,6 @@ void VGA_SetupMemory(Section* sec) {
 		   conventional memory below 128k */
 		//TODO map?	
 	} 
+}
+
 }

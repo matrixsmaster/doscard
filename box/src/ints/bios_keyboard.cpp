@@ -26,6 +26,8 @@
 #include "inout.h"
 #include "dos_inc.h"
 
+namespace dosbox {
+
 /* SDL by default treats numlock and scrolllock different from all other keys.
  * In recent versions this can disabled by a environment variable which we set in sdlmain.cpp
  * Define the following if this is the case */
@@ -647,3 +649,4 @@ void BIOS_SetupKeyboard(void) {
 	}
 }
 
+}

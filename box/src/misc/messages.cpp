@@ -29,6 +29,8 @@
 
 using namespace std;
 
+namespace dosbox {
+
 #define LINE_IN_MAXLEN 2048
 
 struct MessageBlock {
@@ -147,4 +149,6 @@ void MSG_Init(Section_prop * section)
 		Prop_path* pathprop = section->Get_path("language");
 		if(pathprop) LoadMessageFile(pathprop->realpath.c_str());
 	}
+}
+
 }

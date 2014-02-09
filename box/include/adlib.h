@@ -25,8 +25,8 @@
 #include "inout.h"
 #include "setup.h"
 #include "pic.h"
-#include "hardware.h"
 
+namespace dosbox {
 
 namespace Adlib {
 
@@ -148,5 +148,6 @@ public:
 
 
 }		//Adlib namespace
+}		//DosBox
 
 #endif

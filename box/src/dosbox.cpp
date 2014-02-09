@@ -38,7 +38,7 @@
 #include "programs.h"
 #include "support.h"
 #include "mapper.h"
-#include "ints/int10.h"
+#include "int10.h"
 #include "render.h"
 #include "pci_bus.h"
 #include "box_inits.h"

@@ -32,6 +32,8 @@
 #include "shell.h"
 #include "ldb.h"
 
+namespace dosbox {
+
 Bitu call_program;
 
 /* This registers a file on the virtual drive and creates the correct structure for it*/
@@ -803,4 +805,6 @@ void PROGRAMS_Init(Section* /*sec*/) {
 	MSG_Add("PROGRAM_CONFIG_GET_SYNTAX","Correct syntax: config -get \"section property\".\n");
 	MSG_Add("PROGRAM_CONFIG_PRINT_STARTUP","\nDOSBox was started with the following command line parameters:\n%s");
 	MSG_Add("PROGRAM_CONFIG_MISSINGPARAM","Missing parameter.");
+}
+
 }

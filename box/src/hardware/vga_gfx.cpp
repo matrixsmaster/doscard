@@ -21,6 +21,8 @@
 #include "inout.h"
 #include "vga.h"
 
+namespace dosbox {
+
 #define gfx(blah) vga.gfx.blah
 static bool index9warned=false;
 
@@ -232,4 +234,4 @@ void VGA_SetupGFX(void) {
 	}
 }
 
-
+}

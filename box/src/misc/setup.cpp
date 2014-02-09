@@ -30,7 +30,10 @@
 #include "ldb.h"
 
 using namespace std;
-static std::string current_config_dir; // Set by parseconfigfile so Prop_path can use it to construct the realpath
+
+namespace dosbox {
+
+static string current_config_dir; // Set by parseconfigfile so Prop_path can use it to construct the realpath
 void Value::destroy() throw(){
 	if (type == V_STRING) delete _string;
 }
@@ -1146,4 +1149,6 @@ void CommandLine::Shift(unsigned int amount) {
 		file_name = cmds.size()?(*(cmds.begin())):"";
 		if(cmds.size()) cmds.erase(cmds.begin());
 	}
+}
+
 }

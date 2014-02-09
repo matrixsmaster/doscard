@@ -33,6 +33,8 @@
 #include "cpu.h"
 #include "dma.h"
 
+namespace dosbox {
+
 #define EMM_PAGEFRAME	0xE000
 #define EMM_PAGEFRAME4K	((EMM_PAGEFRAME*16)/4096)
 #define	EMM_MAX_HANDLES	200				/* 255 Max */
@@ -1469,3 +1471,5 @@ void EMS_Init(Section* sec) {
 
 //Initialize static members
 Bit16u EMS::ems_baseseg = 0;
+
+}

@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+namespace dosbox {
 
 typedef struct _COMPORT *COMPORT;
 
@@ -53,3 +54,5 @@ bool SERIAL_sendchar(COMPORT port, char data);
 #define SERIAL_OVERRUN_ERR 0x02
 
 int SERIAL_getextchar(COMPORT port);
+
+}

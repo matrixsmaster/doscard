@@ -26,14 +26,16 @@
 #include "mixer.h"
 #include "dma.h"
 #include "pic.h"
-#include "hardware.h"
 #include "setup.h"
 #include "support.h"
 #include "shell.h"
+
 using namespace std;
 
-void MIDI_RawOutByte(Bit8u data);
-bool MIDI_Available(void);
+namespace dosbox {
+
+//void MIDI_RawOutByte(Bit8u data);
+//bool MIDI_Available(void);
 
 #define SB_PIC_EVENTS 0
 
@@ -1655,4 +1657,6 @@ void SBLASTER_ShutDown(Section* /*sec*/) {
 void SBLASTER_Init(Section* sec) {
 	test = new SBLASTER(sec);
 	sec->AddDestroyFunction(&SBLASTER_ShutDown,true);
+}
+
 }

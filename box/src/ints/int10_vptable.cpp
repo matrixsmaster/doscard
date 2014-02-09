@@ -22,6 +22,7 @@
 #include "inout.h"
 #include "int10.h"
 
+namespace dosbox {
 
 const Bit8u vparams[] = {
 	// 40x25 mode 0 and 1 crtc registers
@@ -795,3 +796,5 @@ void INT10_GenerateVideoParameterTable(void) {
 	E_Exit("done!");
 }
 #endif 
+
+}

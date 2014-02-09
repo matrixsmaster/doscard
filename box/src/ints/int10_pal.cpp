@@ -21,6 +21,8 @@
 #include "inout.h"
 #include "int10.h"
 
+namespace dosbox {
+
 #define ACTL_MAX_REG   0x14
 
 static INLINE void ResetACTL(void) {
@@ -421,4 +423,6 @@ void INT10_PerformGrayScaleSumming(Bit16u start_reg,Bit16u count) {
 		Bit8u ic=(i>0x3f) ? 0x3f : ((Bit8u)(i & 0xff));
 		INT10_SetSingleDACRegister(start_reg+ct,ic,ic,ic);
 	}
+}
+
 }

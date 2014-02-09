@@ -27,6 +27,8 @@
 #include "render.h"
 #include "mapper.h"
 
+namespace dosbox {
+
 static void write_crtc_index_other(Bitu /*port*/,Bitu val,Bitu /*iolen*/) {
 	vga.other.index=(Bit8u)val;
 }
@@ -872,5 +874,7 @@ void VGA_SetupOther(void) {
 		IO_RegisterReadHandler(base,read_crtc_index_other,IO_MB);
 		IO_RegisterReadHandler(base+1,read_crtc_data_other,IO_MB);
 	}
+
+}
 
 }

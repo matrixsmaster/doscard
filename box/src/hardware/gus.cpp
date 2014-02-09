@@ -32,6 +32,8 @@
 
 using namespace std;
 
+namespace dosbox {
+
 //Extra bits of precision over normal gus
 #define WAVE_BITS 2
 #define WAVE_FRACT (9+WAVE_BITS)
@@ -887,4 +889,6 @@ void GUS_ShutDown(Section* /*sec*/) {
 void GUS_Init(Section* sec) {
 	test = new GUS(sec);
 	sec->AddDestroyFunction(&GUS_ShutDown,true);
+}
+
 }

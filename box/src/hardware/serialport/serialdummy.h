@@ -22,6 +22,8 @@
 
 #include "serialport.h"
 
+namespace dosbox {
+
 //#define CHECKIT_TESTPLUG
 
 class CSerialDummy : public CSerial {
@@ -44,5 +46,7 @@ public:
 #endif
 
 };
+
+}
 
 #endif // INCLUDEGUARD

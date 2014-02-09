@@ -30,6 +30,8 @@
 
 #include "libserial.h"
 
+namespace dosbox {
+
 class CDirectSerial : public CSerial {
 public:
 	CDirectSerial(Bitu id, CommandLine* cmd);
@@ -65,6 +67,8 @@ private:
 #endif
 
 };
+
+}
 
 #endif	// C_DIRECTSERIAL
 #endif	// include guard

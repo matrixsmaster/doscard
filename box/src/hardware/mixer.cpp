@@ -26,16 +26,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <math.h>
-
-#if defined (WIN32)
-//Midi listing
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <mmsystem.h>
-#endif
-
 #include "mem.h"
 #include "pic.h"
 #include "dosbox.h"
@@ -45,8 +35,9 @@
 #include "cross.h"
 #include "support.h"
 #include "mapper.h"
-#include "hardware.h"
 #include "programs.h"
+
+namespace dosbox {
 
 #define MIXER_SSIZE 4
 #define MIXER_SHIFT 14
@@ -658,4 +649,6 @@ void MIXER_Init(Section* sec) {
 	mixer.max_needed=mixer.blocksize * 2 + 2*mixer.min_needed;
 	mixer.needed=mixer.min_needed+1;
 	PROGRAMS_MakeFile("MIXER.COM",MIXER_ProgramStart);
+}
+
 }

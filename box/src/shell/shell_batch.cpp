@@ -19,9 +19,10 @@
 
 #include <stdlib.h>
 #include <string.h>
-
 #include "shell.h"
 #include "support.h"
+
+namespace dosbox {
 
 BatchFile::BatchFile(DOS_Shell * host,char const * const resolved_name,char const * const entered_name, char const * const cmd_line) {
 	location = 0;
@@ -198,4 +199,6 @@ again:
 
 void BatchFile::Shift(void) {
 	cmd->Shift(1);
+}
+
 }

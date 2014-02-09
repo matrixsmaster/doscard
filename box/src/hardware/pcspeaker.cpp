@@ -24,6 +24,7 @@
 #include "setup.h"
 #include "pic.h"
 
+namespace dosbox {
 
 #ifndef PI
 #define PI 3.14159265358979323846
@@ -356,4 +357,6 @@ void PCSPEAKER_ShutDown(Section* sec){
 void PCSPEAKER_Init(Section* sec) {
 	test = new PCSPEAKER(sec);
 	sec->AddDestroyFunction(&PCSPEAKER_ShutDown,true);
+}
+
 }

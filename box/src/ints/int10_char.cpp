@@ -25,6 +25,8 @@
 #include "inout.h"
 #include "int10.h"
 
+namespace dosbox {
+
 static void CGA2_CopyRow(Bit8u cleft,Bit8u cright,Bit8u rold,Bit8u rnew,PhysPt base) {
 	Bit8u cheight = real_readb(BIOSMEM_SEG,BIOSMEM_CHAR_HEIGHT);
 	PhysPt dest=base+((CurMode->twidth*rnew)*(cheight/2)+cleft);
@@ -657,4 +659,6 @@ void INT10_WriteString(Bit8u row,Bit8u col,Bit8u flag,Bit8u attr,PhysPt string,B
 	if (!(flag&1)) {
 		INT10_SetCursorPos(cur_row,cur_col,page);
 	}
+}
+
 }

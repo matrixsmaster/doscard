@@ -16,7 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <string.h>
 #include "dosbox.h"
 #include "mem.h"
 #include "inout.h"
@@ -24,7 +24,7 @@
 #include "paging.h"
 #include "regs.h"
 
-#include <string.h>
+namespace dosbox {
 
 #define PAGES_IN_BLOCK	((1024*1024)/MEM_PAGE_SIZE)
 #define SAFE_MEMORY	32
@@ -611,4 +611,6 @@ void MEM_Init(Section * sec) {
 	/* shutdown function */
 	test = new MEMORY(sec);
 	sec->AddDestroyFunction(&MEM_ShutDown);
+}
+
 }

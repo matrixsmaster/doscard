@@ -23,6 +23,8 @@
 #include "serialdummy.h"
 #include "serialport.h"
 
+namespace dosbox {
+
 CSerialDummy::CSerialDummy(Bitu id,	CommandLine* cmd):CSerial(id, cmd) {
 	CSerial::Init_Registers();
 	setRI(false);
@@ -99,4 +101,6 @@ void CSerialDummy::setDTR(bool val) {
 	setRI(val);
 	setCD(val);
 #endif
+}
+
 }

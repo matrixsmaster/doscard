@@ -26,6 +26,8 @@
 #include "mouse.h"
 #include "vga.h"
 
+namespace dosbox {
+
 #define _EGA_HALF_CLOCK		0x0001
 #define _EGA_LINE_DOUBLE	0x0002
 #define _VGA_PIXEL_DOUBLE	0x0004
@@ -1432,4 +1434,6 @@ Bitu VideoModeMemSize(Bitu mode) {
 	}
 	// Return 0 for all other types, those always fit in memory
 	return 0;
+}
+
 }

@@ -20,13 +20,13 @@
 #include "inout.h"
 #include "mixer.h"
 #include "mem.h"
-#include "hardware.h"
 #include "setup.h"
 #include "support.h"
 #include "pic.h"
 #include <cstring>
 #include <math.h>
 
+namespace dosbox {
 
 #define LEFT	0x00
 #define RIGHT	0x01
@@ -497,3 +497,4 @@ void CMS_ShutDown(Section* sec) {
 	delete test;	       
 }
 
+}

@@ -25,6 +25,8 @@
 #include "../src/cpu/lazyflags.h"
 #include "callback.h"
 
+namespace dosbox {
+
 //#define ENABLE_PORTLOG
 
 IO_WriteHandler * io_writehandlers[3][IO_MAX];
@@ -520,4 +522,6 @@ void IO_Destroy(Section*) {
 void IO_Init(Section * sect) {
 	test = new IO(sect);
 	sect->AddDestroyFunction(&IO_Destroy);
+}
+
 }

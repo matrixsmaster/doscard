@@ -22,7 +22,7 @@
 #include "callback.h"
 #include "regs.h"
 #include "bios.h"
-#include "../dos/drives.h"
+#include "drives.h"
 #include "support.h"
 #include "control.h"
 #include <cstring>
@@ -31,6 +31,8 @@
 #include <vector>
 #include <string>
 #include <time.h>
+
+namespace dosbox {
 
 static SHELL_Cmd cmd_list[]={
 {	"DIR",		0,			&DOS_Shell::CMD_DIR,		"SHELL_CMD_DIR_HELP"},
@@ -1212,4 +1214,6 @@ void DOS_Shell::CMD_VER(char *args) {
 		dos.version.major = (Bit8u)(atoi(word));
 		dos.version.minor = (Bit8u)(atoi(args));
 	} else WriteOut(MSG_Get("SHELL_CMD_VER_VER"),VERSION,dos.version.major,dos.version.minor);
+}
+
 }

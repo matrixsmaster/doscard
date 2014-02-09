@@ -27,6 +27,7 @@
 #include "callback.h"
 #include "support.h"
 
+namespace dosbox {
 
 Bitu call_shellstop;
 /* Larger scope so shell_del autoexec can use it to
@@ -671,4 +672,6 @@ void SHELL_Init() {
 	first_shell->Run();
 	delete first_shell;
 	first_shell = 0;//Make clear that it shouldn't be used anymore
+}
+
 }

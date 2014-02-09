@@ -28,6 +28,8 @@
 #include "int10.h"
 #include "dos_inc.h"
 
+namespace dosbox {
+
 #define VESA_SUCCESS          0x00
 #define VESA_FAIL             0x01
 #define VESA_HW_UNSUPPORTED   0x02
@@ -596,3 +598,4 @@ void INT10_SetupVESA(void) {
 	int10.rom.pmode_interface_size=int10.rom.used - RealOff( int10.rom.pmode_interface );
 }
 
+}

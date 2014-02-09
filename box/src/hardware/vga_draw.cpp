@@ -25,6 +25,8 @@
 #include "vga.h"
 #include "pic.h"
 
+namespace dosbox {
+
 //#undef C_DEBUG
 //#define C_DEBUG 1
 //#define LOG(X,Y) LOG_MSG
@@ -1597,4 +1599,6 @@ void VGA_SetOverride(bool vga_override) {
 			VGA_SetupDrawing(0);
 		}
 	}
+}
+
 }

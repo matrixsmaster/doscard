@@ -25,6 +25,8 @@
 #include "mixer.h"
 #include "timer.h"
 
+namespace dosbox {
+
 #define KEYBUFSIZE 32
 #define KEYDELAY 0.300f			//Considering 20-30 khz serial clock and 11 bits/char
 
@@ -392,4 +394,6 @@ void KEYBOARD_Init(Section* sec) {
 	keyb.repeat.rate=33;
 	keyb.repeat.wait=0;
 	KEYBOARD_ClrBuffer();
+}
+
 }

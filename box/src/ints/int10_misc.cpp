@@ -22,9 +22,8 @@
 #include "inout.h"
 #include "int10.h"
 
+namespace dosbox {
 
-
-#pragma pack(1)
 struct Dynamic_Functionality {
 	RealPt static_table;		/* 00h   DWORD  address of static functionality table */
 	Bit8u cur_mode;				/* 04h   BYTE   video mode in effect */
@@ -70,7 +69,6 @@ struct Dynamic_Functionality {
 								*/
 	Bit8u reserved2[13];		/*  33h 13 BYTEs reserved (00h) */
 } GCC_ATTRIBUTE(packed);
-#pragma pack()
 
 void INT10_GetFuncStateInformation(PhysPt save) {
 	/* set static state pointer */
@@ -308,4 +306,6 @@ void INT10_EGA_RIL_WriteRegisterSet(Bit16u cx, PhysPt tbl) {
 		}
 		tbl+=4;
 	}
+}
+
 }

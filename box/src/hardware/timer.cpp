@@ -26,6 +26,8 @@
 #include "timer.h"
 #include "setup.h"
 
+namespace dosbox {
+
 static INLINE void BIN2BCD(Bit16u& val) {
 	Bit16u temp=val%10 + (((val/10)%10)<<4)+ (((val/100)%10)<<8) + (((val/1000)%10)<<12);
 	val=temp;
@@ -476,4 +478,6 @@ uint32_t GetTicks()
 void TIMER_Delay(Bitu c)
 {
 	//TODO
+}
+
 }

@@ -19,6 +19,8 @@
 
 #include "vga.h"
 
+namespace dosbox {
+
 #define S3_LFB_BASE		0xC0000000
 
 #define BIOSMEM_SEG		0x40
@@ -232,3 +234,5 @@ bool INT10_VideoState_Restore(Bitu state,RealPt buffer);
 /* Video Parameter Tables */
 Bit16u INT10_SetupVideoParameterTable(PhysPt basepos);
 void INT10_SetupBasicVideoParameterTable(void);
+
+}

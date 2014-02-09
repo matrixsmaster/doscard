@@ -19,6 +19,8 @@
 #ifndef __XMS_H__
 #define __XMS_H__
 
+namespace dosbox {
+
 Bitu	XMS_QueryFreeMemory		(Bit16u& largestFree, Bit16u& totalFree);
 Bitu	XMS_AllocateMemory		(Bitu size, Bit16u& handle);
 Bitu	XMS_FreeMemory			(Bitu handle);
@@ -30,5 +32,7 @@ Bitu	XMS_ResizeMemory		(Bitu handle, Bitu newSize);
 
 Bitu	XMS_EnableA20			(bool enable);
 Bitu	XMS_GetEnabledA20		(void);
+
+}
 
 #endif

@@ -23,6 +23,7 @@
 #include "vga.h"
 #include <math.h>
 
+namespace dosbox {
 
 void vga_write_p3d4(Bitu port,Bitu val,Bitu iolen);
 Bitu vga_read_p3d4(Bitu port,Bitu iolen);
@@ -151,4 +152,6 @@ void VGA_SetupMisc(void) {
 	} else if (machine==MCH_CGA || IS_TANDY_ARCH) {
 		IO_RegisterReadHandler(0x3da,vga_read_p3da,IO_MB);
 	}
+}
+
 }

@@ -21,6 +21,8 @@
 #include "render.h"
 #include "vga.h"
 
+namespace dosbox {
+
 /*
 3C6h (R/W):  PEL Mask
 bit 0-7  This register is anded with the palette index sent for each dot.
@@ -214,4 +216,6 @@ void VGA_SetupDAC(void) {
 		IO_RegisterWriteHandler(0x3c9,write_p3c9,IO_MB);
 		IO_RegisterReadHandler(0x3c9,read_p3c9,IO_MB);
 	}
+}
+
 }

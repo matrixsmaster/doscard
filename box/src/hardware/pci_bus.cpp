@@ -22,10 +22,10 @@
 #include "mem.h"
 #include "pci_bus.h"
 #include "setup.h"
-#include "debug.h"
 #include "callback.h"
 #include "regs.h"
 
+namespace dosbox {
 
 #if defined(PCI_FUNCTIONALITY_ENABLED)
 
@@ -442,3 +442,5 @@ void PCI_Init(Section* sec) {
 }
 
 #endif
+
+}

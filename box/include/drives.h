@@ -25,6 +25,8 @@
 #include "dos_system.h"
 #include "shell.h" /* for DOS_Shell */
 
+namespace dosbox {
+
 bool WildFileCmp(const char * file, const char * wild);
 void Set_Label(char const * const input, char * const output, bool cdrom);
 
@@ -399,6 +401,6 @@ private:
 	VFILE_Block * search_file;
 };
 
-
+}
 
 #endif

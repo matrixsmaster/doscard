@@ -16,14 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <string.h>
 #include "dosbox.h"
-//#include "setup.h"
 #include "video.h"
 #include "pic.h"
 #include "vga.h"
 
-#include <string.h>
+namespace dosbox {
 
 VGA_Type vga;
 SVGA_Driver svga;
@@ -260,4 +259,6 @@ void SVGA_Setup_Driver(void) {
 		vga.vmemsize = vga.vmemwrap = 256*1024;
 		break;
 	}
+}
+
 }

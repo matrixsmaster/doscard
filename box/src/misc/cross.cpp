@@ -16,87 +16,47 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <string>
+#include <stdlib.h>
 #include "dosbox.h"
 #include "cross.h"
 #include "support.h"
-#include <string>
-#include <stdlib.h>
 
-#ifdef WIN32
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0400
-#endif
-#include <shlobj.h>
-#endif
+namespace dosbox {
 
 #if defined HAVE_SYS_TYPES_H && defined HAVE_PWD_H
 #include <sys/types.h>
 #include <pwd.h>
 #endif
 
-#ifdef WIN32
-static void W32_ConfDir(std::string& in,bool create) {
-	int c = create?1:0;
-	char result[MAX_PATH] = { 0 };
-	BOOL r = SHGetSpecialFolderPath(NULL,result,CSIDL_LOCAL_APPDATA,c);
-	if(!r || result[0] == 0) r = SHGetSpecialFolderPath(NULL,result,CSIDL_APPDATA,c);
-	if(!r || result[0] == 0) {
-		char const * windir = getenv("windir");
-		if(!windir) windir = "c:\\windows";
-		safe_strncpy(result,windir,MAX_PATH);
-		char const* appdata = "\\Application Data";
-		size_t len = strlen(result);
-		if(len + strlen(appdata) < MAX_PATH) strcat(result,appdata);
-		if(create) mkdir(result);
-	}
-	in = result;
-}
-#endif
+#define DEFAULT_CONFIG_FILE "dosbox-" VERSION ".conf"
 
-void Cross::GetPlatformConfigDir(std::string& in) {
-#ifdef WIN32
-	W32_ConfDir(in,false);
-	in += "\\DOSBox";
-#elif defined(MACOSX)
-	in = "~/Library/Preferences";
-	ResolveHomedir(in);
-#else
+void Cross::GetPlatformConfigDir(std::string& in)
+{
+	LOG_MSG("GetPlatformConfigDir()");
 	in = "~/.dosbox";
 	ResolveHomedir(in);
-#endif
 	in += CROSS_FILESPLIT;
 }
 
-void Cross::GetPlatformConfigName(std::string& in) {
-#ifdef WIN32
-#define DEFAULT_CONFIG_FILE "dosbox-" VERSION ".conf"
-#elif defined(MACOSX)
-#define DEFAULT_CONFIG_FILE "DOSBox " VERSION " Preferences"
-#else /*linux freebsd*/
-#define DEFAULT_CONFIG_FILE "dosbox-" VERSION ".conf"
-#endif
+void Cross::GetPlatformConfigName(std::string& in)
+{
+	LOG_MSG("GetPlatformConfigName()");
 	in = DEFAULT_CONFIG_FILE;
 }
 
-void Cross::CreatePlatformConfigDir(std::string& in) {
-#ifdef WIN32
-	W32_ConfDir(in,true);
-	in += "\\DOSBox";
-	mkdir(in.c_str());
-#elif defined(MACOSX)
-	in = "~/Library/Preferences/";
-	ResolveHomedir(in);
-	//Don't create it. Assume it exists
-#else
+void Cross::CreatePlatformConfigDir(std::string& in)
+{
+	LOG_MSG("CreatePlatformConfigDir()");
 	in = "~/.dosbox";
 	ResolveHomedir(in);
 	mkdir(in.c_str(),0700);
-#endif
 	in += CROSS_FILESPLIT;
 }
 
-void Cross::ResolveHomedir(std::string & temp_line) {
+void Cross::ResolveHomedir(std::string & temp_line)
+{
+	LOG_MSG("ResolveHomedir()");
 	if(!temp_line.size() || temp_line[0] != '~') return; //No ~
 
 	if(temp_line.size() == 1 || temp_line[1] == CROSS_FILESPLIT) { //The ~ and ~/ variant
@@ -113,90 +73,31 @@ void Cross::ResolveHomedir(std::string & temp_line) {
 	}
 }
 
-void Cross::CreateDir(std::string const& in) {
-#ifdef WIN32
-	mkdir(in.c_str());
-#else
+void Cross::CreateDir(std::string const& in)
+{
+	LOG_MSG("CreateDir()");
 	mkdir(in.c_str(),0700);
-#endif
 }
 
-bool Cross::IsPathAbsolute(std::string const& in) {
-	// Absolute paths
-#if defined (WIN32) || defined(OS2)
-	// drive letter
-	if (in.size() > 2 && in[1] == ':' ) return true;
-	// UNC path
-	else if (in.size() > 2 && in[0]=='\\' && in[1]=='\\') return true;
-#else
+bool Cross::IsPathAbsolute(std::string const& in)
+{
+	LOG_MSG("IsPathAbsolute()");
 	if (in.size() > 1 && in[0] == '/' ) return true;
-#endif
 	return false;
 }
 
-#if defined (WIN32)
-
-dir_information* open_directory(const char* dirname) {
-	if (dirname == NULL) return NULL;
-
-	size_t len = strlen(dirname);
-	if (len == 0) return NULL;
-
-	static dir_information dir;
-
-	safe_strncpy(dir.base_path,dirname,MAX_PATH);
-
-	if (dirname[len-1] == '\\') strcat(dir.base_path,"*.*");
-	else                        strcat(dir.base_path,"\\*.*");
-
-	dir.handle = INVALID_HANDLE_VALUE;
-
-	return (access(dirname,0) ? NULL : &dir);
-}
-
-bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory) {
-	dirp->handle = FindFirstFile(dirp->base_path, &dirp->search_data);
-	if (INVALID_HANDLE_VALUE == dirp->handle) {
-		return false;
-	}
-
-	safe_strncpy(entry_name,dirp->search_data.cFileName,(MAX_PATH<CROSS_LEN)?MAX_PATH:CROSS_LEN);
-
-	if (dirp->search_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) is_directory = true;
-	else is_directory = false;
-
-	return true;
-}
-
-bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory) {
-	int result = FindNextFile(dirp->handle, &dirp->search_data);
-	if (result==0) return false;
-
-	safe_strncpy(entry_name,dirp->search_data.cFileName,(MAX_PATH<CROSS_LEN)?MAX_PATH:CROSS_LEN);
-
-	if (dirp->search_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) is_directory = true;
-	else is_directory = false;
-
-	return true;
-}
-
-void close_directory(dir_information* dirp) {
-	if (dirp->handle != INVALID_HANDLE_VALUE) {
-		FindClose(dirp->handle);
-		dirp->handle = INVALID_HANDLE_VALUE;
-	}
-}
-
-#else
-
-dir_information* open_directory(const char* dirname) {
+dir_information* open_directory(const char* dirname)
+{
+	LOG_MSG("open_directory()");
 	static dir_information dir;
 	dir.dir=opendir(dirname);
 	safe_strncpy(dir.base_path,dirname,CROSS_LEN);
 	return dir.dir?&dir:NULL;
 }
 
-bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory) {
+bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory)
+{
+	LOG_MSG("read_directory_first()");
 	struct dirent* dentry = readdir(dirp->dir);
 	if (dentry==NULL) {
 		return false;
@@ -227,7 +128,9 @@ bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_dire
 	return true;
 }
 
-bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory) {
+bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory)
+{
+	LOG_MSG("read_directory_next()");
 	struct dirent* dentry = readdir(dirp->dir);
 	if (dentry==NULL) {
 		return false;
@@ -259,8 +162,10 @@ bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_direc
 	return true;
 }
 
-void close_directory(dir_information* dirp) {
+void close_directory(dir_information* dirp)
+{
+	LOG_MSG("close_directory()");
 	closedir(dirp->dir);
 }
 
-#endif
+} // namespace dosbox

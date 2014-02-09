@@ -25,6 +25,8 @@
 #include "int10.h"
 #include "setup.h"
 
+namespace dosbox {
+
 Int10Data int10;
 static Bitu call_10;
 static bool warned_ff=false;
@@ -760,4 +762,6 @@ void INT10_Init(Section* /*sec*/) {
 	INT10_SetupVESA();
 	INT10_SetupRomMemoryChecksum();//SetupVesa modifies the rom as well.
 	INT10_SetVideoMode(0x3);
+}
+
 }

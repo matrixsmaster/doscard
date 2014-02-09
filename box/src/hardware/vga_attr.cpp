@@ -21,6 +21,8 @@
 #include "inout.h"
 #include "vga.h"
 
+namespace dosbox {
+
 #define attr(blah) vga.attr.blah
 
 void VGA_ATTR_SetEGAMonitorPalette(EGAMonitorMode m) {
@@ -293,4 +295,6 @@ void VGA_SetupAttr(void) {
 			IO_RegisterReadHandler(0x3c1,read_p3c1,IO_MB);
 		}
 	}
+}
+
 }

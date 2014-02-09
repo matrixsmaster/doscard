@@ -22,11 +22,12 @@
 #include <math.h>
 #include <sys/types.h>
 #include "adlib.h"
-
 #include "setup.h"
 #include "mapper.h"
 #include "mem.h"
 #include "dbopl.h"
+
+namespace dosbox {
 
 namespace OPL2 {
 	#include "opl.cpp"
@@ -642,5 +643,7 @@ void OPL_Init(Section* sec,OPL_Mode oplmode) {
 void OPL_ShutDown(Section* sec){
 	delete module;
 	module = 0;
+
+}
 
 }

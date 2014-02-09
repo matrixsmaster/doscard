@@ -23,6 +23,8 @@
 #include "inout.h"
 #include "mem.h"
 
+namespace dosbox {
+
 typedef struct {
 	Bitu PR0A;
 	Bitu PR0B;
@@ -238,4 +240,6 @@ void SVGA_Setup_ParadisePVGA1A(void) {
 	phys_writeb(rom_base+0x0080,'=');
 
 	IO_Write(0x3cf, 0x05); // Enable!
+}
+
 }

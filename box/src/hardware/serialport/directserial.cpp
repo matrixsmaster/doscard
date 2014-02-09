@@ -27,6 +27,8 @@
 
 #include "libserial.h"
 
+namespace dosbox {
+
 /* This is a serial passthrough class.  Its amazingly simple to */
 /* write now that the serial ports themselves were abstracted out */
 
@@ -312,6 +314,8 @@ void CDirectSerial::setRTS(bool val) {
 
 void CDirectSerial::setDTR(bool val) {
 	SERIAL_setDTR(comport,val);
+}
+
 }
 
 #endif

@@ -24,7 +24,10 @@
 #include "inout.h"
 #include "mem.h"
 #include <cstdlib>
-// Tseng ET4K data
+
+
+namespace dosbox {
+
 typedef struct {
 	Bit8u extensionsEnabled;
 
@@ -802,4 +805,6 @@ void SVGA_Setup_TsengET3K(void) {
 	phys_writeb(rom_base+0x0079,'n');
 	phys_writeb(rom_base+0x007a,'g');
 	phys_writeb(rom_base+0x007b,' ');
+}
+
 }

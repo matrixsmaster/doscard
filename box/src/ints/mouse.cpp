@@ -19,8 +19,6 @@
 
 #include <string.h>
 #include <math.h>
-
-
 #include "dosbox.h"
 #include "callback.h"
 #include "mem.h"
@@ -32,6 +30,8 @@
 #include "int10.h"
 #include "bios.h"
 #include "dos_inc.h"
+
+namespace dosbox {
 
 static Bitu call_int33,call_int74,int74_ret_callback,call_mouse_bd;
 static Bit16u ps2cbseg,ps2cbofs;
@@ -1117,4 +1117,6 @@ void MOUSE_Init(Section* /*sec*/) {
 	Mouse_ResetHardware();
 	Mouse_Reset();
 	Mouse_SetSensitivity(50,50,50);
+}
+
 }

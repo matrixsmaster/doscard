@@ -19,7 +19,6 @@
 
 #include <time.h>
 #include <math.h>
-
 #include "dosbox.h"
 #include "timer.h"
 #include "pic.h"
@@ -28,6 +27,8 @@
 #include "bios_disk.h"
 #include "setup.h"
 #include "cross.h" //fmod on certain platforms
+
+namespace dosbox {
 
 static struct {
 	Bit8u regs[0x40];
@@ -327,4 +328,6 @@ void CMOS_Destroy(Section* sec){
 void CMOS_Init(Section* sec) {
 	test = new CMOS(sec);
 	sec->AddDestroyFunction(&CMOS_Destroy,true);
+}
+
 }

@@ -21,10 +21,11 @@
 #include "dosbox.h"
 #include "inout.h"
 #include "vga.h"
-#include "debug.h"
 #include "cpu.h"
 #include "video.h"
 #include "pic.h"
+
+namespace dosbox {
 
 #define crtc(blah) vga.crtc.blah
 
@@ -430,6 +431,4 @@ Bitu vga_read_p3d5(Bitu port,Bitu iolen) {
 	}
 }
 
-
-
-
+}
