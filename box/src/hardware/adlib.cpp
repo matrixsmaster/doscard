@@ -29,7 +29,14 @@
 
 namespace dosbox {
 
+//TODO: purge all Chinese Code from here
+
 namespace OPL2 {
+/* That's FUCKING incredible thing - inclusion of A FULL SOURCE MODULE
+ * in the middle of the OTHER MODULE.
+ * If YOU like it, just go and read that guide:
+ * https://www.thc.org/root/phun/unmaintain.html
+ */
 	#include "opl.cpp"
 
 	struct Handler : public Adlib::Handler {
@@ -59,6 +66,10 @@ namespace OPL2 {
 
 namespace OPL3 {
 	#define OPLTYPE_IS_OPL3
+/*
+ * Change one parameter and do it again - Nice Chinese Coding style,
+ * isn't it?!
+ */
 	#include "opl.cpp"
 
 	struct Handler : public Adlib::Handler {

@@ -22,6 +22,8 @@
 #include "SDL2/include/SDL.h"
 #include "keyboard.h"
 
+namespace dosbox {
+
 typedef struct {
 	KBD_KEYS db; //dosbox key
 	SDL_Scancode sdl; //sdl key
@@ -120,5 +122,7 @@ static const XShellKeyboardPair XShellKeyboardMap[] = {
 	    {KBD_down,		SDL_SCANCODE_DOWN},
 	    {KBD_up,		SDL_SCANCODE_UP}
 };
+
+}// namespace dosbox
 
 #endif /* XSKBD_H_ */

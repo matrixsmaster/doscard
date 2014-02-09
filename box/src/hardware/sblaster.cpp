@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,7 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include <iomanip>
 #include <sstream>
 #include <string.h>
@@ -30,9 +30,22 @@
 #include "support.h"
 #include "shell.h"
 
+/*
+ * This module is one of the most obfuscated source module I've ever seen!
+ * !GRAND PRIZE!
+ */
+
+//TODO: do something with this piece of ... code
+
 using namespace std;
 
 namespace dosbox {
+
+extern Bit8u adlib_commandreg;
+void CMS_Init(Section* sec);
+void OPL_Init(Section* sec,OPL_Mode oplmode);
+void CMS_ShutDown(Section* sec);
+void OPL_ShutDown(Section* sec);
 
 //void MIDI_RawOutByte(Bit8u data);
 //bool MIDI_Available(void);

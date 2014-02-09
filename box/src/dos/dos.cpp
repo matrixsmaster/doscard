@@ -29,6 +29,7 @@
 #include "setup.h"
 #include "support.h"
 #include "serialport.h"
+#include "cpu.h"
 
 namespace dosbox {
 
@@ -73,9 +74,6 @@ static void DOS_AddDays(Bitu days) {
 #define DATA_TRANSFERS_TAKE_CYCLES 1
 #ifdef DATA_TRANSFERS_TAKE_CYCLES
 
-#ifndef DOSBOX_CPU_H
-#include "cpu.h"
-#endif
 static inline void modify_cycles(Bits value) {
 	if((4*value+5) < CPU_Cycles) {
 		CPU_Cycles -= 4*value;
@@ -90,11 +88,9 @@ static inline void modify_cycles(Bits /* value */) {
 	return;
 }
 #endif
+
 #define DOS_OVERHEAD 1
 #ifdef DOS_OVERHEAD
-#ifndef DOSBOX_CPU_H
-#include "cpu.h"
-#endif
 
 static inline void overhead() {
 	reg_ip += 2;

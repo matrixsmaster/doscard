@@ -23,7 +23,6 @@
  * Copyright (C) 1998-2001 Ken Silverman
  * Ken Silverman's official web site: "http://www.advsys.net/ken"
  */
-namespace dosbox {
 
 #define fltype double
 
@@ -199,6 +198,4 @@ Bitu adlib_reg_read(Bitu port);
 void adlib_write_index(Bitu port, Bit8u val);
 
 static Bit32u generator_add;	// should be a chip parameter
-
-}
 

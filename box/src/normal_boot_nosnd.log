@@ -1,0 +1,82 @@
+[PROFILE]: Started
+[PROFILE]: Stub mode
+[XSHELL MAIN]: ALIVE!
+[XSHELL MAIN]: SDL2 context created successfully
+[XSHELL MAIN]: DOSBox Thread running!
+[XS_SDLoop]: Loop begins
+[XS_Message]: Dosbox_Run(): Enter
+[XS_Message]: DOSCARD version 0.0.1
+[XS_Message]: Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL.
+[XS_Message]: Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry.
+[XS_Message]: Initializing subsystems...
+[XS_Message]: LoadMessageFile(): STUB
+[XS_UpdateScreenBuffer]: Signature received
+[XS_Message]: TITLE [DOSBox 0.0.1, CPU speed: max 100% cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: MIXER:No Sound Mode Selected.
+[XS_Message]: MAPPER_AddHandler()
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: Startup...
+[XS_Message]: ht 100 vt 449 ratio 1.000000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 640x400
+[XS_Message]: TITLE [DOSBox 0.0.1, CPU speed: max 100% cycles, Frameskip  0, Program: IMGMOUNT]
+[XS_Message]: dbfopen(): Pretend to open file c.img for rb+
+[XS_Message]: autosized image file: 512:63:16:812
+[XS_Message]: dbfopen(): Pretend to open file c.img for rb+
+[XS_Message]: Using partition 0 on drive; skipping 63 sectors
+[XS_Message]: Mounted FAT volume is FAT16 with 51125 clusters
+[XS_Message]: TITLE [DOSBox 0.0.1, CPU speed: max 100% cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: TITLE [DOSBox 0.0.1, CPU speed: max 100% cycles, Frameskip  0, Program:     BOOT]
+[XS_Message]: ResolveHomedir()
+[XS_Message]: dbfopen(): Pretend to open file c.img for rb+
+[XS_Message]: Loaded disk 0 from swaplist position 0 - "c.img"
+[XS_Message]: Loaded disk 1 from swaplist position 0 - "c.img"
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: ht 100 vt 449 ratio 1.200000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 320x400
+[XS_Message]: Mouse_AutoLock(): mouse wanted = 0
+
+[XS_Message]: Mouse_AutoLock(): mouse wanted = 0
+
+[XS_Message]: Mouse_AutoLock(): mouse wanted = 1
+
+[XS_Message]: Mouse_AutoLock(): mouse wanted = 1
+
+[XS_Message]: ht 132 vt 628 ratio 1.000000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 800x600
+[XS_Message]: ht 100 vt 449 ratio 1.200000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 320x400
+[XS_Message]: Mouse_AutoLock(): mouse wanted = 0
+
+[XS_Message]: ht 100 vt 449 ratio 1.200000
+[XS_Message]: Dosbox_Run(): killer exception catch
+[XS_Message]: Dosbox_Run(): Exit
+[XSHELL MAIN]: SDLoop() Exited
+[XSHELL MAIN]: DOSBox Thread Exited (0)
+[XSHELL MAIN]: QUIT
+[PROFILE]: Exit

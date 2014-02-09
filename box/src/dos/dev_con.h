@@ -18,7 +18,7 @@
 
 
 #include "dos_inc.h"
-#include "../ints/int10.h"
+#include "int10.h"
 #include <string.h>
 
 namespace dosbox {

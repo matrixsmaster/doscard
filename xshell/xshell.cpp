@@ -39,9 +39,7 @@
  * write it now :)
  */
 
-using namespace std;
-
-static SDL_Thread* dosbox = NULL;
+static SDL_Thread* dosboxthr = NULL;
 static SDL_Window* wnd = NULL;
 static SDL_Renderer* ren = NULL;
 static struct timespec* clkres = NULL;
@@ -53,9 +51,12 @@ static uint32_t frame_cnt,cur_pixel,frame_crc;
 static uint32_t* framebuf = NULL;
 static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
-static vector<LDB_UIEvent> evt_fifo;
+static std::vector<dosbox::LDB_UIEvent> evt_fifo;
 static int frame_block = 0;
 SDL_atomic_t at_flag;
+
+using namespace std;
+using namespace dosbox;
 
 int XS_UpdateScreenBuffer(void* buf, size_t len)
 {
@@ -427,14 +428,14 @@ int main(int argc, char* argv[])
 
 	XS_ldb_register();
 
-	dosbox = SDL_CreateThread(Dosbox_Run,"DosBoxThread",NULL);
-	if (!dosbox) xnfo(-1,1,"Unable to create DOS thread!");
+	dosboxthr = SDL_CreateThread(Dosbox_Run,"DosBoxThread",NULL);
+	if (!dosboxthr) xnfo(-1,1,"Unable to create DOS thread!");
 	xnfo(0,1,"DOSBox Thread running!");
 
 	XS_SDLoop();
 	xnfo(0,1,"SDLoop() Exited");
 
-	SDL_WaitThread(dosbox,&r);
+	SDL_WaitThread(dosboxthr,&r);
 	xnfo(0,1,"DOSBox Thread Exited (%d)",r);
 
 	XS_SDLKill();

@@ -25,10 +25,10 @@
 #include "pic.h"
 #include "fpu.h"
 #include "ldb.h"
+#include "paging.h"
 
 namespace dosbox {
 
-#include "paging.h"
 #define SegBase(c)	SegPhys(c)
 #define LoadMb(off) mem_readb(off)
 #define LoadMw(off) mem_readw(off)

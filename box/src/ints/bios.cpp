@@ -16,7 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <time.h>
+#include <sys/timeb.h>
 #include "dosbox.h"
 #include "mem.h"
 #include "bios.h"
@@ -30,8 +31,6 @@
 #include "mouse.h"
 #include "setup.h"
 #include "serialport.h"
-#include <time.h>
-#include <sys/timeb.h>
 
 namespace dosbox {
 
@@ -78,6 +77,7 @@ static struct {
 	Bit8u dma;
 } tandy_dac;
 
+bool SB_Get_Address(Bitu& sbaddr, Bitu& sbirq, Bitu& sbdma);
 static bool Tandy_InitializeSB() {
 	/* see if soundblaster module available and at what port/IRQ/DMA */
 	Bitu sbport, sbirq, sbdma;
