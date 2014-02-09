@@ -19,9 +19,9 @@
 #ifndef DOSBOX_REGS_H
 #define DOSBOX_REGS_H
 
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif
+
+namespace dosbox {
 
 #define FLAG_CF		0x00000001
 #define FLAG_PF		0x00000004
@@ -165,5 +165,7 @@ enum {
 #define reg_eip cpu_regs.ip.dword[DW_INDEX]
 
 #define reg_flags cpu_regs.flags
+
+}
 
 #endif

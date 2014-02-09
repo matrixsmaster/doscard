@@ -19,6 +19,8 @@
 #ifndef DOSBOX_KEYBOARD_H
 #define DOSBOX_KEYBOARD_H
 
+namespace dosbox {
+
 enum KBD_KEYS {
 	KBD_NONE,
 	KBD_1,	KBD_2,	KBD_3,	KBD_4,	KBD_5,	KBD_6,	KBD_7,	KBD_8,	KBD_9,	KBD_0,		
@@ -49,5 +51,7 @@ enum KBD_KEYS {
 
 void KEYBOARD_ClrBuffer(void);
 void KEYBOARD_AddKey(KBD_KEYS keytype,bool pressed);
+
+}
 
 #endif

@@ -21,6 +21,8 @@
 
 #include "ldb.h"
 
+namespace dosbox {
+
 #define PIT_TICK_RATE 1193182
 
 //#define GetTicks() XS_GetTicks()
@@ -36,5 +38,7 @@ void TIMER_DelTickHandler(TIMER_TickHandler handler);
 
 /* This will add 1 milliscond to all timers */
 void TIMER_AddTick(void);
+
+}
 
 #endif

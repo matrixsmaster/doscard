@@ -19,9 +19,9 @@
 #ifndef DOSBOX_MEM_H
 #define DOSBOX_MEM_H
 
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h"
-#endif
+
+namespace dosbox {
 
 typedef Bit32u PhysPt;
 typedef Bit8u * HostPt;
@@ -213,7 +213,9 @@ static INLINE void RealSetVec(Bit8u vec,RealPt pt,RealPt &old) {
 
 static INLINE RealPt RealGetVec(Bit8u vec) {
 	return mem_readd(vec<<2);
-}	
+}
+
+}
 
 #endif
 

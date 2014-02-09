@@ -20,22 +20,12 @@
 #ifndef DOSBOX_PROGRAMS_H
 #define DOSBOX_PROGRAMS_H
 
-#ifndef DOSBOX_DOSBOX_H
-#include "dosbox.h"
-#endif
-#ifndef DOSBOX_DOS_INC_H
-#include "dos_inc.h"
-#endif
-
-#ifndef CH_LIST
-#define CH_LIST
-#include <list>
-#endif
-
-#ifndef CH_STRING
-#define CH_STRING
 #include <string>
-#endif
+#include <list>
+#include "dosbox.h"
+#include "dos_inc.h"
+
+namespace dosbox {
 
 class CommandLine {
 public:
@@ -88,5 +78,7 @@ public:
 
 typedef void (PROGRAMS_Main)(Program * * make);
 void PROGRAMS_MakeFile(char const * const name,PROGRAMS_Main * main);
+
+}
 
 #endif

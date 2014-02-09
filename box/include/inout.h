@@ -20,6 +20,8 @@
 #ifndef DOSBOX_INOUT_H
 #define DOSBOX_INOUT_H
 
+namespace dosbox {
+
 #define IO_MAX (64*1024+3)
 
 #define IO_MB	0x1
@@ -74,6 +76,8 @@ static INLINE void IO_Write(Bitu port,Bit8u val) {
 }
 static INLINE Bit8u IO_Read(Bitu port){
 	return (Bit8u)IO_ReadB(port);
+}
+
 }
 
 #endif

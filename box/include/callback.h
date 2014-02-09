@@ -20,9 +20,9 @@
 #ifndef DOSBOX_CALLBACK_H
 #define DOSBOX_CALLBACK_H
 
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif 
+
+namespace dosbox {
 
 typedef Bitu (*CallBack_Handler)(void);
 extern CallBack_Handler CallBack_Handlers[];
@@ -107,4 +107,7 @@ public:
 	}
 	void Set_RealVec(Bit8u vec);
 };
+
+}
+
 #endif

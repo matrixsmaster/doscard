@@ -19,6 +19,8 @@
 #ifndef DOSBOX_BIOS_H
 #define DOSBOX_BIOS_H
 
+namespace dosbox {
+
 #define BIOS_BASE_ADDRESS_COM1          0x400
 #define BIOS_BASE_ADDRESS_COM2          0x402
 #define BIOS_BASE_ADDRESS_COM3          0x404
@@ -130,5 +132,7 @@ bool BIOS_AddKeyToBuffer(Bit16u code);
 void INT10_ReloadRomFonts();
 
 void BIOS_SetComPorts (Bit16u baseaddr[]);
+
+}
 
 #endif

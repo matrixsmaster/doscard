@@ -20,9 +20,9 @@
 #ifndef DOSBOX_MIXER_H
 #define DOSBOX_MIXER_H
 
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h"
-#endif
+
+namespace dosbox {
 
 typedef void (*MIXER_MixHandler)(Bit8u * sampdate,Bit32u len);
 typedef void (*MIXER_Handler)(Bitu len);
@@ -111,5 +111,7 @@ public:
 /* PC Speakers functions, tightly related to the timer functions */
 void PCSPEAKER_SetCounter(Bitu cntr,Bitu mode);
 void PCSPEAKER_SetType(Bitu mode);
+
+}
 
 #endif

@@ -18,6 +18,9 @@
 
 #ifndef DOSBOX_LOGGING_H
 #define DOSBOX_LOGGING_H
+
+namespace dosbox {
+
 enum LOG_TYPES {
 	LOG_ALL,
 	LOG_VGA, LOG_VGAGFX,LOG_VGAMISC,LOG_INT10,
@@ -86,5 +89,6 @@ void GFX_ShowMsg(char const* format,...) GCC_ATTRIBUTE(__format__(__printf__, 1,
 
 #endif //C_DEBUG
 
+}
 
 #endif //DOSBOX_LOGGING_H

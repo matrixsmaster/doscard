@@ -21,11 +21,12 @@
 
 //#define PCI_FUNCTIONALITY_ENABLED 0
 
-#if defined PCI_FUNCTIONALITY_ENABLED
+#ifdef PCI_FUNCTIONALITY_ENABLED
 
 #define PCI_MAX_PCIDEVICES		10
 #define PCI_MAX_PCIFUNCTIONS	8
 
+namespace dosbox {
 
 class PCI_Device {
 private:
@@ -80,6 +81,8 @@ public:
 bool PCI_IsInitialized();
 
 RealPt PCI_GetPModeInterface(void);
+
+}
 
 #endif
 

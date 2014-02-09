@@ -20,21 +20,11 @@
 #ifndef DOSBOX_SERIALPORT_H
 #define DOSBOX_SERIALPORT_H
 
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h"
-#endif
-#ifndef DOSBOX_INOUT_H
 #include "inout.h"
-#endif
-#ifndef DOSBOX_TIMER_H
 #include "timer.h"
-#endif
-#ifndef DOSBOX_DOS_INC_H
 #include "dos_inc.h"
-#endif
-#ifndef DOSBOX_PROGRAMS_H
 #include "programs.h"
-#endif
 
 // set this to 1 for serial debugging in release mode
 #define SERIAL_DBG_FORCED 0
@@ -46,6 +36,8 @@
 #if SERIAL_DEBUG
 #include "hardware.h"
 #endif
+
+namespace dosbox {
 
 // Serial port interface 
 
@@ -443,5 +435,7 @@ public:
 private:
 	CSerial* sclass;
 };
+
+}
 
 #endif

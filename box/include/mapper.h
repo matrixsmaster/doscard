@@ -19,6 +19,8 @@
 #ifndef DOSBOX_MAPPER_H
 #define DOSBOX_MAPPER_H
 
+namespace dosbox {
+
 enum MapKeys {
 	MK_f1,MK_f2,MK_f3,MK_f4,MK_f5,MK_f6,MK_f7,MK_f8,MK_f9,MK_f10,MK_f11,MK_f12,
 	MK_return,MK_kpminus,MK_scrolllock,MK_printscreen,MK_pause,MK_home
@@ -36,5 +38,7 @@ void MAPPER_LosingFocus(void);
 
 #define MMOD1 0x1
 #define MMOD2 0x2
+
+}
 
 #endif

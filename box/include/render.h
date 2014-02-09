@@ -19,6 +19,7 @@
 #ifndef DOSBOX_RENDER_H
 #define DOSBOX_RENDER_H
 
+namespace dosbox {
 
 typedef struct {
 	struct { 
@@ -85,5 +86,6 @@ bool RENDER_StartUpdate(void);
 void RENDER_EndUpdate(bool abort);
 void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue);
 
+}
 
 #endif

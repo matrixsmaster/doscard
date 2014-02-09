@@ -1,6 +1,8 @@
 #ifndef DOSBOX_INITS_H_
 #define DOSBOX_INITS_H_
 
+namespace dosbox {
+
 void MSG_Init(Section_prop *);
 void LOG_StartUp(void);
 void MEM_Init(Section *);
@@ -43,11 +45,6 @@ void PCSPEAKER_Init(Section*);
 //void DISNEY_Init(Section*);
 void SERIAL_Init(Section*); 
 
-
-#if C_IPX
-void IPX_Init(Section*);
-#endif
-
 void SID_Init(Section* sec);
 
 void PIC_Init(Section*);
@@ -70,5 +67,7 @@ void AUTOEXEC_Init(Section*);
 void SHELL_Init(void);
 
 void INT10_Init(Section*);
+
+}
 
 #endif

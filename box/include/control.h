@@ -20,35 +20,13 @@
 #ifndef DOSBOX_CONTROL_H
 #define DOSBOX_CONTROL_H
 
-#ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
-#pragma warning ( disable : 4290 )
-#endif
-
-#ifndef DOSBOX_PROGRAMS_H
-#include "programs.h"
-#endif
-#ifndef DOSBOX_SETUP_H
-#include "setup.h"
-#endif
-
-#ifndef CH_LIST
-#define CH_LIST
 #include <list>
-#endif
-
-#ifndef CH_VECTOR
-#define CH_VECTOR
 #include <vector>
-#endif
-
-#ifndef CH_STRING
-#define CH_STRING
 #include <string>
-#endif
+#include "programs.h"
+#include "setup.h"
 
-
-
+namespace dosbox {
 
 class Config{
 public:
@@ -89,5 +67,7 @@ public:
 	bool SecureMode() const { return secure_mode; }
 	void SwitchToSecureMode() { secure_mode = true; }//can't be undone
 };
+
+}
 
 #endif

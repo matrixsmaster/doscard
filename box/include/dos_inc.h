@@ -20,25 +20,16 @@
 #ifndef DOSBOX_DOS_INC_H
 #define DOSBOX_DOS_INC_H
 
-#ifndef DOSBOX_DOS_SYSTEM_H
-#include "dos_system.h"
-#endif
-#ifndef DOSBOX_MEM_H
-#include "mem.h"
-#endif
-
 #include <stddef.h> //for offsetof
+#include "dos_system.h"
+#include "mem.h"
 
-#ifdef _MSC_VER
-#pragma pack (1)
-#endif
+namespace dosbox {
+
 struct CommandTail{
   Bit8u count;				/* number of bytes returned */
   char buffer[127];			 /* the buffer itself */
 } GCC_ATTRIBUTE(packed);
-#ifdef _MSC_VER
-#pragma pack ()
-#endif
 
 struct DOS_Date {
 	Bit16u year;
@@ -50,10 +41,6 @@ struct DOS_Version {
 	Bit8u major,minor,revision;
 };
 
-
-#ifdef _MSC_VER
-#pragma pack (1)
-#endif
 union bootSector {
 	struct entries {
 		Bit8u jump[3];
@@ -65,10 +52,6 @@ union bootSector {
 	} bootdata;
 	Bit8u rawdata[512];
 } GCC_ATTRIBUTE(packed);
-#ifdef _MSC_VER
-#pragma pack ()
-#endif
-
 
 enum { MCB_FREE=0x0000,MCB_DOS=0x0008 };
 enum { RETURN_EXIT=0,RETURN_CTRLC=1,RETURN_ABORT=2,RETURN_TSR=3};
@@ -76,7 +59,6 @@ enum { RETURN_EXIT=0,RETURN_CTRLC=1,RETURN_ABORT=2,RETURN_TSR=3};
 #define DOS_FILES 127
 #define DOS_DRIVES 26
 #define DOS_DEVICES 10
-
 
 // dos swappable area is 0x320 bytes beyond the sysvars table
 // device driver chain is inside sysvars
@@ -307,9 +289,6 @@ public:
 	Bit16u	FindEntryByHandle	(Bit8u handle);
 			
 private:
-	#ifdef _MSC_VER
-	#pragma pack(1)
-	#endif
 	struct sPSP {
 		Bit8u	exit[2];			/* CP/M-like exit poimt */
 		Bit16u	next_seg;			/* Segment of first byte beyond memory allocated or program */
@@ -338,9 +317,6 @@ private:
 		Bit8u	fill_4[4];			/* unused */
 		CommandTail cmdtail;		
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack()
-	#endif
 	Bit16u	seg;
 public:
 	static	Bit16u rootpsp;
@@ -352,9 +328,6 @@ public:
 	void Clear(void);
 	void LoadData(void);
 	void SaveData(void);		/* Save it as an exec block */
-	#ifdef _MSC_VER
-	#pragma pack (1)
-	#endif
 	struct sOverlay {
 		Bit16u loadseg;
 		Bit16u relocation;
@@ -367,9 +340,6 @@ public:
 		RealPt initsssp;
 		RealPt initcsip;
 	}GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack()
-	#endif
 	sExec exec;
 	sOverlay overlay;
 };
@@ -391,9 +361,6 @@ public:
 	RealPt	GetPointer(void);
 	Bit32u GetDeviceChain(void);
 
-	#ifdef _MSC_VER
-	#pragma pack(1)
-	#endif
 	struct sDIB {		
 		Bit8u	unknown1[4];
 		Bit16u	magicWord;			// -0x22 needs to be 1
@@ -444,9 +411,6 @@ public:
 		Bit16u	startOfUMBChain;		//  0x66 segment of first UMB-MCB
 		Bit16u	memAllocScanStart;		//  0x68 start paragraph for memory allocation
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack ()
-	#endif
 	Bit16u	seg;
 };
 
@@ -466,9 +430,6 @@ public:
 	Bit16u	GetDirID(void)				{ return (Bit16u)sGet(sDTA,dirID); };
 	Bit16u	GetDirIDCluster(void)		{ return (Bit16u)sGet(sDTA,dirCluster); };
 private:
-	#ifdef _MSC_VER
-	#pragma pack(1)
-	#endif
 	struct sDTA {
 		Bit8u sdrive;						/* The Drive the search is taking place */
 		Bit8u sname[8];						/* The Search pattern for the filename */		
@@ -483,9 +444,6 @@ private:
 		Bit32u size;
 		char name[DOS_NAMELENGTH_ASCII];
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack()
-	#endif
 };
 
 class DOS_FCB: public MemStruct {
@@ -512,9 +470,6 @@ public:
 private:
 	bool extended;
 	PhysPt real_pt;
-	#ifdef _MSC_VER
-	#pragma pack (1)
-	#endif
 	struct sFCB {
 		Bit8u drive;			/* Drive number 0=default, 1=A, etc */
 		Bit8u filename[8];		/* Space padded name */
@@ -534,9 +489,6 @@ private:
 		Bit8u  cur_rec;			/* Current record in current block */
 		Bit32u rndm;			/* Current relative record number */
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack ()
-	#endif
 };
 
 class DOS_MCB : public MemStruct{
@@ -551,9 +503,6 @@ public:
 	Bit16u GetSize(void) { return (Bit16u)sGet(sMCB,size);}
 	Bit16u GetPSPSeg(void) { return (Bit16u)sGet(sMCB,psp_segment);}
 private:
-	#ifdef _MSC_VER
-	#pragma pack (1)
-	#endif
 	struct sMCB {
 		Bit8u type;
 		Bit16u psp_segment;
@@ -561,9 +510,6 @@ private:
 		Bit8u unused[3];
 		Bit8u filename[8];
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack ()
-	#endif
 };
 
 class DOS_SDA : public MemStruct {
@@ -579,9 +525,6 @@ public:
 	
 	
 private:
-	#ifdef _MSC_VER
-	#pragma pack (1)
-	#endif
 	struct sSDA {
 		Bit8u crit_error_flag;		/* 0x00 Critical Error Flag */
 		Bit8u inDOS_flag;		/* 0x01 InDOS flag (count of active INT 21 calls) */
@@ -599,9 +542,6 @@ private:
 		Bit8u extended_break_flag; 	/* 0x17 extended break flag */
 		Bit8u fill[2];			/* 0x18 flag: code page switching || flag: copy of previous byte in case of INT 24 Abort*/
 	} GCC_ATTRIBUTE(packed);
-	#ifdef _MSC_VER
-	#pragma pack()
-	#endif
 };
 extern DOS_InfoBlock dos_infoblock;
 
@@ -641,6 +581,8 @@ extern DOS_Block dos;
 static INLINE Bit8u RealHandle(Bit16u handle) {
 	DOS_PSP psp(dos.psp());	
 	return psp.GetFileHandle(handle);
+}
+
 }
 
 #endif

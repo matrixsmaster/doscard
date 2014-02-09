@@ -19,9 +19,9 @@
 #ifndef DOSBOX_FPU_H
 #define DOSBOX_FPU_H
 
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif
+
+namespace dosbox {
 
 void FPU_ESC0_Normal(Bitu rm);
 void FPU_ESC0_EA(Bitu func,PhysPt ea);
@@ -150,5 +150,6 @@ static INLINE void FPU_SET_C3(Bitu C){
 	if(C) fpu.sw |= 0x4000;
 }
 
+}
 
 #endif

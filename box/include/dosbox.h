@@ -22,7 +22,10 @@
 
 #include "config.h"
 #include "version.h"
+#include "logging.h"
 #include "ldb.h"
+
+namespace dosbox {
 
 GCC_ATTRIBUTE(noreturn) void E_Exit(const char * message,...) GCC_ATTRIBUTE( __format__(__printf__, 1, 2));
 
@@ -71,8 +74,6 @@ extern LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
 #define EGAVGA_ARCH_CASE MCH_EGA: case MCH_VGA
 #define VGA_ARCH_CASE MCH_VGA
 
-#ifndef DOSBOX_LOGGING_H
-#include "logging.h"
-#endif // the logging system.
+}
 
 #endif /* DOSBOX_DOSBOX_H */

@@ -20,6 +20,8 @@
 #ifndef DOSBOX_DMA_H
 #define DOSBOX_DMA_H
 
+namespace dosbox {
+
 enum DMAEvent {
 	DMA_REACHED_TC,
 	DMA_MASKED,
@@ -114,5 +116,7 @@ void CloseSecondDMAController(void);
 bool SecondDMAControllerAvailable(void);
 
 void DMA_SetWrapping(Bitu wrap);
+
+}
 
 #endif

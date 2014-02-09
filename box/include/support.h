@@ -23,20 +23,11 @@
 #include <string.h>
 #include <string>
 #include <ctype.h>
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h"
-#endif
 
-#if defined (_MSC_VER)						/* MS Visual C++ */
-#define	strcasecmp(a,b) stricmp(a,b)
-#define strncasecmp(a,b,n) _strnicmp(a,b,n)
-#endif
+namespace dosbox {
 
 #define safe_strncpy(a,b,n) do { strncpy((a),(b),(n)-1); (a)[(n)-1] = 0; } while (0)
-
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
 
 void strreplace(char * str,char o,char n);
 char *ltrim(char *str);
@@ -55,5 +46,7 @@ Bits ConvHexWord(char * word);
 
 void upcase(std::string &str);
 void lowcase(std::string &str);
+
+}
 
 #endif

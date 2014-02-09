@@ -19,6 +19,7 @@
 #ifndef DOSBOX_PIC_H
 #define DOSBOX_PIC_H
 
+namespace dosbox {
 
 /* CPU Cycle Timing */
 extern Bit32s CPU_Cycles;
@@ -60,4 +61,7 @@ void PIC_RemoveEvents(PIC_EventHandler handler);
 void PIC_RemoveSpecificEvents(PIC_EventHandler handler, Bitu val);
 
 void PIC_SetIRQMask(Bitu irq, bool masked);
+
+}
+
 #endif

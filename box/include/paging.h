@@ -16,16 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifndef DOSBOX_PAGING_H
 #define DOSBOX_PAGING_H
 
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h"
-#endif
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif
+
+namespace dosbox {
 
 // disable this to reduce the size of the TLB
 // NOTE: does not work with the dynamic core (dynrec is fine)
@@ -361,5 +358,6 @@ static INLINE bool mem_writed_checked(PhysPt address,Bit32u val) {
 	} else return mem_unalignedwrited_checked(address,val);
 }
 
+}
 
 #endif

@@ -19,16 +19,11 @@
 #ifndef DOSBOX_BIOS_DISK_H
 #define DOSBOX_BIOS_DISK_H
 
-//#include <stdio.h>
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif
-#ifndef DOSBOX_DOS_INC_H
 #include "dos_inc.h"
-#endif
-#ifndef DOSBOX_BIOS_H
 #include "bios.h"
-#endif
+
+namespace dosbox {
 
 /* The Section handling Bios Disk Access */
 #define BIOS_MAX_DISK 10
@@ -83,5 +78,7 @@ extern DOS_DTA *imgDTA;
 void swapInDisks(void);
 void swapInNextDisk(void);
 bool getSwapRequest(void);
+
+}
 
 #endif

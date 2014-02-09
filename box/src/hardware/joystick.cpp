@@ -25,6 +25,8 @@
 #include "pic.h"
 #include "support.h"
 
+namespace dosbox {
+
 #define RANGE 64
 #define TIMEOUT 10
 
@@ -227,4 +229,6 @@ void JOYSTICK_Destroy(Section* sec) {
 void JOYSTICK_Init(Section* sec) {
 	test = new JOYSTICK(sec);
 	sec->AddDestroyFunction(&JOYSTICK_Destroy,true); 
+}
+
 }

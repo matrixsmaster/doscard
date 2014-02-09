@@ -23,7 +23,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "dosbox.h"
-#include "debug.h"
 #include "cpu.h"
 #include "video.h"
 #include "pic.h"

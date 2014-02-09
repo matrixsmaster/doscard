@@ -20,7 +20,7 @@
 #ifndef DOSBOX_VIDEO_H
 #define DOSBOX_VIDEO_H
 
-#define REDUCE_JOYSTICK_POLLING
+namespace dosbox {
 
 typedef enum {
 	GFX_CallBackReset,
@@ -69,16 +69,10 @@ void GFX_EndUpdate( const Bit16u *changedLines );
 void GFX_GetSize(int &width, int &height, bool &fullscreen);
 void GFX_LosingFocus(void);
 
-#if defined (WIN32)
-bool GFX_SDLUsingWinDIB(void);
-#endif
-
-#if defined (REDUCE_JOYSTICK_POLLING)
-void MAPPER_UpdateJoysticks(void);
-#endif
-
 /* Mouse related */
 void GFX_CaptureMouse(void);
 extern bool mouselocked; //true if mouse is confined to window
+
+}
 
 #endif

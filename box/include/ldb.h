@@ -16,13 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <inttypes.h>
-#include <unistd.h>
-#include <string.h>
-
 #ifndef DOSBOX_LIBDOSBOX_H_
 #define DOSBOX_LIBDOSBOX_H_
 
+#include <inttypes.h>
+#include <unistd.h>
+#include <string.h>
 #include "keyboard.h"
 
 //#define LDB_EMBEDDED
@@ -30,6 +29,8 @@
 #ifndef LDB_EMBEDDED
 #include <stdio.h>
 #endif
+
+namespace dosbox {
 
 #define DISPLAY_INIT_SIGNATURE 0xFFABCD00
 #define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
@@ -106,5 +107,7 @@ int32_t dbftruncate(DBFILE* f, int64_t len);
 //char *dbfgets(char *s, int n, DBFILE *f);
 int32_t dbfprintf(DBFILE *f, const char *fmt, ...);
 int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
+
+}
 
 #endif

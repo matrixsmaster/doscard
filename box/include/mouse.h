@@ -16,11 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-
 #ifndef DOSBOX_MOUSE_H
 #define DOSBOX_MOUSE_H
 
+namespace dosbox {
 
 void Mouse_ShowCursor(void);
 void Mouse_HideCursor(void);
@@ -37,5 +36,7 @@ void Mouse_ButtonReleased(Bit8u button);
 
 void Mouse_AutoLock(bool enable);
 void Mouse_NewVideoMode(void);
+
+}
 
 #endif

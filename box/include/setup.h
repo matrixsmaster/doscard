@@ -16,12 +16,14 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef DOSBOX_SETUP_H
+#define DOSBOX_SETUP_H
+
 #include <vector>
 #include <list>
 #include <string>
 
-#ifndef DOSBOX_SETUP_H
-#define DOSBOX_SETUP_H
+namespace dosbox {
 
 class Hex {
 private:
@@ -312,4 +314,7 @@ public:
 	/* Returns true if succesful.*/
 	virtual bool Change_Config(Section* /*newconfig*/) {return false;} ;
 };
+
+}
+
 #endif

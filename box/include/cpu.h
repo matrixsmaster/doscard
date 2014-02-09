@@ -20,15 +20,11 @@
 #ifndef DOSBOX_CPU_H
 #define DOSBOX_CPU_H
 
-#ifndef DOSBOX_DOSBOX_H
 #include "dosbox.h" 
-#endif
-#ifndef DOSBOX_REGS_H
 #include "regs.h"
-#endif
-#ifndef DOSBOX_MEM_H
 #include "mem.h"
-#endif
+
+namespace dosbox {
 
 #define CPU_AUTODETERMINE_NONE		0x00
 #define CPU_AUTODETERMINE_CORE		0x01
@@ -487,5 +483,6 @@ static INLINE void CPU_SetFlagsw(Bitu word) {
 	CPU_SetFlags(word,mask);
 }
 
+}
 
 #endif

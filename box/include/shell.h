@@ -20,16 +20,13 @@
 #ifndef DOSBOX_SHELL_H
 #define DOSBOX_SHELL_H
 
-#include <ctype.h>
-#ifndef DOSBOX_DOSBOX_H
-#include "dosbox.h"
-#endif
-#ifndef DOSBOX_PROGRAMS_H
-#include "programs.h"
-#endif
-
 #include <string>
 #include <list>
+#include <ctype.h>
+#include "dosbox.h"
+#include "programs.h"
+
+namespace dosbox {
 
 #define CMD_MAXLINE 4096
 #define CMD_MAXCMDS 20
@@ -142,5 +139,7 @@ public:
 private:
 	void CreateAutoexec(void);
 };
+
+}
 
 #endif
