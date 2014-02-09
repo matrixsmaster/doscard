@@ -47,6 +47,8 @@ _________________________________TODO________________________________________
 	Moreover, the new SDL 2.0 brings the new capability of running scaling code
 	directly on your nVidia TITAN GPU !!! So the render_scalers can be wiped out
 	next to old SDL, eehaw!
+-> DONE!
+
 	
 3. Refactor code. It's highly improbable that we will want to merge something
 from upstream DosBox due to fact of everything we want is already working.
@@ -64,10 +66,12 @@ layers of course)
 
 8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
 we surely didn't have a "normal" disk filesystem.
+-> ALMOST DONE
+
 
 9. Move all of the libdosbox code into it's own namespace.
 
-10. Clean up all the files in INCLUDE directory!
+10. Check and clean up all the files in INCLUDE directory!
 
 ...
 

@@ -76,7 +76,8 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #endif
 				if (*b != 0x01) xnfo(0,2,"Bad Frame (wrong stop byte)");
 				disp_fsm = 1;
-				SDL_AtomicIncRef(&at_flag);
+				if (SDL_AtomicGet(&at_flag) >= 0)
+					SDL_AtomicIncRef(&at_flag);
 			} else {
 				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
 				if (++pxclock > 2) {
@@ -104,7 +105,9 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		case DISPLAY_ABOR_SIGNATURE:
 			if (disp_fsm) {
 				disp_fsm = 1;
+#if XSHELL_VERBOSE
 				xnfo(0,2,"Frame abort");
+#endif
 				SDL_AtomicIncRef(&at_flag);
 			} else
 				xnfo(-1,2,"Frame abort received in wrong state. Data corrupted.");
@@ -112,7 +115,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 		default:
 			if (disp_fsm == 1) {
-				while ((SDL_AtomicGet(&at_flag))) ;
+				while (SDL_AtomicGet(&at_flag) > 0) ;
 
 				uint16_t old_w = lcd_w;
 				uint16_t old_h = lcd_h;
@@ -156,14 +159,15 @@ int XS_QueryUIEvents(void* buf, size_t len)
 	xnfo(0,4,"len=%d",len);
 #endif
 	if ((!buf) || (len < sizeof(LDB_UIEvent))) return -1;
-	if (SDL_AtomicGet(&at_flag)) return 0;
+	if (SDL_AtomicGet(&at_flag) > 0) return 0;
 	int r = evt_fifo.size();
 	if (!evt_fifo.empty()) {
 		LDB_UIEvent e = evt_fifo.back();
 		evt_fifo.pop_back();
 		memcpy(buf,&e,sizeof(LDB_UIEvent));
 	}
-	SDL_AtomicIncRef(&at_flag);
+	if (SDL_AtomicGet(&at_flag) >= 0)
+		SDL_AtomicIncRef(&at_flag);
 	return r;
 }
 
@@ -341,7 +345,7 @@ static void XS_SDLoop()
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	} while (!quit);
-	SDL_AtomicSet(&at_flag,0);
+	SDL_AtomicSet(&at_flag,-1);
 }
 
 int XS_Message(void* buf, size_t len)
@@ -363,13 +367,14 @@ int XS_FIO(void* buf, size_t len)
 	if ((f->todo) && (!f->rf)) return -1;
 	uint64_t* x;
 	int64_t* sx;
-//#if XSHELL_VERBOSE
+#if XSHELL_VERBOSE
 	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
 			f->name,f->todo,f->p_x,f->p_y,f->buf);
-//#endif
+#endif
 	switch (f->todo) {
 	case 0:
 		//open
+		//TODO: track opened files
 		f->rf = fopen(f->name,f->op);
 		if (!f->rf) return -1;
 		break;
