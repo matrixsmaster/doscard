@@ -23,7 +23,6 @@
 #include "dosbox.h"
 #include "cpu.h"
 #include "memory.h"
-#include "debug.h"
 #include "mapper.h"
 #include "setup.h"
 #include "programs.h"
@@ -31,7 +30,9 @@
 #include "lazyflags.h"
 #include "support.h"
 
-Bitu DEBUG_EnableDebugger(void);
+namespace dosbox {
+
+//Bitu DEBUG_EnableDebugger(void);
 extern void GFX_SetTitle(Bit32s cycles ,Bits frameskip,bool paused);
 
 #if 1
@@ -2426,3 +2427,5 @@ void CPU_Init(Section* sec) {
 }
 //initialize static members
 bool CPU::inited=false;
+
+}

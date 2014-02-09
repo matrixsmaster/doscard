@@ -27,6 +27,8 @@
 
 using namespace std;
 
+namespace dosbox {
+
 class isoFile : public DOS_File {
 public:
 	isoFile(isoDrive *drive, const char *name, FileStat_Block *stat, Bit32u offset);
@@ -544,4 +546,6 @@ bool isoDrive :: lookup(isoDirEntry *de, const char *path) {
 		if (!found) return false;
 	}
 	return true;
+}
+
 }

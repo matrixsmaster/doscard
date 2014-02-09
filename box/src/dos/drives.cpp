@@ -23,6 +23,8 @@
 #include "mapper.h"
 #include "support.h"
 
+namespace dosbox {
+
 bool WildFileCmp(const char * file, const char * wild) 
 {
 	char file_name[9];
@@ -225,4 +227,6 @@ void DriveManager::Init(Section* /* sec */) {
 
 void DRIVES_Init(Section* sec) {
 	DriveManager::Init(sec);
+}
+
 }

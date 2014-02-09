@@ -24,6 +24,8 @@
 #include "regs.h"
 #include "dos_inc.h"
 
+namespace dosbox {
+
 bool DOS_IOCTL(void) {
 	Bitu handle=0;Bit8u drive=0;
 	/* calls 0-4,6,7,10,12,16 use a file handle */
@@ -225,4 +227,6 @@ bool DOS_GetSTDINStatus(void) {
 	if (handle==0xFF) return false;
 	if (Files[handle] && (Files[handle]->GetInformation() & 64)) return false;
 	return true;
+}
+
 }

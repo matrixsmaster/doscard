@@ -20,8 +20,6 @@
 #ifndef __CDROM_INTERFACE__
 #define __CDROM_INTERFACE__
 
-#define MAX_ASPI_CDROM	5
-
 #include <string.h>
 #include <string>
 #include <vector>
@@ -38,7 +36,9 @@
 #include "fake_threading.h"
 #include "ldb.h"
 
+namespace dosbox {
 
+#define MAX_ASPI_CDROM	5
 #define RAW_SECTOR_SIZE		2352
 #define COOKED_SECTOR_SIZE	2048
 
@@ -219,5 +219,7 @@ typedef	std::vector<Track>::iterator	track_it;
 	std::string	mcn;
 	Bit8u	subUnit;
 };
+
+}
 
 #endif /* __CDROM_INTERFACE__ */

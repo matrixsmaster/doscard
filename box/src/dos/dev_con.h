@@ -21,6 +21,8 @@
 #include "../ints/int10.h"
 #include <string.h>
 
+namespace dosbox {
+
 #define NUMBER_ANSI_DATA 10
 
 class device_CON : public DOS_Device {
@@ -412,4 +414,6 @@ void device_CON::ClearAnsi(void){
 	ansi.esc=false;
 	ansi.sci=false;
 	ansi.numberofarg=0;
+}
+
 }

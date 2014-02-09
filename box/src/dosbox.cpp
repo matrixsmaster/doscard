@@ -45,6 +45,8 @@
 #include "ldb.h"
 #include "xshell.h"
 
+namespace dosbox {
+
 LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
 Config * control;
 MachineType machine;
@@ -595,3 +597,4 @@ int Dosbox_Run(void* p)
 	return 0;
 }
 
+}

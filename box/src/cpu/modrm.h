@@ -61,4 +61,3 @@ extern Bit32u * lookupRMEAregd[256];
 #define GetEArd												\
 	Bit32u * eard=lookupRMEAregd[rm];
 
-

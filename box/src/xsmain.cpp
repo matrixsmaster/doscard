@@ -31,7 +31,6 @@
 #include "timer.h"
 #include "setup.h"
 #include "support.h"
-#include "debug.h"
 #include "mapper.h"
 #include "vga.h"
 #include "keyboard.h"
@@ -39,6 +38,8 @@
 #include "cross.h"
 #include "control.h"
 #include "render.h"
+
+namespace dosbox {
 
 extern const char* RunningProgram;
 extern bool CPU_CycleAutoAdjust;
@@ -144,4 +145,6 @@ void Mouse_AutoLock(bool enable)
 {
 	LOG_MSG("Mouse_AutoLock(): mouse wanted = %d\n",enable);
 	mouse_wanted = enable;
+}
+
 }

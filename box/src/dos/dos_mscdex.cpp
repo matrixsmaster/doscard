@@ -27,8 +27,9 @@
 #include "support.h"
 #include "bios_disk.h"
 #include "cpu.h"
-
 #include "cdrom.h"
+
+namespace dosbox {
 
 #define MSCDEX_LOG LOG(LOG_MISC,LOG_ERROR)
 //#define MSCDEX_LOG
@@ -1349,4 +1350,6 @@ void MSCDEX_Init(Section* sec) {
 	DOS_AddMultiplexHandler(MSCDEX_Handler);
 	/* Create MSCDEX */
 	mscdex = new CMscdex;
+}
+
 }

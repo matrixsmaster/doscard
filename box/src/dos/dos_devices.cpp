@@ -25,11 +25,10 @@
 #include "bios.h"
 #include "dos_inc.h"
 #include "support.h"
-#include "drives.h" //Wildcmp
-/* Include all the devices */
-
+#include "drives.h"
 #include "dev_con.h"
 
+namespace dosbox {
 
 DOS_Device * Devices[DOS_DEVICES];
 
@@ -190,4 +189,6 @@ void DOS_SetupDevices(void) {
 	DOS_Device * newdev3;
 	newdev3=new device_LPT1();
 	DOS_AddDevice(newdev3);
+}
+
 }

@@ -29,6 +29,8 @@
 #include "bios_disk.h"
 #include "ldb.h"
 
+namespace dosbox {
+
 #define IMGTYPE_FLOPPY 0
 #define IMGTYPE_ISO    1
 #define IMGTYPE_HDD	   2
@@ -1291,3 +1293,4 @@ bool fatDrive::TestDir(char *dir) {
 	return getDirClustNum(dir, &dummyClust, false);
 }
 
+}

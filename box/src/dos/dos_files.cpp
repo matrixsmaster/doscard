@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-
 #include "dosbox.h"
 #include "bios.h"
 #include "mem.h"
@@ -29,6 +28,8 @@
 #include "dos_inc.h"
 #include "drives.h"
 #include "cross.h"
+
+namespace dosbox {
 
 #define DOS_FILESTART 4
 
@@ -1279,4 +1280,6 @@ void DOS_SetupFiles (void) {
 		Drives[i]=0;
 	}
 	Drives[25]=new Virtual_Drive();
+}
+
 }

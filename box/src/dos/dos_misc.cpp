@@ -24,6 +24,7 @@
 #include "dos_inc.h"
 #include <list>
 
+namespace dosbox {
 
 static Bitu call_int2f,call_int2a;
 
@@ -211,4 +212,6 @@ void DOS_SetupMisc(void) {
 	call_int2a=CALLBACK_Allocate();
 	CALLBACK_Setup(call_int2a,&INT2A_Handler,CB_IRET,"DOS Int 2a");
 	RealSetVec(0x2A,CALLBACK_RealPointer(call_int2a));
+}
+
 }

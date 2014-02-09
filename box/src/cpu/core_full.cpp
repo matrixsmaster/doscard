@@ -24,10 +24,10 @@
 #include "lazyflags.h"
 #include "paging.h"
 #include "fpu.h"
-#include "debug.h"
 #include "inout.h"
 #include "callback.h"
 
+namespace dosbox {
 
 typedef PhysPt EAPoint;
 #define SegBase(c)	SegPhys(c)
@@ -94,6 +94,9 @@ illegalopcode:
 }
 
 
-void CPU_Core_Full_Init(void) {
+void CPU_Core_Full_Init(void)
+{
+	//nothing
+}
 
 }

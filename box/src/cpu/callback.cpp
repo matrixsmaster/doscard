@@ -25,6 +25,8 @@
 #include "mem.h"
 #include "cpu.h"
 
+namespace dosbox {
+
 /* CallBack are located at 0xF000:0x1000  (see CB_SEG and CB_SOFFSET in callback.h)
    And they are 16 bytes each and you can define them to behave in certain ways like a
    far return or and IRET
@@ -610,4 +612,6 @@ void CALLBACK_Init(Section* /*sec*/) {
 	phys_writeb(CALLBACK_PhysPointer(call_priv_io)+0x0c,(Bit8u)0x66);	// out dx, eax
 	phys_writeb(CALLBACK_PhysPointer(call_priv_io)+0x0d,(Bit8u)0xef);
 	phys_writeb(CALLBACK_PhysPointer(call_priv_io)+0x0e,(Bit8u)0xcb);	// retf
+}
+
 }

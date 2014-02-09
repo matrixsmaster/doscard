@@ -30,6 +30,8 @@
 #include "inout.h"
 #include "ldb.h"
 
+namespace dosbox {
+
 class localFile : public DOS_File {
 public:
 	localFile(const char* name, DBFILE* handle);
@@ -669,4 +671,6 @@ Bits cdromDrive::UnMount(void) {
 		return 0;
 	}
 	return 2;
+}
+
 }

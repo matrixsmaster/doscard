@@ -24,8 +24,9 @@
 #include "dos_inc.h"
 #include "regs.h"
 #include "callback.h"
-#include "debug.h"
 #include "cpu.h"
+
+namespace dosbox {
 
 const char * RunningProgram="DOSBOX";
 
@@ -485,7 +486,7 @@ bool DOS_Execute(char * name,PhysPt block_pt,Bit8u flags) {
 		while (char chr=*name++) {
 			switch (chr) {
 			case ':':case '\\':case '/':index=0;break;
-			default:if (index<8) stripname[index++]=(char)toupper(chr);
+			default:if (index<8) stripname[index++]=(char)toupper(chr);break;
 			}
 		}
 		index=0;
@@ -501,4 +502,6 @@ bool DOS_Execute(char * name,PhysPt block_pt,Bit8u flags) {
 		return true;
 	}
 	return false;
+}
+
 }

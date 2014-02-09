@@ -22,6 +22,8 @@
 #include "dosbox.h"
 #include "ldb.h"
 
+namespace dosbox {
+
 #define FIOSTRINGMEMBUF 512
 
 DBFILE* dbfopen(const char* p, const char* m)
@@ -181,4 +183,6 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 		if (cnt >= n) break;
 	}
 	return cnt;
+}
+
 }

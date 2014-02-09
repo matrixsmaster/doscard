@@ -25,6 +25,8 @@
 
 using namespace std;
 
+namespace dosbox {
+
 #define MAX_LINE_LENGTH 512
 #define MAX_FILENAME_LENGTH 256
 
@@ -758,4 +760,6 @@ void CDROM_Image_Init(Section* section) {
 	Sound_Init();
 	section->AddDestroyFunction(CDROM_Image_Destroy, false);
 #endif
+}
+
 }

@@ -26,6 +26,8 @@
 #include "lazyflags.h"
 #include "pic.h"
 
+namespace dosbox {
+
 LazyFlags lflags;
 
 /* CF     Carry Flag -- Set on high-order bit carry or borrow; cleared
@@ -1186,3 +1188,5 @@ void DestroyConditionFlags(void) {
 }
 
 #endif
+
+}

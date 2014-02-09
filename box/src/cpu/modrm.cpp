@@ -18,6 +18,7 @@
 
 #include "cpu.h"
 
+namespace dosbox {
 
 Bit8u * lookupRMregb[]=
 {
@@ -207,4 +208,4 @@ Bit32u * lookupRMEAregd[256]={
 	&reg_eax,&reg_ecx,&reg_edx,&reg_ebx,&reg_esp,&reg_ebp,&reg_esi,&reg_edi
 };
 
-
+}

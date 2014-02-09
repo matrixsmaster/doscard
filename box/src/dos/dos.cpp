@@ -30,6 +30,8 @@
 #include "support.h"
 #include "serialport.h"
 
+namespace dosbox {
+
 DOS_Block dos;
 DOS_InfoBlock dos_infoblock;
 
@@ -1248,4 +1250,6 @@ void DOS_Init(Section* sec) {
 	test = new DOS(sec);
 	/* shutdown function */
 	sec->AddDestroyFunction(&DOS_ShutDown,false);
+}
+
 }

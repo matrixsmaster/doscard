@@ -20,11 +20,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
 #include "dosbox.h"
 #include "support.h"
 #include "cdrom.h"
 
+namespace dosbox {
 
 int CDROM_GetMountType(char* path/*, int forceCD*/) {
 // 0 - physical CDROM (obsolete)
@@ -78,4 +78,4 @@ bool CDROM_Interface_Fake :: GetMediaTrayStatus(bool& mediaPresent, bool& mediaC
 	return true;
 }
 
-
+}

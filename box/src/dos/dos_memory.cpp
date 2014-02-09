@@ -22,6 +22,8 @@
 #include "dos_inc.h"
 #include "callback.h"
 
+namespace dosbox {
+
 #define UMB_START_SEG 0x9fff
 
 static Bit16u memAllocStrategy = 0x00;
@@ -460,4 +462,6 @@ void DOS_SetupMemory(void) {
 
 	dos.firstMCB=DOS_MEM_START;
 	dos_infoblock.SetFirstMCB(DOS_MEM_START);
+}
+
 }

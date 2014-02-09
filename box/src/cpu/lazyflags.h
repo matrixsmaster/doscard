@@ -19,6 +19,10 @@
 #if !defined __LAZYFLAGS_H
 #define __LAZYFLAG_H
 
+#include "regs.h"
+
+namespace dosbox {
+
 //Flag Handling
 Bit32u get_CF(void);
 Bit32u get_AF(void);
@@ -30,8 +34,6 @@ Bit32u get_PF(void);
 Bitu FillFlags(void);
 void FillFlagsNoCFOF(void);
 void DestroyConditionFlags(void);
-
-#include "regs.h"
 
 struct LazyFlags {
     GenReg32 var1,var2,res;
@@ -128,5 +130,7 @@ enum {
 	t_NOTDONE,
 	t_LASTFLAG
 };
+
+}
 
 #endif

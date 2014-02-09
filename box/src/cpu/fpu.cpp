@@ -16,16 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include "dosbox.h"
-#if C_FPU
 
+#if C_FPU
 #include <math.h>
 #include <float.h>
 #include "cross.h"
 #include "mem.h"
 #include "fpu.h"
 #include "cpu.h"
+
+namespace dosbox {
 
 FPU_rec fpu;
 
@@ -623,6 +624,8 @@ void FPU_ESC7_Normal(Bitu rm) {
 
 void FPU_Init(Section*) {
 	FPU_FINIT();
+}
+
 }
 
 #endif

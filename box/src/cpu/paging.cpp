@@ -20,15 +20,15 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-
 #include "dosbox.h"
 #include "mem.h"
 #include "paging.h"
 #include "regs.h"
 #include "lazyflags.h"
 #include "cpu.h"
-#include "debug.h"
 #include "setup.h"
+
+namespace dosbox {
 
 #define LINK_TOTAL		(64*1024)
 
@@ -887,4 +887,6 @@ public:
 static PAGING* test;
 void PAGING_Init(Section * sec) {
 	test = new PAGING(sec);
+}
+
 }

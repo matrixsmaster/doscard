@@ -26,6 +26,8 @@
 #include "cross.h"
 #include "ldb.h"
 
+namespace dosbox {
+
 struct VFILE_Block {
 	const char * name;
 	Bit8u * data;
@@ -271,3 +273,4 @@ Bits Virtual_Drive::UnMount(void) {
 	return 1;
 }
 
+}

@@ -26,10 +26,7 @@
 #include "fpu.h"
 #include "ldb.h"
 
-
-#if C_DEBUG
-#include "debug.h"
-#endif
+namespace dosbox {
 
 #include "paging.h"
 #define SegBase(c)	SegPhys(c)
@@ -201,6 +198,9 @@ Bits CPU_Core_Simple_Trap_Run(void) {
 
 
 
-void CPU_Core_Simple_Init(void) {
+void CPU_Core_Simple_Init(void)
+{
+	//nothing
+}
 
 }

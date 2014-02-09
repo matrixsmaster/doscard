@@ -27,8 +27,9 @@
 #include "control.h"
 #include "mapper.h"
 #include "cross.h"
-#include "hardware.h"
 #include "support.h"
+
+namespace dosbox {
 
 Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
@@ -142,4 +143,6 @@ void RENDER_Init(Section * sec)
 {
 	LDB_SendDWord(DISPLAY_INIT_SIGNATURE);
 	init_ok = false;
+}
+
 }

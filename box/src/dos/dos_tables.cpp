@@ -22,17 +22,13 @@
 #include "dos_inc.h"
 #include "callback.h"
 
-#ifdef _MSC_VER
-#pragma pack(1)
-#endif
+namespace dosbox {
+
 struct DOS_TableCase {	
 	Bit16u size;
 	Bit8u chars[256];
 }
 GCC_ATTRIBUTE (packed);
-#ifdef _MSC_VER
-#pragma pack ()
-#endif
 
 RealPt DOS_TableUpCase;
 RealPt DOS_TableLowCase;
@@ -172,4 +168,6 @@ void DOS_SetupTables(void) {
 	/* Add it to country structure */
 	host_writed(country_info + 0x12, CALLBACK_RealPointer(call_casemap));
 	dos.tables.country=country_info;
+}
+
 }

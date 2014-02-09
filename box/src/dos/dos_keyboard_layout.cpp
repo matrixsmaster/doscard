@@ -28,10 +28,10 @@
 #include "mapper.h"
 #include "drives.h"
 #include "dos_inc.h"
-
 #include "dos_codepages.h"
 #include "dos_keyboard_layout_data.h"
 
+namespace dosbox {
 
 static DBFILE* OpenDosboxFile(const char* name)
 {
@@ -1142,4 +1142,6 @@ void DOS_KeyboardLayout_Init(Section* sec) {
 	test = new DOS_KeyboardLayout(sec);
 	sec->AddDestroyFunction(&DOS_KeyboardLayout_ShutDown,true);
 	//	MAPPER_AddHandler(switch_keyboard_layout,MK_f2,MMOD1|MMOD2,"sw_layout","Switch Layout");
+}
+
 }

@@ -1,3 +1,6 @@
+## DosCard Project DosBox Module Main MAKEFILE
+## Copyright (C) 2013-2014 Soloviov Dmitry
+
 LIBNAME	:= libdosbox
 MNDIR	:= $(shell pwd)
 CC_DEFS := -DHAVE_CONFIG_H
@@ -6,7 +9,6 @@ CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp
-LDBG_SRC := debug.cpp debug_gui.cpp debug_disasm.cpp
 LDOS_SRC := dos.cpp dos_devices.cpp dos_execute.cpp dos_files.cpp dos_ioctl.cpp dos_memory.cpp dos_misc.cpp dos_classes.cpp dos_programs.cpp 
 LDOS_SRC += dos_tables.cpp drives.cpp drive_virtual.cpp drive_local.cpp drive_cache.cpp drive_fat.cpp drive_iso.cpp dos_mscdex.cpp 
 LDOS_SRC += dos_keyboard_layout.cpp cdrom.cpp cdrom_image.cpp
@@ -20,7 +22,6 @@ LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 LMSC_SRC := cross.cpp messages.cpp programs.cpp setup.cpp support.cpp
 
 LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix debug/,$(LDBG_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix hardware/serialport/,$(LTTY_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.o))

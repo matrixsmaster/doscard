@@ -24,6 +24,8 @@
 #include "dos_inc.h"
 #include "support.h"
 
+namespace dosbox {
+
 
 void DOS_ParamBlock::Clear(void) {
 	memset(&exec,0,sizeof(exec));
@@ -502,4 +504,6 @@ void DOS_SDA::Init() {
 	/* Clear */
 	for(Bitu i=0;i<sizeof(sSDA);i++) mem_writeb(pt+i,0x00);
 	sSave(sSDA,drive_crit_error,0xff);   
+}
+
 }

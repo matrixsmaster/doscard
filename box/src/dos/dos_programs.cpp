@@ -37,10 +37,7 @@
 #include "setup.h"
 #include "control.h"
 
-
-#if C_DEBUG
-Bitu DEBUG_EnableDebugger(void);
-#endif
+namespace dosbox {
 
 void MSCDEX_SetCDInterface(int intNr, int forceCD);
 static Bitu ZDRIVE_NUM = 25;
@@ -1584,4 +1581,6 @@ void DOS_SetupPrograms(void) {
 #endif
 	PROGRAMS_MakeFile("IMGMOUNT.COM", IMGMOUNT_ProgramStart);
 	PROGRAMS_MakeFile("KEYB.COM", KEYB_ProgramStart);
+}
+
 }

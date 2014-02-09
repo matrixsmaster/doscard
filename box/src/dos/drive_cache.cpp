@@ -25,6 +25,7 @@
 #include "support.h"
 #include "cross.h"
 
+namespace dosbox {
 
 int fileInfoCounter = 0;
 
@@ -864,4 +865,6 @@ void DOS_Drive_Cache::DeleteFileInfo(CFileInfo *dir) {
 	if (dir)
 		ClearFileInfo(dir);
 	delete dir;
+}
+
 }

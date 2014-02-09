@@ -27,10 +27,7 @@
 #include "paging.h"
 #include "ldb.h"
 
-
-#if C_DEBUG
-#include "debug.h"
-#endif
+namespace dosbox {
 
 #if (!C_CORE_INLINE)
 #define LoadMb(off) mem_readb(off)
@@ -203,7 +200,9 @@ Bits CPU_Core_Normal_Trap_Run(void) {
 
 
 
-void CPU_Core_Normal_Init(void) {
-
+void CPU_Core_Normal_Init(void)
+{
+	//nothing
 }
 
+}
