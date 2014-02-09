@@ -1,3 +1,0 @@
-mpg123.lo: mpg123.c ../config.h
-
-../config.h:
