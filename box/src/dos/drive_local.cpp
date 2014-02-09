@@ -61,9 +61,9 @@ bool localDrive::FileCreate(DOS_File * * file,char * name,Bit16u /*attributes*/)
 	bool existing_file=false;
 
 	DBFILE* test= dbfopen(temp_name,"rb+");
-	if(test) { dbfclose(test);
-	existing_file=true;
-
+	if (test) {
+		dbfclose(test);
+		existing_file=true;
 	}
 
 	DBFILE* hand= dbfopen(temp_name,"wb+");
@@ -118,8 +118,9 @@ bool localDrive::FileOpen(DOS_File * * file,char * name,Bit32u flags) {
 	if (!hand) { 
 		if((flags&0xf) != OPEN_READ) {
 			DBFILE* hmm= dbfopen(newname,"rb");
-			if (hmm) { dbfclose(hmm);
-			LOG_MSG("Warning: file %s exists and failed to open in write mode.\nPlease Remove write-protection",newname);
+			if (hmm) {
+				dbfclose(hmm);
+				LOG_MSG("Warning: file %s exists and failed to open in write mode.\nPlease Remove write-protection",newname);
 			}
 		}
 		return false;
@@ -162,7 +163,8 @@ bool localDrive::FileUnlink(char * name) {
 		if(stat(fullname,&buffer)) return false; // File not found.
 
 		DBFILE* file_writable = dbfopen(fullname,"rb+");
-		if(!file_writable) return false; //No acces ? ERROR MESSAGE NOT SET. FIXME ? dbfclose(file_writable);
+		if(!file_writable) return false; //No acces ? ERROR MESSAGE NOT SET. FIXME ?
+		dbfclose(file_writable);
 
 		//File exists and can technically be deleted, nevertheless it failed.
 		//This means that the file is probably open by some process.
@@ -321,11 +323,7 @@ bool localDrive::MakeDir(char * dir) {
 	strcpy(newdir,basedir);
 	strcat(newdir,dir);
 	CROSS_FILENAME(newdir);
-#if defined (WIN32)						/* MS Visual C++ */
-	int temp=mkdir(dirCache.GetExpandName(newdir));
-#else
 	int temp=mkdir(dirCache.GetExpandName(newdir),0700);
-#endif
 	if (temp==0) dirCache.CacheOut(newdir,true);
 
 	return (temp==0);// || ((temp!=0) && (errno==EEXIST));

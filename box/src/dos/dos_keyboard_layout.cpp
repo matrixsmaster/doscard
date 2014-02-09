@@ -152,8 +152,9 @@ static Bit32u read_kcl_file(const char* kcl_file_name, const char* layout_id, bo
 
 	// check ID-bytes of file
 	Bit32u dr=(Bit32u) dbfread(rbuf, sizeof(Bit8u), 7, tempfile);
-	if ((dr<7) || (rbuf[0]!=0x4b) || (rbuf[1]!=0x43) || (rbuf[2]!=0x46)) { dbfclose(tempfile);
-	return 0;
+	if ((dr<7) || (rbuf[0]!=0x4b) || (rbuf[1]!=0x43) || (rbuf[2]!=0x46)) {
+		dbfclose(tempfile);
+		return 0;
 	}
 
 	dbfseek(tempfile, 7+rbuf[6], SEEK_SET);
@@ -180,7 +181,8 @@ static Bit32u read_kcl_file(const char* kcl_file_name, const char* layout_id, bo
 		}
 		lng_codes[lcpos]=0;
 		if (strcasecmp(lng_codes, layout_id)==0) {
-			// language ID found in file, return file position dbfclose(tempfile);
+			// language ID found in file, return file position
+			dbfclose(tempfile);
 			return cur_pos;
 		}
 		if (first_id_only) break;
@@ -298,19 +300,21 @@ Bitu keyboard_layout::read_keyboard_file(const char* keyboard_file_name, Bit32s 
 		}
 		if (tempfile) {
 			dbfseek(tempfile, start_pos+2, SEEK_SET);
-			read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
+			read_buf_size=(Bit32u)dbfread(read_buf, sizeof(Bit8u), 65535, tempfile);
+			dbfclose(tempfile);
 		}
 		start_pos=0;
 	} else {
 		// check ID-bytes of file
-		Bit32u dr=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 4, tempfile);
+		Bit32u dr=(Bit32u)dbfread(read_buf, sizeof(Bit8u), 4, tempfile);
 		if ((dr<4) || (read_buf[0]!=0x4b) || (read_buf[1]!=0x4c) || (read_buf[2]!=0x46)) {
 			LOG(LOG_BIOS,LOG_ERROR)("Invalid keyboard layout file %s",keyboard_file_name);
 			return KEYB_INVALIDFILE;
 		}
 
 		dbfseek(tempfile, 0, SEEK_SET);
-		read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
+		read_buf_size=(Bit32u)dbfread(read_buf, sizeof(Bit8u), 65535, tempfile);
+		dbfclose(tempfile);
 	}
 
 	Bit8u data_len,submappings;
@@ -649,7 +653,8 @@ Bit16u keyboard_layout::extract_codepage(const char* keyboard_file_name) {
 		}
 		if (tempfile) {
 			dbfseek(tempfile, start_pos+2, SEEK_SET);
-			read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
+			read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile);
+			dbfclose(tempfile);
 		}
 		start_pos=0;
 	} else {
@@ -661,7 +666,8 @@ Bit16u keyboard_layout::extract_codepage(const char* keyboard_file_name) {
 		}
 
 		dbfseek(tempfile, 0, SEEK_SET);
-		read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile); dbfclose(tempfile);
+		read_buf_size=(Bit32u) dbfread(read_buf, sizeof(Bit8u), 65535, tempfile);
+		dbfclose(tempfile);
 	}
 
 	Bit8u data_len,submappings;

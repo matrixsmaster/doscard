@@ -421,7 +421,8 @@ private:
 			// get file size
 			dbfseek(tmpfile,0L, SEEK_END);
 			*ksize = ( dbftell(tmpfile) / 1024);
-			*bsize = dbftell(tmpfile); dbfclose(tmpfile);
+			*bsize = dbftell(tmpfile);
+			dbfclose(tmpfile);
 
 			tmpfile = ldp->GetSystemFilePtr(fullname, "rb+");
 			if(tmpfile == NULL) {
@@ -1135,10 +1136,12 @@ public:
 					Bit32u fcsize = (Bit32u)( dbftell(diskfile) / 512L);
 					Bit8u buf[512];
 					dbfseek(diskfile, 0L, SEEK_SET);
-					if ( dbfread(buf,sizeof(Bit8u),512,diskfile)<512) { dbfclose(diskfile);
-					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_IMAGE"));
-					return;
-					} dbfclose(diskfile);
+					if (dbfread(buf,sizeof(Bit8u),512,diskfile)<512) {
+						dbfclose(diskfile);
+						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_IMAGE"));
+						return;
+					}
+					dbfclose(diskfile);
 					if ((buf[510]!=0x55) || (buf[511]!=0xaa)) {
 						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_GEOMETRY"));
 						return;

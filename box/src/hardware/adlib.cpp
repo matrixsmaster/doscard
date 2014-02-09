@@ -269,7 +269,8 @@ class Capture {
 			var_write( &header.versionLow, header.versionLow );
 			var_write( &header.commands, header.commands );
 			var_write( &header.milliseconds, header.milliseconds );
- dbfseek( handle, 0, SEEK_SET ); dbfwrite( &header, 1, sizeof( header ), handle ); dbfclose( handle );
+			dbfseek( handle, 0, SEEK_SET ); dbfwrite( &header, 1, sizeof( header ), handle );
+			dbfclose( handle );
 			handle = 0;
 		}
 	}

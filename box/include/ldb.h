@@ -105,8 +105,9 @@ uint64_t dbftell(DBFILE* f);
 int32_t dbfeof(DBFILE* f);
 int32_t dbftruncate(DBFILE* f, int64_t len);
 //char *dbfgets(char *s, int n, DBFILE *f);
-int32_t dbfprintf(DBFILE *f, const char *fmt, ...);
+int32_t dbfprintf(DBFILE* f, const char *fmt, ...);
 int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
+//void dbfstat(DBFILE* f, struct stat* p);
 
 }
 
