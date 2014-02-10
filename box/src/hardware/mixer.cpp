@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -9,18 +10,12 @@
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
+ *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
-
-/* 
-	Remove the sdl code from here and have it handeld in the sdlmain.
-	That should call the mixer start from there or something.
-*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -351,22 +346,23 @@ static void MIXER_MixData(Bitu needed) {
 		chan->Mix(needed);
 		chan=chan->next;
 	}
-	/*
-	if (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)) {
-		Bit16s convert[1024][2];
-		Bitu added=needed-mixer.done;
-		if (added>1024) 
-			added=1024;
-		Bitu readpos=(mixer.pos+mixer.done)&MIXER_BUFMASK;
-		for (Bitu i=0;i<added;i++) {
-			Bits sample=mixer.work[readpos][0] >> MIXER_VOLSHIFT;
-			convert[i][0]=MIXER_CLIP(sample);
-			sample=mixer.work[readpos][1] >> MIXER_VOLSHIFT;
-			convert[i][1]=MIXER_CLIP(sample);
-			readpos=(readpos+1)&MIXER_BUFMASK;
-		}
-		CAPTURE_AddWave( mixer.freq, added, (Bit16s*)convert );
-	}*/
+
+	Bit16s convert[1024][2];
+	Bitu added=needed-mixer.done;
+	if (added>1024) added=1024;
+	Bitu readpos=(mixer.pos+mixer.done)&MIXER_BUFMASK;
+	for (Bitu i=0;i<added;i++) {
+		Bits sample=mixer.work[readpos][0] >> MIXER_VOLSHIFT;
+		mixer.work[readpos][0] = 0;
+		convert[i][0]=MIXER_CLIP(sample);
+		sample=mixer.work[readpos][1] >> MIXER_VOLSHIFT;
+		mixer.work[readpos][1] = 0;
+		convert[i][1]=MIXER_CLIP(sample);
+		readpos=(readpos+1)&MIXER_BUFMASK;
+	}
+	(*libdosbox_callbacks[DBCB_PushSound])(convert,added*4);
+//	CAPTURE_AddWave( mixer.freq, added, (Bit16s*)convert );
+
 	//Reset the the tick_add for constant speed
 	if( Mixer_irq_important() )
 		mixer.tick_add = ((mixer.freq) << MIXER_SHIFT)/1000;
@@ -601,9 +597,9 @@ void MIXER_Init(Section* sec) {
 
 	Section_prop * section=static_cast<Section_prop *>(sec);
 	/* Read out config section */
-	mixer.freq=MIXER_FREQUENCY;
-//	mixer.nosound=section->Get_bool("nosound");
-	mixer.nosound=true;
+	mixer.freq=section->Get_int("rate");
+	mixer.nosound=section->Get_bool("nosound");
+//	mixer.nosound=true;
 	mixer.blocksize=section->Get_int("blocksize");
 
 	/* Initialize the internal stuff */
@@ -624,25 +620,39 @@ void MIXER_Init(Section* sec) {
 //	spec.userdata=NULL;
 //	spec.samples=(Uint16)mixer.blocksize;
 
+	LDB_SoundInfo inf;
+	inf.width = 16;
+	inf.sign = true;
+	inf.channels = 2;
+	inf.freq = mixer.freq;
+	inf.blocksize = mixer.blocksize;
+
 	mixer.tick_remain=0;
+	mixer.tick_add=(mixer.freq << MIXER_SHIFT)/1000;
 	if (mixer.nosound) {
-		LOG_MSG("MIXER:No Sound Mode Selected.");
-		mixer.tick_add=((mixer.freq) << MIXER_SHIFT)/1000;
+		LOG_MSG("MIXER: Silent mode");
 		TIMER_AddTickHandler(MIXER_Mix_NoSound);
+		inf.silent = true;
 	}/* else if (SDL_OpenAudio(&spec, &obtained) <0 ) {
 		mixer.nosound = true;
 		LOG_MSG("MIXER:Can't open audio: %s , running in nosound mode.",SDL_GetError());
-		mixer.tick_add=((mixer.freq) << MIXER_SHIFT)/1000;
 		TIMER_AddTickHandler(MIXER_Mix_NoSound);
 	} else {
 		if((mixer.freq != obtained.freq) || (mixer.blocksize != obtained.samples))
 			LOG_MSG("MIXER:Got different values from SDL: freq %d, blocksize %d",obtained.freq,obtained.samples);
 		mixer.freq=obtained.freq;
 		mixer.blocksize=obtained.samples;
-		mixer.tick_add=(mixer.freq << MIXER_SHIFT)/1000;
 		TIMER_AddTickHandler(MIXER_Mix);
 		SDL_PauseAudio(0);
 	}*/
+	else {
+		LOG_MSG("MIXER: Starting f=%d, l=%d",mixer.freq,mixer.blocksize);
+		TIMER_AddTickHandler(MIXER_Mix);
+		inf.silent = false;
+	}
+
+	(*libdosbox_callbacks[DBCB_PushSound])(&inf,sizeof(inf));
+
 	mixer.min_needed=section->Get_int("prebuffer");
 	if (mixer.min_needed>100) mixer.min_needed=100;
 	mixer.min_needed=(mixer.freq*mixer.min_needed)/1000;

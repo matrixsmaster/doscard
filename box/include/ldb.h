@@ -75,6 +75,12 @@ typedef struct {
 } LDB_UIEvent;
 
 typedef struct {
+	uint8_t width,channels;
+	uint32_t freq,blocksize;
+	bool sign,silent;
+} LDB_SoundInfo;
+
+typedef struct {
 	char* name;
 #ifdef LDB_EMBEDDED
 	uint8_t hand;

@@ -16,28 +16,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef XSUPPORT_H_
-#define XSUPPORT_H_
+#ifndef SOUNDR_H_
+#define SOUNDR_H_
 
-#include <string.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#define XSHELL_SOUND_LENGTH 22050
 
-#define XS_CONTEXT_COUNT 14
-static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
-		"Undefined context","XSHELL MAIN","XS_UpdateScreenBuffer",
-		"XS_UpdateSoundBuffer","XS_QueryUIEvents","XS_GetTicks",
-		"XS_ldb_register","XS_SDLInit","XS_SDLKill","XS_SDLoop",
-		"XS_Message","XS_FIO","XS_AudioCallback"
-};
+typedef struct {
+	int16_t data[XSHELL_SOUND_LENGTH*2];
+	uint32_t read,write;
+	bool paused;
+} XS_SoundRing;
 
-/*
- * xnfo(int sev, int ctx, char const* format,...)
- * sev: severity (-1-fatal; 0-info; 1-error;)
- * ctx: context (function number)
- */
-void xnfo(int sev, int ctx, char const* format,...);
-
-#endif /* XSUPPORT_H_ */
+#endif /* SOUNDR_H_ */

@@ -44,4 +44,6 @@ int XS_GetTicks(void* buf, size_t len);
 int XS_Message(void* buf, size_t len);
 int XS_FIO(void* buf, size_t len);
 
+void XS_AudioCallback(void* userdata, uint8_t* stream, int len);
+
 #endif /* XSHELL_H_ */

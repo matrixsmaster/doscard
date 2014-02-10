@@ -20,6 +20,7 @@
 #include "xshell.h"
 #include "xsupport.h"
 #include "xskbd.h"
+#include "soundr.h"
 
 /*
  * The Basic model:
@@ -54,6 +55,8 @@ static bool frame_dirty = false;
 static std::vector<dosbox::LDB_UIEvent> evt_fifo;
 static int frame_block = 0;
 SDL_atomic_t at_flag;
+static XS_SoundRing sndring;
+static SDL_AudioDeviceID audio = 0;
 
 using namespace std;
 using namespace dosbox;
@@ -148,9 +151,54 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 int XS_UpdateSoundBuffer(void* buf, size_t len)
 {
+	int i;
+	if (!buf) return -1;
 #if XSHELL_VERBOSE > 1
-	xnfo(0,3,"len=%d",len);
+	int crc = 0;
+	for (i=0; i<len; i++) crc += reinterpret_cast<uint8_t*>(buf)[i];
+	xnfo(0,3,"len=%d; crc=%d",len,crc);
 #endif
+	if (len == sizeof(LDB_SoundInfo)) {
+		SDL_AudioSpec want,have;
+		LDB_SoundInfo* req = reinterpret_cast<LDB_SoundInfo*>(buf);
+		SDL_zero(want);
+		if (req->silent) return 0;
+		want.freq = req->freq;
+		if (req->sign && (req->width == 16))
+			want.format = AUDIO_S16SYS;
+		else
+			xnfo(-1,3,"Unsupported audio format");
+		want.channels = req->channels;
+		want.samples = req->blocksize;
+		want.callback = XS_AudioCallback;
+		audio = SDL_OpenAudioDevice(NULL,0,&want,&have,SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+		if (!audio) {
+			xnfo(1,3,"Audio device couldn't be opened!\nSilent mode.");
+			return 0;
+		}
+		xnfo(0,3,"Audio opened successfully");
+		memset(sndring.data,0,sizeof(sndring.data));
+		sndring.read = 0;
+		sndring.write = 0;
+		sndring.paused = true;
+		SDL_PauseAudioDevice(audio,1);
+		return 0;
+	}
+	if (!audio) return 0;
+	SDL_LockAudioDevice(audio);
+	len >>= 1;
+	int16_t* in = reinterpret_cast<int16_t*>(buf);
+	int p = sndring.write;
+	for (i=0; i<len; i++) {
+		sndring.data[p] = in[i];
+		if (++p >= XSHELL_SOUND_LENGTH) p = 0;
+	}
+	sndring.write = p;
+	SDL_UnlockAudioDevice(audio);
+	if (sndring.paused) {
+		sndring.paused = false;
+		SDL_PauseAudioDevice(audio,0);
+	}
 	return 0;
 }
 
@@ -221,7 +269,7 @@ static void XS_ldb_register()
 
 static int XS_SDLInit()
 {
-	if (SDL_Init(SDL_INIT_VIDEO)) {
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
 		xnfo(1,7,"SDL2 Init Error");
 		return 1;
 	}
@@ -251,6 +299,7 @@ static void XS_SDLKill()
 #if XSHELL_VERBOSE
 	xnfo(0,8,"killing...");
 #endif
+	if (audio) SDL_CloseAudioDevice(audio);
 	if (ren) SDL_DestroyRenderer(ren);
 	if (wnd) SDL_DestroyWindow(wnd);
 	if (frame_sdl) SDL_DestroyTexture(frame_sdl);
@@ -416,6 +465,23 @@ int XS_FIO(void* buf, size_t len)
 	xnfo(0,11,"default return");
 #endif
 	return 0;
+}
+
+void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
+{
+	int i,p;
+	int16_t* buf = reinterpret_cast<int16_t*>(stream);
+	len >>= 1;
+	//FIXME: better use memcpy()
+	p = sndring.read;
+	for (i=0; i<len; i++) {
+		buf[i] = sndring.data[p];
+		if (++p >= XSHELL_SOUND_LENGTH) p = 0;
+	}
+	sndring.read = p;
+#if XSHELL_VERBOSE > 1
+	xnfo(0,12,"%d : %d",sndring.read,sndring.write);
+#endif
 }
 
 int main(int argc, char* argv[])
