@@ -35,11 +35,37 @@ const char* MSG_Get(char const *);     //get messages from the internal language
 class CommandLine;
 class Section;
 class Config;
-//extern Config * control;
+
+enum MachineType {
+MCH_HERC,
+MCH_CGA,
+MCH_TANDY,
+MCH_PCJR,
+MCH_EGA,
+MCH_VGA
+};
+enum SVGACards {
+SVGA_None,
+SVGA_S3Trio,
+SVGA_TsengET4K,
+SVGA_TsengET3K,
+SVGA_ParadisePVGA1A
+};
+extern Config * control;
+extern SVGACards svgaCard;
+extern MachineType machine;
+extern LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
+void DOSBOX_RunMachine();
 
 //FIXME: delete that after all
-#define IS_EGAVGA_ARCH 1
-#define IS_VGA_ARCH 1
+//#define IS_EGAVGA_ARCH 1
+//#define IS_VGA_ARCH 1
+#define IS_TANDY_ARCH ((machine==MCH_TANDY) || (machine==MCH_PCJR))
+#define IS_EGAVGA_ARCH ((machine==MCH_EGA) || (machine==MCH_VGA))
+#define IS_VGA_ARCH (machine==MCH_VGA)
+#define TANDY_ARCH_CASE MCH_TANDY: case MCH_PCJR
+#define EGAVGA_ARCH_CASE MCH_EGA: case MCH_VGA
+#define VGA_ARCH_CASE MCH_VGA
 
 //typedef Bitu (LoopHandler)(void);
 

@@ -19,7 +19,7 @@
 #ifndef DOSBOX_LOGGING_H
 #define DOSBOX_LOGGING_H
 
-#define VERB_LOGGING 1
+//#define VERB_LOGGING 1
 
 namespace dosbox {
 

@@ -47,15 +47,31 @@
 namespace dosbox {
 
 CDosBox* myldbi;
+LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
+MachineType machine;
+SVGACards svgaCard;
+Config * control = NULL;
+
+void DOSBOX_RunMachine()
+{
+	myldbi->RunMachine();
+}
 
 static void DOSBOX_RealInit(Section * sec)
 {
 	Section_prop * section=static_cast<Section_prop *>(sec);
+
+	if (control) myldbi->control = control;
+	else control = myldbi->control;
+
 	/* Initialize some dosbox internals */
 	myldbi->ticksRemain=0;
 	myldbi->ticksLast=GetTicks();
 	myldbi->ticksLocked = false;
 	MSG_Init(section);
+
+	machine = MCH_VGA;
+	svgaCard = SVGA_S3Trio;
 
 	int10.vesa_nolfb = false;
 	int10.vesa_oldvbe = false;
@@ -489,7 +505,7 @@ int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 	//FIXME: checks
 	ldb_callbacks[t] = f;
 	printf("RegisterCallback(%d, 0x%x)\n",t,((void*)f));
-//	libdosbox_callbacks[t] = f;
+	libdosbox_callbacks[t] = f;
 	return 0;
 }
 
