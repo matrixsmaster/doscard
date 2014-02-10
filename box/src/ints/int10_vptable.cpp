@@ -535,23 +535,23 @@ Bit16u INT10_SetupVideoParameterTable(PhysPt basepos) {
 void INT10_SetupBasicVideoParameterTable(void) {
 	/* video parameter table at F000:F0A4 */
 	RealSetVec(0x1d,RealMake(0xF000, 0xF0A4));
-	switch (machine) {
-	case MCH_TANDY:
-		for (Bit16u i = 0; i < sizeof(vparams_tandy); i++) {
-			phys_writeb(0xFF0A4+i,vparams_tandy[i]);
-		}
-		break;
-	case MCH_PCJR:
-		for (Bit16u i = 0; i < sizeof(vparams_pcjr); i++) {
-			phys_writeb(0xFF0A4+i,vparams_pcjr[i]);
-		}
-		break;
-	default:
+//	switch (machine) {
+//	case MCH_TANDY:
+//		for (Bit16u i = 0; i < sizeof(vparams_tandy); i++) {
+//			phys_writeb(0xFF0A4+i,vparams_tandy[i]);
+//		}
+//		break;
+//	case MCH_PCJR:
+//		for (Bit16u i = 0; i < sizeof(vparams_pcjr); i++) {
+//			phys_writeb(0xFF0A4+i,vparams_pcjr[i]);
+//		}
+//		break;
+//	default:
 		for (Bit16u i = 0; i < sizeof(vparams); i++) {
 			phys_writeb(0xFF0A4+i,vparams[i]);
 		}
-		break;
-	}
+//		break;
+//	}
 }
 
 #if 0

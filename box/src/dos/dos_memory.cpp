@@ -54,11 +54,12 @@ void DOS_FreeProcessMemory(Bit16u pspseg) {
 		}
 		if (mcb.GetType()==0x5a) {
 			/* check if currently last block reaches up to the PCJr graphics memory */
-			if ((machine==MCH_PCJR) && (mcb_segment+mcb.GetSize()==0x17fe) &&
-			   (real_readb(0x17ff,0)==0x4d) && (real_readw(0x17ff,1)==8)) {
-				/* re-enable the memory past segment 0x2000 */
-				mcb.SetType(0x4d);
-			} else break;
+//			if ((machine==MCH_PCJR) && (mcb_segment+mcb.GetSize()==0x17fe) &&
+//			   (real_readb(0x17ff,0)==0x4d) && (real_readw(0x17ff,1)==8)) {
+//				/* re-enable the memory past segment 0x2000 */
+//				mcb.SetType(0x4d);
+//			} else
+				break;
 		}
 		mcb_segment+=mcb.GetSize()+1;
 		mcb.SetPt(mcb_segment);
@@ -307,10 +308,10 @@ bool DOS_FreeMemory(Bit16u segment) {
 
 
 void DOS_BuildUMBChain(bool umb_active,bool ems_active) {
-	if (umb_active  && (machine!=MCH_TANDY)) {
+	if (umb_active) {
 		Bit16u first_umb_seg = 0xd000;
 		Bit16u first_umb_size = 0x2000;
-		if(ems_active || (machine == MCH_PCJR)) first_umb_size = 0x1000;
+		if (ems_active) first_umb_size = 0x1000;
 
 		dos_infoblock.SetStartOfUMBChain(UMB_START_SEG);
 		dos_infoblock.SetUMBChainState(0);		// UMBs not linked yet
@@ -434,31 +435,31 @@ void DOS_SetupMemory(void) {
 	DOS_MCB mcb((Bit16u)DOS_MEM_START+mcb_sizes);
 	mcb.SetPSPSeg(MCB_FREE);						//Free
 	mcb.SetType(0x5a);								//Last Block
-	if (machine==MCH_TANDY) {
-		/* memory up to 608k available, the rest (to 640k) is used by
-			the tandy graphics system's variable mapping of 0xb800 */
-		mcb.SetSize(0x9BFF - DOS_MEM_START - mcb_sizes);
-	} else if (machine==MCH_PCJR) {
-		/* memory from 128k to 640k is available */
-		mcb_devicedummy.SetPt((Bit16u)0x2000);
-		mcb_devicedummy.SetPSPSeg(MCB_FREE);
-		mcb_devicedummy.SetSize(0x9FFF - 0x2000);
-		mcb_devicedummy.SetType(0x5a);
-
-		/* exclude PCJr graphics region */
-		mcb_devicedummy.SetPt((Bit16u)0x17ff);
-		mcb_devicedummy.SetPSPSeg(MCB_DOS);
-		mcb_devicedummy.SetSize(0x800);
-		mcb_devicedummy.SetType(0x4d);
-
-		/* memory below 96k */
-		mcb.SetSize(0x1800 - DOS_MEM_START - (2+mcb_sizes));
-		mcb.SetType(0x4d);
-	} else {
+//	if (machine==MCH_TANDY) {
+//		/* memory up to 608k available, the rest (to 640k) is used by
+//			the tandy graphics system's variable mapping of 0xb800 */
+//		mcb.SetSize(0x9BFF - DOS_MEM_START - mcb_sizes);
+//	} else if (machine==MCH_PCJR) {
+//		/* memory from 128k to 640k is available */
+//		mcb_devicedummy.SetPt((Bit16u)0x2000);
+//		mcb_devicedummy.SetPSPSeg(MCB_FREE);
+//		mcb_devicedummy.SetSize(0x9FFF - 0x2000);
+//		mcb_devicedummy.SetType(0x5a);
+//
+//		/* exclude PCJr graphics region */
+//		mcb_devicedummy.SetPt((Bit16u)0x17ff);
+//		mcb_devicedummy.SetPSPSeg(MCB_DOS);
+//		mcb_devicedummy.SetSize(0x800);
+//		mcb_devicedummy.SetType(0x4d);
+//
+//		/* memory below 96k */
+//		mcb.SetSize(0x1800 - DOS_MEM_START - (2+mcb_sizes));
+//		mcb.SetType(0x4d);
+//	} else {
 		/* complete memory up to 640k available */
 		/* last paragraph used to add UMB chain to low-memory MCB chain */
 		mcb.SetSize(0x9FFE - DOS_MEM_START - mcb_sizes);
-	}
+//	}
 
 	dos.firstMCB=DOS_MEM_START;
 	dos_infoblock.SetFirstMCB(DOS_MEM_START);

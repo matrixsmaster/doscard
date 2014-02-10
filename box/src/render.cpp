@@ -37,7 +37,7 @@ static uint32_t frmsk_cnt;
 
 static INLINE void LDB_SendDWord(Bit32u x)
 {
-	(*libdosbox_callbacks[DBCB_PushScreen])(&x,4);
+	myldbi->Callback(DBCB_PushScreen,&x,4);
 }
 /*
 static inline void LDB_SendWord(Bit16u x)
@@ -47,7 +47,7 @@ static inline void LDB_SendWord(Bit16u x)
 */
 static INLINE void LDB_SendByte(Bit8u x)
 {
-	(*libdosbox_callbacks[DBCB_PushScreen])(&x,1);
+	myldbi->Callback(DBCB_PushScreen,&x,1);
 }
 
 void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue)
@@ -121,6 +121,7 @@ void RENDER_EndUpdate(bool abort)
 		//normal update
 		LDB_SendByte(0x01);
 	}
+	//FIXME: frameskip
 	if (frmsk_cnt < 3) frmsk_cnt++;
 	else frmsk_cnt = 0;
 }

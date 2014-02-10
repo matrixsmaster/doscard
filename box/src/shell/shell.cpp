@@ -301,8 +301,8 @@ void DOS_Shell::Run(void) {
 #if C_DEBUG
 	WriteOut(MSG_Get("SHELL_STARTUP_DEBUG"));
 #endif
-	if (machine == MCH_CGA) WriteOut(MSG_Get("SHELL_STARTUP_CGA"));
-	if (machine == MCH_HERC) WriteOut(MSG_Get("SHELL_STARTUP_HERC"));
+//	if (machine == MCH_CGA) WriteOut(MSG_Get("SHELL_STARTUP_CGA"));
+//	if (machine == MCH_HERC) WriteOut(MSG_Get("SHELL_STARTUP_HERC"));
 	WriteOut(MSG_Get("SHELL_STARTUP_END"));
 
 	if (cmd->FindString("/INIT",line,true)) {
@@ -347,11 +347,11 @@ public:
 		Section_line * section=static_cast<Section_line *>(configuration);
 
 		/* Check -securemode switch to disable mount/imgmount/boot after running autoexec.bat */
-		bool secure = control->cmdline->FindExist("-securemode",true);
+		bool secure = myldbi->control->cmdline->FindExist("-securemode",true);
 
 		/* add stuff from the configfile unless -noautexec or -securemode is specified. */
 		char * extra = const_cast<char*>(section->data.c_str());
-		if (extra && !secure && !control->cmdline->FindExist("-noautoexec",true)) {
+		if (extra && !secure && !myldbi->control->cmdline->FindExist("-noautoexec",true)) {
 			/* detect if "echo off" is the first line */
 			bool echo_off  = !strncasecmp(extra,"echo off",8);
 			if (!echo_off) echo_off = !strncasecmp(extra,"@echo off",9);
@@ -366,7 +366,7 @@ public:
 		/* Check to see for extra command line options to be added (before the command specified on commandline) */
 		/* Maximum of extra commands: 10 */
 		Bitu i = 1;
-		while (control->cmdline->FindString("-c",line,true) && (i <= 11)) {
+		while (myldbi->control->cmdline->FindString("-c",line,true) && (i <= 11)) {
 #if defined (WIN32) || defined (OS2)
 			//replace single with double quotes so that mount commands can contain spaces
 			for(Bitu temp = 0;temp < line.size();++temp) if(line[temp] == '\'') line[temp]='\"';
@@ -375,14 +375,14 @@ public:
 		}
 
 		/* Check for the -exit switch which causes dosbox to when the command on the commandline has finished */
-		bool addexit = control->cmdline->FindExist("-exit",true);
+		bool addexit = myldbi->control->cmdline->FindExist("-exit",true);
 
 		/* Check for first command being a directory or file */
 		char buffer[CROSS_LEN];
 		char orig[CROSS_LEN];
 		char cross_filesplit[2] = {CROSS_FILESPLIT , 0};
 		/* Combining -securemode and no parameter leaves you with a lovely Z:\. */ 
-		if ( !control->cmdline->FindCommand(1,line) ) { 
+		if ( !myldbi->control->cmdline->FindCommand(1,line) ) {
 			if ( secure ) autoexec[12].Install("z:\\config.com -securemode");
 		} else {
 			struct stat test;

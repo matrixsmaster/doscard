@@ -65,7 +65,7 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 void GFX_Events()
 {
 	LDB_UIEvent evt;
-	while ((*libdosbox_callbacks[DBCB_PullUIEvents])(&evt,sizeof(LDB_UIEvent))) {
+	while (myldbi->Callback(DBCB_PullUIEvents,&evt,sizeof(LDB_UIEvent))) {
 		switch (evt.t) {
 		case LDB_UIE_KBD:
 			KEYBOARD_AddKey(evt.key,evt.pressed);
@@ -97,7 +97,7 @@ void GFX_ShowMsg(char const* format,...)
 	va_start(msg,format);
 	vsnprintf(buf,511,format,msg);
 	va_end(msg);
-	(*libdosbox_callbacks[DBCB_PushMessage])(buf,sizeof(buf));
+	myldbi->Callback(DBCB_PushMessage,buf,sizeof(buf));
 }
 
 void Mouse_AutoLock(bool enable)

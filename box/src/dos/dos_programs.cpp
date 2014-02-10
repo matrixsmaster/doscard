@@ -94,7 +94,7 @@ public:
 
 		/* In secure mode don't allow people to change mount points. 
 		 * Neither mount nor unmount */
-		if(control->SecureMode()) {
+		if(myldbi->control->SecureMode()) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}
@@ -338,9 +338,10 @@ public:
 
 		Bit16u seg,blocks;blocks=0xffff;
 		DOS_AllocateMemory(&seg,&blocks);
-		if ((machine==MCH_PCJR) && (real_readb(0x2000,0)==0x5a) && (real_readw(0x2000,1)==0) && (real_readw(0x2000,3)==0x7ffe)) {
-			WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),0x7ffe*16/1024);
-		} else WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),blocks*16/1024);
+//		if ((machine==MCH_PCJR) && (real_readb(0x2000,0)==0x5a) && (real_readw(0x2000,1)==0) && (real_readw(0x2000,3)==0x7ffe)) {
+//			WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),0x7ffe*16/1024);
+//		} else
+			WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),blocks*16/1024);
 
 		if (umb_start!=0xffff) {
 			DOS_LinkUMBsToMemChain(1);
@@ -478,7 +479,7 @@ private:
 	}
 
 	void disable_umb_ems_xms(void) {
-		Section* dos_sec = control->GetSection("dos");
+		Section* dos_sec = myldbi->control->GetSection("dos");
 		dos_sec->ExecuteDestroy(false);
 		char test[20];
 		strcpy(test,"umb=false");
@@ -497,7 +498,7 @@ public:
 		ChangeToLongCmd();
 		/* In secure mode don't allow people to boot stuff. 
 		 * They might try to corrupt the data on it */
-		if(control->SecureMode()) {
+		if(myldbi->control->SecureMode()) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}
@@ -583,152 +584,153 @@ public:
 		bootSector bootarea;
 		imageDiskList[drive-65]->Read_Sector(0,0,1,(Bit8u *)&bootarea);
 		if ((bootarea.rawdata[0]==0x50) && (bootarea.rawdata[1]==0x43) && (bootarea.rawdata[2]==0x6a) && (bootarea.rawdata[3]==0x72)) {
-			if (machine!=MCH_PCJR) WriteOut(MSG_Get("PROGRAM_BOOT_CART_WO_PCJR"));
-			else {
-				Bit8u rombuf[65536];
-				Bits cfound_at=-1;
-				if (cart_cmd!="") {
-					/* read cartridge data into buffer */
-					dbfseek(usefile_1,0x200L, SEEK_SET);
-					dbfread(rombuf, 1, rombytesize_1-0x200, usefile_1);
-
-					char cmdlist[1024];
-					cmdlist[0]=0;
-					Bitu ct=6;
-					Bits clen=rombuf[ct];
-					char buf[257];
-					if (cart_cmd=="?") {
-						while (clen!=0) {
-							strncpy(buf,(char*)&rombuf[ct+1],clen);
-							buf[clen]=0;
-							upcase(buf);
-							strcat(cmdlist," ");
-							strcat(cmdlist,buf);
-							ct+=1+clen+3;
-							if (ct>sizeof(cmdlist)) break;
-							clen=rombuf[ct];
-						}
-						if (ct>6) {
-							WriteOut(MSG_Get("PROGRAM_BOOT_CART_LIST_CMDS"),cmdlist);
-						} else {
-							WriteOut(MSG_Get("PROGRAM_BOOT_CART_NO_CMDS"));
-						}
-						for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
-							if(diskSwap[dct]!=NULL) {
-								delete diskSwap[dct];
-								diskSwap[dct]=NULL;
-							}
-						}
-						// dbfclose(usefile_1); //delete diskSwap closes the file
-						return;
-					} else {
-						while (clen!=0) {
-							strncpy(buf,(char*)&rombuf[ct+1],clen);
-							buf[clen]=0;
-							upcase(buf);
-							strcat(cmdlist," ");
-							strcat(cmdlist,buf);
-							ct+=1+clen;
-
-							if (cart_cmd==buf) {
-								cfound_at=ct;
-								break;
-							}
-
-							ct+=3;
-							if (ct>sizeof(cmdlist)) break;
-							clen=rombuf[ct];
-						}
-						if (cfound_at<=0) {
-							if (ct>6) {
-								WriteOut(MSG_Get("PROGRAM_BOOT_CART_LIST_CMDS"),cmdlist);
-							} else {
-								WriteOut(MSG_Get("PROGRAM_BOOT_CART_NO_CMDS"));
-							}
-							for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
-								if(diskSwap[dct]!=NULL) {
-									delete diskSwap[dct];
-									diskSwap[dct]=NULL;
-								}
-							}
-							// dbfclose(usefile_1); //Delete diskSwap closes the file
-							return;
-						}
-					}
-				}
-
-				disable_umb_ems_xms();
-				void PreparePCJRCartRom(void);
-				PreparePCJRCartRom();
-
-				if (usefile_1==NULL) return;
-
-				Bit32u sz1,sz2;
-				DBFILE*tfile = getFSFile("system.rom", &sz1, &sz2, true);
-				if (tfile!=NULL) {
-					dbfseek(tfile, 0x3000L, SEEK_SET);
-					Bit32u drd=(Bit32u) dbfread(rombuf, 1, 0xb000, tfile);
-					if (drd==0xb000) {
-						for(i=0;i<0xb000;i++) phys_writeb(0xf3000+i,rombuf[i]);
-					}
-					dbfclose(tfile);
-				}
-
-				if (usefile_2!=NULL) {
-					dbfseek(usefile_2, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_2);
-					PhysPt romseg_pt=host_readw(&rombuf[0x1ce])<<4;
-
-					/* read cartridge data into buffer */
-					dbfseek(usefile_2, 0x200L, SEEK_SET); dbfread(rombuf, 1, rombytesize_2-0x200, usefile_2);
-					// dbfclose(usefile_2); //usefile_2 is in diskSwap structure which should be deleted to close the file
-
-					/* write cartridge data into ROM */
-					for(i=0;i<rombytesize_2-0x200;i++) phys_writeb(romseg_pt+i,rombuf[i]);
-				}
-
-				dbfseek(usefile_1, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_1);
-				Bit16u romseg=host_readw(&rombuf[0x1ce]);
-
-				/* read cartridge data into buffer */
-				dbfseek(usefile_1,0x200L, SEEK_SET); dbfread(rombuf, 1, rombytesize_1-0x200, usefile_1);
-				// dbfclose(usefile_1); //usefile_1 is in diskSwap structure which should be deleted to close the file
-
-				/* write cartridge data into ROM */
-				for(i=0;i<rombytesize_1-0x200;i++) phys_writeb((romseg<<4)+i,rombuf[i]);
-
-				//Close cardridges
-				for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
-					if(diskSwap[dct]!=NULL) {
-						delete diskSwap[dct];
-						diskSwap[dct]=NULL;
-					}
-				}
-
-
-				if (cart_cmd=="") {
-					Bit32u old_int18=mem_readd(0x60);
-					/* run cartridge setup */
-					SegSet16(ds,romseg);
-					SegSet16(es,romseg);
-					SegSet16(ss,0x8000);
-					reg_esp=0xfffe;
-					CALLBACK_RunRealFar(romseg,0x0003);
-
-					Bit32u new_int18=mem_readd(0x60);
-					if (old_int18!=new_int18) {
-						/* boot cartridge (int18) */
-						SegSet16(cs,RealSeg(new_int18));
-						reg_ip = RealOff(new_int18);
-					} 
-				} else {
-					if (cfound_at>0) {
-						/* run cartridge setup */
-						SegSet16(ds,dos.psp());
-						SegSet16(es,dos.psp());
-						CALLBACK_RunRealFar(romseg,cfound_at);
-					}
-				}
-			}
+//			if (machine!=MCH_PCJR)
+				WriteOut(MSG_Get("PROGRAM_BOOT_CART_WO_PCJR"));
+//			else {
+//				Bit8u rombuf[65536];
+//				Bits cfound_at=-1;
+//				if (cart_cmd!="") {
+//					/* read cartridge data into buffer */
+//					dbfseek(usefile_1,0x200L, SEEK_SET);
+//					dbfread(rombuf, 1, rombytesize_1-0x200, usefile_1);
+//
+//					char cmdlist[1024];
+//					cmdlist[0]=0;
+//					Bitu ct=6;
+//					Bits clen=rombuf[ct];
+//					char buf[257];
+//					if (cart_cmd=="?") {
+//						while (clen!=0) {
+//							strncpy(buf,(char*)&rombuf[ct+1],clen);
+//							buf[clen]=0;
+//							upcase(buf);
+//							strcat(cmdlist," ");
+//							strcat(cmdlist,buf);
+//							ct+=1+clen+3;
+//							if (ct>sizeof(cmdlist)) break;
+//							clen=rombuf[ct];
+//						}
+//						if (ct>6) {
+//							WriteOut(MSG_Get("PROGRAM_BOOT_CART_LIST_CMDS"),cmdlist);
+//						} else {
+//							WriteOut(MSG_Get("PROGRAM_BOOT_CART_NO_CMDS"));
+//						}
+//						for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
+//							if(diskSwap[dct]!=NULL) {
+//								delete diskSwap[dct];
+//								diskSwap[dct]=NULL;
+//							}
+//						}
+//						// dbfclose(usefile_1); //delete diskSwap closes the file
+//						return;
+//					} else {
+//						while (clen!=0) {
+//							strncpy(buf,(char*)&rombuf[ct+1],clen);
+//							buf[clen]=0;
+//							upcase(buf);
+//							strcat(cmdlist," ");
+//							strcat(cmdlist,buf);
+//							ct+=1+clen;
+//
+//							if (cart_cmd==buf) {
+//								cfound_at=ct;
+//								break;
+//							}
+//
+//							ct+=3;
+//							if (ct>sizeof(cmdlist)) break;
+//							clen=rombuf[ct];
+//						}
+//						if (cfound_at<=0) {
+//							if (ct>6) {
+//								WriteOut(MSG_Get("PROGRAM_BOOT_CART_LIST_CMDS"),cmdlist);
+//							} else {
+//								WriteOut(MSG_Get("PROGRAM_BOOT_CART_NO_CMDS"));
+//							}
+//							for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
+//								if(diskSwap[dct]!=NULL) {
+//									delete diskSwap[dct];
+//									diskSwap[dct]=NULL;
+//								}
+//							}
+//							// dbfclose(usefile_1); //Delete diskSwap closes the file
+//							return;
+//						}
+//					}
+//				}
+//
+//				disable_umb_ems_xms();
+//				void PreparePCJRCartRom(void);
+//				PreparePCJRCartRom();
+//
+//				if (usefile_1==NULL) return;
+//
+//				Bit32u sz1,sz2;
+//				DBFILE*tfile = getFSFile("system.rom", &sz1, &sz2, true);
+//				if (tfile!=NULL) {
+//					dbfseek(tfile, 0x3000L, SEEK_SET);
+//					Bit32u drd=(Bit32u) dbfread(rombuf, 1, 0xb000, tfile);
+//					if (drd==0xb000) {
+//						for(i=0;i<0xb000;i++) phys_writeb(0xf3000+i,rombuf[i]);
+//					}
+//					dbfclose(tfile);
+//				}
+//
+//				if (usefile_2!=NULL) {
+//					dbfseek(usefile_2, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_2);
+//					PhysPt romseg_pt=host_readw(&rombuf[0x1ce])<<4;
+//
+//					/* read cartridge data into buffer */
+//					dbfseek(usefile_2, 0x200L, SEEK_SET); dbfread(rombuf, 1, rombytesize_2-0x200, usefile_2);
+//					// dbfclose(usefile_2); //usefile_2 is in diskSwap structure which should be deleted to close the file
+//
+//					/* write cartridge data into ROM */
+//					for(i=0;i<rombytesize_2-0x200;i++) phys_writeb(romseg_pt+i,rombuf[i]);
+//				}
+//
+//				dbfseek(usefile_1, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_1);
+//				Bit16u romseg=host_readw(&rombuf[0x1ce]);
+//
+//				/* read cartridge data into buffer */
+//				dbfseek(usefile_1,0x200L, SEEK_SET); dbfread(rombuf, 1, rombytesize_1-0x200, usefile_1);
+//				// dbfclose(usefile_1); //usefile_1 is in diskSwap structure which should be deleted to close the file
+//
+//				/* write cartridge data into ROM */
+//				for(i=0;i<rombytesize_1-0x200;i++) phys_writeb((romseg<<4)+i,rombuf[i]);
+//
+//				//Close cardridges
+//				for(Bitu dct=0;dct<MAX_SWAPPABLE_DISKS;dct++) {
+//					if(diskSwap[dct]!=NULL) {
+//						delete diskSwap[dct];
+//						diskSwap[dct]=NULL;
+//					}
+//				}
+//
+//
+//				if (cart_cmd=="") {
+//					Bit32u old_int18=mem_readd(0x60);
+//					/* run cartridge setup */
+//					SegSet16(ds,romseg);
+//					SegSet16(es,romseg);
+//					SegSet16(ss,0x8000);
+//					reg_esp=0xfffe;
+//					CALLBACK_RunRealFar(romseg,0x0003);
+//
+//					Bit32u new_int18=mem_readd(0x60);
+//					if (old_int18!=new_int18) {
+//						/* boot cartridge (int18) */
+//						SegSet16(cs,RealSeg(new_int18));
+//						reg_ip = RealOff(new_int18);
+//					}
+//				} else {
+//					if (cfound_at>0) {
+//						/* run cartridge setup */
+//						SegSet16(ds,dos.psp());
+//						SegSet16(es,dos.psp());
+//						CALLBACK_RunRealFar(romseg,cfound_at);
+//					}
+//				}
+//			}
 		} else {
 			disable_umb_ems_xms();
 			void RemoveEMSPageFrame(void);
@@ -974,7 +976,7 @@ public:
 		ChangeToLongCmd();
 		/* In secure mode don't allow people to change imgmount points. 
 		 * Neither mount nor unmount */
-		if(control->SecureMode()) {
+		if(myldbi->control->SecureMode()) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}

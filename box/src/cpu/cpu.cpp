@@ -2165,8 +2165,8 @@ extern Bit32u ticksScheduled;
 
 void CPU_Reset_AutoAdjust(void) {
 	CPU_IODelayRemoved = 0;
-	ticksDone = 0;
-	ticksScheduled = 0;
+	myldbi->ticksDone = 0;
+	myldbi->ticksScheduled = 0;
 }
 
 class CPU: public Module_base {

@@ -242,23 +242,23 @@ void VGA_Init(Section* sec) {
 void SVGA_Setup_Driver(void) {
 	memset(&svga, 0, sizeof(SVGA_Driver));
 
-	switch(svgaCard) {
-	case SVGA_S3Trio:
+//	switch(svgaCard) {
+//	case SVGA_S3Trio:
 		SVGA_Setup_S3Trio();
-		break;
-	case SVGA_TsengET4K:
-		SVGA_Setup_TsengET4K();
-		break;
-	case SVGA_TsengET3K:
-		SVGA_Setup_TsengET3K();
-		break;
-	case SVGA_ParadisePVGA1A:
-		SVGA_Setup_ParadisePVGA1A();
-		break;
-	default:
-		vga.vmemsize = vga.vmemwrap = 256*1024;
-		break;
-	}
+//		break;
+//	case SVGA_TsengET4K:
+//		SVGA_Setup_TsengET4K();
+//		break;
+//	case SVGA_TsengET3K:
+//		SVGA_Setup_TsengET3K();
+//		break;
+//	case SVGA_ParadisePVGA1A:
+//		SVGA_Setup_ParadisePVGA1A();
+//		break;
+//	default:
+//		vga.vmemsize = vga.vmemwrap = 256*1024;
+//		break;
+//	}
 }
 
 }
