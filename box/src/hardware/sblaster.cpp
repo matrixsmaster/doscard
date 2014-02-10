@@ -29,26 +29,12 @@
 #include "setup.h"
 #include "support.h"
 #include "shell.h"
-
-/*
- * This module is one of the most obfuscated source module I've ever seen!
- * !GRAND PRIZE!
- */
-
-//TODO: do something with this piece of ... code
+#include "adlib.h"
+#include "dbopl.h"
 
 using namespace std;
 
 namespace dosbox {
-
-extern Bit8u adlib_commandreg;
-void CMS_Init(Section* sec);
-void OPL_Init(Section* sec,OPL_Mode oplmode);
-void CMS_ShutDown(Section* sec);
-void OPL_ShutDown(Section* sec);
-
-//void MIDI_RawOutByte(Bit8u data);
-//bool MIDI_Available(void);
 
 #define SB_PIC_EVENTS 0
 
@@ -1464,10 +1450,6 @@ static void write_sb(Bitu port,Bitu val,Bitu /*iolen*/) {
 	}
 }
 
-static void adlib_gusforward(Bitu /*port*/,Bitu val,Bitu /*iolen*/) {
-	adlib_commandreg=(Bit8u)(val&0xff);
-}
-
 bool SB_Get_Address(Bitu& sbaddr, Bitu& sbirq, Bitu& sbdma) {
 	sbaddr=0;
 	sbirq =0;
@@ -1517,52 +1499,6 @@ private:
 	MixerObject MixerChan;
 	OPL_Mode oplmode;
 
-	/* Support Functions */
-	void Find_Type_And_Opl(Section_prop* config,SB_TYPES& type, OPL_Mode& opl_mode){
-		const char * sbtype=config->Get_string("sbtype");
-		if (!strcasecmp(sbtype,"sb1")) type=SBT_1;
-		else if (!strcasecmp(sbtype,"sb2")) type=SBT_2;
-		else if (!strcasecmp(sbtype,"sbpro1")) type=SBT_PRO1;
-		else if (!strcasecmp(sbtype,"sbpro2")) type=SBT_PRO2;
-		else if (!strcasecmp(sbtype,"sb16")) type=SBT_16;
-		else if (!strcasecmp(sbtype,"gb")) type=SBT_GB;
-		else if (!strcasecmp(sbtype,"none")) type=SBT_NONE;
-		else type=SBT_16;
-
-		if (type==SBT_16) {
-			if ((!IS_EGAVGA_ARCH) || !SecondDMAControllerAvailable()) type=SBT_PRO2;
-		}
-			
-		/* OPL/CMS Init */
-		const char * omode=config->Get_string("oplmode");
-		if (!strcasecmp(omode,"none")) opl_mode=OPL_none;	
-		else if (!strcasecmp(omode,"cms")) opl_mode=OPL_cms;
-		else if (!strcasecmp(omode,"opl2")) opl_mode=OPL_opl2;
-		else if (!strcasecmp(omode,"dualopl2")) opl_mode=OPL_dualopl2;
-		else if (!strcasecmp(omode,"opl3")) opl_mode=OPL_opl3;
-		/* Else assume auto */
-		else {
-			switch (type) {
-			case SBT_NONE:
-				opl_mode=OPL_none;
-				break;
-			case SBT_GB:
-				opl_mode=OPL_cms;
-				break;
-			case SBT_1:
-			case SBT_2:
-				opl_mode=OPL_opl2;
-				break;
-			case SBT_PRO1:
-				opl_mode=OPL_dualopl2;
-				break;
-			case SBT_PRO2:
-			case SBT_16:
-				opl_mode=OPL_opl3;
-				break;
-			}
-		}	
-	}
 public:
 	SBLASTER(Section* configuration):Module_base(configuration) {
 		Bitu i;
@@ -1580,25 +1516,14 @@ public:
 		sb.mixer.enabled=section->Get_bool("sbmixer");
 		sb.mixer.stereo=false;
 
-		Find_Type_And_Opl(section,sb.type,oplmode);
-	
-		switch (oplmode) {
-		case OPL_none:
-			WriteHandler[0].Install(0x388,adlib_gusforward,IO_MB);
-			break;
-		case OPL_cms:
-			WriteHandler[0].Install(0x388,adlib_gusforward,IO_MB);
-			CMS_Init(section);
-			break;
-		case OPL_opl2:
-			CMS_Init(section);
-			// fall-through
-		case OPL_dualopl2:
-		case OPL_opl3:
-			OPL_Init(section,oplmode);
-			break;
+		sb.type = SBT_16;
+		if ((!IS_EGAVGA_ARCH) || !SecondDMAControllerAvailable()) {
+			sb.type = SBT_PRO2;
+			LOG_MSG("Find_Type_And_Opl(): SB Type forced to be SB PRO 2");
 		}
-		if (sb.type==SBT_NONE || sb.type==SBT_GB) return;
+		oplmode=OPL_opl3;
+
+		OPL_Init(section,oplmode);
 
 		sb.chan=MixerChan.Install(&SBLASTER_CallBack,22050,"SB");
 		sb.dsp.state=DSP_S_NORMAL;
@@ -1642,21 +1567,7 @@ public:
 	}	
 	
 	~SBLASTER() {
-		switch (oplmode) {
-		case OPL_none:
-			break;
-		case OPL_cms:
-			CMS_ShutDown(m_configuration);
-			break;
-		case OPL_opl2:
-			CMS_ShutDown(m_configuration);
-			// fall-through
-		case OPL_dualopl2:
-		case OPL_opl3:
-			OPL_ShutDown(m_configuration);
-			break;
-		}
-		if (sb.type==SBT_NONE || sb.type==SBT_GB) return;
+		OPL_ShutDown(m_configuration);
 		DSP_Reset(); // Stop everything	
 	}	
 }; //End of SBLASTER class

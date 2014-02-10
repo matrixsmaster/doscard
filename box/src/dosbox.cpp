@@ -439,34 +439,6 @@ void DOSBOX_Init(void)
 	Pint->Set_values(oplrates);
 	Pint->Set_help("Sample rate of OPL music emulation. Use 49716 for highest quality (set the mixer rate accordingly).");
 
-
-	secprop=control->AddSection_prop("gus",&GUS_Init,true); //done
-	Pbool = secprop->Add_bool("gus",Property::Changeable::WhenIdle,false); 	
-	Pbool->Set_help("Enable the Gravis Ultrasound emulation.");
-
-	Pint = secprop->Add_int("gusrate",Property::Changeable::WhenIdle,44100);
-	Pint->Set_values(rates);
-	Pint->Set_help("Sample rate of Ultrasound emulation.");
-
-	Phex = secprop->Add_hex("gusbase",Property::Changeable::WhenIdle,0x240);
-	Phex->Set_values(iosgus);
-	Phex->Set_help("The IO base address of the Gravis Ultrasound.");
-
-	Pint = secprop->Add_int("gusirq",Property::Changeable::WhenIdle,5);
-	Pint->Set_values(irqsgus);
-	Pint->Set_help("The IRQ number of the Gravis Ultrasound.");
-
-	Pint = secprop->Add_int("gusdma",Property::Changeable::WhenIdle,3);
-	Pint->Set_values(dmasgus);
-	Pint->Set_help("The DMA channel of the Gravis Ultrasound.");
-
-	Pstring = secprop->Add_string("ultradir",Property::Changeable::WhenIdle,"C:\\ULTRASND");
-	Pstring->Set_help(
-		"Path to Ultrasound directory. In this directory\n"
-		"there should be a MIDI directory that contains\n"
-		"the patch files for GUS playback. Patch sets used\n"
-		"with Timidity should work fine.");
-
 	secprop = control->AddSection_prop("speaker",&PCSPEAKER_Init,true);//done
 	Pbool = secprop->Add_bool("pcspeaker",Property::Changeable::WhenIdle,true);
 	Pbool->Set_help("Enable PC-Speaker emulation.");

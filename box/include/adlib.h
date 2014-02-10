@@ -28,6 +28,13 @@
 
 namespace dosbox {
 
+enum OPL_Mode {
+	OPL_none,OPL_cms,OPL_opl2,OPL_dualopl2,OPL_opl3
+};
+
+void OPL_Init(Section* sec,OPL_Mode oplmode);
+void OPL_ShutDown(Section* sec);
+
 namespace Adlib {
 
 struct Timer {

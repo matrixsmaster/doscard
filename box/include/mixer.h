@@ -112,10 +112,6 @@ public:
 void PCSPEAKER_SetCounter(Bitu cntr,Bitu mode);
 void PCSPEAKER_SetType(Bitu mode);
 
-enum OPL_Mode {
-	OPL_none,OPL_cms,OPL_opl2,OPL_dualopl2,OPL_opl3
-};
-
 }
 
 #endif
