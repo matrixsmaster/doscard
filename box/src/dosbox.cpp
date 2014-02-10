@@ -37,7 +37,6 @@
 #include "cross.h"
 #include "programs.h"
 #include "support.h"
-#include "mapper.h"
 #include "int10.h"
 #include "render.h"
 #include "pci_bus.h"

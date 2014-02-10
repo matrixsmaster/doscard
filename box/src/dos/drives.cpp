@@ -20,7 +20,6 @@
 #include "dosbox.h"
 #include "dos_system.h"
 #include "drives.h"
-#include "mapper.h"
 #include "support.h"
 
 namespace dosbox {

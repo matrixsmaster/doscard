@@ -23,7 +23,6 @@
 #include <sys/types.h>
 #include "adlib.h"
 #include "setup.h"
-#include "mapper.h"
 #include "mem.h"
 #include "dbopl.h"
 

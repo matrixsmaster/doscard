@@ -25,7 +25,6 @@
 #include "mem.h"
 #include "pic.h"
 #include "render.h"
-#include "mapper.h"
 
 namespace dosbox {
 

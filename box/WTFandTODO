@@ -12,7 +12,7 @@ homebrew USB-stick-sized cardboard PC (which will cost you around $15) -- feel
 free to contribute and share the fun!
 *-----
 	Unstripped versions. DosCard XShell have SDL2 linked statically, so the 
-	real size is much lower.
+	real size is much lower (~4 MB less).
 **----
 	Yes, I know about over 9000 implementations of DOOM or Quake engines, but
 	it's not what I want to see. Porting a full DOS makes it possible to run
@@ -21,7 +21,6 @@ free to contribute and share the fun!
 
 _________________________________TODO________________________________________
 
-0. Write TODO
 
 1. Truncate the code tree to exclude everything unneeded
 	Scalers: this thing is really useful but render_scalers.o only weights > 3MB
@@ -34,6 +33,7 @@ _________________________________TODO________________________________________
 	is to leave the code on place, but undef all C_DEBUG defines.
 	Hardware: I don't need GUS, EGA, CGA and many other things. The only things
 	I need is SVGA (s3) and SoundBlaster (which uses OPL, btw).
+->IN PROGRESS
 
 2. Decide what to do with SDL.
 	Pros: SDL has well-maintained code and it's really simple to write your
@@ -56,6 +56,7 @@ from upstream DosBox due to fact of everything we want is already working.
 I had decided that will be a lib, libdosbox. There will be two versions of this:
 (a) x86 GNU/Linux static or/and shared lib; and (b) embeddable library to just
 include in your hobby microcontroller project. Nice, isn't it?
+->IN PROGRESS
 
 4. Select a chip to port this thing into and draw the schematics (and PCB
 layers of course)
@@ -67,7 +68,7 @@ layers of course)
 
 8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
 we surely didn't have a "normal" disk filesystem.
-List of functions needed to be moved (not FIO only):
+List of functions remains to be moved (not FIO only):
 stat()/fstat()
 localtime()
 
@@ -79,8 +80,3 @@ localtime()
 
 10. Check and clean up all the files in INCLUDE directory!
 -> DONE!
-
-...
-
-666. Wipe out all MacOS and WinDOS stuff. It's a lib, a Linux lib. And there's no
-way to use it under Doors, Windows, Walls, Ceilings or Floors OSs :)

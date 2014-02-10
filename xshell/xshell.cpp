@@ -395,7 +395,7 @@ static void XS_SDLoop()
 		SDL_RenderPresent(ren);
 		SDL_Delay(5);
 	} while (!quit);
-	SDL_AtomicSet(&at_flag,-1);
+	SDL_AtomicSet(&at_flag,-10);
 }
 
 int XS_Message(void* buf, size_t len)

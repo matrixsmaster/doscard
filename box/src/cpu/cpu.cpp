@@ -23,7 +23,6 @@
 #include "dosbox.h"
 #include "cpu.h"
 #include "memory.h"
-#include "mapper.h"
 #include "setup.h"
 #include "programs.h"
 #include "paging.h"

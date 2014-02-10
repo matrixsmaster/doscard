@@ -22,14 +22,6 @@
 
 namespace dosbox {
 
-typedef enum {
-	GFX_CallBackReset,
-	GFX_CallBackStop,
-	GFX_CallBackRedraw
-} GFX_CallBackFunctions_t;
-
-typedef void (*GFX_CallBack_t)( GFX_CallBackFunctions_t function );
-
 struct GFX_PalEntry {
 	Bit8u r;
 	Bit8u g;
@@ -37,37 +29,7 @@ struct GFX_PalEntry {
 	Bit8u unused;
 };
 
-#define GFX_CAN_8		0x0001
-#define GFX_CAN_15		0x0002
-#define GFX_CAN_16		0x0004
-#define GFX_CAN_32		0x0008
-
-#define GFX_LOVE_8		0x0010
-#define GFX_LOVE_15		0x0020
-#define GFX_LOVE_16		0x0040
-#define GFX_LOVE_32		0x0080
-
-#define GFX_RGBONLY		0x0100
-
-#define GFX_SCALING		0x1000
-#define GFX_HARDWARE	0x2000
-
-#define GFX_CAN_RANDOM	0x4000		//If the interface can also do random access surface
-
 void GFX_Events(void);
-void GFX_SetPalette(Bitu start,Bitu count,GFX_PalEntry * entries);
-Bitu GFX_GetBestMode(Bitu flags);
-Bitu GFX_GetRGB(Bit8u red,Bit8u green,Bit8u blue);
-Bitu GFX_SetSize(Bitu width,Bitu height,Bitu flags,double scalex,double scaley,GFX_CallBack_t cb);
-
-void GFX_ResetScreen(void);
-void GFX_Start(void);
-void GFX_Stop(void);
-void GFX_SwitchFullScreen(void);
-bool GFX_StartUpdate(Bit8u * & pixels,Bitu & pitch);
-void GFX_EndUpdate( const Bit16u *changedLines );
-void GFX_GetSize(int &width, int &height, bool &fullscreen);
-void GFX_LosingFocus(void);
 
 /* Mouse related */
 void GFX_CaptureMouse(void);

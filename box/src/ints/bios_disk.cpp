@@ -25,7 +25,6 @@
 #include "mem.h"
 #include "dos_inc.h" /* for Drives[] */
 #include "drives.h"
-#include "mapper.h"
 
 namespace dosbox {
 
@@ -535,7 +534,7 @@ void BIOS_SetupDisks(void) {
 /* Setup the Bios Area */
 	mem_writeb(BIOS_HARDDISK_COUNT,2);
 
-	MAPPER_AddHandler(swapInNextDisk,MK_f4,MMOD1,"swapimg","Swap Image");
+//	MAPPER_AddHandler(swapInNextDisk,MK_f4,MMOD1,"swapimg","Swap Image");
 	killRead = false;
 	swapping_requested = false;
 }

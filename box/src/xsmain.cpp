@@ -31,7 +31,6 @@
 #include "timer.h"
 #include "setup.h"
 #include "support.h"
-#include "mapper.h"
 #include "vga.h"
 #include "keyboard.h"
 #include "cpu.h"
@@ -54,48 +53,13 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 	if(cycles != -1) internal_cycles = cycles;
 	if(frameskip != -1) internal_frameskip = frameskip;
 	if(CPU_CycleAutoAdjust) {
-		sprintf(title,"DOSBox %s, CPU speed: max %3d%% cycles, Frameskip %2d, Program: %8s",VERSION,internal_cycles,internal_frameskip,RunningProgram);
+		sprintf(title,"DOSCARD %s, CPU speed: max %3d%% cycles, Frameskip %2d, Program: %8s",VERSION,internal_cycles,internal_frameskip,RunningProgram);
 	} else {
-		sprintf(title,"DOSBox %s, CPU speed: %8d cycles, Frameskip %2d, Program: %8s",VERSION,internal_cycles,internal_frameskip,RunningProgram);
+		sprintf(title,"DOSCARD %s, CPU speed: %8d cycles, Frameskip %2d, Program: %8s",VERSION,internal_cycles,internal_frameskip,RunningProgram);
 	}
 
 	if(paused) strcat(title," PAUSED");
-//	SDL_WM_SetCaption(title,VERSION);
 	GFX_ShowMsg("TITLE [%s]",title);
-}
-
-void GFX_ResetScreen(void)
-{
-
-}
-
-Bitu GFX_SetSize(Bitu width,Bitu height,Bitu flags,double scalex,double scaley,GFX_CallBack_t callback)
-{
-
-}
-
-void GFX_GetSize(int &width, int &height, bool &fullscreen)
-{
-
-}
-
-bool GFX_StartUpdate(Bit8u * & pixels,Bitu & pitch)
-{
-
-}
-
-void GFX_EndUpdate(const Bit16u *changedLines )
-{
-
-}
-
-void GFX_SetPalette(Bitu start,Bitu count,GFX_PalEntry * entries)
-{
-
-}
-
-static void GUI_StartUp(Section * sec)
-{
 }
 
 void GFX_Events()
@@ -134,11 +98,6 @@ void GFX_ShowMsg(char const* format,...)
 	vsnprintf(buf,511,format,msg);
 	va_end(msg);
 	(*libdosbox_callbacks[DBCB_PushMessage])(buf,sizeof(buf));
-}
-
-void MAPPER_AddHandler(MAPPER_Handler * handler,MapKeys key,Bitu mods,char const * const eventname,char const * const buttonname)
-{
-	LOG_MSG("MAPPER_AddHandler()");
 }
 
 void Mouse_AutoLock(bool enable)

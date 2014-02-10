@@ -29,7 +29,6 @@
 #include "setup.h"
 #include "cross.h"
 #include "support.h"
-#include "mapper.h"
 #include "programs.h"
 
 namespace dosbox {

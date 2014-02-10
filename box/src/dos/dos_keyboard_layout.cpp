@@ -25,7 +25,6 @@
 #include "int10.h"
 #include "regs.h"
 #include "callback.h"
-#include "mapper.h"
 #include "drives.h"
 #include "dos_inc.h"
 #include "dos_codepages.h"
@@ -1141,7 +1140,7 @@ public:
 static DOS_KeyboardLayout* test;
 
 void DOS_KeyboardLayout_ShutDown(Section* /*sec*/) {
-	delete test;	
+	delete test;
 }
 
 void DOS_KeyboardLayout_Init(Section* sec) {

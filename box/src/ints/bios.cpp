@@ -27,7 +27,6 @@
 #include "inout.h"
 #include "pic.h"
 #include "pci_bus.h"
-#include "joystick.h"
 #include "mouse.h"
 #include "setup.h"
 #include "serialport.h"

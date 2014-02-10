@@ -25,7 +25,6 @@
 #include "render.h"
 #include "setup.h"
 #include "control.h"
-#include "mapper.h"
 #include "cross.h"
 #include "support.h"
 
@@ -36,9 +35,7 @@ RenderLineHandler_t RENDER_DrawLine;
 static bool init_ok;
 static uint32_t frmsk_cnt;
 
-static void RENDER_CallBack(GFX_CallBackFunctions_t function);
-
-static inline void LDB_SendDWord(Bit32u x)
+static INLINE void LDB_SendDWord(Bit32u x)
 {
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,4);
 }
@@ -48,7 +45,7 @@ static inline void LDB_SendWord(Bit16u x)
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,2);
 }
 */
-static inline void LDB_SendByte(Bit8u x)
+static INLINE void LDB_SendByte(Bit8u x)
 {
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,1);
 }
