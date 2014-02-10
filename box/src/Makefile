@@ -3,7 +3,9 @@
 
 LIBNAME	:= libdosbox
 MNDIR	:= $(shell pwd)
-CC_DEFS := -DHAVE_CONFIG_H
+BLDINFO := -DBUILDATE="\"$(shell date)\"" -DCOMPILERNAME="\"$(shell gcc --version | head -n1)\""
+BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
+CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -D_GNU_SOURCE
 CC_FLAG := -g -O2
 CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
 CC_COMP := g++ $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
@@ -32,6 +34,7 @@ LIB_OBJS += render.o xsmain.o xsfio.o dosbox.o
 
 
 all:	$(LIB_OBJS)
+	expr `cat buildno` + 1 > buildno
 	g++ -g -c instrument.cpp -o instrument.o
 	rm -f $(LIBNAME).a
 	ar cru $(LIBNAME).a instrument.o $(LIB_OBJS)

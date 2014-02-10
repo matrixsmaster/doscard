@@ -20,8 +20,20 @@
 #ifndef DOSBOX_VERSION_H_
 #define DOSBOX_VERSION_H_
 
-#define VERSION "0.0.1"
-#define BUILDNO 103
+#define VERSION "0.0.2"
+
+#ifndef BUILDNUMBER
+#define BUILDNUMBER "unknown"
+#endif
+
+#ifndef BUILDATE
+#define BUILDATE "somewhere in time"
+#endif
+
+#ifndef COMPILERNAME
+#define COMPILERNAME "some compiler"
+#endif
+
 #define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
 #define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
 

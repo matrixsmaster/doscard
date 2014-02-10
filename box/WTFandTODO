@@ -4,14 +4,15 @@ which may relatively easily run on something really low-cost. Like STM32
 microcontrollers.
 So the first thing needed to be done is truncation of source code tree.
 The vanilla dosbox compiled on $(see gcc.ver) weights 10.8 MB*
-Current version (on the same machine with the same toolchain) weights 7.8 MB*
+Current version (on the same machine with the same toolchain) weights 11 MB*
 and still counting down.
 This is a fun weekend project, so don't expect anything really usable :)
 But if you want to run your beloved DOOM** or even a full Win95 install on a 
 homebrew USB-stick-sized cardboard PC (which will cost you around $15) -- feel
 free to contribute and share the fun!
 *-----
-	Unstripped versions
+	Unstripped versions. DosCard XShell have SDL2 linked statically, so the 
+	real size is much lower.
 **----
 	Yes, I know about over 9000 implementations of DOOM or Quake engines, but
 	it's not what I want to see. Porting a full DOS makes it possible to run
@@ -74,8 +75,10 @@ localtime()
 
 
 9. Move all of the libdosbox code into it's own namespace.
+-> DONE!
 
 10. Check and clean up all the files in INCLUDE directory!
+-> DONE!
 
 ...
 

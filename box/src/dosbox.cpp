@@ -579,9 +579,10 @@ int Dosbox_Run(void* p)
 	Config myconf(&com_line);
 	control = &myconf;
 	DOSBOX_Init();
-	LOG_MSG("DOSCARD version %s",VERSION);
+	LOG_MSG("DOSCARD version %s bld %s",VERSION,BUILDNUMBER);
 	LOG_MSG(COPYRIGHT_STRING_ORIGINAL);
 	LOG_MSG(COPYRIGHT_STRING_NEW);
+	LOG_MSG("Compiled with %s %s",COMPILERNAME,BUILDATE);
 	LOG_MSG("Initializing subsystems...");
 	control->Init();
 	LOG_MSG("Startup...");
