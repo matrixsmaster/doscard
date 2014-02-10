@@ -677,18 +677,21 @@ public:
 //				}
 //
 //				if (usefile_2!=NULL) {
-//					dbfseek(usefile_2, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_2);
+//					dbfseek(usefile_2, 0x0L, SEEK_SET);
+//					dbfread(rombuf, 1, 0x200, usefile_2);
 //					PhysPt romseg_pt=host_readw(&rombuf[0x1ce])<<4;
 //
 //					/* read cartridge data into buffer */
-//					dbfseek(usefile_2, 0x200L, SEEK_SET); dbfread(rombuf, 1, rombytesize_2-0x200, usefile_2);
+//					dbfseek(usefile_2, 0x200L, SEEK_SET);
+//					dbfread(rombuf, 1, rombytesize_2-0x200, usefile_2);
 //					// dbfclose(usefile_2); //usefile_2 is in diskSwap structure which should be deleted to close the file
 //
 //					/* write cartridge data into ROM */
 //					for(i=0;i<rombytesize_2-0x200;i++) phys_writeb(romseg_pt+i,rombuf[i]);
 //				}
 //
-//				dbfseek(usefile_1, 0x0L, SEEK_SET); dbfread(rombuf, 1, 0x200, usefile_1);
+//				dbfseek(usefile_1, 0x0L, SEEK_SET);
+//				dbfread(rombuf, 1, 0x200, usefile_1);
 //				Bit16u romseg=host_readw(&rombuf[0x1ce]);
 //
 //				/* read cartridge data into buffer */

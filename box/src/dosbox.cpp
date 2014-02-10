@@ -64,7 +64,7 @@ static void DOSBOX_RealInit(Section * sec)
 void CDosBox::RunMachine()
 {
 	//FIXME: update this after all encapsulation is complete!
-	NormalLoop();
+	while (!NormalLoop());
 }
 
 Bitu CDosBox::NormalLoop()

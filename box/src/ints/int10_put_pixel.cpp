@@ -130,11 +130,7 @@ void INT10_PutPixel(Bit16u x,Bit16u y,Bit8u page,Bit8u color) {
 	}
 	break;
 	case M_LIN4:
-		if (CurMode->swidth>800) {
-			// the ET4000 BIOS supports text output in 800x600 SVGA (Gateway 2)
-			// putpixel warining?
-			break;
-		}
+		break;
 	case M_EGA:
 		{
 			/* Set the correct bitmask for the pixel position */
