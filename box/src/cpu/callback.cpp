@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-
 #include "dosbox.h"
 #include "callback.h"
 #include "mem.h"

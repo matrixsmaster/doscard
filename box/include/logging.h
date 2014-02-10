@@ -19,6 +19,8 @@
 #ifndef DOSBOX_LOGGING_H
 #define DOSBOX_LOGGING_H
 
+#define VERB_LOGGING 1
+
 namespace dosbox {
 
 enum LOG_TYPES {
@@ -40,7 +42,7 @@ enum LOG_SEVERITIES {
 	LOG_ERROR
 };
 
-#if C_DEBUG
+#if (C_DEBUG || VERB_LOGGING)
 class LOG 
 { 
 	LOG_TYPES       d_type;
@@ -55,10 +57,19 @@ public:
 
 };
 
+#if C_DEBUG
+
 void DEBUG_ShowMsg(char const* format,...) GCC_ATTRIBUTE(__format__(__printf__, 1, 2));
 #define LOG_MSG DEBUG_ShowMsg
 
-#else  //C_DEBUG
+#else
+
+void GFX_ShowMsg(char const* format,...) GCC_ATTRIBUTE(__format__(__printf__, 1, 2));
+#define LOG_MSG GFX_ShowMsg
+
+#endif //C_DEBUG nested
+
+#else  //C_DEBUG or Verbose logging
 
 struct LOG
 {
