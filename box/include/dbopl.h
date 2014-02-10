@@ -16,12 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "adlib.h"
+//#include "adlib.h"
 #include "dosbox.h"
 
 namespace dosbox {
 
-//Use 8 handlers based on a small logatirmic wavetabe and an exponential table for volume
+//Use 8 handlers based on a small logarithmic wavetabe and an exponential table for volume
 #define WAVE_HANDLER	10
 //Use a logarithmic wavetable with an exponential table for volume
 #define WAVE_TABLELOG	11
