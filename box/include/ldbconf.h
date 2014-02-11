@@ -26,13 +26,7 @@ namespace dosbox {
 typedef void (*LDB_INIT_FUN)(void*);
 
 typedef struct ALDB_CPU {
-	enum {
-		LDB_CPU_AUTO = 0,
-		LDB_CPU_386,
-		LDB_CPU_386S,
-		LDB_CPU_486S,
-		LDB_CPU_586S
-	} family;
+	uint8_t family;
 	enum {
 		LDB_CPU_CYCLE_AUTO = 0,
 		LDB_CPU_CYCLE_FIX,
@@ -56,8 +50,8 @@ class CLDBConf {
 public:
 	CLDBConf(LDB_Settings* p);
 	virtual ~CLDBConf();
-	void AddInitializer(LDB_INIT_FUN f);
-	void InitAll();
+//	void AddInitializer(LDB_INIT_FUN f);
+//	void InitAll();
 	LDB_Settings* GetSettings();
 	LDB_CPUType* GetCPU();
 	uint32_t GetMem();

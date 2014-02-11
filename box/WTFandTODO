@@ -90,3 +90,9 @@ performance. That's bad!
 
 13. Deal with manual exceptions and its catches. This might unveil big problems while
 porting on possible target arch.
+
+Notes:
+1. It's just incredible thing: class which uses a well-written Configure system,
+implements a good ctor and dtor, but HEAVILY uses GLOBAL VARIABLES just inside itself.
+It's a madness!
+

@@ -344,8 +344,8 @@ public:
 		spkr.chan=MixerChan.Install(&PCSPEAKER_CallBack,spkr.rate,"SPKR");
 	}
 	~PCSPEAKER(){
-		Section_prop * section=static_cast<Section_prop *>(m_configuration);
-		if(!section->Get_bool("pcspeaker")) return;
+//		Section_prop * section=static_cast<Section_prop *>(m_configuration);
+//		if(!section->Get_bool("pcspeaker")) return;
 	}
 };
 static PCSPEAKER* test;

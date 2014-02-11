@@ -564,7 +564,7 @@ private:
 	IO_ReadHandleObject ReadHandler[4];
 	IO_WriteHandleObject WriteHandler[4];
 public:
-	PIC_8259A(Section* configuration):Module_base(configuration){
+	PIC_8259A(Section* /*configuration*/):Module_base(NULL){
 		/* Setup pic0 and pic1 with initial values like DOS has normally */
 		PIC_IRQCheck=0;
 		PIC_Ticks=0;

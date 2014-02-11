@@ -871,7 +871,7 @@ bool PAGING_Enabled(void) {
 
 class PAGING:public Module_base{
 public:
-	PAGING(Section* configuration):Module_base(configuration){
+	PAGING(Section* /*configuration*/):Module_base(NULL){
 		/* Setup default Page Directory, force it to update */
 		paging.enabled=false;
 		PAGING_InitTLB();

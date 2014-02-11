@@ -542,12 +542,12 @@ private:
 	IO_ReadHandleObject ReadHandler;
 	IO_WriteHandleObject WriteHandler;
 public:	
-	MEMORY(Section* configuration):Module_base(configuration){
+	MEMORY(Bitu memsize/*Section* configuration*/):Module_base(NULL){
 		Bitu i;
-		Section_prop * section=static_cast<Section_prop *>(configuration);
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
 	
 		/* Setup the Physical Page Links */
-		Bitu memsize=section->Get_int("memsize");
+//		Bitu memsize=section->Get_int("memsize");
 	
 		if (memsize < 1) memsize = 1;
 		/* max 63 to solve problems with certain xms handlers */
@@ -609,8 +609,8 @@ static void MEM_ShutDown(Section * sec) {
 
 void MEM_Init(Section * sec) {
 	/* shutdown function */
-	test = new MEMORY(sec);
-	sec->AddDestroyFunction(&MEM_ShutDown);
+	test = new MEMORY(31);
+//	sec->AddDestroyFunction(&MEM_ShutDown);
 }
 
 }

@@ -23,6 +23,7 @@
 #include "dosbox.h" 
 #include "regs.h"
 #include "mem.h"
+#include "abstr_subsys.h"
 
 namespace dosbox {
 
@@ -35,7 +36,6 @@ namespace dosbox {
 
 #define CPU_CYCLES_LOWER_LIMIT		100
 
-
 #define CPU_ARCHTYPE_MIXED			0xff
 #define CPU_ARCHTYPE_386SLOW		0x30
 #define CPU_ARCHTYPE_386FAST		0x35
@@ -43,126 +43,10 @@ namespace dosbox {
 #define CPU_ARCHTYPE_486NEWSLOW		0x45
 #define CPU_ARCHTYPE_PENTIUMSLOW	0x50
 
-/* CPU Cycle Timing */
-extern Bit32s CPU_Cycles;
-extern Bit32s CPU_CycleLeft;
-extern Bit32s CPU_CycleMax;
-extern Bit32s CPU_OldCycleMax;
-extern Bit32s CPU_CyclePercUsed;
-extern Bit32s CPU_CycleLimit;
-extern Bit64s CPU_IODelayRemoved;
-extern bool CPU_CycleAutoAdjust;
-extern bool CPU_SkipCycleAutoAdjust;
-extern Bitu CPU_AutoDetermineMode;
-
-extern Bitu CPU_ArchitectureType;
-
-extern Bitu CPU_PrefetchQueueSize;
-
-/* Some common Defines */
-/* A CPU Handler */
-typedef Bits (CPU_Decoder)(void);
-extern CPU_Decoder * cpudecoder;
-
-Bits CPU_Core_Normal_Run(void);
-Bits CPU_Core_Normal_Trap_Run(void);
-Bits CPU_Core_Simple_Run(void);
-Bits CPU_Core_Full_Run(void);
-Bits CPU_Core_Dyn_X86_Run(void);
-Bits CPU_Core_Dyn_X86_Trap_Run(void);
-Bits CPU_Core_Dynrec_Run(void);
-Bits CPU_Core_Dynrec_Trap_Run(void);
-Bits CPU_Core_Prefetch_Run(void);
-Bits CPU_Core_Prefetch_Trap_Run(void);
-
-void CPU_Enable_SkipAutoAdjust(void);
-void CPU_Disable_SkipAutoAdjust(void);
-void CPU_Reset_AutoAdjust(void);
-
-
-//CPU Stuff
-
-extern Bit16u parity_lookup[256];
-
-bool CPU_LLDT(Bitu selector);
-bool CPU_LTR(Bitu selector);
-void CPU_LIDT(Bitu limit,Bitu base);
-void CPU_LGDT(Bitu limit,Bitu base);
-
-Bitu CPU_STR(void);
-Bitu CPU_SLDT(void);
-Bitu CPU_SIDT_base(void);
-Bitu CPU_SIDT_limit(void);
-Bitu CPU_SGDT_base(void);
-Bitu CPU_SGDT_limit(void);
-
-void CPU_ARPL(Bitu & dest_sel,Bitu src_sel);
-void CPU_LAR(Bitu selector,Bitu & ar);
-void CPU_LSL(Bitu selector,Bitu & limit);
-
-void CPU_SET_CRX(Bitu cr,Bitu value);
-bool CPU_WRITE_CRX(Bitu cr,Bitu value);
-Bitu CPU_GET_CRX(Bitu cr);
-bool CPU_READ_CRX(Bitu cr,Bit32u & retvalue);
-
-bool CPU_WRITE_DRX(Bitu dr,Bitu value);
-bool CPU_READ_DRX(Bitu dr,Bit32u & retvalue);
-
-bool CPU_WRITE_TRX(Bitu dr,Bitu value);
-bool CPU_READ_TRX(Bitu dr,Bit32u & retvalue);
-
-Bitu CPU_SMSW(void);
-bool CPU_LMSW(Bitu word);
-
-void CPU_VERR(Bitu selector);
-void CPU_VERW(Bitu selector);
-
-void CPU_JMP(bool use32,Bitu selector,Bitu offset,Bitu oldeip);
-void CPU_CALL(bool use32,Bitu selector,Bitu offset,Bitu oldeip);
-void CPU_RET(bool use32,Bitu bytes,Bitu oldeip);
-void CPU_IRET(bool use32,Bitu oldeip);
-void CPU_HLT(Bitu oldeip);
-
-bool CPU_POPF(Bitu use32);
-bool CPU_PUSHF(Bitu use32);
-bool CPU_CLI(void);
-bool CPU_STI(void);
-
-bool CPU_IO_Exception(Bitu port,Bitu size);
-void CPU_RunException(void);
-
-void CPU_ENTER(bool use32,Bitu bytes,Bitu level);
-
 #define CPU_INT_SOFTWARE		0x1
 #define CPU_INT_EXCEPTION		0x2
 #define CPU_INT_HAS_ERROR		0x4
 #define CPU_INT_NOIOPLCHECK		0x8
-
-void CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip);
-static INLINE void CPU_HW_Interrupt(Bitu num) {
-	CPU_Interrupt(num,0,reg_eip);
-}
-static INLINE void CPU_SW_Interrupt(Bitu num,Bitu oldeip) {
-	CPU_Interrupt(num,CPU_INT_SOFTWARE,oldeip);
-}
-static INLINE void CPU_SW_Interrupt_NoIOPLCheck(Bitu num,Bitu oldeip) {
-	CPU_Interrupt(num,CPU_INT_SOFTWARE|CPU_INT_NOIOPLCHECK,oldeip);
-}
-
-bool CPU_PrepareException(Bitu which,Bitu error);
-void CPU_Exception(Bitu which,Bitu error=0);
-
-bool CPU_SetSegGeneral(SegNames seg,Bitu value);
-bool CPU_PopSeg(SegNames seg,bool use32);
-
-bool CPU_CPUID(void);
-Bitu CPU_Pop16(void);
-Bitu CPU_Pop32(void);
-void CPU_Push16(Bitu value);
-void CPU_Push32(Bitu value);
-
-void CPU_SetFlags(Bitu word,Bitu mask);
-
 
 #define EXCEPTION_UD			6
 #define EXCEPTION_TS			10
@@ -177,6 +61,64 @@ void CPU_SetFlags(Bitu word,Bitu mask);
 #define CR0_TASKSWITCH			0x00000008
 #define CR0_FPUPRESENT			0x00000010
 #define CR0_PAGING				0x80000000
+
+// *********************************************************************
+// Flags
+// *********************************************************************
+
+#define lf_var1b lflags.var1.byte[BL_INDEX]
+#define lf_var2b lflags.var2.byte[BL_INDEX]
+#define lf_resb lflags.res.byte[BL_INDEX]
+
+#define lf_var1w lflags.var1.word[W_INDEX]
+#define lf_var2w lflags.var2.word[W_INDEX]
+#define lf_resw lflags.res.word[W_INDEX]
+
+#define lf_var1d lflags.var1.dword[DW_INDEX]
+#define lf_var2d lflags.var2.dword[DW_INDEX]
+#define lf_resd lflags.res.dword[DW_INDEX]
+
+#define SETFLAGSb(FLAGB)													\
+{																			\
+	SETFLAGBIT(OF,get_OF());												\
+	lflags.type=t_UNKNOWN;													\
+	CPU_SetFlags(FLAGB,FMASK_NORMAL & 0xff);								\
+}
+
+#define SETFLAGSw(FLAGW)													\
+{																			\
+	lflags.type=t_UNKNOWN;													\
+	CPU_SetFlagsw(FLAGW);													\
+}
+
+#define SETFLAGSd(FLAGD)													\
+{																			\
+	lflags.type=t_UNKNOWN;													\
+	CPU_SetFlagsd(FLAGD);													\
+}
+
+#define LoadCF SETFLAGBIT(CF,get_CF());
+#define LoadZF SETFLAGBIT(ZF,get_ZF());
+#define LoadSF SETFLAGBIT(SF,get_SF());
+#define LoadOF SETFLAGBIT(OF,get_OF());
+#define LoadAF SETFLAGBIT(AF,get_AF());
+
+#define TFLG_O		(get_OF())
+#define TFLG_NO		(!get_OF())
+#define TFLG_B		(get_CF())
+#define TFLG_NB		(!get_CF())
+#define TFLG_Z		(get_ZF())
+#define TFLG_NZ		(!get_ZF())
+#define TFLG_BE		(get_CF() || get_ZF())
+#define TFLG_NBE	(!get_CF() && !get_ZF())
+#define TFLG_S		(get_SF())
+#define TFLG_NS		(!get_SF())
+#define TFLG_P		(get_PF())
+#define TFLG_NP		(!get_PF())
+#define TFLG_L		((get_SF()!=0) != (get_OF()!=0))
+#define TFLG_NL		((get_SF()!=0) == (get_OF()!=0))
+#define TFLG_LE		(get_ZF()  || ((get_SF()!=0) != (get_OF()!=0)))
+#define TFLG_NLE	(!get_ZF() && ((get_SF()!=0) == (get_OF()!=0)))
 
 
 // *********************************************************************
@@ -218,9 +160,6 @@ void CPU_SetFlags(Bitu word,Bitu mask);
 #define DESC_CODE_R_C_A				0x1e
 #define DESC_CODE_R_C_NA			0x1f
 
-#ifdef _MSC_VER
-#pragma pack (1)
-#endif
 
 struct S_Descriptor {
 #ifdef WORDS_BIGENDIAN
@@ -315,9 +254,6 @@ struct TSS_32 {
     Bit32u ldt;                  /* The local descriptor table */
 } GCC_ATTRIBUTE(packed);
 
-#ifdef _MSC_VER
-#pragma pack()
-#endif
 class Descriptor
 {
 public:
@@ -443,7 +379,6 @@ public:
 	}
 };
 
-
 struct CPUBlock {
 	Bitu cpl;							/* Current Privilege */
 	Bitu mpl;
@@ -471,18 +406,213 @@ struct CPUBlock {
 	Bit32u trx[8];
 };
 
-extern CPUBlock cpu;
+struct LazyFlags {
+    GenReg32 var1,var2,res;
+	Bitu type;
+	Bitu prev_type;
+	Bitu oldcf;
+};
 
-static INLINE void CPU_SetFlagsd(Bitu word) {
-	Bitu mask=cpu.cpl ? FMASK_NORMAL : FMASK_ALL;
-	CPU_SetFlags(word,mask);
-}
+//Types of Flag changing instructions
+enum {
+	t_UNKNOWN=0,
+	t_ADDb,t_ADDw,t_ADDd,
+	t_ORb,t_ORw,t_ORd,
+	t_ADCb,t_ADCw,t_ADCd,
+	t_SBBb,t_SBBw,t_SBBd,
+	t_ANDb,t_ANDw,t_ANDd,
+	t_SUBb,t_SUBw,t_SUBd,
+	t_XORb,t_XORw,t_XORd,
+	t_CMPb,t_CMPw,t_CMPd,
+	t_INCb,t_INCw,t_INCd,
+	t_DECb,t_DECw,t_DECd,
+	t_TESTb,t_TESTw,t_TESTd,
+	t_SHLb,t_SHLw,t_SHLd,
+	t_SHRb,t_SHRw,t_SHRd,
+	t_SARb,t_SARw,t_SARd,
+	t_ROLb,t_ROLw,t_ROLd,
+	t_RORb,t_RORw,t_RORd,
+	t_RCLb,t_RCLw,t_RCLd,
+	t_RCRb,t_RCRw,t_RCRd,
+	t_NEGb,t_NEGw,t_NEGd,
 
-static INLINE void CPU_SetFlagsw(Bitu word) {
-	Bitu mask=(cpu.cpl ? FMASK_NORMAL : FMASK_ALL) & 0xffff;
-	CPU_SetFlags(word,mask);
-}
+	t_DSHLw,t_DSHLd,
+	t_DSHRw,t_DSHRd,
+	t_MUL,t_DIV,
+	t_NOTDONE,
+	t_LASTFLAG
+};
 
-}
+enum TSwitchType {
+	TSwitch_JMP,TSwitch_CALL_INT,TSwitch_IRET
+};
+
+typedef Bits (CPU_Decoder)(void);
+
+//static INLINE void CPU_SetFlagsd(Bitu word) {
+//	Bitu mask=cpu.cpl ? FMASK_NORMAL : FMASK_ALL;
+//	CPU_SetFlags(word,mask);
+//}
+
+#define CPU_SetFlagsd(X) { \
+		Bitu mask=cpu.cpl ? FMASK_NORMAL : FMASK_ALL; \
+		CPU_SetFlags(X,mask); }
+
+//static INLINE void CPU_SetFlagsw(Bitu word) {
+//	Bitu mask=(cpu.cpl ? FMASK_NORMAL : FMASK_ALL) & 0xffff;
+//	CPU_SetFlags(word,mask);
+//}
+
+#define CPU_SetFlagsw(X) { \
+		Bitu mask=(cpu.cpl ? FMASK_NORMAL : FMASK_ALL) & 0xffff; \
+		CPU_SetFlags(X,mask); }
+
+//class CPU;
+class TaskStateSegment;
+
+class CPUSubSystem : public CLSBAbstractSubSystem {
+public:
+	CPUSubSystem(CDosBox* p);
+	~CPUSubSystem();
+
+	void Vinit();
+	bool Change_Config();
+
+	void CPU_Core_Full_Init(void);
+	void CPU_Core_Normal_Init(void);
+	void CPU_Core_Simple_Init(void);
+	Bits CPU_Core_Normal_Run(void);
+	Bits CPU_Core_Normal_Trap_Run(void);
+	Bits CPU_Core_Simple_Run(void);
+	Bits CPU_Core_Full_Run(void);
+
+	void CPU_Enable_SkipAutoAdjust(void);
+	void CPU_Disable_SkipAutoAdjust(void);
+	void CPU_Reset_AutoAdjust(void);
+
+	bool CPU_LLDT(Bitu selector);
+	bool CPU_LTR(Bitu selector);
+	void CPU_LIDT(Bitu limit,Bitu base);
+	void CPU_LGDT(Bitu limit,Bitu base);
+
+	Bitu CPU_STR(void);
+	Bitu CPU_SLDT(void);
+	Bitu CPU_SIDT_base(void);
+	Bitu CPU_SIDT_limit(void);
+	Bitu CPU_SGDT_base(void);
+	Bitu CPU_SGDT_limit(void);
+
+	void CPU_ARPL(Bitu & dest_sel,Bitu src_sel);
+	void CPU_LAR(Bitu selector,Bitu & ar);
+	void CPU_LSL(Bitu selector,Bitu & limit);
+
+	void CPU_SET_CRX(Bitu cr,Bitu value);
+	bool CPU_WRITE_CRX(Bitu cr,Bitu value);
+	Bitu CPU_GET_CRX(Bitu cr);
+	bool CPU_READ_CRX(Bitu cr,Bit32u & retvalue);
+
+	bool CPU_WRITE_DRX(Bitu dr,Bitu value);
+	bool CPU_READ_DRX(Bitu dr,Bit32u & retvalue);
+
+	bool CPU_WRITE_TRX(Bitu dr,Bitu value);
+	bool CPU_READ_TRX(Bitu dr,Bit32u & retvalue);
+
+	Bitu CPU_SMSW(void);
+	bool CPU_LMSW(Bitu word);
+
+	void CPU_VERR(Bitu selector);
+	void CPU_VERW(Bitu selector);
+
+	void CPU_JMP(bool use32,Bitu selector,Bitu offset,Bitu oldeip);
+	void CPU_CALL(bool use32,Bitu selector,Bitu offset,Bitu oldeip);
+	void CPU_RET(bool use32,Bitu bytes,Bitu oldeip);
+	void CPU_IRET(bool use32,Bitu oldeip);
+	void CPU_HLT(Bitu oldeip);
+
+	bool CPU_POPF(Bitu use32);
+	bool CPU_PUSHF(Bitu use32);
+	bool CPU_CLI(void);
+	bool CPU_STI(void);
+
+	bool CPU_IO_Exception(Bitu port,Bitu size);
+	void CPU_RunException(void);
+
+	void CPU_ENTER(bool use32,Bitu bytes,Bitu level);
+	void CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip);
+
+	bool CPU_PrepareException(Bitu which,Bitu error);
+	void CPU_Exception(Bitu which,Bitu error=0);
+
+	bool CPU_SetSegGeneral(SegNames seg,Bitu value);
+	bool CPU_PopSeg(SegNames seg,bool use32);
+
+	bool CPU_CPUID(void);
+	Bitu CPU_Pop16(void);
+	Bitu CPU_Pop32(void);
+	void CPU_Push16(Bitu value);
+	void CPU_Push32(Bitu value);
+
+	void CPU_SetFlags(Bitu word,Bitu mask);
+	//Flag Handling
+	Bit32u get_CF(void);
+	Bit32u get_AF(void);
+	Bit32u get_ZF(void);
+	Bit32u get_SF(void);
+	Bit32u get_OF(void);
+	Bit32u get_PF(void);
+
+	Bitu FillFlags(void);
+	void FillFlagsNoCFOF(void);
+	void DestroyConditionFlags(void);
+
+	inline void CPU_HW_Interrupt(Bitu num) {
+		CPU_Interrupt(num,0,reg_eip); }
+
+	inline void CPU_SW_Interrupt(Bitu num,Bitu oldeip) {
+		CPU_Interrupt(num,CPU_INT_SOFTWARE,oldeip); }
+
+	inline void CPU_SW_Interrupt_NoIOPLCheck(Bitu num,Bitu oldeip) {
+		CPU_Interrupt(num,CPU_INT_SOFTWARE|CPU_INT_NOIOPLCHECK,oldeip); }
+
+	inline PhysPt SegPhys(SegNames index) {
+		return Segs.phys[index]; }
+
+	inline Bit16u SegValue(SegNames index) {
+		return (Bit16u)Segs.val[index]; }
+
+	inline RealPt RealMakeSeg(SegNames index,Bit16u off) {
+		return RealMake(SegValue(index),off); }
+
+	inline void SegSet16(Bitu index,Bit16u val) {
+		Segs.val[index]=val; Segs.phys[index]=val << 4; }
+
+	Bit32s CPU_Cycles;
+	Bit32s CPU_CycleLeft;
+	Bit32s CPU_CycleMax;
+	Bit32s CPU_OldCycleMax;
+	Bit32s CPU_CyclePercUsed;
+	Bit32s CPU_CycleLimit;
+	Bit64s CPU_IODelayRemoved;
+	bool CPU_CycleAutoAdjust;
+	bool CPU_SkipCycleAutoAdjust;
+	Bitu CPU_AutoDetermineMode;
+	Bitu CPU_ArchitectureType;
+	Bitu CPU_PrefetchQueueSize;
+	Bitu CPU_extflags_toggle;
+	CPU_Decoder * cpudecoder;
+	Bit16u parity_lookup[256];
+	CPU_Regs cpu_regs;
+	CPUBlock cpu;
+	Segments Segs;
+	LazyFlags lflags;
+private:
+//	CPU* pCPU;
+	bool inited;
+	bool printed_cycles_auto_info;
+	Bit8u lastint;
+	TaskStateSegment cpu_tss;
+};
+
+} //namespace dosbox
 
 #endif
