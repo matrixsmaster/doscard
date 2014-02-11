@@ -137,14 +137,14 @@ static struct {
 bool BIOS_AddKeyToBuffer(Bit16u code) {
 	if (mem_readb(BIOS_KEYBOARD_FLAGS2)&8) return true;
 	Bit16u start,end,head,tail,ttail;
-//	if (machine==MCH_PCJR) {
-//		/* should be done for cga and others as well, to be tested */
-//		start=0x1e;
-//		end=0x3e;
-//	} else {
+	if (machine==MCH_PCJR) {
+		/* should be done for cga and others as well, to be tested */
+		start=0x1e;
+		end=0x3e;
+	} else {
 		start=mem_readw(BIOS_KEYBOARD_BUFFER_START);
 		end	 =mem_readw(BIOS_KEYBOARD_BUFFER_END);
-//	}
+	}
 	head =mem_readw(BIOS_KEYBOARD_BUFFER_HEAD);
 	tail =mem_readw(BIOS_KEYBOARD_BUFFER_TAIL);
 	ttail=tail+2;
@@ -165,14 +165,14 @@ static void add_key(Bit16u code) {
 
 static bool get_key(Bit16u &code) {
 	Bit16u start,end,head,tail,thead;
-//	if (machine==MCH_PCJR) {
-//		/* should be done for cga and others as well, to be tested */
-//		start=0x1e;
-//		end=0x3e;
-//	} else {
+	if (machine==MCH_PCJR) {
+		/* should be done for cga and others as well, to be tested */
+		start=0x1e;
+		end=0x3e;
+	} else {
 		start=mem_readw(BIOS_KEYBOARD_BUFFER_START);
 		end	 =mem_readw(BIOS_KEYBOARD_BUFFER_END);
-//	}
+	}
 	head =mem_readw(BIOS_KEYBOARD_BUFFER_HEAD);
 	tail =mem_readw(BIOS_KEYBOARD_BUFFER_TAIL);
 
@@ -630,23 +630,23 @@ void BIOS_SetupKeyboard(void) {
 	//	pop ax
 	//	iret
 
-//	if (machine==MCH_PCJR) {
-//		call_irq6=CALLBACK_Allocate();
-//		CALLBACK_Setup(call_irq6,NULL,CB_IRQ6_PCJR,"PCJr kb irq");
-//		RealSetVec(0x0e,CALLBACK_RealPointer(call_irq6));
-//		// pseudocode for CB_IRQ6_PCJR:
-//		//	push ax
-//		//	in al, 0x60
-//		//	cmp al, 0xe0
-//		//	je skip
-//		//	int 0x09
-//		//	label skip:
-//		//	cli
-//		//	mov al, 0x20
-//		//	out 0x20, al
-//		//	pop ax
-//		//	iret
-//	}
+	if (machine==MCH_PCJR) {
+		call_irq6=CALLBACK_Allocate();
+		CALLBACK_Setup(call_irq6,NULL,CB_IRQ6_PCJR,"PCJr kb irq");
+		RealSetVec(0x0e,CALLBACK_RealPointer(call_irq6));
+		// pseudocode for CB_IRQ6_PCJR:
+		//	push ax
+		//	in al, 0x60
+		//	cmp al, 0xe0
+		//	je skip
+		//	int 0x09
+		//	label skip:
+		//	cli
+		//	mov al, 0x20
+		//	out 0x20, al
+		//	pop ax
+		//	iret
+	}
 }
 
 }

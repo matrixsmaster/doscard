@@ -32,34 +32,51 @@ GCC_ATTRIBUTE(noreturn) void E_Exit(const char * message,...) GCC_ATTRIBUTE( __f
 void MSG_Add(const char*,const char*); //add messages to the internal languagefile
 const char* MSG_Get(char const *);     //get messages from the internal languagefile
 
-class CommandLine;
 class Section;
+
+typedef Bitu (LoopHandler)(void);
+
+void DOSBOX_RunMachine();
+void DOSBOX_SetLoop(LoopHandler * handler);
+void DOSBOX_SetNormalLoop();
+
+void DOSBOX_Init(void);
+
 class Config;
+extern Config * control;
 
 enum MachineType {
-MCH_HERC,
-MCH_CGA,
-MCH_TANDY,
-MCH_PCJR,
-MCH_EGA,
-MCH_VGA
+	MCH_HERC,
+	MCH_CGA,
+	MCH_TANDY,
+	MCH_PCJR,
+	MCH_EGA,
+	MCH_VGA
 };
+
 enum SVGACards {
-SVGA_None,
-SVGA_S3Trio,
-SVGA_TsengET4K,
-SVGA_TsengET3K,
-SVGA_ParadisePVGA1A
+	SVGA_None,
+	SVGA_S3Trio,
+	SVGA_TsengET4K,
+	SVGA_TsengET3K,
+	SVGA_ParadisePVGA1A
 };
-extern Config * control;
+
+class CDosBox {
+public:
+	CDosBox();
+	~CDosBox() {}
+	int Callback(LDB_CallbackType,void*,size_t);
+	void RunMachine();
+	Config * control;
+};
+
+extern CDosBox* myldbi;
 extern SVGACards svgaCard;
 extern MachineType machine;
+extern bool SDLNetInited;
 extern LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
-void DOSBOX_RunMachine();
 
-//FIXME: delete that after all
-//#define IS_EGAVGA_ARCH 1
-//#define IS_VGA_ARCH 1
 #define IS_TANDY_ARCH ((machine==MCH_TANDY) || (machine==MCH_PCJR))
 #define IS_EGAVGA_ARCH ((machine==MCH_EGA) || (machine==MCH_VGA))
 #define IS_VGA_ARCH (machine==MCH_VGA)
@@ -67,33 +84,6 @@ void DOSBOX_RunMachine();
 #define EGAVGA_ARCH_CASE MCH_EGA: case MCH_VGA
 #define VGA_ARCH_CASE MCH_VGA
 
-//typedef Bitu (LoopHandler)(void);
-
-class CDosBox {
-private:
-	//FIXME: move vars from public
-	LDB_CallbackFunc ldb_callbacks[LDB_CALLBACKSQ];
-	CommandLine* com_line;
-	bool callbacksReady;
-public:
-	CDosBox();
-	~CDosBox();
-	int RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
-	int Callback(LDB_CallbackType t, void* p, size_t l);
-	Bitu NormalLoop();
-	void RunMachine();
-	void Execute();
-//	void E_Exit(const char * message,...);
-	//
-	Config* control;
-	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
-	Bit32s ticksDone;
-	bool ticksLocked;
-};
-
-//FIXME: local dosbox class instance pointer
-extern CDosBox* myldbi;
-
-} //namespace dosbox
+}
 
 #endif /* DOSBOX_DOSBOX_H */

@@ -263,14 +263,14 @@ private:
 			name = config_path + name;
 		}
 		WriteOut(MSG_Get("PROGRAM_CONFIG_FILE_WHICH"),name.c_str());
-		if (!myldbi->control->PrintConfig(name.c_str())) {
+		if (!control->PrintConfig(name.c_str())) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_FILE_ERROR"),name.c_str());
 		}
 		return;
 	}
 	
 	bool securemode_check() {
-		if (myldbi->control->SecureMode()) {
+		if (control->SecureMode()) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return true;
 		}
@@ -321,23 +321,23 @@ void CONFIG::Run(void) {
 			return;
 		
 		case P_LISTCONF: {
-			Bitu size = myldbi->control->configfiles.size();
+			Bitu size = control->configfiles.size();
 			std::string config_path;
 			Cross::GetPlatformConfigDir(config_path);
 			WriteOut(MSG_Get("PROGRAM_CONFIG_CONFDIR"), VERSION,config_path.c_str());
 			if (size==0) WriteOut(MSG_Get("PROGRAM_CONFIG_NOCONFIGFILE"));
 			else {
-				WriteOut(MSG_Get("PROGRAM_CONFIG_PRIMARY_CONF"),myldbi->control->configfiles.front().c_str());
+				WriteOut(MSG_Get("PROGRAM_CONFIG_PRIMARY_CONF"),control->configfiles.front().c_str());
 				if (size > 1) {
 					WriteOut(MSG_Get("PROGRAM_CONFIG_ADDITIONAL_CONF"));
 					for(Bitu i = 1; i < size; i++)
-						WriteOut("%s\n",myldbi->control->configfiles[i].c_str());
+						WriteOut("%s\n",control->configfiles[i].c_str());
 				}
 			}
-			if (myldbi->control->startup_params.size() > 0) {
+			if (control->startup_params.size() > 0) {
 				std::string test;
-				for(size_t k = 0; k < myldbi->control->startup_params.size(); k++)
-					test += myldbi->control->startup_params[k] + " ";
+				for(size_t k = 0; k < control->startup_params.size(); k++)
+					test += control->startup_params[k] + " ";
 				WriteOut(MSG_Get("PROGRAM_CONFIG_PRINT_STARTUP"), test.c_str());
 			}
 			break;
@@ -350,7 +350,7 @@ void CONFIG::Run(void) {
 				writeconf(pvars[0], !Cross::IsPathAbsolute(pvars[0]));
 			} else {
 				// -wc without parameter: write primary config file
-				if (myldbi->control->configfiles.size()) writeconf(myldbi->control->configfiles[0], false);
+				if (control->configfiles.size()) writeconf(control->configfiles[0], false);
 				else WriteOut(MSG_Get("PROGRAM_CONFIG_NOCONFIGFILE"));
 			}
 			break;
@@ -371,7 +371,7 @@ void CONFIG::Run(void) {
 				writeconf(pvars[0], false);
 			} else {
 				// -wcp without parameter: write dosbox.conf to startup directory
-				if (myldbi->control->configfiles.size()) writeconf(std::string("dosbox.conf"), false);
+				if (control->configfiles.size()) writeconf(std::string("dosbox.conf"), false);
 				else WriteOut(MSG_Get("PROGRAM_CONFIG_NOCONFIGFILE"));
 			}
 			break;
@@ -394,17 +394,17 @@ void CONFIG::Run(void) {
 					WriteOut(MSG_Get("PROGRAM_CONFIG_HLP_SECTLIST"));
 					Bitu i = 0;
 					while(true) {
-						Section* sec = myldbi->control->GetSection(i++);
+						Section* sec = control->GetSection(i++);
 						if (!sec) break;
 						WriteOut("%s\n",sec->GetName());
 					}
 					return;
 				}
 				// if it's a section, leave it as one-param
-				Section* sec = myldbi->control->GetSection(pvars[0].c_str());
+				Section* sec = control->GetSection(pvars[0].c_str());
 				if (!sec) {
 					// could be a property
-					sec = myldbi->control->GetSectionFromProperty(pvars[0].c_str());
+					sec = control->GetSectionFromProperty(pvars[0].c_str());
 					if (!sec) {
 						WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
 						return;
@@ -415,8 +415,8 @@ void CONFIG::Run(void) {
 			}
 			case 2: {
 				// sanity check
-				Section* sec = myldbi->control->GetSection(pvars[0].c_str());
-				Section* sec2 = myldbi->control->GetSectionFromProperty(pvars[1].c_str());
+				Section* sec = control->GetSection(pvars[0].c_str());
+				Section* sec2 = control->GetSectionFromProperty(pvars[1].c_str());
 				if (sec != sec2) {
 					WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
 				}
@@ -428,7 +428,7 @@ void CONFIG::Run(void) {
 			}	
 			// if we have one value in pvars, it's a section
 			// two values are section + property
-			Section* sec = myldbi->control->GetSection(pvars[0].c_str());
+			Section* sec = control->GetSection(pvars[0].c_str());
 			if (sec==NULL) {
 				WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
 				return;
@@ -507,7 +507,7 @@ void CONFIG::Run(void) {
 		}
 		case P_AUTOEXEC_CLEAR: {
 			Section_line* sec = dynamic_cast <Section_line*>
-				(myldbi->control->GetSection(std::string("autoexec")));
+				(control->GetSection(std::string("autoexec")));
 			sec->data.clear();
 			break;
 		}
@@ -517,14 +517,14 @@ void CONFIG::Run(void) {
 				return;
 			}
 			Section_line* sec = dynamic_cast <Section_line*>
-				(myldbi->control->GetSection(std::string("autoexec")));
+				(control->GetSection(std::string("autoexec")));
 
 			for(Bitu i = 0; i < pvars.size(); i++) sec->HandleInputline(pvars[i]);
 			break;
 		}
 		case P_AUTOEXEC_TYPE: {
 			Section_line* sec = dynamic_cast <Section_line*>
-				(myldbi->control->GetSection(std::string("autoexec")));
+				(control->GetSection(std::string("autoexec")));
 			WriteOut("\n%s",sec->data.c_str());
 			break;
 		}
@@ -547,7 +547,7 @@ void CONFIG::Run(void) {
 			case 1: {
 				// property/section only
 				// is it a section?
-				Section* sec = myldbi->control->GetSection(pvars[0].c_str());
+				Section* sec = control->GetSection(pvars[0].c_str());
 				if (sec) {
 					// list properties in section
 					Bitu i = 0;
@@ -569,7 +569,7 @@ void CONFIG::Run(void) {
 					}
 				} else {
 					// no: maybe it's a property?
-					sec = myldbi->control->GetSectionFromProperty(pvars[0].c_str());
+					sec = control->GetSectionFromProperty(pvars[0].c_str());
 					if (!sec) {
 						WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
 						return;
@@ -583,7 +583,7 @@ void CONFIG::Run(void) {
 			}
 			case 2: {
 				// section + property
-				Section* sec = myldbi->control->GetSection(pvars[0].c_str());
+				Section* sec = control->GetSection(pvars[0].c_str());
 				if (!sec) {
 					WriteOut(MSG_Get("PROGRAM_CONFIG_SECTION_ERROR"));
 					return;
@@ -637,7 +637,7 @@ void CONFIG::Run(void) {
 				pvars.insert(++pvars.begin(),pvars[0].substr(equpos+1));
 				pvars[0].erase(equpos);
 				// As we had a = the first thing must be a property now
-				Section* sec=myldbi->control->GetSectionFromProperty(pvars[0].c_str());
+				Section* sec=control->GetSectionFromProperty(pvars[0].c_str());
 				if (sec) pvars.insert(pvars.begin(),std::string(sec->GetName()));
 				else {
 					WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
@@ -652,10 +652,10 @@ void CONFIG::Run(void) {
 					pvars[0].erase(spcpos);
 				}
 				// check if the first parameter is a section or property
-				Section* sec = myldbi->control->GetSection(pvars[0].c_str());
+				Section* sec = control->GetSection(pvars[0].c_str());
 				if (!sec) {
 					// not a section: little duplicate from above
-					Section* sec=myldbi->control->GetSectionFromProperty(pvars[0].c_str());
+					Section* sec=control->GetSectionFromProperty(pvars[0].c_str());
 					if (sec) pvars.insert(pvars.begin(),std::string(sec->GetName()));
 					else {
 						WriteOut(MSG_Get("PROGRAM_CONFIG_PROPERTY_ERROR"));
@@ -682,10 +682,10 @@ void CONFIG::Run(void) {
 						pvars[1].erase(spcpos2);
 					}
 					// is this a property?
-					Section* sec2 = myldbi->control->GetSectionFromProperty(pvars[1].c_str());
+					Section* sec2 = control->GetSectionFromProperty(pvars[1].c_str());
 					if (!sec2) {
 						// not a property, 
-						Section* sec3 = myldbi->control->GetSectionFromProperty(pvars[0].c_str());
+						Section* sec3 = control->GetSectionFromProperty(pvars[0].c_str());
 						if (sec3) {
 							// section and property name are identical
 							pvars.insert(pvars.begin(),pvars[0]);
@@ -698,7 +698,7 @@ void CONFIG::Run(void) {
 				return;
 			}
 			// check if the property actually exists in the section
-			Section* sec2 = myldbi->control->GetSectionFromProperty(pvars[1].c_str());
+			Section* sec2 = control->GetSectionFromProperty(pvars[1].c_str());
 			if (!sec2) {
 				WriteOut(MSG_Get("PROGRAM_CONFIG_NO_PROPERTY"),
 					pvars[1].c_str(),pvars[0].c_str());
@@ -706,7 +706,7 @@ void CONFIG::Run(void) {
 			}
 			// Input has been parsed (pvar[0]=section, [1]=property, [2]=value)
 			// now execute
-			Section* tsec = myldbi->control->GetSection(pvars[0]);
+			Section* tsec = control->GetSection(pvars[0]);
 			std::string value;
 			value += pvars[2];
 			for(Bitu i = 3; i < pvars.size(); i++) value += (std::string(" ") + pvars[i]);
@@ -735,7 +735,7 @@ void CONFIG::Run(void) {
 
 		case P_SECURE:
 			// Code for switching to secure mode
-			myldbi->control->SwitchToSecureMode();
+			control->SwitchToSecureMode();
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_ON"));
 			return;
 

@@ -46,43 +46,27 @@
 
 namespace dosbox {
 
-CDosBox* myldbi;
 LDB_CallbackFunc libdosbox_callbacks[LDB_CALLBACKSQ];
+Config * control;
 MachineType machine;
 SVGACards svgaCard;
-Config * control = NULL;
+CDosBox* myldbi;
+static LoopHandler * loop;
 
-void DOSBOX_RunMachine()
-{
-	myldbi->RunMachine();
-}
+static Bit32u ticksRemain;
+static Bit32u ticksLast;
+static Bit32u ticksAdded;
+Bit32s ticksDone;
+Bit32u ticksScheduled;
+bool ticksLocked;
 
-static void DOSBOX_RealInit(Section * sec)
-{
-	Section_prop * section=static_cast<Section_prop *>(sec);
+static Bitu Normal_Loop(void);
 
-	if (control) myldbi->control = control;
-	else control = myldbi->control;
+void DOSBOX_SetLoop(LoopHandler * handler) { loop=handler; }
+void DOSBOX_SetNormalLoop() { loop=Normal_Loop; }
+void DOSBOX_RunMachine() { while (!(*loop)()); }
 
-	/* Initialize some dosbox internals */
-	myldbi->ticksRemain=0;
-	myldbi->ticksLast=GetTicks();
-	myldbi->ticksLocked = false;
-	MSG_Init(section);
-
-	machine = MCH_VGA;
-	svgaCard = SVGA_S3Trio;
-
-	int10.vesa_nolfb = false;
-	int10.vesa_oldvbe = false;
-}
-
-void CDosBox::RunMachine()
-{
-	while (!NormalLoop());
-}
-
-Bitu CDosBox::NormalLoop()
+static Bitu Normal_Loop(void)
 {
 	Bits ret;
 	while (1) {
@@ -190,7 +174,7 @@ Bitu CDosBox::NormalLoop()
 	}
 	return 0;
 }
-/*
+
 static void DOSBOX_UnlockSpeed( bool pressed ) {
 	static bool autoadjust = false;
 	if (pressed) {
@@ -211,9 +195,48 @@ static void DOSBOX_UnlockSpeed( bool pressed ) {
 		}
 	}
 }
-*/
 
-CDosBox::CDosBox()
+static void DOSBOX_RealInit(Section * sec)
+{
+	Section_prop * section=static_cast<Section_prop *>(sec);
+	/* Initialize some dosbox internals */
+
+	ticksRemain=0;
+	ticksLast=GetTicks();
+	ticksLocked = false;
+	DOSBOX_SetLoop(&Normal_Loop);
+	MSG_Init(section);
+
+	std::string cmd_machine;
+	if (control->cmdline->FindString("-machine",cmd_machine,true)){
+		//update value in config (else no matching against suggested values
+		section->HandleInputline(std::string("machine=") + cmd_machine);
+	}
+
+	std::string mtype(section->Get_string("machine"));
+	svgaCard = SVGA_None; 
+	machine = MCH_VGA;
+	int10.vesa_nolfb = false;
+	int10.vesa_oldvbe = false;
+	if      (mtype == "cga")      { machine = MCH_CGA; }
+	else if (mtype == "tandy")    { machine = MCH_TANDY; }
+	else if (mtype == "pcjr")     { machine = MCH_PCJR; }
+	else if (mtype == "hercules") { machine = MCH_HERC; }
+	else if (mtype == "ega")      { machine = MCH_EGA; }
+//	else if (mtype == "vga")          { svgaCard = SVGA_S3Trio; }
+	else if (mtype == "svga_s3")       { svgaCard = SVGA_S3Trio; }
+	else if (mtype == "vesa_nolfb")   { svgaCard = SVGA_S3Trio; int10.vesa_nolfb = true;}
+	else if (mtype == "vesa_oldvbe")   { svgaCard = SVGA_S3Trio; int10.vesa_oldvbe = true;}
+	else if (mtype == "svga_et4000")   { svgaCard = SVGA_TsengET4K; }
+	else if (mtype == "svga_et3000")   { svgaCard = SVGA_TsengET3K; }
+//	else if (mtype == "vga_pvga1a")   { svgaCard = SVGA_ParadisePVGA1A; }
+	else if (mtype == "svga_paradise") { svgaCard = SVGA_ParadisePVGA1A; }
+	else if (mtype == "vgaonly")      { svgaCard = SVGA_None; }
+	else E_Exit("DOSBOX:Unknown machine type %s",mtype.c_str());
+}
+
+
+void DOSBOX_Init(void)
 {
 	Section_prop * secprop;
 	Section_line * secline;
@@ -223,11 +246,6 @@ CDosBox::CDosBox()
 	Prop_bool* Pbool;
 	Prop_multival* Pmulti;
 	Prop_multival_remain* Pmulti_remain;
-
-	com_line = new CommandLine(0,NULL);
-	control = new Config(com_line);
-	//FIXME: don't use globals! :)
-	myldbi = this;
 
 	// Some frequently used option sets
 	const char *rates[] = {  "44100", "48000", "32000","22050", "16000", "11025", "8000", "49716", 0 };
@@ -355,6 +373,27 @@ CDosBox::CDosBox()
 	Pint = secprop->Add_int("prebuffer",Property::Changeable::OnlyAtStart,20);
 	Pint->SetMinMax(0,100);
 	Pint->Set_help("How many milliseconds of data to keep on top of the blocksize.");
+
+//	secprop=control->AddSection_prop("midi",&MIDI_Init,true);//done
+//	secprop->AddInitFunction(&MPU401_Init,true);//done
+	
+//	const char* mputypes[] = { "intelligent", "uart", "none",0};
+//	// FIXME: add some way to offer the actually available choices.
+//	const char *devices[] = { "default", "win32", "alsa", "oss", "coreaudio", "coremidi","none", 0};
+//	Pstring = secprop->Add_string("mpu401",Property::Changeable::WhenIdle,"intelligent");
+//	Pstring->Set_values(mputypes);
+//	Pstring->Set_help("Type of MPU-401 to emulate.");
+//
+//	Pstring = secprop->Add_string("mididevice",Property::Changeable::WhenIdle,"default");
+//	Pstring->Set_values(devices);
+//	Pstring->Set_help("Device that will receive the MIDI data from MPU-401.");
+//
+//	Pstring = secprop->Add_string("midiconfig",Property::Changeable::WhenIdle,"");
+//	Pstring->Set_help("Special configuration options for the device driver. This is usually the id of the device you want to use.\n"
+//	                  "  or in the case of coreaudio, you can specify a soundfont here.\n"
+//	                  "  When using a Roland MT-32 rev. 0 as midi output device, some games may require a delay in order to prevent 'buffer overflow' issues.\n"
+//	                  "  In that case, add 'delaysysex', for example: midiconfig=2 delaysysex\n"
+//	                  "  See the README/Manual for more details.");
 
 #if C_DEBUG
 	secprop=control->AddSection_prop("debug",&DEBUG_Init);
@@ -489,53 +528,62 @@ CDosBox::CDosBox()
 		"Lines in this section will be run at startup.\n"
 		"You can put your MOUNT lines here.\n"
 	);
+	MSG_Add("CONFIGFILE_INTRO",
+	        "# This is the configuration file for DOSBox %s. (Please use the latest version of DOSBox)\n"
+	        "# Lines starting with a # are comment lines and are ignored by DOSBox.\n"
+	        "# They are used to (briefly) document the effect of each option.\n");
 	MSG_Add("CONFIG_SUGGESTED_VALUES", "Possible values");
 
 	control->SetStartUp(&SHELL_Init);
 }
 
-CDosBox::~CDosBox()
+int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 {
-	if (control) delete control;
-	if (com_line) delete com_line;
-}
-
-int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
-{
-	//FIXME: checks
-	ldb_callbacks[t] = f;
-	printf("RegisterCallback(%d, 0x%x)\n",t,((void*)f));
 	libdosbox_callbacks[t] = f;
 	return 0;
 }
 
-int CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
+int Dosbox_Run(void* p)
 {
-	//FIXME: checks
-	return ((*ldb_callbacks[t])(p,l));
-}
-
-void CDosBox::Execute()
-{
-	LOG_MSG("CDosBox::Execute(): Enter");
-	if (!control) return;
+	LOG_MSG("Dosbox_Run(): Enter");
+	CommandLine com_line(0,NULL);
+	Config myconf(&com_line);
+	control = &myconf;
+	myldbi = new CDosBox();
+	myldbi->control = &myconf;
+	DOSBOX_Init();
 	LOG_MSG("DOSCARD version %s bld %s",VERSION,BUILDNUMBER);
 	LOG_MSG(COPYRIGHT_STRING_ORIGINAL);
 	LOG_MSG(COPYRIGHT_STRING_NEW);
 	LOG_MSG("Compiled with %s %s",COMPILERNAME,BUILDATE);
-	LOG_MSG("CDosBox::Execute(): Initializing subsystems...");
+	LOG_MSG("Initializing subsystems...");
 	control->Init();
-	LOG_MSG("CDosBox::Execute(): Startup...");
+	LOG_MSG("Startup...");
 	/*that's really ugly way to control the quit state of VM
 	 * but original Box was written in that way in mind, so...*/
 	try {
 		control->StartUp();
 	}
 	catch (int) {
-		LOG_MSG("CDosBox::Execute(): killer exception catch");
+		LOG_MSG("Dosbox_Run(): killer exception catch");
 	}
-	LOG_MSG("CDosBox::Execute(): Exit");
-	return;
+	LOG_MSG("Dosbox_Run(): Exit");
+	return 0;
 }
 
-} //namespace dosbox
+CDosBox::CDosBox()
+{
+	printf("CONSTRUCTOR\n");
+}
+
+int CDosBox::Callback(LDB_CallbackType t,void* p,size_t l)
+{
+	return ((*libdosbox_callbacks[t])(p,l));
+}
+
+void CDosBox::RunMachine()
+{
+	DOSBOX_RunMachine();
+}
+
+}

@@ -26,9 +26,6 @@ namespace dosbox {
 
 #define FIOSTRINGMEMBUF 512
 
-//LDB_CallbackFunc fio_call = NULL;
-//#define CHECK_FIO_CALL if (!fio_call) fio_call = myldbi->GetCallback(DBCB_FileIOReq)
-
 DBFILE* dbfopen(const char* p, const char* m)
 {
 	if ((!m) || (!p)) return NULL;
@@ -64,7 +61,8 @@ DBFILE* dbfopen(const char* p, const char* m)
 	strcpy(r->op,m);
 	r->todo = 0;
 #endif
-	if (!myldbi->Callback(DBCB_FileIOReq,r,sizeof(DBFILE))) return r;
+	if (!(*libdosbox_callbacks[DBCB_FileIOReq])(r,sizeof(DBFILE)))
+		return r;
 	delete r;
 	return NULL;
 }
@@ -78,7 +76,7 @@ void dbfclose(DBFILE* f)
 	f->todo = 1;
 	if (f->op) free(f->op);
 #endif
-	myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE));
+	(*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE));
 	if (f->name) free(f->name);
 	delete f;
 }
@@ -93,7 +91,7 @@ uint32_t dbfread(void* p, uint32_t sz, uint32_t q, DBFILE* f)
 	f->p_x = sz;
 	f->p_y = q;
 	f->buf = p;
-	return (myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE)));
+	return ((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE)));
 }
 
 uint32_t dbfwrite(const void* p, uint32_t sz, uint32_t q, DBFILE* f)
@@ -106,7 +104,7 @@ uint32_t dbfwrite(const void* p, uint32_t sz, uint32_t q, DBFILE* f)
 	f->p_x = sz;
 	f->p_y = q;
 	f->buf = const_cast<void*>(p);
-	return (myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE)));
+	return ((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE)));
 }
 
 int32_t dbfseek(DBFILE* f, uint64_t off, int32_t wh)
@@ -119,7 +117,7 @@ int32_t dbfseek(DBFILE* f, uint64_t off, int32_t wh)
 	f->p_x = wh;
 	f->p_y = 8;
 	f->buf = &off;
-	return (myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE)));
+	return ((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE)));
 }
 
 uint64_t dbftell(DBFILE* f)
@@ -132,7 +130,8 @@ uint64_t dbftell(DBFILE* f)
 	uint64_t r = 0;
 	f->p_y = 8;
 	f->buf = &r;
-	if (!myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE))) return r;
+	if (!((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE))))
+		return r;
 	return 0;
 }
 
@@ -143,7 +142,7 @@ int32_t dbfeof(DBFILE* f)
 #else
 	f->todo = 6;
 #endif
-	return (myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE)));
+	return ((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE)));
 }
 
 int32_t dbftruncate(DBFILE* f, int64_t len)
@@ -156,7 +155,7 @@ int32_t dbftruncate(DBFILE* f, int64_t len)
 #endif
 	f->p_y = 8;
 	f->buf = &len;
-	return (myldbi->Callback(DBCB_FileIOReq,f,sizeof(DBFILE)));
+	return ((*libdosbox_callbacks[DBCB_FileIOReq])(f,sizeof(DBFILE)));
 }
 
 int32_t dbfprintf(DBFILE *f, const char *fmt, ...)
@@ -186,4 +185,4 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 	return cnt;
 }
 
-} //namespace dosbox
+}

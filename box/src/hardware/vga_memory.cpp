@@ -777,46 +777,46 @@ void VGA_SetupHandlers(void) {
 	vga.svga.bank_write_full = vga.svga.bank_write*vga.svga.bank_size;
 
 	PageHandler *newHandler;
-//	switch (machine) {
-//	case MCH_CGA:
-//	case MCH_PCJR:
-//		MEM_SetPageHandler( VGA_PAGE_B8, 8, &vgaph.pcjr );
-//		goto range_done;
-//	case MCH_HERC:
-//		vgapages.base=VGA_PAGE_B0;
-//		if (vga.herc.enable_bits & 0x2) {
-//			vgapages.mask=0xffff;
-//			MEM_SetPageHandler(VGA_PAGE_B0,16,&vgaph.map);
-//		} else {
-//			vgapages.mask=0x7fff;
-//			/* With hercules in 32kb mode it leaves a memory hole on 0xb800 */
-//			MEM_SetPageHandler(VGA_PAGE_B0,8,&vgaph.map);
-//			MEM_SetPageHandler(VGA_PAGE_B8,8,&vgaph.empty);
-//		}
-//		goto range_done;
-//	case MCH_TANDY:
-//		/* Always map 0xa000 - 0xbfff, might overwrite 0xb800 */
-//		vgapages.base=VGA_PAGE_A0;
-//		vgapages.mask=0x1ffff;
-//		MEM_SetPageHandler(VGA_PAGE_A0, 32, &vgaph.map );
-//		if ( vga.tandy.extended_ram & 1 ) {
-//			//You seem to be able to also map different 64kb banks, but have to figure that out
-//			//This seems to work so far though
-//			vga.tandy.draw_base = vga.mem.linear;
-//			vga.tandy.mem_base = vga.mem.linear;
-//		} else {
-//			vga.tandy.draw_base = TANDY_VIDBASE( vga.tandy.draw_bank * 16 * 1024);
-//			vga.tandy.mem_base = TANDY_VIDBASE( vga.tandy.mem_bank * 16 * 1024);
-//			MEM_SetPageHandler( 0xb8, 8, &vgaph.tandy );
-//		}
-//		goto range_done;
-////		MEM_SetPageHandler(vga.tandy.mem_bank<<2,vga.tandy.is_32k_mode ? 0x08 : 0x04,range_handler);
-//	case EGAVGA_ARCH_CASE:
-//		break;
-//	default:
-//		LOG_MSG("Illegal machine type %d", machine );
-//		return;
-//	}
+	switch (machine) {
+	case MCH_CGA:
+	case MCH_PCJR:
+		MEM_SetPageHandler( VGA_PAGE_B8, 8, &vgaph.pcjr );
+		goto range_done;
+	case MCH_HERC:
+		vgapages.base=VGA_PAGE_B0;
+		if (vga.herc.enable_bits & 0x2) {
+			vgapages.mask=0xffff;
+			MEM_SetPageHandler(VGA_PAGE_B0,16,&vgaph.map);
+		} else {
+			vgapages.mask=0x7fff;
+			/* With hercules in 32kb mode it leaves a memory hole on 0xb800 */
+			MEM_SetPageHandler(VGA_PAGE_B0,8,&vgaph.map);
+			MEM_SetPageHandler(VGA_PAGE_B8,8,&vgaph.empty);
+		}
+		goto range_done;
+	case MCH_TANDY:
+		/* Always map 0xa000 - 0xbfff, might overwrite 0xb800 */
+		vgapages.base=VGA_PAGE_A0;
+		vgapages.mask=0x1ffff;
+		MEM_SetPageHandler(VGA_PAGE_A0, 32, &vgaph.map );
+		if ( vga.tandy.extended_ram & 1 ) {
+			//You seem to be able to also map different 64kb banks, but have to figure that out
+			//This seems to work so far though
+			vga.tandy.draw_base = vga.mem.linear;
+			vga.tandy.mem_base = vga.mem.linear;
+		} else {
+			vga.tandy.draw_base = TANDY_VIDBASE( vga.tandy.draw_bank * 16 * 1024);
+			vga.tandy.mem_base = TANDY_VIDBASE( vga.tandy.mem_bank * 16 * 1024);
+			MEM_SetPageHandler( 0xb8, 8, &vgaph.tandy );
+		}
+		goto range_done;
+//		MEM_SetPageHandler(vga.tandy.mem_bank<<2,vga.tandy.is_32k_mode ? 0x08 : 0x04,range_handler);
+	case EGAVGA_ARCH_CASE:
+		break;
+	default:
+		LOG_MSG("Illegal machine type %d", machine );
+		return;
+	}
 
 	/* This should be vga only */
 	switch (vga.mode) {
@@ -869,16 +869,16 @@ void VGA_SetupHandlers(void) {
 	switch ((vga.gfx.miscellaneous >> 2) & 3) {
 	case 0:
 		vgapages.base = VGA_PAGE_A0;
-//		switch (svgaCard) {
-//		case SVGA_TsengET3K:
-//		case SVGA_TsengET4K:
-//			vgapages.mask = 0xffff;
-//			break;
-//		case SVGA_S3Trio:
-//		default:
+		switch (svgaCard) {
+		case SVGA_TsengET3K:
+		case SVGA_TsengET4K:
+			vgapages.mask = 0xffff;
+			break;
+		case SVGA_S3Trio:
+		default:
 			vgapages.mask = 0x1ffff;
-//			break;
-//		}
+			break;
+		}
 		MEM_SetPageHandler(VGA_PAGE_A0, 32, newHandler );
 		break;
 	case 1:
@@ -902,7 +902,7 @@ void VGA_SetupHandlers(void) {
 		MEM_ResetPageHandler( VGA_PAGE_B0, 8 );
 		break;
 	}
-	if((vga.s3.ext_mem_ctrl & 0x10))
+	if(svgaCard == SVGA_S3Trio && (vga.s3.ext_mem_ctrl & 0x10))
 		MEM_SetPageHandler(VGA_PAGE_A0, 16, &vgaph.mmio);
 range_done:
 	PAGING_ClearTLB();
@@ -958,6 +958,12 @@ void VGA_SetupMemory(Section* sec) {
 	vga.svga.bank_size = 0x10000; /* most common bank size is 64K */
 
 	sec->AddDestroyFunction(&VGA_Memory_ShutDown);
+
+	if (machine==MCH_PCJR) {
+		/* PCJr does not have dedicated graphics memory but uses
+		   conventional memory below 128k */
+		//TODO map?	
+	} 
 }
 
 }

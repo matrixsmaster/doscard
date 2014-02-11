@@ -71,32 +71,32 @@ static Bitu INT10_Handler(void) {
 		reg_ax=0;
 		break;
 	case 0x05:								/* Set Active Page */
-//		if ((reg_al & 0x80) && IS_TANDY_ARCH) {
-//			Bit8u crtcpu=real_readb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE);
-//			switch (reg_al) {
-//			case 0x80:
-//				reg_bh=crtcpu & 7;
-//				reg_bl=(crtcpu >> 3) & 0x7;
-//				break;
-//			case 0x81:
-//				crtcpu=(crtcpu & 0xc7) | ((reg_bl & 7) << 3);
-//				break;
-//			case 0x82:
-//				crtcpu=(crtcpu & 0xf8) | (reg_bh & 7);
-//				break;
-//			case 0x83:
-//				crtcpu=(crtcpu & 0xc0) | (reg_bh & 7) | ((reg_bl & 7) << 3);
-//				break;
-//			}
-//			if (machine==MCH_PCJR) {
-//				/* always return graphics mapping, even for invalid values of AL */
-//				reg_bh=crtcpu & 7;
-//				reg_bl=(crtcpu >> 3) & 0x7;
-//			}
-//			IO_WriteB(0x3df,crtcpu);
-//			real_writeb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE,crtcpu);
-//		} else
-			INT10_SetActivePage(reg_al);
+		if ((reg_al & 0x80) && IS_TANDY_ARCH) {
+			Bit8u crtcpu=real_readb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE);		
+			switch (reg_al) {
+			case 0x80:
+				reg_bh=crtcpu & 7;
+				reg_bl=(crtcpu >> 3) & 0x7;
+				break;
+			case 0x81:
+				crtcpu=(crtcpu & 0xc7) | ((reg_bl & 7) << 3);
+				break;
+			case 0x82:
+				crtcpu=(crtcpu & 0xf8) | (reg_bh & 7);
+				break;
+			case 0x83:
+				crtcpu=(crtcpu & 0xc0) | (reg_bh & 7) | ((reg_bl & 7) << 3);
+				break;
+			}
+			if (machine==MCH_PCJR) {
+				/* always return graphics mapping, even for invalid values of AL */
+				reg_bh=crtcpu & 7;
+				reg_bl=(crtcpu >> 3) & 0x7;
+			}
+			IO_WriteB(0x3df,crtcpu);
+			real_writeb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE,crtcpu);
+		}
+		else INT10_SetActivePage(reg_al);
 		break;	
 	case 0x06:								/* Scroll Up */
 		INT10_ScrollWindow(reg_ch,reg_cl,reg_dh,reg_dl,-reg_al,reg_bh,0xFF);
@@ -304,8 +304,7 @@ graphics_chars:
 				LOG(LOG_INT10,LOG_ERROR)("Function 11:30 Request for font %2X",reg_bh);	
 				break;
 			}
-//			if ((reg_bh<=7) || (svgaCard==SVGA_TsengET4K)) {
-			if (reg_bh<=7) {
+			if ((reg_bh<=7) || (svgaCard==SVGA_TsengET4K)) {
 				reg_cx=real_readw(BIOSMEM_SEG,BIOSMEM_CHAR_HEIGHT);
 				reg_dl=real_readb(BIOSMEM_SEG,BIOSMEM_NB_ROWS);
 			}
@@ -331,12 +330,12 @@ graphics_chars:
 			{   
 				if (!IS_VGA_ARCH) break;
 				LOG(LOG_INT10,LOG_WARN)("Function 12:Call %2X (select vertical resolution)",reg_bl);
-//				if (svgaCard != SVGA_None) {
+				if (svgaCard != SVGA_None) {
 					if (reg_al > 2) {
 						reg_al=0;		// invalid subfunction
 						break;
 					}
-//				}
+				}
 				Bit8u modeset_ctl = real_readb(BIOSMEM_SEG,BIOSMEM_MODESET_CTL);
 				Bit8u video_switches = real_readb(BIOSMEM_SEG,BIOSMEM_SWITCHES)&0xf0;
 				switch(reg_al) {
@@ -367,7 +366,7 @@ graphics_chars:
 		case 0x31:							/* Palette loading on modeset */
 			{   
 				if (!IS_VGA_ARCH) break;
-//				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
+				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
 				if (reg_al>1) {
 					reg_al=0;		//invalid subfunction
 					break;
@@ -381,14 +380,14 @@ graphics_chars:
 		case 0x32:							/* Video addressing */
 			if (!IS_VGA_ARCH) break;
 			LOG(LOG_INT10,LOG_ERROR)("Function 12:Call %2X not handled",reg_bl);
-//			if (svgaCard==SVGA_TsengET4K) reg_al&=1;
+			if (svgaCard==SVGA_TsengET4K) reg_al&=1;
 			if (reg_al>1) reg_al=0;		//invalid subfunction
 			else reg_al=0x12;			//fake a success call
 			break;
 		case 0x33: /* SWITCH GRAY-SCALE SUMMING */
 			{   
 				if (!IS_VGA_ARCH) break;
-//				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
+				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
 				if (reg_al>1) {
 					reg_al=0;
 					break;
@@ -403,7 +402,7 @@ graphics_chars:
 			{   
 				// bit 0: 0=enable, 1=disable
 				if (!IS_VGA_ARCH) break;
-//				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
+				if (svgaCard==SVGA_TsengET4K) reg_al&=1;
 				if (reg_al>1) {
 					reg_al=0;
 					break;
@@ -420,7 +419,7 @@ graphics_chars:
 			break;
 		case 0x36: {						/* VGA Refresh control */
 			if (!IS_VGA_ARCH) break;
-			if ((reg_al>1)) {
+			if ((svgaCard==SVGA_S3Trio) && (reg_al>1)) {
 				reg_al=0;
 				break;
 			}
@@ -438,8 +437,7 @@ graphics_chars:
 		}
 		default:
 			LOG(LOG_INT10,LOG_ERROR)("Function 12:Call %2X not handled",reg_bl);
-//			if (machine!=MCH_EGA)
-				reg_al=0;
+			if (machine!=MCH_EGA) reg_al=0;
 			break;
 		}
 		break;
@@ -523,14 +521,13 @@ graphics_chars:
 				else reg_al=0;
 				break;
 			default:
-//				if (svgaCard==SVGA_TsengET4K) reg_ax=0;
-//				else
-					reg_al=0;
+				if (svgaCard==SVGA_TsengET4K) reg_ax=0;
+				else reg_al=0;
 				break;
 		}
 		break;
 	case 0x4f:								/* VESA Calls */
-//		if ((!IS_VGA_ARCH) || (svgaCard!=SVGA_S3Trio)) break;
+		if ((!IS_VGA_ARCH) || (svgaCard!=SVGA_S3Trio)) break;
 		switch (reg_al) {
 		case 0x00:							/* Get SVGA Information */
 			reg_al=0x4f;
@@ -744,17 +741,17 @@ static void SetupTandyBios(void) {
 		0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x65, 0x73, 0x20, 0x4c, 0x74,
 		0x64, 0x2e, 0x0d, 0x0a, 0x61, 0x6e, 0x64, 0x20, 0x54, 0x61, 0x6e, 0x64, 0x79
 	};
-//	if (machine==MCH_TANDY) {
-//		Bitu i;
-//		for(i=0;i<130;i++) {
-//			phys_writeb(0xf0000+i+0xc000, TandyConfig[i]);
-//		}
-//	}
+	if (machine==MCH_TANDY) {
+		Bitu i;
+		for(i=0;i<130;i++) {
+			phys_writeb(0xf0000+i+0xc000, TandyConfig[i]);
+		}
+	}
 }
 
 void INT10_Init(Section* /*sec*/) {
 	INT10_InitVGA();
-//	if (IS_TANDY_ARCH) SetupTandyBios();
+	if (IS_TANDY_ARCH) SetupTandyBios();
 	/* Setup the INT 10 vector */
 	call_10=CALLBACK_Allocate();	
 	CALLBACK_Setup(call_10,&INT10_Handler,CB_IRET,"Int 10 video");

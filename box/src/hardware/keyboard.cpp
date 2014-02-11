@@ -57,9 +57,8 @@ static struct {
 static void KEYBOARD_SetPort60(Bit8u val) {
 	keyb.p60changed=true;
 	keyb.p60data=val;
-//	if (machine==MCH_PCJR) PIC_ActivateIRQ(6);
-//	else
-		PIC_ActivateIRQ(1);
+	if (machine==MCH_PCJR) PIC_ActivateIRQ(6);
+	else PIC_ActivateIRQ(1);
 }
 
 static void KEYBOARD_TransferBuffer(Bitu val) {

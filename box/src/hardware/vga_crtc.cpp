@@ -141,24 +141,24 @@ void vga_write_p3d5(Bitu port,Bitu val,Bitu iolen) {
 		if (IS_VGA_ARCH)
 			vga.config.line_compare=(vga.config.line_compare & 0x5ff)|(val&0x40)<<3;
 
-//		if (IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA)) {
-//			// in vgaonly mode we take special care of line repeats (excluding CGA modes)
-//			if ((vga.crtc.maximum_scan_line ^ val) & 0x20) {
-//				crtc(maximum_scan_line)=val;
-//				VGA_StartResize();
-//			} else {
-//				crtc(maximum_scan_line)=val;
-//			}
-//			vga.draw.address_line_total = (val &0x1F) + 1;
-//			if (val&0x80) vga.draw.address_line_total*=2;
-//		} else {
+		if (IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA)) {
+			// in vgaonly mode we take special care of line repeats (excluding CGA modes)
+			if ((vga.crtc.maximum_scan_line ^ val) & 0x20) {
+				crtc(maximum_scan_line)=val;
+				VGA_StartResize();
+			} else {
+				crtc(maximum_scan_line)=val;
+			}
+			vga.draw.address_line_total = (val &0x1F) + 1;
+			if (val&0x80) vga.draw.address_line_total*=2;
+		} else {
 			if ((vga.crtc.maximum_scan_line ^ val) & 0xbf) {
 				crtc(maximum_scan_line)=val;
 				VGA_StartResize();
 			} else {
 				crtc(maximum_scan_line)=val;
 			}
-//		}
+		}
 		/*
 			0-4	Number of scan lines in a character row -1. In graphics modes this is
 				the number of times (-1) the line is displayed before passing on to
@@ -226,7 +226,7 @@ void vga_write_p3d5(Bitu port,Bitu val,Bitu iolen) {
 		
 		if (IS_EGAVGA_ARCH && !(val & 0x10)) {
 			vga.draw.vret_triggered=false;
-//			if (GCC_UNLIKELY(machine==MCH_EGA)) PIC_DeActivateIRQ(9);
+			if (GCC_UNLIKELY(machine==MCH_EGA)) PIC_DeActivateIRQ(9);
 		}
 		if (IS_VGA_ARCH) crtc(read_only)=(val & 128)>0;
 		else crtc(read_only)=false;

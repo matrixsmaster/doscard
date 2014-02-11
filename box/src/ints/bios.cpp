@@ -717,24 +717,24 @@ static Bitu INT15_Handler(void) {
 			if (biosConfigSeg==0) biosConfigSeg = DOS_GetMemory(1); //We have 16 bytes
 			PhysPt data	= PhysMake(biosConfigSeg,0);
 			mem_writew(data,8);						// 8 Bytes following
-//			if (IS_TANDY_ARCH) {
-//				if (machine==MCH_TANDY) {
-//					// Model ID (Tandy)
-//					mem_writeb(data+2,0xFF);
-//				} else {
-//					// Model ID (PCJR)
-//					mem_writeb(data+2,0xFD);
-//				}
-//				mem_writeb(data+3,0x0A);					// Submodel ID
-//				mem_writeb(data+4,0x10);					// Bios Revision
-//				/* Tandy doesn't have a 2nd PIC, left as is for now */
-//				mem_writeb(data+5,(1<<6)|(1<<5)|(1<<4));	// Feature Byte 1
-//			} else {
+			if (IS_TANDY_ARCH) {
+				if (machine==MCH_TANDY) {
+					// Model ID (Tandy)
+					mem_writeb(data+2,0xFF);
+				} else {
+					// Model ID (PCJR)
+					mem_writeb(data+2,0xFD);
+				}
+				mem_writeb(data+3,0x0A);					// Submodel ID
+				mem_writeb(data+4,0x10);					// Bios Revision
+				/* Tandy doesn't have a 2nd PIC, left as is for now */
+				mem_writeb(data+5,(1<<6)|(1<<5)|(1<<4));	// Feature Byte 1
+			} else {
 				mem_writeb(data+2,0xFC);					// Model ID (PC)
 				mem_writeb(data+3,0x00);					// Submodel ID
 				mem_writeb(data+4,0x01);					// Bios Revision
 				mem_writeb(data+5,(1<<6)|(1<<5)|(1<<4));	// Feature Byte 1
-//			}
+			}
 			mem_writeb(data+6,(1<<6));				// Feature Byte 2
 			mem_writeb(data+7,0);					// Feature Byte 3
 			mem_writeb(data+8,0);					// Feature Byte 4
@@ -947,10 +947,10 @@ static Bitu INT15_Handler(void) {
 		LOG(LOG_BIOS,LOG_ERROR)("INT15:Unknown call %4X",reg_ax);
 		reg_ah=0x86;
 		CALLBACK_SCF(true);
-//		if ((IS_EGAVGA_ARCH) || (machine==MCH_CGA)) {
+		if ((IS_EGAVGA_ARCH) || (machine==MCH_CGA)) {
 			/* relict from comparisons, as int15 exits with a retf2 instead of an iret */
 			CALLBACK_SZF(false);
-//		}
+		}
 	}
 	return CBRET_NONE;
 }
@@ -1019,14 +1019,13 @@ public:
 		/* INT 12 Memory Size default at 640 kb */
 		callback[2].Install(&INT12_Handler,CB_IRET,"Int 12 Memory");
 		callback[2].Set_RealVec(0x12);
-//		if (IS_TANDY_ARCH) {
-//			/* reduce reported memory size for the Tandy (32k graphics memory
-//			   at the end of the conventional 640k) */
-//			if (machine==MCH_TANDY) mem_writew(BIOS_MEMORY_SIZE,624);
-//			else mem_writew(BIOS_MEMORY_SIZE,640);
-//			mem_writew(BIOS_TRUE_MEMORY_SIZE,640);
-//		} else
-			mem_writew(BIOS_MEMORY_SIZE,640);
+		if (IS_TANDY_ARCH) {
+			/* reduce reported memory size for the Tandy (32k graphics memory
+			   at the end of the conventional 640k) */
+			if (machine==MCH_TANDY) mem_writew(BIOS_MEMORY_SIZE,624);
+			else mem_writew(BIOS_MEMORY_SIZE,640);
+			mem_writew(BIOS_TRUE_MEMORY_SIZE,640);
+		} else mem_writew(BIOS_MEMORY_SIZE,640);
 		
 		/* INT 13 Bios Disk Support */
 		BIOS_SetupDisks();
@@ -1096,10 +1095,9 @@ public:
 		phys_writeb(Real2Phys(BIOS_DEFAULT_HANDLER_LOCATION),0xcf);	/* bios default interrupt vector location -> IRET */
 		phys_writew(Real2Phys(RealGetVec(0x12))+0x12,0x20); //Hack for Jurresic
 
-//		if (machine==MCH_TANDY) phys_writeb(0xffffe,0xff)	;	/* Tandy model */
-//		else if (machine==MCH_PCJR) phys_writeb(0xffffe,0xfd);	/* PCJr model */
-//		else
-			phys_writeb(0xffffe,0xfc);	/* PC */
+		if (machine==MCH_TANDY) phys_writeb(0xffffe,0xff)	;	/* Tandy model */
+		else if (machine==MCH_PCJR) phys_writeb(0xffffe,0xfd);	/* PCJr model */
+		else phys_writeb(0xffffe,0xfc);	/* PC */
 
 		// System BIOS identification
 		const char* const b_type =
@@ -1221,22 +1219,22 @@ public:
 		//FPU
 		config|=0x2;
 #endif
-//		switch (machine) {
-//		case MCH_HERC:
-//			//Startup monochrome
-//			config|=0x30;
-//			break;
-//		case EGAVGA_ARCH_CASE:
-//		case MCH_CGA:
-//		case TANDY_ARCH_CASE:
+		switch (machine) {
+		case MCH_HERC:
+			//Startup monochrome
+			config|=0x30;
+			break;
+		case EGAVGA_ARCH_CASE:
+		case MCH_CGA:
+		case TANDY_ARCH_CASE:
 			//Startup 80x25 color
 			config|=0x20;
-//			break;
-//		default:
-//			//EGA VGA
-//			config|=0;
-//			break;
-//		}
+			break;
+		default:
+			//EGA VGA
+			config|=0;
+			break;
+		}
 		// PS2 mouse
 		config |= 0x04;
 		// Gameport

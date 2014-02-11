@@ -628,10 +628,7 @@ string Section_line::GetPropValue(string const& /* _property*/) const {
 	return NO_SUCH_PROPERTY;
 }
 
-bool Config::PrintConfig(char const * const configfilename) const
-{
-	LOG_MSG("PrintConfig(): STUB");
-#if 0
+bool Config::PrintConfig(char const * const configfilename) const {
 	char temp[50];char helpline[256];
 	DBFILE* outfile= dbfopen(configfilename,"w+t");
 	if(outfile==NULL) return false;
@@ -703,7 +700,6 @@ bool Config::PrintConfig(char const * const configfilename) const
 		dbfprintf(outfile,"\n");		/* Always an empty line between sections */
 	}
 	dbfclose(outfile);
-#endif
 	return true;
 }
 
@@ -796,7 +792,6 @@ Section* Config::GetSectionFromProperty(char const * const prop) const{
 
 bool Config::ParseConfigFile(char const * const configfilename)
 {
-	LOG_MSG("ParseConfigFile(): STUB");
 	return false;
 #if 0
 	//static bool first_configfile = true;

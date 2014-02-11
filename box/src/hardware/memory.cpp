@@ -580,12 +580,12 @@ public:
 		for (i=0xf0;i<0x100;i++) {
 			memory.phandlers[i] = &rom_page_handler;
 		}
-//		if (machine==MCH_PCJR) {
-//			/* Setup cartridge rom at 0xe0000-0xf0000 */
-//			for (i=0xe0;i<0xf0;i++) {
-//				memory.phandlers[i] = &rom_page_handler;
-//			}
-//		}
+		if (machine==MCH_PCJR) {
+			/* Setup cartridge rom at 0xe0000-0xf0000 */
+			for (i=0xe0;i<0xf0;i++) {
+				memory.phandlers[i] = &rom_page_handler;
+			}
+		}
 		/* Reset some links */
 		memory.links.used = 0;
 		// A20 Line - PS/2 system control port A

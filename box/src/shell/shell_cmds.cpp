@@ -106,7 +106,7 @@ static char* ExpandDot(char*args, char* buffer) {
 
 
 bool DOS_Shell::CheckConfig(char* cmd_in,char*line) {
-	Section* test = myldbi->control->GetSectionFromProperty(cmd_in);
+	Section* test = control->GetSectionFromProperty(cmd_in);
 	if(!test) return false;
 	if(line && !line[0]) {
 		std::string val = test->GetPropValue(cmd_in);

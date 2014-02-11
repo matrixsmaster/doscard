@@ -97,7 +97,7 @@ CNullModem::CNullModem(Bitu id, CommandLine* cmd):CSerial (id, cmd) {
 		if (Netwrapper_GetCapabilities()&NETWRAPPER_TCP_NATIVESOCKET) {
 			if (bool_temp==1) {
 				int sock;
-				if (myldbi->control->cmdline->FindInt("-socket",sock,true)) {
+				if (control->cmdline->FindInt("-socket",sock,true)) {
 					dtrrespect=false;
 					transparent=true;
 					LOG_MSG("Inheritance socket handle: %d",sock);

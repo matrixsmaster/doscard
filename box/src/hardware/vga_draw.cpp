@@ -592,7 +592,7 @@ static void VGA_ProcessSplit() {
 		// In text mode only the characters are shifted by panning, not the address;
 		// this is done in the text line draw function.
 		vga.draw.address = vga.draw.byte_panning_shift*vga.draw.bytes_skip;
-		if (vga.mode!=M_TEXT) vga.draw.address += vga.draw.panning;
+		if ((vga.mode!=M_TEXT)&&(machine!=MCH_EGA)) vga.draw.address += vga.draw.panning;
 	}
 	vga.draw.address_line=0;
 }
@@ -600,25 +600,25 @@ static void VGA_ProcessSplit() {
 static Bit8u bg_color_index = 0; // screen-off black index
 static void VGA_DrawSingleLine(Bitu /*blah*/) {
 	if (GCC_UNLIKELY(vga.attr.disabled)) {
-//		switch(machine) {
-//		case MCH_PCJR:
-//			// Displays the border color when screen is disabled
-//			bg_color_index = vga.tandy.border_color;
-//			break;
-//		case MCH_TANDY:
-//			// Either the PCJr way or the CGA way
-//			if (vga.tandy.gfx_control& 0x4) {
-//				bg_color_index = vga.tandy.border_color;
-//			} else if (vga.mode==M_TANDY4)
-//				bg_color_index = vga.attr.palette[0];
-//			else bg_color_index = 0;
-//			break;
-//		case MCH_CGA:
-//			// the background color
-//			bg_color_index = vga.attr.overscan_color;
-//			break;
-//		case MCH_EGA:
-//		case MCH_VGA:
+		switch(machine) {
+		case MCH_PCJR:
+			// Displays the border color when screen is disabled
+			bg_color_index = vga.tandy.border_color;
+			break;
+		case MCH_TANDY:
+			// Either the PCJr way or the CGA way
+			if (vga.tandy.gfx_control& 0x4) { 
+				bg_color_index = vga.tandy.border_color;
+			} else if (vga.mode==M_TANDY4) 
+				bg_color_index = vga.attr.palette[0];
+			else bg_color_index = 0;
+			break;
+		case MCH_CGA:
+			// the background color
+			bg_color_index = vga.attr.overscan_color;
+			break;
+		case MCH_EGA:
+		case MCH_VGA:
 			// DoWhackaDo, Alien Carnage, TV sports Football
 			// when disabled by attribute index bit 5:
 			//  ET3000, ET4000, Paradise display the border color
@@ -637,11 +637,11 @@ static void VGA_DrawSingleLine(Bitu /*blah*/) {
 			}
 			//} else 
             //    bg_color_index = vga.attr.overscan_color;
-//			break;
-//		default:
-//			bg_color_index = 0;
-//			break;
-//		}
+			break;
+		default:
+			bg_color_index = 0;
+			break;
+		}
 		if (vga.draw.bpp==8) {
 			memset(TempLine, bg_color_index, sizeof(TempLine));
 		} else if (vga.draw.bpp==16) {
@@ -764,7 +764,7 @@ static void INLINE VGA_ChangesStart( void ) {
 static void VGA_VertInterrupt(Bitu /*val*/) {
 	if ((!vga.draw.vret_triggered) && ((vga.crtc.vertical_retrace_end&0x30)==0x10)) {
 		vga.draw.vret_triggered=true;
-//		if (GCC_UNLIKELY(machine==MCH_EGA)) PIC_ActivateIRQ(9);
+		if (GCC_UNLIKELY(machine==MCH_EGA)) PIC_ActivateIRQ(9);
 	}
 }
 
@@ -786,36 +786,36 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 	vga.draw.delay.framestart = PIC_FullIndex();
 	PIC_AddEvent( VGA_VerticalTimer, (float)vga.draw.delay.vtotal );
 	
-//	switch(machine) {
-//	case MCH_PCJR:
-//	case MCH_TANDY:
-//		// PCJr: Vsync is directly connected to the IRQ controller
-//		// Some earlier Tandy models are said to have a vsync interrupt too
-//		PIC_AddEvent(VGA_Other_VertInterrupt, (float)vga.draw.delay.vrstart, 1);
-//		PIC_AddEvent(VGA_Other_VertInterrupt, (float)vga.draw.delay.vrend, 0);
-//		// fall-through
-//	case MCH_CGA:
-//	case MCH_HERC:
-//		// MC6845-powered graphics: Loading the display start latch happens somewhere
-//		// after vsync off and before first visible scanline, so probably here
-//		VGA_DisplayStartLatch(0);
-//		break;
-//	case MCH_VGA:
+	switch(machine) {
+	case MCH_PCJR:
+	case MCH_TANDY:
+		// PCJr: Vsync is directly connected to the IRQ controller
+		// Some earlier Tandy models are said to have a vsync interrupt too
+		PIC_AddEvent(VGA_Other_VertInterrupt, (float)vga.draw.delay.vrstart, 1);
+		PIC_AddEvent(VGA_Other_VertInterrupt, (float)vga.draw.delay.vrend, 0);
+		// fall-through
+	case MCH_CGA:
+	case MCH_HERC:
+		// MC6845-powered graphics: Loading the display start latch happens somewhere
+		// after vsync off and before first visible scanline, so probably here
+		VGA_DisplayStartLatch(0);
+		break;
+	case MCH_VGA:
 		PIC_AddEvent(VGA_DisplayStartLatch, (float)vga.draw.delay.vrstart);
 		PIC_AddEvent(VGA_PanningLatch, (float)vga.draw.delay.vrend);
 		// EGA: 82c435 datasheet: interrupt happens at display end
 		// VGA: checked with scope; however disabled by default by jumper on VGA boards
 		// add a little amount of time to make sure the last drawpart has already fired
 		PIC_AddEvent(VGA_VertInterrupt,(float)(vga.draw.delay.vdend + 0.005));
-//		break;
-//	case MCH_EGA:
-//		PIC_AddEvent(VGA_DisplayStartLatch, (float)vga.draw.delay.vrend);
-//		PIC_AddEvent(VGA_VertInterrupt,(float)(vga.draw.delay.vdend + 0.005));
-//		break;
-//	default:
-//		E_Exit("This new machine needs implementation in VGA_VerticalTimer too.");
-//		break;
-//	}
+		break;
+	case MCH_EGA:
+		PIC_AddEvent(VGA_DisplayStartLatch, (float)vga.draw.delay.vrend);
+		PIC_AddEvent(VGA_VertInterrupt,(float)(vga.draw.delay.vdend + 0.005));
+		break;
+	default:
+		E_Exit("This new machine needs implementation in VGA_VerticalTimer too.");
+		break;
+	}
 	//Check if we can actually render, else skip the rest (frameskip)
 	if (vga.draw.vga_override || !RENDER_StartUpdate())
 		return;
@@ -824,7 +824,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 //	if (vga.draw.lines_scaled < 1) vga.draw.lines_scaled = 1;
 	if (IS_EGAVGA_ARCH) {
 		vga.draw.split_line = (Bitu)((vga.config.line_compare+1)/vga.draw.lines_scaled);
-		if (vga.config.line_compare==0) vga.draw.split_line=0;
+		if ((svgaCard==SVGA_S3Trio) && (vga.config.line_compare==0)) vga.draw.split_line=0;
 		vga.draw.split_line -= vga.draw.vblank_skip;
 	} else {
 		vga.draw.split_line = 0x10000;	// don't care
@@ -832,11 +832,11 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 	vga.draw.address = vga.config.real_start;
 	vga.draw.byte_panning_shift = 0;
 	// go figure...
-//	if (machine==MCH_EGA) {
-//		if (vga.draw.doubleheight) // Spacepigs EGA Megademo
-//			vga.draw.split_line*=2;
-//		vga.draw.split_line++; // EGA adds one buggy scanline
-//	}
+	if (machine==MCH_EGA) {
+		if (vga.draw.doubleheight) // Spacepigs EGA Megademo
+			vga.draw.split_line*=2;
+		vga.draw.split_line++; // EGA adds one buggy scanline
+	}
 //	if (machine==MCH_EGA) vga.draw.split_line = ((((vga.config.line_compare&0x5ff)+1)*2-1)/vga.draw.lines_scaled);
 #ifdef VGA_KEEP_CHANGES
 	bool startaddr_changed=false;
@@ -849,7 +849,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 		vga.draw.byte_panning_shift = 8;
 		vga.draw.address += vga.draw.bytes_skip;
 		vga.draw.address *= vga.draw.byte_panning_shift;
-		vga.draw.address += vga.draw.panning;
+		if (machine!=MCH_EGA) vga.draw.address += vga.draw.panning;
 #ifdef VGA_KEEP_CHANGES
 		startaddr_changed=true;
 #endif
@@ -880,10 +880,9 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 		// fall-through
 	case M_TANDY_TEXT:
 	case M_HERC_TEXT:
-//		if (machine==MCH_HERC) vga.draw.linear_mask = 0xfff; // 1 page
-//		else if (IS_EGAVGA_ARCH)
-		vga.draw.linear_mask = 0x7fff; // 8 pages
-//		else vga.draw.linear_mask = 0x3fff; // CGA, Tandy 4 pages
+		if (machine==MCH_HERC) vga.draw.linear_mask = 0xfff; // 1 page
+		else if (IS_EGAVGA_ARCH) vga.draw.linear_mask = 0x7fff; // 8 pages
+		else vga.draw.linear_mask = 0x3fff; // CGA, Tandy 4 pages
 		vga.draw.cursor.address=vga.config.cursor_start*2;
 		vga.draw.address *= 2;
 		vga.draw.cursor.count++;
@@ -1022,26 +1021,26 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 		return;
 	}
 	// set the drawing mode
-//	switch (machine) {
-//	case MCH_CGA:
-//	case MCH_PCJR:
-//	case MCH_TANDY:
-//		vga.draw.mode = LINE;
-//		break;
-//	case MCH_EGA:
-//		// Note: The Paradise SVGA uses the same panning mechanism as EGA
-//		vga.draw.mode = EGALINE;
-//		break;
-//	case MCH_VGA:
-//		if (svgaCard==SVGA_None) {
-//			vga.draw.mode = LINE;
-//			break;
-//		}
-//		// fall-through
-//	default:
+	switch (machine) {
+	case MCH_CGA:
+	case MCH_PCJR:
+	case MCH_TANDY:
+		vga.draw.mode = LINE;
+		break;
+	case MCH_EGA:
+		// Note: The Paradise SVGA uses the same panning mechanism as EGA
+		vga.draw.mode = EGALINE;
+		break;
+	case MCH_VGA:
+		if (svgaCard==SVGA_None) {
+			vga.draw.mode = LINE;
+			break;
+		}
+		// fall-through
+	default:
 		vga.draw.mode = PART;
-//		break;
-//	}
+		break;
+	}
 	
 	/* Calculate the FPS for this screen */
 	double fps; Bitu clock;
@@ -1116,13 +1115,11 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 		} else {
 			switch ((vga.misc_output >> 2) & 3) {
 			case 0:	
-//				clock = (machine==MCH_EGA) ? 14318180 : 25175000;
-				clock = 25175000;
+				clock = (machine==MCH_EGA) ? 14318180 : 25175000;
 				break;
 			case 1:
 			default:
-//				clock = (machine==MCH_EGA) ? 16257000 : 28322000;
-				clock = 28322000;
+				clock = (machine==MCH_EGA) ? 16257000 : 28322000;
 				break;
 			}
 		}
@@ -1134,18 +1131,17 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 			htotal*=2;
 		}
 		vga.draw.address_line_total=(vga.crtc.maximum_scan_line&0x1f)+1;
-//		if (IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA)) {
-//			// vgaonly; can't use with CGA because these use address_line for their
-//			// own purposes.
-//			// Set the low resolution modes to have as many lines as are scanned -
-//			// Quite a few demos change the max_scanline register at display time
-//			// to get SFX: Majic12 show, Magic circle, Copper, GBU, Party91
-//			if ( vga.crtc.maximum_scan_line&0x80) vga.draw.address_line_total*=2;
-//			vga.draw.double_scan=false;
-//		}
-//		else if (IS_VGA_ARCH)
-		vga.draw.double_scan=(vga.crtc.maximum_scan_line&0x80)>0;
-//		else vga.draw.double_scan=(vtotal==262);
+		if (IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA)) {
+			// vgaonly; can't use with CGA because these use address_line for their
+			// own purposes.
+			// Set the low resolution modes to have as many lines as are scanned - 
+			// Quite a few demos change the max_scanline register at display time
+			// to get SFX: Majic12 show, Magic circle, Copper, GBU, Party91
+			if ( vga.crtc.maximum_scan_line&0x80) vga.draw.address_line_total*=2;
+			vga.draw.double_scan=false;
+		}
+		else if (IS_VGA_ARCH) vga.draw.double_scan=(vga.crtc.maximum_scan_line&0x80)>0;
+		else vga.draw.double_scan=(vtotal==262);
 	} else {
 		htotal = vga.other.htotal + 1;
 		hdend = vga.other.hdend;
@@ -1162,19 +1158,19 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 		vbstart = vdend;
 		vbend = vtotal;
 		vga.draw.double_scan=false;
-//		switch (machine) {
-//		case MCH_CGA:
-//		case TANDY_ARCH_CASE:
-//			clock=((vga.tandy.mode_control & 1) ? 14318180 : (14318180/2))/8;
-//			break;
-//		case MCH_HERC:
-//			if (vga.herc.mode_control & 0x2) clock=16000000/16;
-//			else clock=16000000/8;
-//			break;
-//		default:
+		switch (machine) {
+		case MCH_CGA:
+		case TANDY_ARCH_CASE:
+			clock=((vga.tandy.mode_control & 1) ? 14318180 : (14318180/2))/8;
+			break;
+		case MCH_HERC:
+			if (vga.herc.mode_control & 0x2) clock=16000000/16;
+			else clock=16000000/8;
+			break;
+		default:
 			clock = 14318180;
-//			break;
-//		}
+			break;
+		}
 		vga.draw.delay.hdend = hdend*1000.0/clock; //in milliseconds
 	}
 #if C_DEBUG
@@ -1240,27 +1236,27 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	vga.draw.delay.vdend = vdend * vga.draw.delay.htotal;
 
 	// EGA frequency dependent monitor palette
-//	if (machine == MCH_EGA) {
-//		if (vga.misc_output & 1) {
-//			// EGA card is in color mode
-//			if ((1.0f/vga.draw.delay.htotal) > 19.0f) {
-//				// 64 color EGA mode
-//				VGA_ATTR_SetEGAMonitorPalette(EGA);
-//			} else {
-//				// 16 color CGA mode compatibility
-//				VGA_ATTR_SetEGAMonitorPalette(CGA);
-//			}
-//		} else {
-//			// EGA card in monochrome mode
-//			// It is not meant to be autodetected that way, you either
-//			// have a monochrome or color monitor connected and
-//			// the EGA switches configured appropriately.
-//			// But this would only be a problem if a program sets
-//			// the adapter to monochrome mode and still expects color output.
-//			// Such a program should be shot to the moon...
-//			VGA_ATTR_SetEGAMonitorPalette(MONO);
-//		}
-//	}
+	if (machine == MCH_EGA) {
+		if (vga.misc_output & 1) {
+			// EGA card is in color mode
+			if ((1.0f/vga.draw.delay.htotal) > 19.0f) {
+				// 64 color EGA mode
+				VGA_ATTR_SetEGAMonitorPalette(EGA);
+			} else {
+				// 16 color CGA mode compatibility
+				VGA_ATTR_SetEGAMonitorPalette(CGA);
+			}
+		} else {
+			// EGA card in monochrome mode
+			// It is not meant to be autodetected that way, you either
+			// have a monochrome or color monitor connected and
+			// the EGA switches configured appropriately.
+			// But this would only be a problem if a program sets 
+			// the adapter to monochrome mode and still expects color output.
+			// Such a program should be shot to the moon...
+			VGA_ATTR_SetEGAMonitorPalette(MONO);
+		}
+	}
 
 	vga.draw.parts_total=VGA_PARTS;
 	/*
@@ -1274,14 +1270,12 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	//Base pixel width around 100 clocks horizontal
 	//For 9 pixel text modes this should be changed, but we don't support that anyway :)
 	//Seems regular vga only listens to the 9 char pixel mode with character mode enabled
-//	double pwidth = (machine==MCH_EGA) ? (114.0 / htotal) : (100.0 / htotal);
-	double pwidth = 100.0 / htotal;
+	double pwidth = (machine==MCH_EGA) ? (114.0 / htotal) : (100.0 / htotal);
 	//Base pixel height around vertical totals of modes that have 100 clocks horizontal
 	//Different sync values gives different scaling of the whole vertical range
 	//VGA monitor just seems to thighten or widen the whole vertical range
 	double pheight;
-//	double target_total = (machine==MCH_EGA) ? 262.0 : 449.0;
-	double target_total = 449.0;
+	double target_total = (machine==MCH_EGA) ? 262.0 : 449.0;
 	Bitu sync = vga.misc_output >> 6;
 	switch ( sync ) {
 	case 0:		// This is not defined in vga specs,
@@ -1341,16 +1335,15 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	case M_VGA:
 		doublewidth=true;
 		width<<=2;
-//		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
-//			bpp=16;
-//			VGA_DrawLine = VGA_Draw_Xlat16_Linear_Line;
-//		} else
-			VGA_DrawLine = VGA_Draw_Linear_Line;
+		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
+			bpp=16;
+			VGA_DrawLine = VGA_Draw_Xlat16_Linear_Line;
+		} else VGA_DrawLine = VGA_Draw_Linear_Line;
 		break;
 	case M_LIN8:
 		if (vga.crtc.mode_control & 0x8)
 			width >>=1;
-		else if (!(vga.s3.reg_3a&0x10)) {
+		else if (svgaCard == SVGA_S3Trio && !(vga.s3.reg_3a&0x10)) {
 			doublewidth=true;
 			width >>=1;
 		}
@@ -1366,7 +1359,7 @@ void VGA_SetupDrawing(Bitu /*val*/) {
  	case M_LIN16:
 		// 15/16 bpp modes double the horizontal values
 		width<<=2;
-		if ((vga.crtc.mode_control & 0x8) || ((vga.s3.pll.cmd & 0x10)))
+		if ((vga.crtc.mode_control & 0x8) || (svgaCard == SVGA_S3Trio && (vga.s3.pll.cmd & 0x10)))
 			doublewidth = true;
 		/* Use HW mouse cursor drawer if enabled */
 		VGA_ActivateHardwareCursor();
@@ -1383,12 +1376,11 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 		doublewidth=(vga.seq.clocking_mode & 0x8) > 0;
 		vga.draw.blocks = width;
 		width<<=3;
-//		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
-//			// This would also be required for EGA in Spacepigs Megademo
-//			bpp=16;
-//			VGA_DrawLine = VGA_Draw_Xlat16_Linear_Line;
-//		} else
-			VGA_DrawLine=VGA_Draw_Linear_Line;
+		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
+			// This would also be required for EGA in Spacepigs Megademo
+			bpp=16;
+			VGA_DrawLine = VGA_Draw_Xlat16_Linear_Line;
+		} else VGA_DrawLine=VGA_Draw_Linear_Line;
 
 		vga.draw.linear_base = vga.fastmem;
 		vga.draw.linear_mask = (vga.vmemwrap<<1) - 1;
@@ -1415,23 +1407,23 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 		aspect_ratio=1.0;
 		vga.draw.blocks=width;
 		doublewidth=(vga.seq.clocking_mode & 0x8) > 0;
-//		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
-//			// vgaonly: allow 9-pixel wide fonts
-//			if (vga.seq.clocking_mode&0x01) {
-//				vga.draw.char9dot = false;
-//				width*=8;
-//			} else {
-//				vga.draw.char9dot = true;
-//				width*=9;
-//			}
-//			VGA_DrawLine=VGA_TEXT_Xlat16_Draw_Line;
-//			bpp=16;
-//		} else {
+		if ((IS_VGA_ARCH) && (svgaCard==SVGA_None)) {
+			// vgaonly: allow 9-pixel wide fonts
+			if (vga.seq.clocking_mode&0x01) {
+				vga.draw.char9dot = false;
+				width*=8;
+			} else {
+				vga.draw.char9dot = true;
+				width*=9;
+			}
+			VGA_DrawLine=VGA_TEXT_Xlat16_Draw_Line;
+			bpp=16;
+		} else {
 			// not vgaonly: force 8-pixel wide fonts
 			width*=8; // 8 bit wide text font
 			vga.draw.char9dot = false;
 			VGA_DrawLine=VGA_TEXT_Draw_Line;
-//		}
+		}
 		break;
 	case M_HERC_GFX:
 		aspect_ratio=1.5;
@@ -1442,9 +1434,8 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	case M_TANDY2:
 		aspect_ratio=1.2;
 		doubleheight=true;
-//		if (machine==MCH_PCJR) doublewidth=(vga.tandy.gfx_control & 0x8)==0x00;
-//		else
-			doublewidth=(vga.tandy.mode_control & 0x10)==0;
+		if (machine==MCH_PCJR) doublewidth=(vga.tandy.gfx_control & 0x8)==0x00;
+		else doublewidth=(vga.tandy.mode_control & 0x10)==0;
 		vga.draw.blocks=width * (doublewidth ? 4:8);
 		width=vga.draw.blocks*2;
 		VGA_DrawLine=VGA_Draw_1BPP_Line;
@@ -1452,30 +1443,28 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	case M_TANDY4:
 		aspect_ratio=1.2;
 		doubleheight=true;
-//		if (machine==MCH_TANDY) doublewidth=(vga.tandy.mode_control & 0x10)==0;
-//		else
-			doublewidth=(vga.tandy.mode_control & 0x01)==0x00;
+		if (machine==MCH_TANDY) doublewidth=(vga.tandy.mode_control & 0x10)==0;
+		else doublewidth=(vga.tandy.mode_control & 0x01)==0x00;
 		vga.draw.blocks=width * 2;
 		width=vga.draw.blocks*4;
-//		if ((machine==MCH_TANDY && (vga.tandy.gfx_control & 0x8)) ||
-//			(machine==MCH_PCJR && (vga.tandy.mode_control==0x0b)))
-//			VGA_DrawLine=VGA_Draw_2BPPHiRes_Line;
-//		else
-			VGA_DrawLine=VGA_Draw_2BPP_Line;
+		if ((machine==MCH_TANDY && (vga.tandy.gfx_control & 0x8)) ||
+			(machine==MCH_PCJR && (vga.tandy.mode_control==0x0b)))
+			VGA_DrawLine=VGA_Draw_2BPPHiRes_Line;
+		else VGA_DrawLine=VGA_Draw_2BPP_Line;
 		break;
 	case M_TANDY16:
 		aspect_ratio=1.2;
 		doubleheight=true;
 		vga.draw.blocks=width*2;
 		if (vga.tandy.mode_control & 0x1) {
-//			if (( machine==MCH_TANDY ) && ( vga.tandy.mode_control & 0x10 )) {
-//				doublewidth = false;
-//				vga.draw.blocks*=2;
-//				width=vga.draw.blocks*2;
-//			} else {
+			if (( machine==MCH_TANDY ) && ( vga.tandy.mode_control & 0x10 )) {
+				doublewidth = false;
+				vga.draw.blocks*=2;
+				width=vga.draw.blocks*2;
+			} else {
 				doublewidth = true;
 				width=vga.draw.blocks*2;
-//			}
+			}
 			VGA_DrawLine=VGA_Draw_4BPP_Line;
 		} else {
 			doublewidth=true;
@@ -1511,8 +1500,7 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 	}
 	vga.draw.vblank_skip = vblank_skip;
 		
-//	if (!(IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA))) {
-	if (!(IS_VGA_ARCH && false && (vga.mode==M_EGA || vga.mode==M_VGA))) {
+	if (!(IS_VGA_ARCH && (svgaCard==SVGA_None) && (vga.mode==M_EGA || vga.mode==M_VGA))) {
 		//Only check for extra double height in vga modes
 		//(line multiplying by address_line_total)
 		if (!doubleheight && (vga.mode<M_TEXT) && !(vga.draw.address_line_total & 1)) {

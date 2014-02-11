@@ -28,6 +28,8 @@
 
 namespace dosbox {
 
+//TODO: purge all Chinese Code from here
+
 #define RAW_SIZE 1024
 
 
@@ -173,7 +175,7 @@ void Module::Init( Mode m ) {
 
 }; //namespace
 
-//TODO: purge all Chinese Code from here
+
 
 static Adlib::Module* module = 0;
 

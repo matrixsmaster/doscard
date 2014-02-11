@@ -289,11 +289,11 @@ void SaveVgaRegisters() {
 		//Set Map to all planes. Celtic Tales
 		index3C4 = IO_Read(0x3c4);  IO_Write(0x3C4,2);
 		gfxReg3C5 = IO_Read(0x3C5); IO_Write(0x3C5,0xF);
-	}/* else if (machine==MCH_EGA) {
+	} else if (machine==MCH_EGA) {
 		//Set Map to all planes.
 		IO_Write(0x3C4,2);
 		IO_Write(0x3C5,0xF);
-	}*/
+	}
 }
 
 void RestoreVgaRegisters() {

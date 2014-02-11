@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "dosbox.h"
 #include "callback.h"
 #include "mem.h"
@@ -66,7 +67,7 @@ void CALLBACK_Idle(void) {
 	Bit32u oldeip=reg_eip;
 	SegSet16(cs,CB_SEG);
 	reg_eip=CB_SOFFSET+call_idle*CB_SIZE;
-	myldbi->RunMachine();
+	DOSBOX_RunMachine();
 	reg_eip=oldeip;
 	SegSet16(cs,oldcs);
 	SETFLAGBIT(IF,oldIF);
@@ -93,7 +94,7 @@ void CALLBACK_RunRealFar(Bit16u seg,Bit16u off) {
 	Bit16u oldcs=SegValue(cs);
 	reg_eip=off;
 	SegSet16(cs,seg);
-	myldbi->RunMachine();
+	DOSBOX_RunMachine();
 	reg_eip=oldeip;
 	SegSet16(cs,oldcs);
 }
@@ -103,7 +104,7 @@ void CALLBACK_RunRealInt(Bit8u intnum) {
 	Bit16u oldcs=SegValue(cs);
 	reg_eip=CB_SOFFSET+(CB_MAX*CB_SIZE)+(intnum*6);
 	SegSet16(cs,CB_SEG);
-	myldbi->RunMachine();
+	DOSBOX_RunMachine();
 	reg_eip=oldeip;
 	SegSet16(cs,oldcs);
 }

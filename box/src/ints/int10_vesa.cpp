@@ -567,10 +567,10 @@ void INT10_SetupVESA(void) {
 	for (i=0;i<len;i++) {
 		phys_writeb(0xc0000+int10.rom.used++,string_oem[i]);
 	}
-//	switch (svgaCard) {
-//	case SVGA_S3Trio:
-//		break;
-//	}
+	switch (svgaCard) {
+	case SVGA_S3Trio:
+		break;
+	}
 	callback.setwindow=CALLBACK_Allocate();
 	callback.pmPalette=CALLBACK_Allocate();
 	callback.pmStart=CALLBACK_Allocate();

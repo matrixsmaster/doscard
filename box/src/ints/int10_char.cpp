@@ -209,17 +209,17 @@ void INT10_ScrollWindow(Bit8u rul,Bit8u cul,Bit8u rlr,Bit8u clr,Bit8s nlines,Bit
 	if (page==0xff) base+=real_readw(BIOSMEM_SEG,BIOSMEM_CURRENT_START);
 	else base+=page*real_readw(BIOSMEM_SEG,BIOSMEM_PAGE_SIZE);
 	
-//	if (GCC_UNLIKELY(machine==MCH_PCJR)) {
-//		if (real_readb(BIOSMEM_SEG, BIOSMEM_CURRENT_MODE) >= 9) {
-//			// PCJr cannot handle these modes at 0xb800
-//			// See INT10_PutPixel M_TANDY16
-//			Bitu cpupage =
-//				(real_readb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE) >> 3) & 0x7;
-//
-//			base = cpupage << 14;
-//			base += page*real_readw(BIOSMEM_SEG,BIOSMEM_PAGE_SIZE);
-//		}
-//	}
+	if (GCC_UNLIKELY(machine==MCH_PCJR)) {
+		if (real_readb(BIOSMEM_SEG, BIOSMEM_CURRENT_MODE) >= 9) {
+			// PCJr cannot handle these modes at 0xb800
+			// See INT10_PutPixel M_TANDY16
+			Bitu cpupage =
+				(real_readb(BIOSMEM_SEG, BIOSMEM_CRTCPU_PAGE) >> 3) & 0x7;
+
+			base = cpupage << 14;
+			base += page*real_readw(BIOSMEM_SEG,BIOSMEM_PAGE_SIZE);
+		}
+	}
 
 	/* See how much lines need to be copied */
 	Bit8u start,end;Bits next;
@@ -252,11 +252,11 @@ void INT10_ScrollWindow(Bit8u rul,Bit8u cul,Bit8u rlr,Bit8u clr,Bit8s nlines,Bit
 		case M_VGA:		
 			VGA_CopyRow(cul,clr,start,start+nlines,base);break;
 		case M_LIN4:
-//			if ((machine==MCH_VGA) && (svgaCard==SVGA_TsengET4K) &&
-//					(CurMode->swidth<=800)) {
-//				// the ET4000 BIOS supports text output in 800x600 SVGA
-//				EGA16_CopyRow(cul,clr,start,start+nlines,base);break;
-//			}
+			if ((machine==MCH_VGA) && (svgaCard==SVGA_TsengET4K) &&
+					(CurMode->swidth<=800)) {
+				// the ET4000 BIOS supports text output in 800x600 SVGA
+				EGA16_CopyRow(cul,clr,start,start+nlines,base);break;
+			}
 			// fall-through
 		default:
 			LOG(LOG_INT10,LOG_ERROR)("Unhandled mode %d for scroll",CurMode->type);
@@ -285,10 +285,10 @@ filling:
 		case M_VGA:		
 			VGA_FillRow(cul,clr,start,base,attr);break;
 		case M_LIN4:
-//			if ((machine==MCH_VGA) && (svgaCard==SVGA_TsengET4K) &&
-//					(CurMode->swidth<=800)) {
-//				EGA16_FillRow(cul,clr,start,base,attr);break;
-//			}
+			if ((machine==MCH_VGA) && (svgaCard==SVGA_TsengET4K) &&
+					(CurMode->swidth<=800)) {
+				EGA16_FillRow(cul,clr,start,base,attr);break;
+			}
 			// fall-through
 		default:
 			LOG(LOG_INT10,LOG_ERROR)("Unhandled mode %d for scroll",CurMode->type);
@@ -301,8 +301,7 @@ void INT10_SetActivePage(Bit8u page) {
 	Bit16u mem_address;
 	if (page>7) LOG(LOG_INT10,LOG_ERROR)("INT10_SetActivePage page %d",page);
 
-//	if (IS_EGAVGA_ARCH && (svgaCard==SVGA_S3Trio)) page &= 7;
-	page &= 7;
+	if (IS_EGAVGA_ARCH && (svgaCard==SVGA_S3Trio)) page &= 7;
 
 	mem_address=page*real_readw(BIOSMEM_SEG,BIOSMEM_PAGE_SIZE);
 	/* Write the new page start */
@@ -330,8 +329,8 @@ void INT10_SetActivePage(Bit8u page) {
 
 void INT10_SetCursorShape(Bit8u first,Bit8u last) {
 	real_writew(BIOSMEM_SEG,BIOSMEM_CURSOR_TYPE,last|(first<<8));
-//	if (machine==MCH_CGA) goto dowrite;
-//	if (IS_TANDY_ARCH) goto dowrite;
+	if (machine==MCH_CGA) goto dowrite;
+	if (IS_TANDY_ARCH) goto dowrite;
 	/* Skip CGA cursor emulation if EGA/VGA system is active */
 	if (!(real_readb(BIOSMEM_SEG,BIOSMEM_VIDEO_CTL) & 0x8)) {
 		/* Check for CGA type 01, invisible */
@@ -559,16 +558,15 @@ void WriteChar(Bit16u col,Bit16u row,Bit8u page,Bit8u chr,Bit8u attr,bool useatt
 void INT10_WriteChar(Bit8u chr,Bit8u attr,Bit8u page,Bit16u count,bool showattr) {
 	if (CurMode->type!=M_TEXT) {
 		showattr=true; //Use attr in graphics mode always
-//		switch (machine) {
-//			case EGAVGA_ARCH_CASE:
-//				page%=CurMode->ptotal;
-//				break;
-//			case MCH_CGA:
-//			case MCH_PCJR:
-//				page=0;
-//				break;
-//		}
-		page%=CurMode->ptotal;
+		switch (machine) {
+			case EGAVGA_ARCH_CASE:
+				page%=CurMode->ptotal;
+				break;
+			case MCH_CGA:
+			case MCH_PCJR:
+				page=0;
+				break;
+		}
 	}
 
 	Bit8u cur_row=CURSOR_POS_ROW(page);

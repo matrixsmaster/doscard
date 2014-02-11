@@ -21,7 +21,6 @@
 #include "xsupport.h"
 #include "xskbd.h"
 #include "soundr.h"
-#include "dosbox.h"
 
 /*
  * The Basic model:
@@ -41,7 +40,6 @@
  * write it now :)
  */
 
-static dosbox::CDosBox* doscard = NULL;
 static SDL_Thread* dosboxthr = NULL;
 static SDL_Window* wnd = NULL;
 static SDL_Renderer* ren = NULL;
@@ -258,12 +256,12 @@ int XS_GetTicks(void* buf, size_t len)
 
 static void XS_ldb_register()
 {
-	doscard->RegisterCallback(DBCB_GetTicks,&XS_GetTicks);
-	doscard->RegisterCallback(DBCB_PushScreen,&XS_UpdateScreenBuffer);
-	doscard->RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
-	doscard->RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
-	doscard->RegisterCallback(DBCB_PushMessage,&XS_Message);
-	doscard->RegisterCallback(DBCB_FileIOReq,&XS_FIO);
+	Dosbox_RegisterCallback(DBCB_GetTicks,&XS_GetTicks);
+	Dosbox_RegisterCallback(DBCB_PushScreen,&XS_UpdateScreenBuffer);
+	Dosbox_RegisterCallback(DBCB_PushSound,&XS_UpdateSoundBuffer);
+	Dosbox_RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
+	Dosbox_RegisterCallback(DBCB_PushMessage,&XS_Message);
+	Dosbox_RegisterCallback(DBCB_FileIOReq,&XS_FIO);
 #if XSHELL_VERBOSE
 	xnfo(0,6,"finished");
 #endif
@@ -369,7 +367,7 @@ static void XS_SDLoop()
 			}
 
 			evt_fifo.insert(evt_fifo.begin(),mye);
-#if XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 			xnfo(0,9,"evt_fifo[] size = %d",evt_fifo.size());
 #endif
 		}
@@ -486,40 +484,27 @@ void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 #endif
 }
 
-int DosRun(void* p)
-{
-	doscard->Execute();
-	return 0;
-}
-
 int main(int argc, char* argv[])
 {
 	int r;
 	xnfo(0,1,"ALIVE!");
-
-	doscard = new CDosBox();
-	if (doscard) xnfo(0,1,"Class instance created");
-	else abort();
 
 	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
 	xnfo(0,1,"SDL2 context created successfully");
 
 	XS_ldb_register();
 
-	dosboxthr = SDL_CreateThread(DosRun,"DosThread",NULL);
+	dosboxthr = SDL_CreateThread(Dosbox_Run,"DosBoxThread",NULL);
 	if (!dosboxthr) xnfo(-1,1,"Unable to create DOS thread!");
-	xnfo(0,1,"DOS Thread running!");
+	xnfo(0,1,"DOSBox Thread running!");
 
 	XS_SDLoop();
 	xnfo(0,1,"SDLoop() Exited");
 
 	SDL_WaitThread(dosboxthr,&r);
-	xnfo(0,1,"DOS Thread Exited (%d)",r);
+	xnfo(0,1,"DOSBox Thread Exited (%d)",r);
 
 	XS_SDLKill();
-
-	delete doscard;
-
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);
 }
