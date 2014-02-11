@@ -335,7 +335,7 @@ extern bool ticksLocked;
 static inline bool Mixer_irq_important(void) {
 	/* In some states correct timing of the irqs is more important then 
 	 * non stuttering audo */
-	return (ticksLocked);// || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
+	return (myldbi->ticksLocked);// || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
 }
 
 /* Mix a certain amount of new samples */
@@ -359,7 +359,8 @@ static void MIXER_MixData(Bitu needed) {
 		convert[i][1]=MIXER_CLIP(sample);
 		readpos=(readpos+1)&MIXER_BUFMASK;
 	}
-	(*libdosbox_callbacks[DBCB_PushSound])(convert,added*4);
+//	(*libdosbox_callbacks[DBCB_PushSound])(convert,added*4);
+	myldbi->Callback(DBCB_PushSound,convert,added*4);
 //	CAPTURE_AddWave( mixer.freq, added, (Bit16s*)convert );
 
 	//Reset the the tick_add for constant speed
@@ -650,7 +651,7 @@ void MIXER_Init(Section* sec) {
 		inf.silent = false;
 	}
 
-	(*libdosbox_callbacks[DBCB_PushSound])(&inf,sizeof(inf));
+	myldbi->Callback(DBCB_PushSound,&inf,sizeof(inf));
 
 	mixer.min_needed=section->Get_int("prebuffer");
 	if (mixer.min_needed>100) mixer.min_needed=100;

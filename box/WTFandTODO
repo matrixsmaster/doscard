@@ -80,3 +80,8 @@ localtime()
 
 10. Check and clean up all the files in INCLUDE directory!
 -> DONE!
+
+11. Do something with VM' internal clocks. One of the hardest bugs is the clocking
+errors. For example, W95 will not load properly in hi-res mode without -O2 flag.
+Which means, the richness of functionality of guest OS lies on host system 
+performance. That's bad!

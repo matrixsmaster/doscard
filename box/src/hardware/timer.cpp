@@ -471,7 +471,7 @@ void TIMER_Init(Section* sec) {
 uint32_t GetTicks()
 {
 	uint32_t r;
-	(*libdosbox_callbacks[DBCB_GetTicks])(&r,sizeof(r));
+	myldbi->Callback(DBCB_GetTicks,&r,sizeof(r));
 	return r;
 }
 

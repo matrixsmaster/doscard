@@ -1329,11 +1329,11 @@ public:
 		ems_type=GetEMSType(section);
 		if (ems_type<=0) return;
 
-		if (machine==MCH_PCJR) {
-			ems_type=0;
-			LOG_MSG("EMS disabled for PCJr machine");
-			return;
-		}
+//		if (machine==MCH_PCJR) {
+//			ems_type=0;
+//			LOG_MSG("EMS disabled for PCJr machine");
+//			return;
+//		}
 		BIOS_ZeroExtendedSize(true);
 
 		if (!ems_baseseg) ems_baseseg=DOS_GetMemory(2);	//We have 32 bytes

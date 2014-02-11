@@ -36,6 +36,7 @@
 #include "cpu.h"
 #include "cross.h"
 #include "control.h"
+#include "logging.h"
 #include "render.h"
 
 namespace dosbox {
@@ -65,7 +66,7 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 void GFX_Events()
 {
 	LDB_UIEvent evt;
-	while ((*libdosbox_callbacks[DBCB_PullUIEvents])(&evt,sizeof(LDB_UIEvent))) {
+	while (myldbi->Callback(DBCB_PullUIEvents,&evt,sizeof(LDB_UIEvent))) {
 		switch (evt.t) {
 		case LDB_UIE_KBD:
 			KEYBOARD_AddKey(evt.key,evt.pressed);
@@ -97,8 +98,27 @@ void GFX_ShowMsg(char const* format,...)
 	va_start(msg,format);
 	vsnprintf(buf,511,format,msg);
 	va_end(msg);
-	(*libdosbox_callbacks[DBCB_PushMessage])(buf,sizeof(buf));
+	myldbi->Callback(DBCB_PushMessage,buf,sizeof(buf));
 }
+
+//TODO: maybe move it to somewhere
+#if ((!C_DEBUG) && VERB_LOGGING)
+void LOG::operator()(char const* format, ...)
+{
+	char buf[512];
+	char sev[10];
+	va_list msg;
+	va_start(msg,format);
+	vsprintf(buf,format,msg);
+	va_end(msg);
+	switch (d_severity) {
+	case LOG_WARN: snprintf(sev,9,"WARN"); break;
+	case LOG_ERROR: snprintf(sev,9,"ERROR"); break;
+	default: snprintf(sev,9,"INFO"); break;
+	}
+	GFX_ShowMsg("%s:%s\n",sev,buf);
+}
+#endif
 
 void Mouse_AutoLock(bool enable)
 {
