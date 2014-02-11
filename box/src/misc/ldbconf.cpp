@@ -1,5 +1,4 @@
 /*
- *  Copyright (C) 2002-2013  The DOSBox Team
  *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,24 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DOSBOX_VERSION_H_
-#define DOSBOX_VERSION_H_
+#include "dosbox.h"
+#include "ldbconf.h"
 
-#define VERSION "0.0.3"
+namespace dosbox {
 
-#ifndef BUILDNUMBER
-#define BUILDNUMBER "unknown"
-#endif
+CLDBConf::CLDBConf(LDB_Settings* p) {
+	// TODO Auto-generated constructor stub
 
-#ifndef BUILDATE
-#define BUILDATE "somewhere in time"
-#endif
+}
 
-#ifndef COMPILERNAME
-#define COMPILERNAME "some compiler"
-#endif
+CLDBConf::~CLDBConf() {
+	// TODO Auto-generated destructor stub
+}
 
-#define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
-#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
-
-#endif
+} /* namespace dosbox */

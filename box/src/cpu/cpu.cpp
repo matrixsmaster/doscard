@@ -28,6 +28,7 @@
 #include "paging.h"
 #include "lazyflags.h"
 #include "support.h"
+#include "ldbconf.h"
 
 namespace dosbox {
 
@@ -54,8 +55,6 @@ Bit32s CPU_CycleMax = 3000;
 Bit32s CPU_OldCycleMax = 3000;
 Bit32s CPU_CyclePercUsed = 100;
 Bit32s CPU_CycleLimit = -1;
-Bit32s CPU_CycleUp = 0;
-Bit32s CPU_CycleDown = 0;
 Bit64s CPU_IODelayRemoved = 0;
 CPU_Decoder * cpudecoder;
 bool CPU_CycleAutoAdjust = false;
@@ -2098,54 +2097,6 @@ void CPU_ENTER(bool use32,Bitu bytes,Bitu level) {
 	reg_esp=(reg_esp&cpu.stack.notmask)|((sp_index)&cpu.stack.mask);
 }
 
-static void CPU_CycleIncrease(bool pressed) {
-	if (!pressed) return;
-	if (CPU_CycleAutoAdjust) {
-		CPU_CyclePercUsed+=5;
-		if (CPU_CyclePercUsed>105) CPU_CyclePercUsed=105;
-		LOG_MSG("CPU speed: max %d percent.",CPU_CyclePercUsed);
-		GFX_SetTitle(CPU_CyclePercUsed,-1,false);
-	} else {
-		Bit32s old_cycles=CPU_CycleMax;
-		if (CPU_CycleUp < 100) {
-			CPU_CycleMax = (Bit32s)(CPU_CycleMax * (1 + (float)CPU_CycleUp / 100.0));
-		} else {
-			CPU_CycleMax = (Bit32s)(CPU_CycleMax + CPU_CycleUp);
-		}
-	    
-		CPU_CycleLeft=0;CPU_Cycles=0;
-		if (CPU_CycleMax==old_cycles) CPU_CycleMax++;
-		if(CPU_CycleMax > 15000 ) 
-			LOG_MSG("CPU speed: fixed %d cycles. If you need more than 20000, try core=dynamic in DOSBox's options.",CPU_CycleMax);
-		else
-			LOG_MSG("CPU speed: fixed %d cycles.",CPU_CycleMax);
-		GFX_SetTitle(CPU_CycleMax,-1,false);
-	}
-}
-
-static void CPU_CycleDecrease(bool pressed) {
-	if (!pressed) return;
-	if (CPU_CycleAutoAdjust) {
-		CPU_CyclePercUsed-=5;
-		if (CPU_CyclePercUsed<=0) CPU_CyclePercUsed=1;
-		if(CPU_CyclePercUsed <=70)
-			LOG_MSG("CPU speed: max %d percent. If the game runs too fast, try a fixed cycles amount in DOSBox's options.",CPU_CyclePercUsed);
-		else
-			LOG_MSG("CPU speed: max %d percent.",CPU_CyclePercUsed);
-		GFX_SetTitle(CPU_CyclePercUsed,-1,false);
-	} else {
-		if (CPU_CycleDown < 100) {
-			CPU_CycleMax = (Bit32s)(CPU_CycleMax / (1 + (float)CPU_CycleDown / 100.0));
-		} else {
-			CPU_CycleMax = (Bit32s)(CPU_CycleMax - CPU_CycleDown);
-		}
-		CPU_CycleLeft=0;CPU_Cycles=0;
-		if (CPU_CycleMax <= 0) CPU_CycleMax=1;
-		LOG_MSG("CPU speed: fixed %d cycles.",CPU_CycleMax);
-		GFX_SetTitle(CPU_CycleMax,-1,false);
-	}
-}
-
 void CPU_Enable_SkipAutoAdjust(void) {
 	if (CPU_CycleAutoAdjust) {
 		CPU_CycleMax /= 2;
@@ -2158,10 +2109,6 @@ void CPU_Enable_SkipAutoAdjust(void) {
 void CPU_Disable_SkipAutoAdjust(void) {
 	CPU_SkipCycleAutoAdjust=false;
 }
-
-
-extern Bit32s ticksDone;
-extern Bit32u ticksScheduled;
 
 void CPU_Reset_AutoAdjust(void) {
 	CPU_IODelayRemoved = 0;
@@ -2222,13 +2169,6 @@ public:
 		CPU_Core_Normal_Init();
 		CPU_Core_Simple_Init();
 		CPU_Core_Full_Init();
-#if (C_DYNAMIC_X86)
-		CPU_Core_Dyn_X86_Init();
-#elif (C_DYNREC)
-		CPU_Core_Dynrec_Init();
-#endif
-//		MAPPER_AddHandler(CPU_CycleDecrease,MK_f11,MMOD1,"cycledown","Dec Cycles");
-//		MAPPER_AddHandler(CPU_CycleIncrease,MK_f12,MMOD1,"cycleup"  ,"Inc Cycles");
 		Change_Config(configuration);	
 		CPU_JMP(false,0,0,0);					//Setup the first cpu core
 	}
@@ -2315,8 +2255,6 @@ public:
 			CPU_CycleAutoAdjust=false;
 		}
 
-		CPU_CycleUp=section->Get_int("cycleup");
-		CPU_CycleDown=section->Get_int("cycledown");
 		std::string core(section->Get_string("core"));
 		cpudecoder=&CPU_Core_Normal_Run;
 		if (core == "normal") {
@@ -2327,30 +2265,7 @@ public:
 			cpudecoder=&CPU_Core_Full_Run;
 		} else if (core == "auto") {
 			cpudecoder=&CPU_Core_Normal_Run;
-#if (C_DYNAMIC_X86)
-			CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CORE;
 		}
-		else if (core == "dynamic") {
-			cpudecoder=&CPU_Core_Dyn_X86_Run;
-			CPU_Core_Dyn_X86_SetFPUMode(true);
-		} else if (core == "dynamic_nodhfpu") {
-			cpudecoder=&CPU_Core_Dyn_X86_Run;
-			CPU_Core_Dyn_X86_SetFPUMode(false);
-#elif (C_DYNREC)
-			CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CORE;
-		}
-		else if (core == "dynamic") {
-			cpudecoder=&CPU_Core_Dynrec_Run;
-#else
-
-#endif
-		}
-
-#if (C_DYNAMIC_X86)
-		CPU_Core_Dyn_X86_Cache_Init((core == "dynamic") || (core == "dynamic_nodhfpu"));
-#elif (C_DYNREC)
-		CPU_Core_Dynrec_Cache_Init( core == "dynamic" );
-#endif
 
 		CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
 		std::string cputype(section->Get_string("cputype"));
@@ -2358,38 +2273,10 @@ public:
 			CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
 		} else if (cputype == "386") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
-#if 0
-		} else if (cputype == "386_prefetch") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
-			if (core == "normal") {
-				cpudecoder=&CPU_Core_Prefetch_Run;
-				CPU_PrefetchQueueSize = 16;
-			} else if (core == "auto") {
-				cpudecoder=&CPU_Core_Prefetch_Run;
-				CPU_PrefetchQueueSize = 16;
-				CPU_AutoDetermineMode&=(~CPU_AUTODETERMINE_CORE);
-			} else {
-				E_Exit("prefetch queue emulation requires the normal core setting.");
-			}
-#endif
 		} else if (cputype == "386_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_386SLOW;
 		} else if (cputype == "486_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
-#if 0
-		} else if (cputype == "486_prefetch") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
-			if (core == "normal") {
-				cpudecoder=&CPU_Core_Prefetch_Run;
-				CPU_PrefetchQueueSize = 32;
-			} else if (core == "auto") {
-				cpudecoder=&CPU_Core_Prefetch_Run;
-				CPU_PrefetchQueueSize = 32;
-				CPU_AutoDetermineMode&=(~CPU_AUTODETERMINE_CORE);
-			} else {
-				E_Exit("prefetch queue emulation requires the normal core setting.");
-			}
-#endif
 		} else if (cputype == "pentium_slow") {
 			CPU_ArchitectureType = CPU_ARCHTYPE_PENTIUMSLOW;
 		}
@@ -2398,10 +2285,7 @@ public:
 		else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
 		else CPU_extflags_toggle=0;
 
-
-		if(CPU_CycleMax <= 0) CPU_CycleMax = 3000;
-		if(CPU_CycleUp <= 0)   CPU_CycleUp = 500;
-		if(CPU_CycleDown <= 0) CPU_CycleDown = 20;
+		if (CPU_CycleMax <= 0) CPU_CycleMax = 3000;
 		if (CPU_CycleAutoAdjust) GFX_SetTitle(CPU_CyclePercUsed,-1,false);
 		else GFX_SetTitle(CPU_CycleMax,-1,false);
 		return true;
@@ -2412,11 +2296,6 @@ public:
 static CPU * test;
 
 void CPU_ShutDown(Section* sec) {
-#if (C_DYNAMIC_X86)
-	CPU_Core_Dyn_X86_Cache_Close();
-#elif (C_DYNREC)
-	CPU_Core_Dynrec_Cache_Close();
-#endif
 	delete test;
 }
 

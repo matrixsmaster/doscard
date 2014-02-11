@@ -33,7 +33,7 @@ _________________________________TODO________________________________________
 	is to leave the code on place, but undef all C_DEBUG defines.
 	Hardware: I don't need GUS, EGA, CGA and many other things. The only things
 	I need is SVGA (s3) and SoundBlaster (which uses OPL, btw).
-->IN PROGRESS
+->ALMOST DONE!
 
 2. Decide what to do with SDL.
 	Pros: SDL has well-maintained code and it's really simple to write your
@@ -85,3 +85,8 @@ localtime()
 errors. For example, W95 will not load properly in hi-res mode without -O2 flag.
 Which means, the richness of functionality of guest OS lies on host system 
 performance. That's bad!
+
+12. Types unification. Use <inttypes> instead of all of this Bit<xx>[s/u] forms.
+
+13. Deal with manual exceptions and its catches. This might unveil big problems while
+porting on possible target arch.

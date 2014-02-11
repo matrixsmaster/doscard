@@ -24,6 +24,7 @@
 #include "version.h"
 #include "logging.h"
 #include "ldb.h"
+#include "ldbconf.h"
 
 namespace dosbox {
 
@@ -49,6 +50,7 @@ private:
 	LDB_CallbackFunc ldb_callbacks[LDB_CALLBACKSQ];
 	CommandLine* com_line;
 	bool callbacksReady;
+	CLDBConf* config;
 public:
 	CDosBox();
 	~CDosBox();
@@ -57,6 +59,8 @@ public:
 	Bitu NormalLoop();
 	void RunMachine();
 	void Execute();
+	void SetConfig(LDB_Settings* c);
+	LDB_Settings* GetConfig();
 //	void E_Exit(const char * message,...);
 	//
 	Config* control;

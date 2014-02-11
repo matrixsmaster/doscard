@@ -1,5 +1,4 @@
 /*
- *  Copyright (C) 2002-2013  The DOSBox Team
  *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,24 +16,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DOSBOX_VERSION_H_
-#define DOSBOX_VERSION_H_
+#ifndef ABSTR_SUBSYS_H_
+#define ABSTR_SUBSYS_H_
 
-#define VERSION "0.0.3"
+class CDosBox;
 
-#ifndef BUILDNUMBER
-#define BUILDNUMBER "unknown"
-#endif
+class CLSBAbstractSubSystem {
+public:
+	virtual CLSBAbstractSubSystem() = 0;
+	virtual ~CLSBAbstractSubSystem() = 0;
+private:
+	CDosBox* parent;
+};
 
-#ifndef BUILDATE
-#define BUILDATE "somewhere in time"
-#endif
-
-#ifndef COMPILERNAME
-#define COMPILERNAME "some compiler"
-#endif
-
-#define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
-#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
-
-#endif
+#endif /* ABSTR_SUBSYS_H_ */
