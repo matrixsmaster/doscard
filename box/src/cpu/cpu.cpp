@@ -80,71 +80,282 @@ extern void GFX_SetTitle(Bit32s cycles ,Bits frameskip,bool paused);
 }
 #endif
 
+class Descriptor {
+public:
+	Descriptor(CPUSubSystem* p) {
+		parent = p;
+		saved.fill[0]=saved.fill[1]=0;
+	}
+
+	void Load(PhysPt address);
+	void Save(PhysPt address);
+
+	inline PhysPt GetBase (void) {
+		return (saved.seg.base_24_31<<24) | (saved.seg.base_16_23<<16) | saved.seg.base_0_15;
+	}
+	Bitu GetLimit (void) {
+		Bitu limit = (saved.seg.limit_16_19<<16) | saved.seg.limit_0_15;
+		if (saved.seg.g)	return (limit<<12) | 0xFFF;
+		return limit;
+	}
+	inline Bitu GetOffset(void) {
+		return (saved.gate.offset_16_31 << 16) | saved.gate.offset_0_15;
+	}
+	inline Bitu GetSelector(void) {
+		return saved.gate.selector;
+	}
+	inline Bitu Type(void) {
+		return saved.seg.type;
+	}
+	inline Bitu Conforming(void) {
+		return saved.seg.type & 8;
+	}
+	inline Bitu DPL(void) {
+		return saved.seg.dpl;
+	}
+	inline Bitu Big(void) {
+		return saved.seg.big;
+	}
+	union {
+		S_Descriptor seg;
+		G_Descriptor gate;
+		Bit32u fill[2];
+	} saved;
+protected:
+	CPUSubSystem* parent;
+};
+
+class DescriptorTable {
+public:
+	DescriptorTable(CPUSubSystem* p) {
+		parent = p;
+	}
+
+	PhysPt	GetBase			(void)			{ return table_base;	}
+	Bitu	GetLimit		(void)			{ return table_limit;	}
+	void	SetBase			(PhysPt _base)	{ table_base = _base;	}
+	void	SetLimit		(Bitu _limit)	{ table_limit= _limit;	}
+
+	bool GetDescriptor	(Bitu selector, Descriptor& desc) {
+		selector&=~7;
+		if (selector>=table_limit) return false;
+		desc.Load(table_base+(selector));
+		return true;
+	}
+protected:
+	PhysPt table_base;
+	Bitu table_limit;
+	CPUSubSystem* parent;
+};
+
+class GDTDescriptorTable : public DescriptorTable {
+public:
+	GDTDescriptorTable(CPUSubSystem* p) : DescriptorTable(p) { }
+
+	bool GetDescriptor(Bitu selector, Descriptor* desc) {
+		Bitu address=selector & ~7;
+		if (selector & 4) {
+			if (address>=ldt_limit) return false;
+			desc->Load(ldt_base+address);
+			return true;
+		} else {
+			if (address>=table_limit) return false;
+			desc->Load(table_base+address);
+			return true;
+		}
+	}
+	bool SetDescriptor(Bitu selector, Descriptor* desc) {
+		Bitu address=selector & ~7;
+		if (selector & 4) {
+			if (address>=ldt_limit) return false;
+			desc->Save(ldt_base+address);
+			return true;
+		} else {
+			if (address>=table_limit) return false;
+			desc->Save(table_base+address);
+			return true;
+		}
+	}
+	Bitu SLDT(void)	{
+		return ldt_value;
+	}
+	bool LLDT(Bitu value)	{
+		if ((value&0xfffc)==0) {
+			ldt_value=0;
+			ldt_base=0;
+			ldt_limit=0;
+			return true;
+		}
+		Descriptor desc(parent);
+		if (!GetDescriptor(value,&desc))
+			return (!(parent->CPU_PrepareException(EXCEPTION_GP,value)));
+
+		if (desc.Type()!=DESC_LDT)
+			return (!(parent->CPU_PrepareException(EXCEPTION_GP,value)));
+
+		if (!desc.saved.seg.p)
+			return (!(parent->CPU_PrepareException(EXCEPTION_NP,value)));
+
+		ldt_base=desc.GetBase();
+		ldt_limit=desc.GetLimit();
+		ldt_value=value;
+		return true;
+	}
+private:
+	PhysPt ldt_base;
+	Bitu ldt_limit;
+	Bitu ldt_value;
+};
+
+class TSS_Descriptor : public Descriptor {
+public:
+	TSS_Descriptor(CPUSubSystem* p) : Descriptor(p) { }
+
+	Bitu IsBusy(void) {
+		return saved.seg.type & 2;
+	}
+	Bitu Is386(void) {
+		return saved.seg.type & 8;
+	}
+	void SetBusy(bool busy) {
+		if (busy) saved.seg.type|=2;
+		else saved.seg.type&=~2;
+	}
+};
+
+class TaskStateSegment {
+public:
+	TaskStateSegment(CPUSubSystem* p) {
+		parent = p;
+		valid = false;
+		desc = new TSS_Descriptor(p);
+//		limit = 0;
+	}
+	~TaskStateSegment() { delete desc; }
+
+	inline bool IsValid(void) {
+		return valid;
+	}
+	Bitu Get_back(void) {
+		parent->cpu.mpl=0;
+		Bit16u backlink=mem_readw(base);
+		parent->cpu.mpl=3;
+		return backlink;
+	}
+	inline void SaveSelector(void) {
+		parent->cpu.gdt->SetDescriptor(selector,desc);
+	}
+	void Get_SSx_ESPx(Bitu level,Bitu & _ss,Bitu & _esp) {
+		parent->cpu.mpl=0;
+		if (is386) {
+			PhysPt where=base+offsetof(TSS_32,esp0)+level*8;
+			_esp=mem_readd(where);
+			_ss=mem_readw(where+4);
+		} else {
+			PhysPt where=base+offsetof(TSS_16,sp0)+level*4;
+			_esp=mem_readw(where);
+			_ss=mem_readw(where+2);
+		}
+		parent->cpu.mpl=3;
+	}
+	bool SetSelector(Bitu new_sel) {
+		valid=false;
+		if ((new_sel & 0xfffc)==0) {
+			selector=0;
+			base=0;
+			limit=0;
+			is386=1;
+			return true;
+		}
+		if (new_sel&4) return false;
+		if (!parent->cpu.gdt->GetDescriptor(new_sel,desc)) return false;
+		switch (desc->Type()) {
+			case DESC_286_TSS_A:		case DESC_286_TSS_B:
+			case DESC_386_TSS_A:		case DESC_386_TSS_B:
+				break;
+			default:
+				return false;
+		}
+		if (!desc->saved.seg.p) return false;
+		selector=new_sel;
+		valid=true;
+		base=desc->GetBase();
+		limit=desc->GetLimit();
+		is386=desc->Is386();
+		return true;
+	}
+	TSS_Descriptor* desc;
+	Bitu selector;
+	PhysPt base;
+	Bitu limit;
+	Bitu is386;
+	bool valid;
+private:
+	CPUSubSystem* parent;
+};
 
 void Descriptor::Load(PhysPt address) {
-	cpu.mpl=0;
+	parent->cpu.mpl=0;
 	Bit32u* data = (Bit32u*)&saved;
 	*data	  = mem_readd(address);
 	*(data+1) = mem_readd(address+4);
-	cpu.mpl=3;
+	parent->cpu.mpl=3;
 }
 void Descriptor::Save(PhysPt address) {
-	cpu.mpl=0;
+	parent->cpu.mpl=0;
 	Bit32u* data = (Bit32u*)&saved;
 	mem_writed(address,*data);
 	mem_writed(address+4,*(data+1));
-	cpu.mpl=03;
+	parent->cpu.mpl=03;
 }
 
-
-void CPU_Push16(Bitu value) {
+void CPUSubSystem::CPU_Push16(Bitu value) {
 	Bit32u new_esp=(reg_esp&cpu.stack.notmask)|((reg_esp-2)&cpu.stack.mask);
 	mem_writew(SegPhys(ss) + (new_esp & cpu.stack.mask) ,value);
 	reg_esp=new_esp;
 }
 
-void CPU_Push32(Bitu value) {
+void CPUSubSystem::CPU_Push32(Bitu value) {
 	Bit32u new_esp=(reg_esp&cpu.stack.notmask)|((reg_esp-4)&cpu.stack.mask);
 	mem_writed(SegPhys(ss) + (new_esp & cpu.stack.mask) ,value);
 	reg_esp=new_esp;
 }
 
-Bitu CPU_Pop16(void) {
+Bitu CPUSubSystem::CPU_Pop16(void) {
 	Bitu val=mem_readw(SegPhys(ss) + (reg_esp & cpu.stack.mask));
 	reg_esp=(reg_esp&cpu.stack.notmask)|((reg_esp+2)&cpu.stack.mask);
 	return val;
 }
 
-Bitu CPU_Pop32(void) {
+Bitu CPUSubSystem::CPU_Pop32(void) {
 	Bitu val=mem_readd(SegPhys(ss) + (reg_esp & cpu.stack.mask));
 	reg_esp=(reg_esp&cpu.stack.notmask)|((reg_esp+4)&cpu.stack.mask);
 	return val;
 }
 
-PhysPt SelBase(Bitu sel) {
+PhysPt CPUSubSystem::SelBase(Bitu sel) {
 	if (cpu.cr0 & CR0_PROTECTION) {
-		Descriptor desc;
-		cpu.gdt.GetDescriptor(sel,desc);
+		Descriptor desc(this);
+		cpu.gdt->GetDescriptor(sel,&desc);
 		return desc.GetBase();
 	} else {
 		return sel<<4;
 	}
 }
 
-
-void CPU_SetFlags(Bitu word,Bitu mask) {
+void CPUSubSystem::CPU_SetFlags(Bitu word,Bitu mask) {
 	mask|=CPU_extflags_toggle;	// ID-flag and AC-flag can be toggled on CPUID-supporting CPUs
 	reg_flags=(reg_flags & ~mask)|(word & mask)|2;
 	cpu.direction=1-((reg_flags & FLAG_DF) >> 9);
 }
 
-bool CPU_PrepareException(Bitu which,Bitu error) {
+bool CPUSubSystem::CPU_PrepareException(Bitu which,Bitu error) {
 	cpu.exception.which=which;
 	cpu.exception.error=error;
 	return true;
 }
 
-bool CPU_CLI(void) {
+bool CPUSubSystem::CPU_CLI(void) {
 	if (cpu.pmode && ((!GETFLAG(VM) && (GETFLAG_IOPL<cpu.cpl)) || (GETFLAG(VM) && (GETFLAG_IOPL<3)))) {
 		return CPU_PrepareException(EXCEPTION_GP,0);
 	} else {
@@ -153,7 +364,7 @@ bool CPU_CLI(void) {
 	}
 }
 
-bool CPU_STI(void) {
+bool CPUSubSystem::CPU_STI(void) {
 	if (cpu.pmode && ((!GETFLAG(VM) && (GETFLAG_IOPL<cpu.cpl)) || (GETFLAG(VM) && (GETFLAG_IOPL<3)))) {
 		return CPU_PrepareException(EXCEPTION_GP,0);
 	} else {
@@ -162,7 +373,7 @@ bool CPU_STI(void) {
 	}
 }
 
-bool CPU_POPF(Bitu use32) {
+bool CPUSubSystem::CPU_POPF(Bitu use32) {
 	if (cpu.pmode && GETFLAG(VM) && (GETFLAG(IOPL)!=FLAG_IOPL)) {
 		/* Not enough privileges to execute POPF */
 		return CPU_PrepareException(EXCEPTION_GP,0);
@@ -178,7 +389,7 @@ bool CPU_POPF(Bitu use32) {
 	return false;
 }
 
-bool CPU_PUSHF(Bitu use32) {
+bool CPUSubSystem::CPU_PUSHF(Bitu use32) {
 	if (cpu.pmode && GETFLAG(VM) && (GETFLAG(IOPL)!=FLAG_IOPL)) {
 		/* Not enough privileges to execute PUSHF */
 		return CPU_PrepareException(EXCEPTION_GP,0);
@@ -190,10 +401,10 @@ bool CPU_PUSHF(Bitu use32) {
 	return false;
 }
 
-void CPU_CheckSegments(void) {
+void CPUSubSystem::CPU_CheckSegments(void) {
 	bool needs_invalidation=false;
-	Descriptor desc;
-	if (!cpu.gdt.GetDescriptor(SegValue(es),desc)) needs_invalidation=true;
+	Descriptor desc(this);
+	if (!cpu.gdt->GetDescriptor(SegValue(es),&desc)) needs_invalidation=true;
 	else switch (desc.Type()) {
 		case DESC_DATA_EU_RO_NA:	case DESC_DATA_EU_RO_A:	case DESC_DATA_EU_RW_NA:	case DESC_DATA_EU_RW_A:
 		case DESC_DATA_ED_RO_NA:	case DESC_DATA_ED_RO_A:	case DESC_DATA_ED_RW_NA:	case DESC_DATA_ED_RW_A:
@@ -203,7 +414,7 @@ void CPU_CheckSegments(void) {
 	if (needs_invalidation) CPU_SetSegGeneral(es,0);
 
 	needs_invalidation=false;
-	if (!cpu.gdt.GetDescriptor(SegValue(ds),desc)) needs_invalidation=true;
+	if (!cpu.gdt->GetDescriptor(SegValue(ds),&desc)) needs_invalidation=true;
 	else switch (desc.Type()) {
 		case DESC_DATA_EU_RO_NA:	case DESC_DATA_EU_RO_A:	case DESC_DATA_EU_RW_NA:	case DESC_DATA_EU_RW_A:
 		case DESC_DATA_ED_RO_NA:	case DESC_DATA_ED_RO_A:	case DESC_DATA_ED_RW_NA:	case DESC_DATA_ED_RW_A:
@@ -213,7 +424,7 @@ void CPU_CheckSegments(void) {
 	if (needs_invalidation) CPU_SetSegGeneral(ds,0);
 
 	needs_invalidation=false;
-	if (!cpu.gdt.GetDescriptor(SegValue(fs),desc)) needs_invalidation=true;
+	if (!cpu.gdt->GetDescriptor(SegValue(fs),&desc)) needs_invalidation=true;
 	else switch (desc.Type()) {
 		case DESC_DATA_EU_RO_NA:	case DESC_DATA_EU_RO_A:	case DESC_DATA_EU_RW_NA:	case DESC_DATA_EU_RW_A:
 		case DESC_DATA_ED_RO_NA:	case DESC_DATA_ED_RO_A:	case DESC_DATA_ED_RW_NA:	case DESC_DATA_ED_RW_A:
@@ -223,7 +434,7 @@ void CPU_CheckSegments(void) {
 	if (needs_invalidation) CPU_SetSegGeneral(fs,0);
 
 	needs_invalidation=false;
-	if (!cpu.gdt.GetDescriptor(SegValue(gs),desc)) needs_invalidation=true;
+	if (!cpu.gdt->GetDescriptor(SegValue(gs),&desc)) needs_invalidation=true;
 	else switch (desc.Type()) {
 		case DESC_DATA_EU_RO_NA:	case DESC_DATA_EU_RO_A:	case DESC_DATA_EU_RW_NA:	case DESC_DATA_EU_RW_A:
 		case DESC_DATA_ED_RO_NA:	case DESC_DATA_ED_RO_A:	case DESC_DATA_ED_RW_NA:	case DESC_DATA_ED_RW_A:
@@ -233,81 +444,16 @@ void CPU_CheckSegments(void) {
 	if (needs_invalidation) CPU_SetSegGeneral(gs,0);
 }
 
-
-class TaskStateSegment {
-public:
-	TaskStateSegment() {
-		valid=false;
-	}
-	bool IsValid(void) {
-		return valid;
-	}
-	Bitu Get_back(void) {
-		cpu.mpl=0;
-		Bit16u backlink=mem_readw(base);
-		cpu.mpl=3;
-		return backlink;
-	}
-	void SaveSelector(void) {
-		cpu.gdt.SetDescriptor(selector,desc);
-	}
-	void Get_SSx_ESPx(Bitu level,Bitu & _ss,Bitu & _esp) {
-		cpu.mpl=0;
-		if (is386) {
-			PhysPt where=base+offsetof(TSS_32,esp0)+level*8;
-			_esp=mem_readd(where);
-			_ss=mem_readw(where+4);
-		} else {
-			PhysPt where=base+offsetof(TSS_16,sp0)+level*4;
-			_esp=mem_readw(where);
-			_ss=mem_readw(where+2);
-		}
-		cpu.mpl=3;
-	}
-	bool SetSelector(Bitu new_sel) {
-		valid=false;
-		if ((new_sel & 0xfffc)==0) {
-			selector=0;
-			base=0;
-			limit=0;
-			is386=1;
-			return true;
-		}
-		if (new_sel&4) return false;
-		if (!cpu.gdt.GetDescriptor(new_sel,desc)) return false;
-		switch (desc.Type()) {
-			case DESC_286_TSS_A:		case DESC_286_TSS_B:
-			case DESC_386_TSS_A:		case DESC_386_TSS_B:
-				break;
-			default:
-				return false;
-		}
-		if (!desc.saved.seg.p) return false;
-		selector=new_sel;
-		valid=true;
-		base=desc.GetBase();
-		limit=desc.GetLimit();
-		is386=desc.Is386();
-		return true;
-	}
-	TSS_Descriptor desc;
-	Bitu selector;
-	PhysPt base;
-	Bitu limit;
-	Bitu is386;
-	bool valid;
-};
-
 bool CPUSubSystem::CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu old_eip) {
 	FillFlags();
-	TaskStateSegment new_tss;
+	TaskStateSegment new_tss(this);
 	if (!new_tss.SetSelector(new_tss_selector)) 
 		E_Exit("Illegal TSS for switch, selector=%x, switchtype=%x",new_tss_selector,tstype);
 	if (tstype==TSwitch_IRET) {
-		if (!new_tss.desc.IsBusy())
+		if (!new_tss.desc->IsBusy())
 			E_Exit("TSS not busy for IRET");
 	} else {
-		if (new_tss.desc.IsBusy())
+		if (new_tss.desc->IsBusy())
 			E_Exit("TSS busy for JMP/CALL/INT");
 	}
 	Bitu new_cr3=0;
@@ -349,32 +495,32 @@ bool CPUSubSystem::CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu 
 
 	/* Check if we need to clear busy bit of old TASK */
 	if (tstype==TSwitch_JMP || tstype==TSwitch_IRET) {
-		cpu_tss.desc.SetBusy(false);
-		cpu_tss.SaveSelector();
+		cpu_tss->desc->SetBusy(false);
+		cpu_tss->SaveSelector();
 	}
 	Bit32u old_flags = reg_flags;
 	if (tstype==TSwitch_IRET) old_flags &= (~FLAG_NT);
 
 	/* Save current context in current TSS */
-	if (cpu_tss.is386) {
-		mem_writed(cpu_tss.base+offsetof(TSS_32,eflags),old_flags);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,eip),old_eip);
+	if (cpu_tss->is386) {
+		mem_writed(cpu_tss->base+offsetof(TSS_32,eflags),old_flags);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,eip),old_eip);
 
-		mem_writed(cpu_tss.base+offsetof(TSS_32,eax),reg_eax);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,ecx),reg_ecx);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,edx),reg_edx);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,ebx),reg_ebx);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,esp),reg_esp);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,ebp),reg_ebp);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,esi),reg_esi);
-		mem_writed(cpu_tss.base+offsetof(TSS_32,edi),reg_edi);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,eax),reg_eax);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,ecx),reg_ecx);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,edx),reg_edx);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,ebx),reg_ebx);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,esp),reg_esp);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,ebp),reg_ebp);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,esi),reg_esi);
+		mem_writed(cpu_tss->base+offsetof(TSS_32,edi),reg_edi);
 
-		mem_writed(cpu_tss.base+offsetof(TSS_32,es),SegValue(es));
-		mem_writed(cpu_tss.base+offsetof(TSS_32,cs),SegValue(cs));
-		mem_writed(cpu_tss.base+offsetof(TSS_32,ss),SegValue(ss));
-		mem_writed(cpu_tss.base+offsetof(TSS_32,ds),SegValue(ds));
-		mem_writed(cpu_tss.base+offsetof(TSS_32,fs),SegValue(fs));
-		mem_writed(cpu_tss.base+offsetof(TSS_32,gs),SegValue(gs));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,es),SegValue(es));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,cs),SegValue(cs));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,ss),SegValue(ss));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,ds),SegValue(ds));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,fs),SegValue(fs));
+		mem_writed(cpu_tss->base+offsetof(TSS_32,gs),SegValue(gs));
 	} else {
 		E_Exit("286 task switch");
 	}
@@ -382,21 +528,21 @@ bool CPUSubSystem::CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu 
 	/* Setup a back link to the old TSS in new TSS */
 	if (tstype==TSwitch_CALL_INT) {
 		if (new_tss.is386) {
-			mem_writed(new_tss.base+offsetof(TSS_32,back),cpu_tss.selector);
+			mem_writed(new_tss.base+offsetof(TSS_32,back),cpu_tss->selector);
 		} else {
-			mem_writew(new_tss.base+offsetof(TSS_16,back),cpu_tss.selector);
+			mem_writew(new_tss.base+offsetof(TSS_16,back),cpu_tss->selector);
 		}
 		/* And make the new task's eflag have the nested task bit */
 		new_eflags|=FLAG_NT;
 	}
 	/* Set the busy bit in the new task */
 	if (tstype==TSwitch_JMP || tstype==TSwitch_CALL_INT) {
-		new_tss.desc.SetBusy(true);
+		new_tss.desc->SetBusy(true);
 		new_tss.SaveSelector();
 	}
 
 //	cpu.cr0|=CR0_TASKSWITCHED;
-	if (new_tss_selector == cpu_tss.selector) {
+	if (new_tss_selector == cpu_tss->selector) {
 		reg_eip = old_eip;
 		new_cs = SegValue(cs);
 		new_ss = SegValue(ss);
@@ -436,9 +582,9 @@ bool CPUSubSystem::CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu 
 		/* Protected mode task */
 		if (new_ldt!=0) CPU_LLDT(new_ldt);
 		/* Load the new CS*/
-		Descriptor cs_desc;
+		Descriptor cs_desc(this);
 		cpu.cpl=new_cs & 3;
-		if (!cpu.gdt.GetDescriptor(new_cs,cs_desc))
+		if (!cpu.gdt->GetDescriptor(new_cs,&cs_desc))
 			E_Exit("Task switch with CS beyond limits");
 		if (!cs_desc.saved.seg.p)
 			E_Exit("Task switch with non present code-segment");
@@ -464,11 +610,11 @@ doconforming:
 	CPU_SetSegGeneral(ds,new_ds);
 	CPU_SetSegGeneral(fs,new_fs);
 	CPU_SetSegGeneral(gs,new_gs);
-	if (!cpu_tss.SetSelector(new_tss_selector)) {
+	if (!cpu_tss->SetSelector(new_tss_selector)) {
 		LOG(LOG_CPU,LOG_NORMAL)("TaskSwitch: set tss selector %X failed",new_tss_selector);
 	}
-//	cpu_tss.desc.SetBusy(true);
-//	cpu_tss.SaveSelector();
+//	cpu_tss->desc.SetBusy(true);
+//	cpu_tss->SaveSelector();
 //	LOG_MSG("Task CPL %X CS:%X IP:%X SS:%X SP:%X eflags %x",cpu.cpl,SegValue(cs),reg_eip,SegValue(ss),reg_esp,reg_flags);
 	return true;
 }
@@ -476,11 +622,11 @@ doconforming:
 bool CPUSubSystem::CPU_IO_Exception(Bitu port,Bitu size) {
 	if (cpu.pmode && ((GETFLAG_IOPL<cpu.cpl) || GETFLAG(VM))) {
 		cpu.mpl=0;
-		if (!cpu_tss.is386) goto doexception;
-		PhysPt bwhere=cpu_tss.base+0x66;
+		if (!cpu_tss->is386) goto doexception;
+		PhysPt bwhere=cpu_tss->base+0x66;
 		Bitu ofs=mem_readw(bwhere);
-		if (ofs>cpu_tss.limit) goto doexception;
-		bwhere=cpu_tss.base+ofs+(port/8);
+		if (ofs>cpu_tss->limit) goto doexception;
+		bwhere=cpu_tss->base+ofs+(port/8);
 		Bitu map=mem_readw(bwhere);
 		Bitu mask=(0xffff>>(16-size)) << (port&7);
 		if (map & mask) goto doexception;
@@ -526,7 +672,7 @@ void CPUSubSystem::CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
 		SETFLAGBIT(IF,false);
 		SETFLAGBIT(TF,false);
 		/* Get the new CS:IP from vector table */
-		PhysPt base=cpu.idt.GetBase();
+		PhysPt base=cpu.idt->GetBase();
 		reg_eip=mem_readw(base+(num << 2));
 		Segs.val[cs]=mem_readw(base+(num << 2)+2);
 		Segs.phys[cs]=Segs.val[cs]<<4;
@@ -542,8 +688,8 @@ void CPUSubSystem::CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
 			}
 		} 
 
-		Descriptor gate;
-		if (!cpu.idt.GetDescriptor(num<<3,gate)) {
+		Descriptor gate(this);
+		if (!cpu.idt->GetDescriptor(num<<3,gate)) {
 			// zone66
 			CPU_Exception(EXCEPTION_GP,num*8+2+(type&CPU_INT_SOFTWARE)?0:1);
 			return;
@@ -564,13 +710,13 @@ void CPUSubSystem::CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
 					"INT:Gate segment not present",
 					EXCEPTION_NP,num*8+2+(type&CPU_INT_SOFTWARE)?0:1)
 
-				Descriptor cs_desc;
+				Descriptor cs_desc(this);
 				Bitu gate_sel=gate.GetSelector();
 				Bitu gate_off=gate.GetOffset();
 				CPU_CHECK_COND((gate_sel & 0xfffc)==0,
 					"INT:Gate with CS zero selector",
 					EXCEPTION_GP,(type&CPU_INT_SOFTWARE)?0:1)
-				CPU_CHECK_COND(!cpu.gdt.GetDescriptor(gate_sel,cs_desc),
+				CPU_CHECK_COND(!cpu.gdt->GetDescriptor(gate_sel,&cs_desc),
 					"INT:Gate with CS beyond limit",
 					EXCEPTION_GP,(gate_sel & 0xfffc)+(type&CPU_INT_SOFTWARE)?0:1)
 
@@ -594,12 +740,12 @@ void CPUSubSystem::CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
 						Bitu o_ss,o_esp;
 						o_ss=SegValue(ss);
 						o_esp=reg_esp;
-						cpu_tss.Get_SSx_ESPx(cs_dpl,n_ss,n_esp);
+						cpu_tss->Get_SSx_ESPx(cs_dpl,n_ss,n_esp);
 						CPU_CHECK_COND((n_ss & 0xfffc)==0,
 							"INT:Gate with SS zero selector",
 							EXCEPTION_TS,(type&CPU_INT_SOFTWARE)?0:1)
-						Descriptor n_ss_desc;
-						CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_ss,n_ss_desc),
+						Descriptor n_ss_desc(this);
+						CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_ss,&n_ss_desc),
 							"INT:Gate with SS beyond limit",
 							EXCEPTION_TS,(n_ss & 0xfffc)+(type&CPU_INT_SOFTWARE)?0:1)
 						CPU_CHECK_COND(((n_ss & 3)!=cs_dpl) || (n_ss_desc.DPL()!=cs_dpl),
@@ -702,7 +848,7 @@ do_interrupt:
 			CPU_SwitchTask(gate.GetSelector(),TSwitch_CALL_INT,oldeip);
 			if (type & CPU_INT_HAS_ERROR) {
 				//TODO Be sure about this, seems somewhat unclear
-				if (cpu_tss.is386) CPU_Push32(cpu.exception.error);
+				if (cpu_tss->is386) CPU_Push32(cpu.exception.error);
 				else CPU_Push16(cpu.exception.error);
 			}
 			return;
@@ -769,13 +915,13 @@ void CPUSubSystem::CPU_IRET(bool use32,Bitu oldeip) {
 		/* Check if this is task IRET */	
 		if (GETFLAG(NT)) {
 			if (GETFLAG(VM)) E_Exit("Pmode IRET with VM bit set");
-			CPU_CHECK_COND(!cpu_tss.IsValid(),
+			CPU_CHECK_COND(!cpu_tss->IsValid(),
 				"TASK Iret without valid TSS",
-				EXCEPTION_TS,cpu_tss.selector & 0xfffc)
-			if (!cpu_tss.desc.IsBusy()) {
+				EXCEPTION_TS,cpu_tss->selector & 0xfffc)
+			if (!cpu_tss->desc->IsBusy()) {
 				LOG(LOG_CPU,LOG_ERROR)("TASK Iret:TSS not busy");
 			}
-			Bitu back_link=cpu_tss.Get_back();
+			Bitu back_link=cpu_tss->Get_back();
 			CPU_SwitchTask(back_link,TSwitch_IRET,oldeip);
 			return;
 		}
@@ -832,8 +978,8 @@ void CPUSubSystem::CPU_IRET(bool use32,Bitu oldeip) {
 			"IRET:CS selector zero",
 			EXCEPTION_GP,0)
 		Bitu n_cs_rpl=n_cs_sel & 3;
-		Descriptor n_cs_desc;
-		CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_cs_sel,n_cs_desc),
+		Descriptor n_cs_desc(this);
+		CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_cs_sel,&n_cs_desc),
 			"IRET:CS selector beyond limits",
 			EXCEPTION_GP,n_cs_sel & 0xfffc)
 		CPU_CHECK_COND(n_cs_rpl<cpu.cpl,
@@ -893,8 +1039,8 @@ void CPUSubSystem::CPU_IRET(bool use32,Bitu oldeip) {
 			CPU_CHECK_COND((n_ss & 3)!=n_cs_rpl,
 				"IRET:Outer level:SS rpl!=CS rpl",
 				EXCEPTION_GP,n_ss & 0xfffc)
-			Descriptor n_ss_desc;
-			CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_ss,n_ss_desc),
+			Descriptor n_ss_desc(this);
+			CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_ss,&n_ss_desc),
 				"IRET:Outer level:SS beyond limit",
 				EXCEPTION_GP,n_ss & 0xfffc)
 			CPU_CHECK_COND(n_ss_desc.DPL()!=n_cs_rpl,
@@ -966,8 +1112,8 @@ void CPUSubSystem::CPU_JMP(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
 			"JMP:CS selector zero",
 			EXCEPTION_GP,0)
 		Bitu rpl=selector & 3;
-		Descriptor desc;
-		CPU_CHECK_COND(!cpu.gdt.GetDescriptor(selector,desc),
+		Descriptor desc(this);
+		CPU_CHECK_COND(!cpu.gdt->GetDescriptor(selector,&desc),
 			"JMP:CS beyond limits",
 			EXCEPTION_GP,selector & 0xfffc)
 		switch (desc.Type()) {
@@ -1037,8 +1183,8 @@ void CPUSubSystem::CPU_CALL(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
 			"CALL:CS selector zero",
 			EXCEPTION_GP,0)
 		Bitu rpl=selector & 3;
-		Descriptor call;
-		CPU_CHECK_COND(!cpu.gdt.GetDescriptor(selector,call),
+		Descriptor call(this);
+		CPU_CHECK_COND(!cpu.gdt->GetDescriptor(selector,&call),
 			"CALL:CS beyond limits",
 			EXCEPTION_GP,selector & 0xfffc)
 		/* Check for type of far call */
@@ -1091,13 +1237,13 @@ call_code:
 				CPU_CHECK_COND(!call.saved.seg.p,
 					"CALL:Gate:Segment not present",
 					EXCEPTION_NP,selector & 0xfffc)
-				Descriptor n_cs_desc;
+				Descriptor n_cs_desc(this);
 				Bitu n_cs_sel=call.GetSelector();
 
 				CPU_CHECK_COND((n_cs_sel & 0xfffc)==0,
 					"CALL:Gate:CS selector zero",
 					EXCEPTION_GP,0)
-				CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_cs_sel,n_cs_desc),
+				CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_cs_sel,&n_cs_desc),
 					"CALL:Gate:CS beyond limits",
 					EXCEPTION_GP,n_cs_sel & 0xfffc)
 				Bitu n_cs_dpl	= n_cs_desc.DPL();
@@ -1117,12 +1263,12 @@ call_code:
 					if (n_cs_dpl < cpu.cpl) {
 						/* Get new SS:ESP out of TSS */
 						Bitu n_ss_sel,n_esp;
-						Descriptor n_ss_desc;
-						cpu_tss.Get_SSx_ESPx(n_cs_dpl,n_ss_sel,n_esp);
+						Descriptor n_ss_desc(this);
+						cpu_tss->Get_SSx_ESPx(n_cs_dpl,n_ss_sel,n_esp);
 						CPU_CHECK_COND((n_ss_sel & 0xfffc)==0,
 							"CALL:Gate:NC:SS selector zero",
 							EXCEPTION_TS,0)
-						CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_ss_sel,n_ss_desc),
+						CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_ss_sel,&n_ss_desc),
 							"CALL:Gate:Invalid SS selector",
 							EXCEPTION_TS,n_ss_sel & 0xfffc)
 						CPU_CHECK_COND(((n_ss_sel & 3)!=n_cs_desc.DPL()) || (n_ss_desc.DPL()!=n_cs_desc.DPL()),
@@ -1274,7 +1420,7 @@ void CPUSubSystem::CPU_RET(bool use32,Bitu bytes,Bitu oldeip) {
 		if (!use32) selector	= mem_readw(SegPhys(ss) + (reg_esp & cpu.stack.mask) + 2);
 		else 		selector	= mem_readd(SegPhys(ss) + (reg_esp & cpu.stack.mask) + 4) & 0xffff;
 
-		Descriptor desc;
+		Descriptor desc(this);
 		Bitu rpl=selector & 3;
 		if(rpl < cpu.cpl) {
 			// win setup
@@ -1285,7 +1431,7 @@ void CPUSubSystem::CPU_RET(bool use32,Bitu bytes,Bitu oldeip) {
 		CPU_CHECK_COND((selector & 0xfffc)==0,
 			"RET:CS selector zero",
 			EXCEPTION_GP,0)
-		CPU_CHECK_COND(!cpu.gdt.GetDescriptor(selector,desc),
+		CPU_CHECK_COND(!cpu.gdt->GetDescriptor(selector,&desc),
 			"RET:CS beyond limits",
 			EXCEPTION_GP,selector & 0xfffc)
 
@@ -1377,8 +1523,8 @@ RET_same_level:
 				"RET to outer level with SS selector zero",
 				EXCEPTION_GP,0)
 
-			Descriptor n_ss_desc;
-			CPU_CHECK_COND(!cpu.gdt.GetDescriptor(n_ss,n_ss_desc),
+			Descriptor n_ss_desc(this);
+			CPU_CHECK_COND(!cpu.gdt->GetDescriptor(n_ss,&n_ss_desc),
 				"RET:SS beyond limits",
 				EXCEPTION_GP,n_ss & 0xfffc)
 
@@ -1429,11 +1575,11 @@ RET_same_level:
 
 
 inline Bitu CPUSubSystem::CPU_SLDT(void) {
-	return cpu.gdt.SLDT();
+	return cpu.gdt->SLDT();
 }
 
 bool CPUSubSystem::CPU_LLDT(Bitu selector) {
-	if (!cpu.gdt.LLDT(selector)) {
+	if (!cpu.gdt->LLDT(selector)) {
 		LOG(LOG_CPU,LOG_ERROR)("LLDT failed, selector=%X",selector);
 		return true;
 	}
@@ -1442,16 +1588,16 @@ bool CPUSubSystem::CPU_LLDT(Bitu selector) {
 }
 
 inline Bitu CPUSubSystem::CPU_STR(void) {
-	return cpu_tss.selector;
+	return cpu_tss->selector;
 }
 
 bool CPUSubSystem::CPU_LTR(Bitu selector) {
 	if ((selector & 0xfffc)==0) {
-		cpu_tss.SetSelector(selector);
+		cpu_tss->SetSelector(selector);
 		return false;
 	}
-	TSS_Descriptor desc;
-	if ((selector & 4) || (!cpu.gdt.GetDescriptor(selector,desc))) {
+	TSS_Descriptor desc(this);
+	if ((selector & 4) || (!cpu.gdt->GetDescriptor(selector,&desc))) {
 		LOG(LOG_CPU,LOG_ERROR)("LTR failed, selector=%X",selector);
 		return CPU_PrepareException(EXCEPTION_GP,selector);
 	}
@@ -1461,9 +1607,9 @@ bool CPUSubSystem::CPU_LTR(Bitu selector) {
 			LOG(LOG_CPU,LOG_ERROR)("LTR failed, selector=%X (not present)",selector);
 			return CPU_PrepareException(EXCEPTION_NP,selector);
 		}
-		if (!cpu_tss.SetSelector(selector)) E_Exit("LTR failed, selector=%X",selector);
-		cpu_tss.desc.SetBusy(true);
-		cpu_tss.SaveSelector();
+		if (!cpu_tss->SetSelector(selector)) E_Exit("LTR failed, selector=%X",selector);
+		cpu_tss->desc->SetBusy(true);
+		cpu_tss->SaveSelector();
 	} else {
 		/* Descriptor was no available TSS descriptor */ 
 		LOG(LOG_CPU,LOG_NORMAL)("LTR failed, selector=%X (type=%X)",selector,desc.Type());
@@ -1474,30 +1620,30 @@ bool CPUSubSystem::CPU_LTR(Bitu selector) {
 
 void CPUSubSystem::CPU_LGDT(Bitu limit,Bitu base) {
 	LOG(LOG_CPU,LOG_NORMAL)("GDT Set to base:%X limit:%X",base,limit);
-	cpu.gdt.SetLimit(limit);
-	cpu.gdt.SetBase(base);
+	cpu.gdt->SetLimit(limit);
+	cpu.gdt->SetBase(base);
 }
 
 void CPUSubSystem::CPU_LIDT(Bitu limit,Bitu base) {
 	LOG(LOG_CPU,LOG_NORMAL)("IDT Set to base:%X limit:%X",base,limit);
-	cpu.idt.SetLimit(limit);
-	cpu.idt.SetBase(base);
+	cpu.idt->SetLimit(limit);
+	cpu.idt->SetBase(base);
 }
 
 inline Bitu CPUSubSystem::CPU_SGDT_base(void) {
-	return cpu.gdt.GetBase();
+	return cpu.gdt->GetBase();
 }
 
 inline Bitu CPUSubSystem::CPU_SGDT_limit(void) {
-	return cpu.gdt.GetLimit();
+	return cpu.gdt->GetLimit();
 }
 
 inline Bitu CPUSubSystem::CPU_SIDT_base(void) {
-	return cpu.idt.GetBase();
+	return cpu.idt->GetBase();
 }
 
 inline Bitu CPUSubSystem::CPU_SIDT_limit(void) {
-	return cpu.idt.GetLimit();
+	return cpu.idt->GetLimit();
 }
 
 void CPUSubSystem::CPU_SET_CRX(Bitu cr,Bitu value) {
@@ -1704,8 +1850,9 @@ void CPUSubSystem::CPU_LAR(Bitu selector,Bitu & ar) {
 		SETFLAGBIT(ZF,false);
 		return;
 	}
-	Descriptor desc;Bitu rpl=selector & 3;
-	if (!cpu.gdt.GetDescriptor(selector,desc)){
+	Descriptor desc(this);
+	Bitu rpl=selector & 3;
+	if (!cpu.gdt->GetDescriptor(selector,&desc)){
 		SETFLAGBIT(ZF,false);
 		return;
 	}
@@ -1756,8 +1903,9 @@ void CPUSubSystem::CPU_LSL(Bitu selector,Bitu & limit) {
 		SETFLAGBIT(ZF,false);
 		return;
 	}
-	Descriptor desc;Bitu rpl=selector & 3;
-	if (!cpu.gdt.GetDescriptor(selector,desc)){
+	Descriptor desc(this);
+	Bitu rpl=selector & 3;
+	if (!cpu.gdt->GetDescriptor(selector,&desc)){
 		SETFLAGBIT(ZF,false);
 		return;
 	}
@@ -1799,8 +1947,9 @@ void CPUSubSystem::CPU_VERR(Bitu selector) {
 		SETFLAGBIT(ZF,false);
 		return;
 	}
-	Descriptor desc;Bitu rpl=selector & 3;
-	if (!cpu.gdt.GetDescriptor(selector,desc)){
+	Descriptor desc(this);
+	Bitu rpl=selector & 3;
+	if (!cpu.gdt->GetDescriptor(selector,&desc)){
 		SETFLAGBIT(ZF,false);
 		return;
 	}
@@ -1832,8 +1981,9 @@ void CPUSubSystem::CPU_VERW(Bitu selector) {
 		SETFLAGBIT(ZF,false);
 		return;
 	}
-	Descriptor desc;Bitu rpl=selector & 3;
-	if (!cpu.gdt.GetDescriptor(selector,desc)){
+	Descriptor desc(this);
+	Bitu rpl=selector & 3;
+	if (!cpu.gdt->GetDescriptor(selector,&desc)){
 		SETFLAGBIT(ZF,false);
 		return;
 	}
@@ -1870,8 +2020,8 @@ bool CPUSubSystem::CPU_SetSegGeneral(SegNames seg,Bitu value) {
 				E_Exit("CPU_SetSegGeneral: Stack segment zero");
 //				return CPU_PrepareException(EXCEPTION_GP,0);
 			}
-			Descriptor desc;
-			if (!cpu.gdt.GetDescriptor(value,desc)) {
+			Descriptor desc(this);
+			if (!cpu.gdt->GetDescriptor(value,&desc)) {
 				E_Exit("CPU_SetSegGeneral: Stack segment beyond limits");
 //				return CPU_PrepareException(EXCEPTION_GP,value & 0xfffc);
 			}
@@ -1911,8 +2061,8 @@ bool CPUSubSystem::CPU_SetSegGeneral(SegNames seg,Bitu value) {
 				Segs.phys[seg]=0;	// ??
 				return false;
 			}
-			Descriptor desc;
-			if (!cpu.gdt.GetDescriptor(value,desc)) {
+			Descriptor desc(this);
+			if (!cpu.gdt->GetDescriptor(value,&desc)) {
 				return CPU_PrepareException(EXCEPTION_GP,value & 0xfffc);
 			}
 			switch (desc.Type()) {
@@ -2008,7 +2158,7 @@ void CPUSubSystem::CPU_HLT(Bitu oldeip) {
 	cpu.hlt.cs=SegValue(cs);
 	cpu.hlt.eip=reg_eip;
 	cpu.hlt.old_decoder=cpudecoder;
-	cpudecoder = &HLT_Decode;
+	cpudecoder = CPUSubSystem::HLT_Decode;
 }
 
 void CPUSubSystem::CPU_ENTER(bool use32,Bitu bytes,Bitu level) {
@@ -2075,6 +2225,9 @@ void CPUSubSystem::CPU_Reset_AutoAdjust(void) {
 
 CPUSubSystem::CPUSubSystem(CDosBox* p) : CLSBAbstractSubSystem(p)
 {
+	cpu_tss = new TaskStateSegment(this);
+	cpu.gdt = new GDTDescriptorTable(this);
+	cpu.idt = new DescriptorTable(this);
 	CPU_Cycles = 0;
 	CPU_CycleLeft = 3000;
 	CPU_CycleMax = 3000;
@@ -2126,8 +2279,8 @@ void CPUSubSystem::Vinit()
 	cpu.stack.notmask=0xffff0000;
 	cpu.stack.big=false;
 	cpu.trap_skip=false;
-	cpu.idt.SetBase(0);
-	cpu.idt.SetLimit(1023);
+	cpu.idt->SetBase(0);
+	cpu.idt->SetLimit(1023);
 
 	for (Bitu i=0; i<7; i++) {
 		cpu.drx[i]=0;
@@ -2155,6 +2308,7 @@ bool CPUSubSystem::Change_Config()
 	CPU_Cycles=0;
 	CPU_SkipCycleAutoAdjust=false;
 	CPU_CycleAutoAdjust=false;
+	int percval;
 
 	switch (parent->GetConfig()->cpu.cycles_change) {
 	case ALDB_CPU::LDB_CPU_CYCLE_MAX:
@@ -2162,7 +2316,7 @@ bool CPUSubSystem::Change_Config()
 		CPU_CyclePercUsed=100;
 		CPU_CycleAutoAdjust=true;
 		CPU_CycleLimit=-1;
-		int percval = parent->GetConfig()->cpu.cycle_perc;
+		percval = parent->GetConfig()->cpu.cycle_perc;
 		if ((percval>0) && (percval<=105)) CPU_CyclePercUsed = (Bit32s)percval;
 		if (parent->GetConfig()->cpu.cycle_limit > 0)
 			CPU_CycleLimit = parent->GetConfig()->cpu.cycle_limit;
@@ -2173,7 +2327,7 @@ bool CPUSubSystem::Change_Config()
 		CPU_CycleMax=3000;
 		CPU_OldCycleMax=3000;
 		CPU_CyclePercUsed=100;
-		int percval = parent->GetConfig()->cpu.cycle_perc;
+		percval = parent->GetConfig()->cpu.cycle_perc;
 		if ((percval>0) && (percval<=105)) CPU_CyclePercUsed = (Bit32s)percval;
 		if (parent->GetConfig()->cpu.cycle_limit > 0)
 			CPU_CycleLimit = parent->GetConfig()->cpu.cycle_limit;

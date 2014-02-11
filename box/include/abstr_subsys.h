@@ -25,12 +25,12 @@ namespace dosbox {
 
 class CLSBAbstractSubSystem {
 public:
-	virtual CLSBAbstractSubSystem(CDosBox* p) {
+	CLSBAbstractSubSystem(CDosBox* p) {
 		parent = p; }
 
 	virtual ~CLSBAbstractSubSystem() = 0;
 
-private:
+protected:
 	CDosBox* parent;
 };
 

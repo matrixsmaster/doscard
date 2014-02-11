@@ -254,138 +254,19 @@ struct TSS_32 {
     Bit32u ldt;                  /* The local descriptor table */
 } GCC_ATTRIBUTE(packed);
 
-class Descriptor
-{
-public:
-	Descriptor() { saved.fill[0]=saved.fill[1]=0; }
+typedef Bits (CPU_Decoder)(void);
 
-	void Load(PhysPt address);
-	void Save(PhysPt address);
-
-	PhysPt GetBase (void) { 
-		return (saved.seg.base_24_31<<24) | (saved.seg.base_16_23<<16) | saved.seg.base_0_15; 
-	}
-	Bitu GetLimit (void) {
-		Bitu limit = (saved.seg.limit_16_19<<16) | saved.seg.limit_0_15;
-		if (saved.seg.g)	return (limit<<12) | 0xFFF;
-		return limit;
-	}
-	Bitu GetOffset(void) {
-		return (saved.gate.offset_16_31 << 16) | saved.gate.offset_0_15;
-	}
-	Bitu GetSelector(void) {
-		return saved.gate.selector;
-	}
-	Bitu Type(void) {
-		return saved.seg.type;
-	}
-	Bitu Conforming(void) {
-		return saved.seg.type & 8;
-	}
-	Bitu DPL(void) {
-		return saved.seg.dpl;
-	}
-	Bitu Big(void) {
-		return saved.seg.big;
-	}
-public:
-	union {
-		S_Descriptor seg;
-		G_Descriptor gate;
-		Bit32u fill[2];
-	} saved;
-};
-
-class DescriptorTable {
-public:
-	PhysPt	GetBase			(void)			{ return table_base;	}
-	Bitu	GetLimit		(void)			{ return table_limit;	}
-	void	SetBase			(PhysPt _base)	{ table_base = _base;	}
-	void	SetLimit		(Bitu _limit)	{ table_limit= _limit;	}
-
-	bool GetDescriptor	(Bitu selector, Descriptor& desc) {
-		selector&=~7;
-		if (selector>=table_limit) return false;
-		desc.Load(table_base+(selector));
-		return true;
-	}
-protected:
-	PhysPt table_base;
-	Bitu table_limit;
-};
-
-class GDTDescriptorTable : public DescriptorTable {
-public:
-	bool GetDescriptor(Bitu selector, Descriptor& desc) {
-		Bitu address=selector & ~7;
-		if (selector & 4) {
-			if (address>=ldt_limit) return false;
-			desc.Load(ldt_base+address);
-			return true;
-		} else {
-			if (address>=table_limit) return false;
-			desc.Load(table_base+address);
-			return true;
-		}
-	}
-	bool SetDescriptor(Bitu selector, Descriptor& desc) {
-		Bitu address=selector & ~7;
-		if (selector & 4) {
-			if (address>=ldt_limit) return false;
-			desc.Save(ldt_base+address);
-			return true;
-		} else {
-			if (address>=table_limit) return false;
-			desc.Save(table_base+address);
-			return true;
-		}
-	} 
-	Bitu SLDT(void)	{
-		return ldt_value;
-	}
-	bool LLDT(Bitu value)	{
-		if ((value&0xfffc)==0) {
-			ldt_value=0;
-			ldt_base=0;
-			ldt_limit=0;
-			return true;
-		}
-		Descriptor desc;
-		if (!GetDescriptor(value,desc)) return !CPU_PrepareException(EXCEPTION_GP,value);
-		if (desc.Type()!=DESC_LDT) return !CPU_PrepareException(EXCEPTION_GP,value);
-		if (!desc.saved.seg.p) return !CPU_PrepareException(EXCEPTION_NP,value);
-		ldt_base=desc.GetBase();
-		ldt_limit=desc.GetLimit();
-		ldt_value=value;
-		return true;
-	}
-private:
-	PhysPt ldt_base;
-	Bitu ldt_limit;
-	Bitu ldt_value;
-};
-
-class TSS_Descriptor : public Descriptor {
-public:
-	Bitu IsBusy(void) {
-		return saved.seg.type & 2;
-	}
-	Bitu Is386(void) {
-		return saved.seg.type & 8;
-	}
-	void SetBusy(bool busy) {
-		if (busy) saved.seg.type|=2;
-		else saved.seg.type&=~2;
-	}
-};
+class DescriptorTable;
+class GDTDescriptorTable;
+class TaskStateSegment;
 
 struct CPUBlock {
 	Bitu cpl;							/* Current Privilege */
 	Bitu mpl;
 	Bitu cr0;
 	bool pmode;							/* Is Protected mode enabled */
-	GDTDescriptorTable gdt;
-	DescriptorTable idt;
+	GDTDescriptorTable* gdt;
+	DescriptorTable* idt;
 	struct {
 		Bitu mask,notmask;
 		bool big;
@@ -395,7 +276,7 @@ struct CPUBlock {
 	} code;
 	struct {
 		Bitu cs,eip;
-		CPU_Decoder * old_decoder;
+		CPU_Decoder* old_decoder;
 	} hlt;
 	struct {
 		Bitu which,error;
@@ -447,8 +328,6 @@ enum TSwitchType {
 	TSwitch_JMP,TSwitch_CALL_INT,TSwitch_IRET
 };
 
-typedef Bits (CPU_Decoder)(void);
-
 //static INLINE void CPU_SetFlagsd(Bitu word) {
 //	Bitu mask=cpu.cpl ? FMASK_NORMAL : FMASK_ALL;
 //	CPU_SetFlags(word,mask);
@@ -467,8 +346,6 @@ typedef Bits (CPU_Decoder)(void);
 		Bitu mask=(cpu.cpl ? FMASK_NORMAL : FMASK_ALL) & 0xffff; \
 		CPU_SetFlags(X,mask); }
 
-//class CPU;
-class TaskStateSegment;
 
 class CPUSubSystem : public CLSBAbstractSubSystem {
 public:
@@ -564,6 +441,11 @@ public:
 	Bitu FillFlags(void);
 	void FillFlagsNoCFOF(void);
 	void DestroyConditionFlags(void);
+	Bits HLT_Decode(void);
+
+	PhysPt SelBase(Bitu sel);
+	void CPU_CheckSegments(void);
+	bool CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu old_eip);
 
 	inline void CPU_HW_Interrupt(Bitu num) {
 		CPU_Interrupt(num,0,reg_eip); }
@@ -610,7 +492,7 @@ private:
 	bool inited;
 	bool printed_cycles_auto_info;
 	Bit8u lastint;
-	TaskStateSegment cpu_tss;
+	TaskStateSegment* cpu_tss;
 };
 
 } //namespace dosbox
