@@ -29,6 +29,7 @@
 #include <string>
 #include "dosbox.h"
 #include "support.h"
+#include "logging.h"
 #include "video.h"
 #include "ldb.h"
 
@@ -51,17 +52,14 @@ void lowcase(std::string &str) {
 */
 
 
-/*
- * replaces all instances of character o with character c
- */
-
-
+/* replaces all instances of character o with character c*/
 void strreplace(char * str,char o,char n) {
 	while (*str) {
 		if (*str==o) *str=n;
 		str++;
 	}
 }
+
 char *ltrim(char *str) { 
 	while (*str && isspace(*reinterpret_cast<unsigned char*>(str))) str++;
 	return str;
@@ -88,8 +86,6 @@ char * lowcase(char * str) {
 	for(char* idx = str; *idx ; idx++)  *idx = tolower(*reinterpret_cast<unsigned char*>(idx));
 	return str;
 }
-
-
 
 bool ScanCMDBool(char * cmd,char const * const check) {
 	char * scan=cmd;size_t c_len=strlen(check);
@@ -168,7 +164,6 @@ double ConvDblWord(char * word) {
 	return 0.0f;
 }
 
-
 static char buf[1024];           //greater scope as else it doesn't always gets thrown right (linux/gcc2.95)
 void E_Exit(const char * format,...) {
 #if C_DEBUG && C_HEAVY_DEBUG
@@ -183,4 +178,22 @@ void E_Exit(const char * format,...) {
 	throw(buf);
 }
 
+#if ((!C_DEBUG) && VERB_LOGGING)
+void LOG::operator()(char const* format, ...)
+{
+	char buf[512];
+	char sev[10];
+	va_list msg;
+	va_start(msg,format);
+	vsprintf(buf,format,msg);
+	va_end(msg);
+	switch (d_severity) {
+	case LOG_WARN: snprintf(sev,9,"WARN"); break;
+	case LOG_ERROR: snprintf(sev,9,"ERROR"); break;
+	default: snprintf(sev,9,"INFO"); break;
+	}
+	LOG_MSG("%s:%s\n",sev,buf);
 }
+#endif
+
+} //namespace dosbox

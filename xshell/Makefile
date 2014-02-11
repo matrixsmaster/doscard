@@ -4,28 +4,32 @@
 ##TODO: make callcatcher work on AR
 
 APP := xshell
-CXX := g++
-#CALLCATCH := callcatcher
+CXX := callcatcher g++
 INCLUDES := -I. -I.. -I../box/include
 #DEFINES := -DXSHELL_VERBOSE=1
-CXXFLAGS := -g -O2 -Wall $(INCLUDES) $(DEFINES)
+CXXFLAGS := -g -O2 -Wall -pthread $(INCLUDES) $(DEFINES)
 LD_STAT := -ldosbox -lSDL2
-LD_BDYN := -lX11 -lpthread -lrt
+LD_BDYN := -lX11 -lrt
 LD_LIBS := -L../SDL2/build/.libs -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := fake_threading.o xsupport.o
+GLOB_OBJS := $(addprefix ../box/src/,$(shell cat ../box/src/objs.txt)) $(SUPPORTS)
 
 all:	$(SUPPORTS) $(APP).o
 	$(CXX) -g -o $(APP) $(SUPPORTS) $(APP).o $(LD_LIBS)
 .PHONY:	all
 
-findunusedcode:	$(SUPPORTS) $(APP).o
-	callarchive ../box/src/libdosbox.a $(APP).o
-	$(CALLCATCH) $(CXX) -g -o $(APP) $(SUPPORTS) $(APP).o $(LD_LIBS)
-	callanalyse $(APP)
-.PHONY: findunusedcode
+#findunused:	$(SUPPORTS) $(APP).o
+#	callarchive ../box/src/libdosbox.a $(APP).o
+#	$(CXX) -g -o $(APP) $(SUPPORTS) $(APP).o $(LD_LIBS)
+#	callanalyse $(APP)
+#findunused:
+#	echo $(GLOB_OBJS)
+#	$(CXX) -g -o $(APP) $(APP).o $(GLOB_OBJS) $(LD_LIBS)
+#	callanalyse $(APP)
+#.PHONY: findunused
 
 %.o:	%.cpp
-	$(CALLCATCH) $(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(APP) *.o

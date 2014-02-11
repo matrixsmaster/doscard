@@ -488,7 +488,7 @@ int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 {
 	//FIXME: checks
 	ldb_callbacks[t] = f;
-	printf("RegisterCallback(%d, 0x%x)\n",t,((void*)f));
+//	printf("RegisterCallback(%d, 0x%x)\n",t,((void*)f));
 //	libdosbox_callbacks[t] = f;
 	return 0;
 }

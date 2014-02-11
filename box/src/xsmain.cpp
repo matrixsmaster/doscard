@@ -77,6 +77,7 @@ void GFX_Events()
 				if (evt.pressed) Mouse_ButtonPressed(evt.m.button);
 				else Mouse_ButtonReleased(evt.m.button);
 			} else {
+				//FIXME: mouse absolute position calculation
 				evt.m.abs.x /= static_cast<float>(render.src.width);
 				evt.m.abs.y /= static_cast<float>(render.src.height);
 				Mouse_CursorMoved(evt.m.rel.x,evt.m.rel.y,evt.m.abs.x,evt.m.abs.y,true);
@@ -100,25 +101,6 @@ void GFX_ShowMsg(char const* format,...)
 	va_end(msg);
 	myldbi->Callback(DBCB_PushMessage,buf,sizeof(buf));
 }
-
-//TODO: maybe move it to somewhere
-#if ((!C_DEBUG) && VERB_LOGGING)
-void LOG::operator()(char const* format, ...)
-{
-	char buf[512];
-	char sev[10];
-	va_list msg;
-	va_start(msg,format);
-	vsprintf(buf,format,msg);
-	va_end(msg);
-	switch (d_severity) {
-	case LOG_WARN: snprintf(sev,9,"WARN"); break;
-	case LOG_ERROR: snprintf(sev,9,"ERROR"); break;
-	default: snprintf(sev,9,"INFO"); break;
-	}
-	GFX_ShowMsg("%s:%s\n",sev,buf);
-}
-#endif
 
 void Mouse_AutoLock(bool enable)
 {
