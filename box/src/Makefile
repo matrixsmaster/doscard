@@ -2,7 +2,7 @@
 ## Copyright (C) 2013-2014 Soloviov Dmitry
 
 LIBNAME	:= libdosbox
-CXX		:= callcatcher g++
+CXX		:= g++
 MNDIR	:= $(shell pwd)
 BLDINFO := -DBUILDATE="\"$(shell date)\"" -DCOMPILERNAME="\"$(shell gcc --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
@@ -30,6 +30,9 @@ LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 
 LMSC_SRC := cross.cpp messages.cpp programs.cpp setup.cpp support.cpp
 
+LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp dosbox.cpp
+
+
 LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix hardware/serialport/,$(LTTY_SRC:.cpp=.o))
@@ -37,7 +40,7 @@ LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.o))
 LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.o))
-LIB_OBJS += render.o xsmain.o xsfio.o dosbox.o
+LIB_OBJS += $(LTOP_SRC:.cpp=.o)
 
 
 all:	$(LIB_OBJS)

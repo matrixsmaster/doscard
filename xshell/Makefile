@@ -4,7 +4,7 @@
 ##TODO: make callcatcher work on AR
 
 APP := xshell
-CXX := callcatcher g++
+CXX := g++
 INCLUDES := -I. -I.. -I../box/include
 #DEFINES := -DXSHELL_VERBOSE=1
 CXXFLAGS := -g -O2 -Wall -pthread $(INCLUDES) $(DEFINES)
