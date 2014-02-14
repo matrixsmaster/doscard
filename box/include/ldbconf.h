@@ -74,6 +74,7 @@ typedef struct ALDB_SETTINGS {
 	LDB_MemorySet mem;
 	LDB_Sound snd;
 	LDB_RS232 tty[4];
+	uint32_t frameskip;
 } LDB_Settings;
 
 class CLDBConf {

@@ -51,6 +51,8 @@ private:
 	CommandLine* com_line;
 	bool callbacksReady;
 	CLDBConf* config;
+	bool init_ok;
+	uint64_t loopcount;
 public:
 	CDosBox();
 	~CDosBox();
@@ -58,6 +60,7 @@ public:
 	int Callback(LDB_CallbackType t, void* p, size_t l);
 	Bitu NormalLoop();
 	void RunMachine();
+	void Init();
 	void Execute();
 	void SetConfig(LDB_Settings* c);
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }

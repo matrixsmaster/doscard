@@ -34,7 +34,6 @@ Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
 static bool init_ok;
 static uint32_t frmsk_cnt;
-uint32_t frameskip;
 
 static INLINE void LDB_SendDWord(Bit32u x)
 {
@@ -105,7 +104,7 @@ bool RENDER_StartUpdate(void)
 		frmsk_cnt = 0;
 		return false;
 	}
-	RENDER_DrawLine = (frmsk_cnt < frameskip)? RENDER_EmptyLineHandler:RENDER_StartLineHandler;
+	RENDER_DrawLine = (frmsk_cnt < RENDER_FRMSK)? RENDER_EmptyLineHandler:RENDER_StartLineHandler;
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
 	hdr |= ((Bit16u)render.src.height);
@@ -115,7 +114,7 @@ bool RENDER_StartUpdate(void)
 
 void RENDER_EndUpdate(bool abort)
 {
-	if ((abort) || (frmsk_cnt < frameskip)) {
+	if ((abort) || (frmsk_cnt < RENDER_FRMSK)) {
 		//Do NOT update anything
 		LDB_SendDWord(DISPLAY_ABOR_SIGNATURE);
 	} else {
@@ -123,7 +122,7 @@ void RENDER_EndUpdate(bool abort)
 		LDB_SendByte(0x01);
 	}
 	//FIXME: frameskip
-	if (frmsk_cnt < frameskip) frmsk_cnt++;
+	if (frmsk_cnt < RENDER_FRMSK) frmsk_cnt++;
 	else frmsk_cnt = 0;
 }
 

@@ -341,36 +341,33 @@ private:
 	AutoexecObject autoexec[17];
 	AutoexecObject autoexec_echo;
 public:
-	AUTOEXEC(Section* configuration):Module_base(configuration) {
+	AUTOEXEC(Section* /*configuration*/):Module_base(NULL) {
 		/* Register a virtual AUOEXEC.BAT file */
 		std::string line;
-		Section_line * section=static_cast<Section_line *>(configuration);
+//		Section_line * section=static_cast<Section_line *>(configuration);
 
 		/* Check -securemode switch to disable mount/imgmount/boot after running autoexec.bat */
-		bool secure = myldbi->control->cmdline->FindExist("-securemode",true);
+		bool secure = false;//myldbi->control->cmdline->FindExist("-securemode",true);
 
 		/* add stuff from the configfile unless -noautexec or -securemode is specified. */
-		char * extra = const_cast<char*>(section->data.c_str());
-		if (extra && !secure && !myldbi->control->cmdline->FindExist("-noautoexec",true)) {
-			/* detect if "echo off" is the first line */
-			bool echo_off  = !strncasecmp(extra,"echo off",8);
-			if (!echo_off) echo_off = !strncasecmp(extra,"@echo off",9);
-
-			/* if "echo off" add it to the front of autoexec.bat */
-			if(echo_off) autoexec_echo.InstallBefore("@echo off");
-
-			/* Install the stuff from the configfile */
-			autoexec[0].Install(section->data);
-		}
+//		char * extra = const_cast<char*>(section->data.c_str());
+//		if (extra && !secure && !myldbi->control->cmdline->FindExist("-noautoexec",true)) {
+////		if (extra && !secure) {
+//			/* detect if "echo off" is the first line */
+//			bool echo_off  = !strncasecmp(extra,"echo off",8);
+//			if (!echo_off) echo_off = !strncasecmp(extra,"@echo off",9);
+//
+//			/* if "echo off" add it to the front of autoexec.bat */
+//			if(echo_off) autoexec_echo.InstallBefore("@echo off");
+//
+//			/* Install the stuff from the configfile */
+//			autoexec[0].Install(section->data);
+//		}
 
 		/* Check to see for extra command line options to be added (before the command specified on commandline) */
 		/* Maximum of extra commands: 10 */
 		Bitu i = 1;
 		while (myldbi->control->cmdline->FindString("-c",line,true) && (i <= 11)) {
-#if defined (WIN32) || defined (OS2)
-			//replace single with double quotes so that mount commands can contain spaces
-			for(Bitu temp = 0;temp < line.size();++temp) if(line[temp] == '\'') line[temp]='\"';
-#endif //Linux users can simply use \" in their shell
 			autoexec[i++].Install(line);
 		}
 
@@ -445,8 +442,8 @@ nomount:
 
 static AUTOEXEC* test;
 
-void AUTOEXEC_Init(Section * sec) {
-	test = new AUTOEXEC(sec);
+void AUTOEXEC_Init(Section * /*sec*/) {
+	test = new AUTOEXEC(NULL);
 }
 
 static char const * const path_string="PATH=Z:\\";
@@ -512,32 +509,25 @@ void SHELL_Init() {
 		"\033[44;1m\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
 		"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
 		"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB\n"
-		"\xBA \033[32mWelcome to DOSBox %-8s\033[37m                                         \xBA\n"
+		"\xBA \033[32mWelcome to DOSCARD %-8s\033[37m                                        \xBA\n"
 		"\xBA                                                                    \xBA\n"
-//		"\xBA DOSBox runs real and protected mode games.                         \xBA\n"
-		"\xBA For a short introduction for new users type: \033[33mINTRO\033[37m                 \xBA\n"
-		"\xBA For supported shell commands type: \033[33mHELP\033[37m                            \xBA\n"
-		"\xBA                                                                    \xBA\n"
-		"\xBA To adjust the emulated CPU speed, use \033[31mctrl-F11\033[37m and \033[31mctrl-F12\033[37m.       \xBA\n"
-		"\xBA To activate the keymapper \033[31mctrl-F1\033[37m.                                 \xBA\n"
-		"\xBA For more information read the \033[36mREADME\033[37m file in the DOSBox directory. \xBA\n"
 		"\xBA                                                                    \xBA\n"
 	);
-	MSG_Add("SHELL_STARTUP_CGA","\xBA DOSBox supports Composite CGA mode.                                \xBA\n"
-	        "\xBA Use \033[31mF12\033[37m to set composite output ON, OFF, or AUTO (default).        \xBA\n"
-	        "\xBA \033[31m(Alt-)F11\033[37m changes hue; \033[31mctrl-alt-F11\033[37m selects early/late CGA model.  \xBA\n"
-	        "\xBA                                                                    \xBA\n"
-	);
-	MSG_Add("SHELL_STARTUP_HERC","\xBA Use \033[31mF11\033[37m to cycle through white, amber, and green monochrome color. \xBA\n"
-	        "\xBA                                                                    \xBA\n"
-	);
+//	MSG_Add("SHELL_STARTUP_CGA","\xBA DOSBox supports Composite CGA mode.                                \xBA\n"
+//	        "\xBA Use \033[31mF12\033[37m to set composite output ON, OFF, or AUTO (default).        \xBA\n"
+//	        "\xBA \033[31m(Alt-)F11\033[37m changes hue; \033[31mctrl-alt-F11\033[37m selects early/late CGA model.  \xBA\n"
+//	        "\xBA                                                                    \xBA\n"
+//	);
+//	MSG_Add("SHELL_STARTUP_HERC","\xBA Use \033[31mF11\033[37m to cycle through white, amber, and green monochrome color. \xBA\n"
+//	        "\xBA                                                                    \xBA\n"
+//	);
 	MSG_Add("SHELL_STARTUP_DEBUG",
 	        "\xBA Press \033[31malt-Pause\033[37m to enter the debugger or start the exe with \033[33mDEBUG\033[37m. \xBA\n"
 	        "\xBA                                                                    \xBA\n"
 	);
 	MSG_Add("SHELL_STARTUP_END",
-	        "\xBA \033[32mHAVE FUN!\033[37m                                                          \xBA\n"
-	        "\xBA \033[32mThe DOSBox Team \033[33mhttp://www.dosbox.com\033[37m                              \xBA\n"
+//	        "\xBA \033[32mHAVE FUN!\033[37m                                                          \xBA\n"
+//	        "\xBA \033[32mThe DOSBox Team \033[33mhttp://www.dosbox.com\033[37m                              \xBA\n"
 	        "\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
 	        "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
 	        "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC\033[0m\n"

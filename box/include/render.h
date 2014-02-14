@@ -21,6 +21,8 @@
 
 namespace dosbox {
 
+#define RENDER_FRMSK myldbi->GetConfig()->frameskip
+
 typedef struct {
 	struct { 
 		Bit8u red;
