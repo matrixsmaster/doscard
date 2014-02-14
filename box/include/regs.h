@@ -90,6 +90,27 @@ struct CPU_Regs {
 	Bitu flags;
 };
 
+extern Segments Segs;
+extern CPU_Regs cpu_regs;
+
+static INLINE PhysPt SegPhys(SegNames index) {
+	return Segs.phys[index];
+}
+
+static INLINE Bit16u SegValue(SegNames index) {
+	return (Bit16u)Segs.val[index];
+}
+	
+static INLINE RealPt RealMakeSeg(SegNames index,Bit16u off) {
+	return RealMake(SegValue(index),off);	
+}
+
+
+static INLINE void SegSet16(Bitu index,Bit16u val) {
+	Segs.val[index]=val;
+	Segs.phys[index]=val << 4;
+}
+
 enum {
 	REGI_AX, REGI_CX, REGI_DX, REGI_BX,
 	REGI_SP, REGI_BP, REGI_SI, REGI_DI

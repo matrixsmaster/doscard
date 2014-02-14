@@ -45,6 +45,42 @@ extern void GFX_SetTitle(Bit32s cycles ,Bits frameskip,bool paused);
 #endif
 #endif
 
+CPU_Regs cpu_regs;
+CPUBlock cpu;
+Segments Segs;
+
+Bit32s CPU_Cycles = 0;
+Bit32s CPU_CycleLeft = 3000;
+Bit32s CPU_CycleMax = 3000;
+Bit32s CPU_OldCycleMax = 3000;
+Bit32s CPU_CyclePercUsed = 100;
+Bit32s CPU_CycleLimit = -1;
+Bit64s CPU_IODelayRemoved = 0;
+CPU_Decoder * cpudecoder;
+bool CPU_CycleAutoAdjust = false;
+bool CPU_SkipCycleAutoAdjust = false;
+Bitu CPU_AutoDetermineMode = 0;
+
+Bitu CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
+
+Bitu CPU_extflags_toggle=0;	// ID and AC flags may be toggled depending on emulated CPU architecture
+
+Bitu CPU_PrefetchQueueSize=0;
+
+void CPU_Core_Full_Init(void);
+void CPU_Core_Normal_Init(void);
+void CPU_Core_Simple_Init(void);
+#if (C_DYNAMIC_X86)
+void CPU_Core_Dyn_X86_Init(void);
+void CPU_Core_Dyn_X86_Cache_Init(bool enable_cache);
+void CPU_Core_Dyn_X86_Cache_Close(void);
+void CPU_Core_Dyn_X86_SetFPUMode(bool dh_fpu);
+#elif (C_DYNREC)
+void CPU_Core_Dynrec_Init(void);
+void CPU_Core_Dynrec_Cache_Init(bool enable_cache);
+void CPU_Core_Dynrec_Cache_Close(void);
+#endif
+
 /* In debug mode exceptions are tested and dosbox exits when 
  * a unhandled exception state is detected. 
  * USE CHECK_EXCEPT to raise an exception in that case to see if that exception
@@ -88,7 +124,7 @@ void Descriptor::Load(PhysPt address) {
 	*(data+1) = mem_readd(address+4);
 	cpu.mpl=3;
 }
-void Descriptor::Save(PhysPt address) {
+void Descriptor:: Save(PhysPt address) {
 	cpu.mpl=0;
 	Bit32u* data = (Bit32u*)&saved;
 	mem_writed(address,*data);
@@ -298,7 +334,13 @@ public:
 	bool valid;
 };
 
-bool CPUSubSystem::CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu old_eip) {
+TaskStateSegment cpu_tss;
+
+enum TSwitchType {
+	TSwitch_JMP,TSwitch_CALL_INT,TSwitch_IRET
+};
+
+bool CPU_SwitchTask(Bitu new_tss_selector,TSwitchType tstype,Bitu old_eip) {
 	FillFlags();
 	TaskStateSegment new_tss;
 	if (!new_tss.SetSelector(new_tss_selector)) 
@@ -473,7 +515,7 @@ doconforming:
 	return true;
 }
 
-bool CPUSubSystem::CPU_IO_Exception(Bitu port,Bitu size) {
+bool CPU_IO_Exception(Bitu port,Bitu size) {
 	if (cpu.pmode && ((GETFLAG_IOPL<cpu.cpl) || GETFLAG(VM))) {
 		cpu.mpl=0;
 		if (!cpu_tss.is386) goto doexception;
@@ -493,13 +535,14 @@ doexception:
 	return CPU_PrepareException(EXCEPTION_GP,0);
 }
 
-void CPUSubSystem::CPU_Exception(Bitu which,Bitu error ) {
+void CPU_Exception(Bitu which,Bitu error ) {
 //	LOG_MSG("Exception %d error %x",which,error);
 	cpu.exception.error=error;
 	CPU_Interrupt(which,CPU_INT_EXCEPTION | ((which>=8) ? CPU_INT_HAS_ERROR : 0),reg_eip);
 }
 
-void CPUSubSystem::CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
+Bit8u lastint;
+void CPU_Interrupt(Bitu num,Bitu type,Bitu oldeip) {
 	lastint=num;
 	FillFlags();
 #if C_DEBUG
@@ -715,7 +758,7 @@ do_interrupt:
 }
 
 
-void CPUSubSystem::CPU_IRET(bool use32,Bitu oldeip) {
+void CPU_IRET(bool use32,Bitu oldeip) {
 	if (!cpu.pmode) {					/* RealMode IRET */
 		if (use32) {
 			reg_eip=CPU_Pop32();
@@ -951,7 +994,7 @@ void CPUSubSystem::CPU_IRET(bool use32,Bitu oldeip) {
 }
 
 
-void CPUSubSystem::CPU_JMP(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
+void CPU_JMP(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
 	if (!cpu.pmode || (reg_flags & FLAG_VM)) {
 		if (!use32) {
 			reg_eip=offset&0xffff;
@@ -1018,7 +1061,7 @@ CODE_jmp:
 }
 
 
-void CPUSubSystem::CPU_CALL(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
+void CPU_CALL(bool use32,Bitu selector,Bitu offset,Bitu oldeip) {
 	if (!cpu.pmode || (reg_flags & FLAG_VM)) {
 		if (!use32) {
 			CPU_Push16(SegValue(cs));
@@ -1254,7 +1297,7 @@ call_code:
 }
 
 
-void CPUSubSystem::CPU_RET(bool use32,Bitu bytes,Bitu oldeip) {
+void CPU_RET(bool use32,Bitu bytes,Bitu oldeip) {
 	if (!cpu.pmode || (reg_flags & FLAG_VM)) {
 		Bitu new_ip,new_cs;
 		if (!use32) {
@@ -1428,11 +1471,11 @@ RET_same_level:
 }
 
 
-inline Bitu CPUSubSystem::CPU_SLDT(void) {
+Bitu CPU_SLDT(void) {
 	return cpu.gdt.SLDT();
 }
 
-bool CPUSubSystem::CPU_LLDT(Bitu selector) {
+bool CPU_LLDT(Bitu selector) {
 	if (!cpu.gdt.LLDT(selector)) {
 		LOG(LOG_CPU,LOG_ERROR)("LLDT failed, selector=%X",selector);
 		return true;
@@ -1441,11 +1484,11 @@ bool CPUSubSystem::CPU_LLDT(Bitu selector) {
 	return false;
 }
 
-inline Bitu CPUSubSystem::CPU_STR(void) {
+Bitu CPU_STR(void) {
 	return cpu_tss.selector;
 }
 
-bool CPUSubSystem::CPU_LTR(Bitu selector) {
+bool CPU_LTR(Bitu selector) {
 	if ((selector & 0xfffc)==0) {
 		cpu_tss.SetSelector(selector);
 		return false;
@@ -1472,35 +1515,34 @@ bool CPUSubSystem::CPU_LTR(Bitu selector) {
 	return false;
 }
 
-void CPUSubSystem::CPU_LGDT(Bitu limit,Bitu base) {
+void CPU_LGDT(Bitu limit,Bitu base) {
 	LOG(LOG_CPU,LOG_NORMAL)("GDT Set to base:%X limit:%X",base,limit);
 	cpu.gdt.SetLimit(limit);
 	cpu.gdt.SetBase(base);
 }
 
-void CPUSubSystem::CPU_LIDT(Bitu limit,Bitu base) {
+void CPU_LIDT(Bitu limit,Bitu base) {
 	LOG(LOG_CPU,LOG_NORMAL)("IDT Set to base:%X limit:%X",base,limit);
 	cpu.idt.SetLimit(limit);
 	cpu.idt.SetBase(base);
 }
 
-inline Bitu CPUSubSystem::CPU_SGDT_base(void) {
+Bitu CPU_SGDT_base(void) {
 	return cpu.gdt.GetBase();
 }
-
-inline Bitu CPUSubSystem::CPU_SGDT_limit(void) {
+Bitu CPU_SGDT_limit(void) {
 	return cpu.gdt.GetLimit();
 }
 
-inline Bitu CPUSubSystem::CPU_SIDT_base(void) {
+Bitu CPU_SIDT_base(void) {
 	return cpu.idt.GetBase();
 }
-
-inline Bitu CPUSubSystem::CPU_SIDT_limit(void) {
+Bitu CPU_SIDT_limit(void) {
 	return cpu.idt.GetLimit();
 }
 
-void CPUSubSystem::CPU_SET_CRX(Bitu cr,Bitu value) {
+static bool printed_cycles_auto_info = false;
+void CPU_SET_CRX(Bitu cr,Bitu value) {
 	switch (cr) {
 	case 0:
 		{
@@ -1528,6 +1570,17 @@ void CPUSubSystem::CPU_SET_CRX(Bitu cr,Bitu value) {
 				} else {
 					GFX_SetTitle(-1,-1,false);
 				}
+#if (C_DYNAMIC_X86)
+				if (CPU_AutoDetermineMode&CPU_AUTODETERMINE_CORE) {
+					CPU_Core_Dyn_X86_Cache_Init(true);
+					cpudecoder=&CPU_Core_Dyn_X86_Run;
+				}
+#elif (C_DYNREC)
+				if (CPU_AutoDetermineMode&CPU_AUTODETERMINE_CORE) {
+					CPU_Core_Dynrec_Cache_Init(true);
+					cpudecoder=&CPU_Core_Dynrec_Run;
+				}
+#endif
 				CPU_AutoDetermineMode<<=CPU_AUTODETERMINE_SHIFT;
 			} else {
 				cpu.pmode=false;
@@ -1549,7 +1602,7 @@ void CPUSubSystem::CPU_SET_CRX(Bitu cr,Bitu value) {
 	}
 }
 
-bool CPUSubSystem::CPU_WRITE_CRX(Bitu cr,Bitu value) {
+bool CPU_WRITE_CRX(Bitu cr,Bitu value) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	if ((cr==1) || (cr>4)) return CPU_PrepareException(EXCEPTION_UD,0);
@@ -1560,7 +1613,7 @@ bool CPUSubSystem::CPU_WRITE_CRX(Bitu cr,Bitu value) {
 	return false;
 }
 
-Bitu CPUSubSystem::CPU_GET_CRX(Bitu cr) {
+Bitu CPU_GET_CRX(Bitu cr) {
 	switch (cr) {
 	case 0:
 		if (CPU_ArchitectureType>=CPU_ARCHTYPE_PENTIUMSLOW) return cpu.cr0;
@@ -1577,7 +1630,7 @@ Bitu CPUSubSystem::CPU_GET_CRX(Bitu cr) {
 	return 0;
 }
 
-bool CPUSubSystem::CPU_READ_CRX(Bitu cr,Bit32u & retvalue) {
+bool CPU_READ_CRX(Bitu cr,Bit32u & retvalue) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	if ((cr==1) || (cr>4)) return CPU_PrepareException(EXCEPTION_UD,0);
@@ -1586,7 +1639,7 @@ bool CPUSubSystem::CPU_READ_CRX(Bitu cr,Bit32u & retvalue) {
 }
 
 
-bool CPUSubSystem::CPU_WRITE_DRX(Bitu dr,Bitu value) {
+bool CPU_WRITE_DRX(Bitu dr,Bitu value) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	switch (dr) {
@@ -1615,7 +1668,7 @@ bool CPUSubSystem::CPU_WRITE_DRX(Bitu dr,Bitu value) {
 	return false;
 }
 
-bool CPUSubSystem::CPU_READ_DRX(Bitu dr,Bit32u & retvalue) {
+bool CPU_READ_DRX(Bitu dr,Bit32u & retvalue) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	switch (dr) {
@@ -1641,7 +1694,7 @@ bool CPUSubSystem::CPU_READ_DRX(Bitu dr,Bit32u & retvalue) {
 	return false;
 }
 
-bool CPUSubSystem::CPU_WRITE_TRX(Bitu tr,Bitu value) {
+bool CPU_WRITE_TRX(Bitu tr,Bitu value) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	switch (tr) {
@@ -1657,7 +1710,7 @@ bool CPUSubSystem::CPU_WRITE_TRX(Bitu tr,Bitu value) {
 	return CPU_PrepareException(EXCEPTION_UD,0);
 }
 
-bool CPUSubSystem::CPU_READ_TRX(Bitu tr,Bit32u & retvalue) {
+bool CPU_READ_TRX(Bitu tr,Bit32u & retvalue) {
 	/* Check if privileged to access control registers */
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	switch (tr) {
@@ -1674,11 +1727,11 @@ bool CPUSubSystem::CPU_READ_TRX(Bitu tr,Bit32u & retvalue) {
 }
 
 
-inline Bitu CPUSubSystem::CPU_SMSW(void) {
+Bitu CPU_SMSW(void) {
 	return cpu.cr0;
 }
 
-bool CPUSubSystem::CPU_LMSW(Bitu word) {
+bool CPU_LMSW(Bitu word) {
 	if (cpu.pmode && (cpu.cpl>0)) return CPU_PrepareException(EXCEPTION_GP,0);
 	word&=0xf;
 	if (cpu.cr0 & 1) word|=1; 
@@ -1687,7 +1740,7 @@ bool CPUSubSystem::CPU_LMSW(Bitu word) {
 	return false;
 }
 
-void CPUSubSystem::CPU_ARPL(Bitu & dest_sel,Bitu src_sel) {
+void CPU_ARPL(Bitu & dest_sel,Bitu src_sel) {
 	FillFlags();
 	if ((dest_sel & 3) < (src_sel & 3)) {
 		dest_sel=(dest_sel & 0xfffc) + (src_sel & 3);
@@ -1698,7 +1751,7 @@ void CPUSubSystem::CPU_ARPL(Bitu & dest_sel,Bitu src_sel) {
 	} 
 }
 	
-void CPUSubSystem::CPU_LAR(Bitu selector,Bitu & ar) {
+void CPU_LAR(Bitu selector,Bitu & ar) {
 	FillFlags();
 	if (selector == 0) {
 		SETFLAGBIT(ZF,false);
@@ -1750,7 +1803,7 @@ void CPUSubSystem::CPU_LAR(Bitu selector,Bitu & ar) {
 	SETFLAGBIT(ZF,true);
 }
 
-void CPUSubSystem::CPU_LSL(Bitu selector,Bitu & limit) {
+void CPU_LSL(Bitu selector,Bitu & limit) {
 	FillFlags();
 	if (selector == 0) {
 		SETFLAGBIT(ZF,false);
@@ -1793,7 +1846,7 @@ void CPUSubSystem::CPU_LSL(Bitu selector,Bitu & limit) {
 	SETFLAGBIT(ZF,true);
 }
 
-void CPUSubSystem::CPU_VERR(Bitu selector) {
+void CPU_VERR(Bitu selector) {
 	FillFlags();
 	if (selector == 0) {
 		SETFLAGBIT(ZF,false);
@@ -1826,7 +1879,7 @@ void CPUSubSystem::CPU_VERR(Bitu selector) {
 	SETFLAGBIT(ZF,true);
 }
 
-void CPUSubSystem::CPU_VERW(Bitu selector) {
+void CPU_VERW(Bitu selector) {
 	FillFlags();
 	if (selector == 0) {
 		SETFLAGBIT(ZF,false);
@@ -1852,7 +1905,7 @@ void CPUSubSystem::CPU_VERW(Bitu selector) {
 	SETFLAGBIT(ZF,true);
 }
 
-bool CPUSubSystem::CPU_SetSegGeneral(SegNames seg,Bitu value) {
+bool CPU_SetSegGeneral(SegNames seg,Bitu value) {
 	value &= 0xffff;
 	if (!cpu.pmode || (reg_flags & FLAG_VM)) {
 		Segs.val[seg]=value;
@@ -1946,7 +1999,7 @@ bool CPUSubSystem::CPU_SetSegGeneral(SegNames seg,Bitu value) {
 	}
 }
 
-bool CPUSubSystem::CPU_PopSeg(SegNames seg,bool use32) {
+bool CPU_PopSeg(SegNames seg,bool use32) {
 	Bitu val=mem_readw(SegPhys(ss) + (reg_esp & cpu.stack.mask));
 	if (CPU_SetSegGeneral(seg,val)) return true;
 	Bitu addsp=use32?0x04:0x02;
@@ -1954,7 +2007,7 @@ bool CPUSubSystem::CPU_PopSeg(SegNames seg,bool use32) {
 	return false;
 }
 
-bool CPUSubSystem::CPU_CPUID(void) {
+bool CPU_CPUID(void) {
 	if (CPU_ArchitectureType<CPU_ARCHTYPE_486NEWSLOW) return false;
 	switch (reg_eax) {
 	case 0:	/* Vendor ID String and maximum level? */
@@ -1990,7 +2043,7 @@ bool CPUSubSystem::CPU_CPUID(void) {
 	return true;
 }
 
-Bits CPUSubSystem::HLT_Decode(void) {
+static Bits HLT_Decode(void) {
 	/* Once an interrupt occurs, it should change cpu core */
 	if (reg_eip!=cpu.hlt.eip || SegValue(cs) != cpu.hlt.cs) {
 		cpudecoder=cpu.hlt.old_decoder;
@@ -2001,17 +2054,17 @@ Bits CPUSubSystem::HLT_Decode(void) {
 	return 0;
 }
 
-void CPUSubSystem::CPU_HLT(Bitu oldeip) {
+void CPU_HLT(Bitu oldeip) {
 	reg_eip=oldeip;
 	CPU_IODelayRemoved += CPU_Cycles;
 	CPU_Cycles=0;
 	cpu.hlt.cs=SegValue(cs);
 	cpu.hlt.eip=reg_eip;
 	cpu.hlt.old_decoder=cpudecoder;
-	cpudecoder = &HLT_Decode;
+	cpudecoder=&HLT_Decode;
 }
 
-void CPUSubSystem::CPU_ENTER(bool use32,Bitu bytes,Bitu level) {
+void CPU_ENTER(bool use32,Bitu bytes,Bitu level) {
 	level&=0x1f;
 	Bitu sp_index=reg_esp&cpu.stack.mask;
 	Bitu bp_index=reg_ebp&cpu.stack.mask;
@@ -2044,7 +2097,7 @@ void CPUSubSystem::CPU_ENTER(bool use32,Bitu bytes,Bitu level) {
 	reg_esp=(reg_esp&cpu.stack.notmask)|((sp_index)&cpu.stack.mask);
 }
 
-void CPUSubSystem::CPU_Enable_SkipAutoAdjust(void) {
+void CPU_Enable_SkipAutoAdjust(void) {
 	if (CPU_CycleAutoAdjust) {
 		CPU_CycleMax /= 2;
 		if (CPU_CycleMax < CPU_CYCLES_LOWER_LIMIT)
@@ -2053,167 +2106,204 @@ void CPUSubSystem::CPU_Enable_SkipAutoAdjust(void) {
 	CPU_SkipCycleAutoAdjust=true;
 }
 
-void CPUSubSystem::CPU_Disable_SkipAutoAdjust(void) {
+void CPU_Disable_SkipAutoAdjust(void) {
 	CPU_SkipCycleAutoAdjust=false;
 }
 
-void CPUSubSystem::CPU_Reset_AutoAdjust(void) {
+void CPU_Reset_AutoAdjust(void) {
 	CPU_IODelayRemoved = 0;
 	myldbi->ticksDone = 0;
 	myldbi->ticksScheduled = 0;
 }
 
-//class CPU: public Module_base {
-//private:
-//	bool inited;
-//public:
-//	CPU(Section* configuration):Module_base(configuration) {
-//
-//	}
-//	~CPU(){ /* empty */};
-//};
+class CPU: public Module_base {
+private:
+	static bool inited;
+public:
+	CPU(Section* configuration):Module_base(configuration) {
+		if(inited) {
+			Change_Config(configuration);
+			return;
+		}
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
+		inited=true;
+		reg_eax=0;
+		reg_ebx=0;
+		reg_ecx=0;
+		reg_edx=0;
+		reg_edi=0;
+		reg_esi=0;
+		reg_ebp=0;
+		reg_esp=0;
+	
+		SegSet16(cs,0);
+		SegSet16(ds,0);
+		SegSet16(es,0);
+		SegSet16(fs,0);
+		SegSet16(gs,0);
+		SegSet16(ss,0);
+	
+		CPU_SetFlags(FLAG_IF,FMASK_ALL);		//Enable interrupts
+		cpu.cr0=0xffffffff;
+		CPU_SET_CRX(0,0);						//Initialize
+		cpu.code.big=false;
+		cpu.stack.mask=0xffff;
+		cpu.stack.notmask=0xffff0000;
+		cpu.stack.big=false;
+		cpu.trap_skip=false;
+		cpu.idt.SetBase(0);
+		cpu.idt.SetLimit(1023);
 
-CPUSubSystem::CPUSubSystem(CDosBox* p) : CLSBAbstractSubSystem(p)
-{
-	CPU_Cycles = 0;
-	CPU_CycleLeft = 3000;
-	CPU_CycleMax = 3000;
-	CPU_OldCycleMax = 3000;
-	CPU_CyclePercUsed = 100;
-	CPU_CycleLimit = -1;
-	CPU_IODelayRemoved = 0;
-	cpudecoder = NULL;
-	CPU_CycleAutoAdjust = false;
-	CPU_SkipCycleAutoAdjust = false;
-	CPU_AutoDetermineMode = 0;
-	CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
-	CPU_extflags_toggle=0;	// ID and AC flags may be toggled depending on emulated CPU architecture
-	CPU_PrefetchQueueSize=0;
-//	pCPU = new CPU(NULL);
-//	pCPU->inited = false;
-	inited = false;
-	printed_cycles_auto_info = false;
-}
+		for (Bitu i=0; i<7; i++) {
+			cpu.drx[i]=0;
+			cpu.trx[i]=0;
+		}
+		if (CPU_ArchitectureType==CPU_ARCHTYPE_PENTIUMSLOW) {
+			cpu.drx[6]=0xffff0ff0;
+		} else {
+			cpu.drx[6]=0xffff1ff0;
+		}
+		cpu.drx[7]=0x00000400;
 
-void CPUSubSystem::Vinit()
-{
-	if (inited) {
-		Change_Config();
-		return;
+		/* Init the cpu cores */
+		CPU_Core_Normal_Init();
+		CPU_Core_Simple_Init();
+		CPU_Core_Full_Init();
+		Change_Config(configuration);	
+		CPU_JMP(false,0,0,0);					//Setup the first cpu core
 	}
-	inited=true;
-	reg_eax=0;
-	reg_ebx=0;
-	reg_ecx=0;
-	reg_edx=0;
-	reg_edi=0;
-	reg_esi=0;
-	reg_ebp=0;
-	reg_esp=0;
+	bool Change_Config(Section* newconfig){
+		Section_prop * section=static_cast<Section_prop *>(newconfig);
+		CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
+		//CPU_CycleLeft=0;//needed ?
+		CPU_Cycles=0;
+		CPU_SkipCycleAutoAdjust=false;
 
-	SegSet16(cs,0);
-	SegSet16(ds,0);
-	SegSet16(es,0);
-	SegSet16(fs,0);
-	SegSet16(gs,0);
-	SegSet16(ss,0);
+		Prop_multival* p = section->Get_multival("cycles");
+		std::string type = p->GetSection()->Get_string("type");
+		std::string str ;
+		CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
+		if (type=="max") {
+			CPU_CycleMax=0;
+			CPU_CyclePercUsed=100;
+			CPU_CycleAutoAdjust=true;
+			CPU_CycleLimit=-1;
+			for (Bitu cmdnum=1; cmdnum<=cmd.GetCount(); cmdnum++) {
+				if (cmd.FindCommand(cmdnum,str)) {
+					if (str.find('%')==str.length()-1) {
+						str.erase(str.find('%'));
+						int percval=0;
+						std::istringstream stream(str);
+						stream >> percval;
+						if ((percval>0) && (percval<=105)) CPU_CyclePercUsed=(Bit32s)percval;
+					} else if (str=="limit") {
+						cmdnum++;
+						if (cmd.FindCommand(cmdnum,str)) {
+							int cyclimit=0;
+							std::istringstream stream(str);
+							stream >> cyclimit;
+							if (cyclimit>0) CPU_CycleLimit=cyclimit;
+						}
+					}
+				}
+			}
+		} else {
+			if (type=="auto") {
+				CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
+				CPU_CycleMax=3000;
+				CPU_OldCycleMax=3000;
+				CPU_CyclePercUsed=100;
+				for (Bitu cmdnum=0; cmdnum<=cmd.GetCount(); cmdnum++) {
+					if (cmd.FindCommand(cmdnum,str)) {
+						if (str.find('%')==str.length()-1) {
+							str.erase(str.find('%'));
+							int percval=0;
+							std::istringstream stream(str);
+							stream >> percval;
+							if ((percval>0) && (percval<=105)) CPU_CyclePercUsed=(Bit32s)percval;
+						} else if (str=="limit") {
+							cmdnum++;
+							if (cmd.FindCommand(cmdnum,str)) {
+								int cyclimit=0;
+								std::istringstream stream(str);
+								stream >> cyclimit;
+								if (cyclimit>0) CPU_CycleLimit=cyclimit;
+							}
+						} else {
+							int rmdval=0;
+							std::istringstream stream(str);
+							stream >> rmdval;
+							if (rmdval>0) {
+								CPU_CycleMax=(Bit32s)rmdval;
+								CPU_OldCycleMax=(Bit32s)rmdval;
+							}
+						}
+					}
+				}
+			} else if(type =="fixed") {
+				cmd.FindCommand(1,str);
+				int rmdval=0;
+				std::istringstream stream(str);
+				stream >> rmdval;
+				CPU_CycleMax=(Bit32s)rmdval;
+			} else {
+				std::istringstream stream(type);
+				int rmdval=0;
+				stream >> rmdval;
+				if(rmdval) CPU_CycleMax=(Bit32s)rmdval;
+			}
+			CPU_CycleAutoAdjust=false;
+		}
 
-	CPU_SetFlags(FLAG_IF,FMASK_ALL);		//Enable interrupts
-	cpu.cr0=0xffffffff;
-	CPU_SET_CRX(0,0);						//Initialize
-	cpu.code.big=false;
-	cpu.stack.mask=0xffff;
-	cpu.stack.notmask=0xffff0000;
-	cpu.stack.big=false;
-	cpu.trap_skip=false;
-	cpu.idt.SetBase(0);
-	cpu.idt.SetLimit(1023);
+		std::string core(section->Get_string("core"));
+		cpudecoder=&CPU_Core_Normal_Run;
+		if (core == "normal") {
+			cpudecoder=&CPU_Core_Normal_Run;
+		} else if (core =="simple") {
+			cpudecoder=&CPU_Core_Simple_Run;
+		} else if (core == "full") {
+			cpudecoder=&CPU_Core_Full_Run;
+		} else if (core == "auto") {
+			cpudecoder=&CPU_Core_Normal_Run;
+		}
 
-	for (Bitu i=0; i<7; i++) {
-		cpu.drx[i]=0;
-		cpu.trx[i]=0;
-	}
-	if (CPU_ArchitectureType==CPU_ARCHTYPE_PENTIUMSLOW) {
-		cpu.drx[6]=0xffff0ff0;
-	} else {
-		cpu.drx[6]=0xffff1ff0;
-	}
-	cpu.drx[7]=0x00000400;
-
-	/* Init the cpu cores */
-	CPU_Core_Normal_Init();
-	CPU_Core_Simple_Init();
-	CPU_Core_Full_Init();
-	Change_Config();
-	CPU_JMP(false,0,0,0);					//Setup the first cpu core
-}
-
-bool CPUSubSystem::Change_Config()
-{
-	CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
-	//CPU_CycleLeft=0;//needed ?
-	CPU_Cycles=0;
-	CPU_SkipCycleAutoAdjust=false;
-	CPU_CycleAutoAdjust=false;
-
-	switch (parent->GetConfig()->cpu.cycles_change) {
-	case ALDB_CPU::LDB_CPU_CYCLE_MAX:
-		CPU_CycleMax=0;
-		CPU_CyclePercUsed=100;
-		CPU_CycleAutoAdjust=true;
-		CPU_CycleLimit=-1;
-		int percval = parent->GetConfig()->cpu.cycle_perc;
-		if ((percval>0) && (percval<=105)) CPU_CyclePercUsed = (Bit32s)percval;
-		if (parent->GetConfig()->cpu.cycle_limit > 0)
-			CPU_CycleLimit = parent->GetConfig()->cpu.cycle_limit;
-		break;
-
-	case ALDB_CPU::LDB_CPU_CYCLE_AUTO:
-		CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
-		CPU_CycleMax=3000;
-		CPU_OldCycleMax=3000;
-		CPU_CyclePercUsed=100;
-		int percval = parent->GetConfig()->cpu.cycle_perc;
-		if ((percval>0) && (percval<=105)) CPU_CyclePercUsed = (Bit32s)percval;
-		if (parent->GetConfig()->cpu.cycle_limit > 0)
-			CPU_CycleLimit = parent->GetConfig()->cpu.cycle_limit;
-		CPU_CycleMax = parent->GetConfig()->cpu.fix_cycles;
-		CPU_OldCycleMax = CPU_CycleMax;
-		break;
-
-	case ALDB_CPU::LDB_CPU_CYCLE_FIX:
-		CPU_CycleMax = parent->GetConfig()->cpu.fix_cycles;
-		break;
-	}
-
-	switch (parent->GetConfig()->cpu.core) {
-	case ALDB_CPU::LDB_CPU_SIMPLE:
-		cpudecoder = &CPU_Core_Simple_Run;
-		break;
-	case ALDB_CPU::LDB_CPU_FULL:
-		cpudecoder = &CPU_Core_Full_Run;
-		break;
-	default:
-		cpudecoder = &CPU_Core_Normal_Run;
-	}
-
-	CPU_ArchitectureType = parent->GetConfig()->cpu.family;
-	if (!CPU_ArchitectureType)
 		CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
+		std::string cputype(section->Get_string("cputype"));
+		if (cputype == "auto") {
+			CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
+		} else if (cputype == "386") {
+			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
+		} else if (cputype == "386_slow") {
+			CPU_ArchitectureType = CPU_ARCHTYPE_386SLOW;
+		} else if (cputype == "486_slow") {
+			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
+		} else if (cputype == "pentium_slow") {
+			CPU_ArchitectureType = CPU_ARCHTYPE_PENTIUMSLOW;
+		}
 
-	if (CPU_ArchitectureType>=CPU_ARCHTYPE_486NEWSLOW) CPU_extflags_toggle=(FLAG_ID|FLAG_AC);
-	else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
-	else CPU_extflags_toggle=0;
+		if (CPU_ArchitectureType>=CPU_ARCHTYPE_486NEWSLOW) CPU_extflags_toggle=(FLAG_ID|FLAG_AC);
+		else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
+		else CPU_extflags_toggle=0;
 
-	if (CPU_CycleMax <= 0) CPU_CycleMax = 3000;
-	if (CPU_CycleAutoAdjust) GFX_SetTitle(CPU_CyclePercUsed,-1,false);
-	else GFX_SetTitle(CPU_CycleMax,-1,false);
-	return true;
+		if (CPU_CycleMax <= 0) CPU_CycleMax = 3000;
+		if (CPU_CycleAutoAdjust) GFX_SetTitle(CPU_CyclePercUsed,-1,false);
+		else GFX_SetTitle(CPU_CycleMax,-1,false);
+		return true;
+	}
+	~CPU(){ /* empty */};
+};
+	
+static CPU * test;
+
+void CPU_ShutDown(Section* sec) {
+	delete test;
 }
 
-CPUSubSystem::~CPUSubSystem()
-{
-//	delete pCPU;
+void CPU_Init(Section* sec) {
+	test = new CPU(sec);
+	sec->AddDestroyFunction(&CPU_ShutDown,true);
 }
+//initialize static members
+bool CPU::inited=false;
 
 }

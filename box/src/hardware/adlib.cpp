@@ -255,7 +255,7 @@ void OPL_Init(Section* sec,OPL_Mode oplmode) {
 	module = new Adlib::Module( sec );
 }
 
-void OPL_ShutDown(Section* /*sec*/){
+void OPL_ShutDown(Section* sec){
 	delete module;
 	module = 0;
 

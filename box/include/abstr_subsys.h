@@ -21,19 +21,12 @@
 
 class CDosBox;
 
-namespace dosbox {
-
 class CLSBAbstractSubSystem {
 public:
-	virtual CLSBAbstractSubSystem(CDosBox* p) {
-		parent = p; }
-
+	virtual CLSBAbstractSubSystem() = 0;
 	virtual ~CLSBAbstractSubSystem() = 0;
-
 private:
 	CDosBox* parent;
 };
-
-} //namespace dosbox
 
 #endif /* ABSTR_SUBSYS_H_ */

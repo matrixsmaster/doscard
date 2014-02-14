@@ -346,7 +346,7 @@ again:
 
 class DMA:public Module_base{
 public:
-	DMA(Section* /*configuration*/):Module_base(NULL){
+	DMA(Section* configuration):Module_base(configuration){
 		Bitu i;
 		DmaControllers[0] = new DmaController(0);
 		if (IS_EGAVGA_ARCH) DmaControllers[1] = new DmaController(1);

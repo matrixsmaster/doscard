@@ -1567,7 +1567,7 @@ public:
 	}	
 	
 	~SBLASTER() {
-		OPL_ShutDown(NULL);
+		OPL_ShutDown(m_configuration);
 		DSP_Reset(); // Stop everything	
 	}	
 }; //End of SBLASTER class

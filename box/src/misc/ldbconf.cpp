@@ -30,14 +30,4 @@ CLDBConf::~CLDBConf() {
 	// TODO Auto-generated destructor stub
 }
 
-LDB_Settings* CLDBConf::GetSettings()
-{
-	return (&set);
-}
-
-LDB_CPUType* CLDBConf::GetCPU()
-{
-	return (&set.cpu);
-}
-
 } /* namespace dosbox */

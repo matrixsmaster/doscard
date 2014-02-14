@@ -138,7 +138,7 @@ void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool 
 	render.src.ratio=ratio;
 }
 
-void RENDER_Init(Section * /*sec*/)
+void RENDER_Init(Section * sec)
 {
 	LDB_SendDWord(DISPLAY_INIT_SIGNATURE);
 	init_ok = false;
