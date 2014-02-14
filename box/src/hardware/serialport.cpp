@@ -29,10 +29,10 @@
 #include "callback.h"				// CALLBACK_Idle
 
 #include "serialport.h"
-#include "directserial.h"
+//#include "directserial.h"
 #include "serialdummy.h"
 //#include "softmodem.h"
-#include "nullmodem.h"
+//#include "nullmodem.h"
 
 #include "cpu.h"
 
@@ -1233,27 +1233,11 @@ public:
 			if (type=="dummy") {
 				serialports[i] = new CSerialDummy (i, &cmd);
 			}
-#ifdef DIRECTSERIAL_AVAILIBLE
+#if 0
 			else if (type=="directserial") {
 				serialports[i] = new CDirectSerial (i, &cmd);
 				if (!serialports[i]->InstallationSuccessful)  {
 					// serial port name was wrong or already in use
-					delete serialports[i];
-					serialports[i] = NULL;
-				}
-			}
-#endif
-#if C_MODEM
-			else if(type=="modem") {
-				serialports[i] = new CSerialModem (i, &cmd);
-				if (!serialports[i]->InstallationSuccessful)  {
-					delete serialports[i];
-					serialports[i] = NULL;
-				}
-			}
-			else if(type=="nullmodem") {
-				serialports[i] = new CNullModem (i, &cmd);
-				if (!serialports[i]->InstallationSuccessful)  {
 					delete serialports[i];
 					serialports[i] = NULL;
 				}

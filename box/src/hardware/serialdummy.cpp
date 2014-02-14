@@ -60,7 +60,7 @@ void CSerialDummy::handleUpperEvent(Bit16u type) {
 /* parameters baudrate, stopbits, number of databits, parity.               **/
 /*****************************************************************************/
 void CSerialDummy::updatePortConfig(Bit16u divider, Bit8u lcr) {
-	//LOG_MSG("Serial port at 0x%x: Port params changed: %d Baud", base,dcb.BaudRate);
+	LOG_MSG("Serial port params changed");
 }
 
 void CSerialDummy::updateMSR() {

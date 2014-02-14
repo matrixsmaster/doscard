@@ -255,45 +255,9 @@ CDosBox::CDosBox()
 #endif
 
 	myset.mem = 31;
-
-//	secprop=control->AddSection_prop("cpu",&CPU_Init,true);//done
-//	const char* cores[] = { "auto", "normal", "simple",0 };
-
 	myset.cpu.core = ALDB_CPU::LDB_CPU_NORMAL;
-
-//	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"auto");
-//	Pstring->Set_values(cores);
-//	Pstring->Set_help("CPU Core used in emulation. auto will switch to dynamic if available and\n"
-//		"appropriate.");
-	myset.cpu.core = ALDB_CPU::LDB_CPU_NORMAL;
-
-//	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", 0};
-
 	myset.cpu.family = CPU_ARCHTYPE_486NEWSLOW;
-
-//	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"486_slow");
-//	Pstring->Set_values(cputype_values);
-//	Pstring->Set_help("CPU Type used in emulation. auto is the fastest choice.");
-
-	Pmulti_remain = secprop->Add_multiremain("cycles",Property::Changeable::Always," ");
-
 	myset.cpu.cycles_change = ALDB_CPU::LDB_CPU_CYCLE_AUTO;
-
-//	const char* cyclest[] = { "auto","fixed","max","%u",0 };
-//	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::Always,"auto");
-//	Pmulti_remain->SetValue("max");
-//	Pstring->Set_values(cyclest);
-
-//	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::Always,"");
-
-		
-//#if C_FPU
-//	secprop->AddInitFunction(&FPU_Init);
-//#endif
-//	secprop->AddInitFunction(&DMA_Init);//done
-//	secprop->AddInitFunction(&VGA_Init);
-//	secprop->AddInitFunction(&KEYBOARD_Init);
-
 
 #if defined(PCI_FUNCTIONALITY_ENABLED)
 	secprop=control->AddSection_prop("pci",&PCI_Init,false); //PCI bus
@@ -457,16 +421,14 @@ CDosBox::~CDosBox()
 
 int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 {
-	//FIXME: checks
+	//TODO: checks
 	ldb_callbacks[t] = f;
-//	printf("RegisterCallback(%d, 0x%x)\n",t,((void*)f));
-//	libdosbox_callbacks[t] = f;
 	return 0;
 }
 
 int CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
 {
-	//FIXME: checks
+	//TODO: checks
 	return ((*ldb_callbacks[t])(p,l));
 }
 
