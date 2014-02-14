@@ -201,16 +201,16 @@ void OPL_Write(Bitu port,Bitu val,Bitu iolen) {
 
 namespace Adlib {
 
-Module::Module( Section* configuration ) : Module_base(configuration) {
+Module::Module( Section* /*configuration*/) : Module_base(NULL) {
 	reg.dual[0] = 0;
 	reg.dual[1] = 0;
 	reg.normal = 0;
 	handler = 0;
 //	capture = 0;
 
-	Section_prop * section=static_cast<Section_prop *>(configuration);
-	Bitu base = section->Get_hex("sbbase");
-	Bitu rate = section->Get_int("oplrate");
+//	Section_prop * section=static_cast<Section_prop *>(configuration);
+	Bitu base = myldbi->GetConfig()->snd.sb_base; //section->Get_hex("sbbase");
+	Bitu rate = myldbi->GetConfig()->snd.sb_opl_freq; //section->Get_int("oplrate");
 	//Make sure we can't select lower than 8000 to prevent fixed point issues
 	if ( rate < 8000 )
 		rate = 8000;
@@ -250,9 +250,9 @@ OPL_Mode Module::oplmode=OPL_none;
 };	//Adlib Namespace
 
 
-void OPL_Init(Section* sec,OPL_Mode oplmode) {
+void OPL_Init(/*Section* sec,*/OPL_Mode oplmode) {
 	Adlib::Module::oplmode = oplmode;
-	module = new Adlib::Module( sec );
+	module = new Adlib::Module(NULL);
 }
 
 void OPL_ShutDown(Section* /*sec*/){

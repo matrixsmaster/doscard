@@ -41,10 +41,23 @@ typedef struct ALDB_CPU {
 	int32_t cycle_perc, cycle_limit;
 } LDB_CPUType;
 
+typedef struct ALDB_SND {
+	bool enabled;
+	uint32_t sample_freq, blocks;
+	uint32_t prebuf; //FIXME: cut it
+	//TODO: maybe place SB16/SBPro2 setting here?
+	uint16_t sb_base, sb_irq, sb_dma, sb_hdma;
+	uint32_t sb_opl_freq;
+	bool sb_mix;
+	bool pcsp_en;
+	uint32_t pcsp_freq;
+} LDB_Sound;
+
 typedef struct ALDB_SETTINGS {
 	LDB_CPUType cpu;
 	uint32_t mem;
 	bool xms;
+	LDB_Sound snd;
 } LDB_Settings;
 
 class CLDBConf {

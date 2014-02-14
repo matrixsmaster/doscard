@@ -325,14 +325,16 @@ class PCSPEAKER:public Module_base {
 private:
 	MixerObject MixerChan;
 public:
-	PCSPEAKER(Section* configuration):Module_base(configuration){
+	PCSPEAKER(Section* /*configuration*/):Module_base(NULL){
 		spkr.chan=0;
-		Section_prop * section=static_cast<Section_prop *>(configuration);
-		if(!section->Get_bool("pcspeaker")) return;
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
+//		if(!section->Get_bool("pcspeaker")) return;
+		if (!myldbi->GetConfig()->snd.pcsp_en) return;
 		spkr.mode=SPKR_OFF;
 		spkr.last_ticks=0;
 		spkr.last_index=0;
-		spkr.rate=section->Get_int("pcrate");
+//		spkr.rate=section->Get_int("pcrate");
+		spkr.rate = myldbi->GetConfig()->snd.pcsp_freq;
 		spkr.pit_max=(1000.0f/PIT_TICK_RATE)*65535;
 		spkr.pit_half=spkr.pit_max/2;
 		spkr.pit_new_max=spkr.pit_max;
@@ -356,7 +358,7 @@ void PCSPEAKER_ShutDown(Section* sec){
 
 void PCSPEAKER_Init(Section* sec) {
 	test = new PCSPEAKER(sec);
-	sec->AddDestroyFunction(&PCSPEAKER_ShutDown,true);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&PCSPEAKER_ShutDown,true)\n");
 }
 
 }

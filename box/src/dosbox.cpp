@@ -79,6 +79,15 @@ static void DOSBOX_RealInit(Section *)
 	DMA_Init(NULL);
 	VGA_Init(NULL);
 	KEYBOARD_Init(NULL);
+#if defined(PCI_FUNCTIONALITY_ENABLED)
+	PCI_Init(); //PCI bus
+#endif
+	MIXER_Init(NULL);
+#if C_DEBUG
+	DEBUG_Init();
+#endif
+	SBLASTER_Init(NULL);
+	PCSPEAKER_Init(NULL);
 }
 
 static void DOSBOX_RealDelete()
@@ -259,70 +268,81 @@ CDosBox::CDosBox()
 	myset.cpu.family = CPU_ARCHTYPE_486NEWSLOW;
 	myset.cpu.cycles_change = ALDB_CPU::LDB_CPU_CYCLE_AUTO;
 
-#if defined(PCI_FUNCTIONALITY_ENABLED)
-	secprop=control->AddSection_prop("pci",&PCI_Init,false); //PCI bus
-#endif
+
+//	secprop=control->AddSection_prop("mixer",&MIXER_Init);
+//	Pbool = secprop->Add_bool("nosound",Property::Changeable::OnlyAtStart,false);
+//	Pbool->Set_help("Enable silent mode, sound is still emulated though.");
+
+	myset.snd.enabled = true;
+	myset.snd.sample_freq = 44100;
+
+//	Pint = secprop->Add_int("rate",Property::Changeable::OnlyAtStart,44100);
+//	Pint->Set_values(rates);
+//	Pint->Set_help("Mixer sample rate, setting any device's rate higher than this will probably lower their sound quality.");
+
+//	const char *blocksizes[] = { "1024", "2048", "4096", "8192", "512", "256", 0};
+//	Pint = secprop->Add_int("blocksize",Property::Changeable::OnlyAtStart,256);
+//	Pint->Set_values(blocksizes);
+//	Pint->Set_help("Mixer block size, larger blocks might help sound stuttering but sound will also be more lagged.");
+
+	myset.snd.blocks = 256;
+	myset.snd.prebuf = 20;
+
+//	Pint = secprop->Add_int("prebuffer",Property::Changeable::OnlyAtStart,20);
+//	Pint->SetMinMax(0,100);
+//	Pint->Set_help("How many milliseconds of data to keep on top of the blocksize.");
 
 
-	secprop=control->AddSection_prop("mixer",&MIXER_Init);
-	Pbool = secprop->Add_bool("nosound",Property::Changeable::OnlyAtStart,false);
-	Pbool->Set_help("Enable silent mode, sound is still emulated though.");
-
-	Pint = secprop->Add_int("rate",Property::Changeable::OnlyAtStart,44100);
-	Pint->Set_values(rates);
-	Pint->Set_help("Mixer sample rate, setting any device's rate higher than this will probably lower their sound quality.");
-
-	const char *blocksizes[] = {
-		 "1024", "2048", "4096", "8192", "512", "256", 0};
-	Pint = secprop->Add_int("blocksize",Property::Changeable::OnlyAtStart,256);
-	Pint->Set_values(blocksizes);
-	Pint->Set_help("Mixer block size, larger blocks might help sound stuttering but sound will also be more lagged.");
-
-	Pint = secprop->Add_int("prebuffer",Property::Changeable::OnlyAtStart,20);
-	Pint->SetMinMax(0,100);
-	Pint->Set_help("How many milliseconds of data to keep on top of the blocksize.");
-
-#if C_DEBUG
-	secprop=control->AddSection_prop("debug",&DEBUG_Init);
-#endif
-
-	secprop=control->AddSection_prop("sblaster",&SBLASTER_Init,true);//done
+//	secprop=control->AddSection_prop("sblaster",&SBLASTER_Init,true);//done
 	
-	const char* sbtypes[] = { "sb1", "sb2", "sbpro1", "sbpro2", "sb16", "gb", "none", 0 };
-	Pstring = secprop->Add_string("sbtype",Property::Changeable::WhenIdle,"sb16");
-	Pstring->Set_values(sbtypes);
-	Pstring->Set_help("Type of Soundblaster to emulate. gb is Gameblaster.");
+//	const char* sbtypes[] = { "sb1", "sb2", "sbpro1", "sbpro2", "sb16", "gb", "none", 0 };
+//	Pstring = secprop->Add_string("sbtype",Property::Changeable::WhenIdle,"sb16");
+//	Pstring->Set_values(sbtypes);
+//	Pstring->Set_help("Type of Soundblaster to emulate. gb is Gameblaster.");
 
-	Phex = secprop->Add_hex("sbbase",Property::Changeable::WhenIdle,0x220);
-	Phex->Set_values(ios);
-	Phex->Set_help("The IO address of the soundblaster.");
+//	Phex = secprop->Add_hex("sbbase",Property::Changeable::WhenIdle,0x220);
+//	Phex->Set_values(ios);
+//	Phex->Set_help("The IO address of the soundblaster.");
 
-	Pint = secprop->Add_int("irq",Property::Changeable::WhenIdle,7);
-	Pint->Set_values(irqssb);
-	Pint->Set_help("The IRQ number of the soundblaster.");
+	myset.snd.sb_base = 0x220;
+	myset.snd.sb_irq = 7;
 
-	Pint = secprop->Add_int("dma",Property::Changeable::WhenIdle,1);
-	Pint->Set_values(dmassb);
-	Pint->Set_help("The DMA number of the soundblaster.");
+//	Pint = secprop->Add_int("irq",Property::Changeable::WhenIdle,7);
+//	Pint->Set_values(irqssb);
+//	Pint->Set_help("The IRQ number of the soundblaster.");
 
-	Pint = secprop->Add_int("hdma",Property::Changeable::WhenIdle,5);
-	Pint->Set_values(dmassb);
-	Pint->Set_help("The High DMA number of the soundblaster.");
+//	Pint = secprop->Add_int("dma",Property::Changeable::WhenIdle,1);
+//	Pint->Set_values(dmassb);
+//	Pint->Set_help("The DMA number of the soundblaster.");
 
-	Pbool = secprop->Add_bool("sbmixer",Property::Changeable::WhenIdle,true);
-	Pbool->Set_help("Allow the soundblaster mixer to modify the DOSBox mixer.");
+	myset.snd.sb_dma = 1;
+	myset.snd.sb_hdma = 5;
 
-	Pint = secprop->Add_int("oplrate",Property::Changeable::WhenIdle,44100);
-	Pint->Set_values(oplrates);
-	Pint->Set_help("Sample rate of OPL music emulation. Use 49716 for highest quality (set the mixer rate accordingly).");
+//	Pint = secprop->Add_int("hdma",Property::Changeable::WhenIdle,5);
+//	Pint->Set_values(dmassb);
+//	Pint->Set_help("The High DMA number of the soundblaster.");
 
-	secprop = control->AddSection_prop("speaker",&PCSPEAKER_Init,true);//done
-	Pbool = secprop->Add_bool("pcspeaker",Property::Changeable::WhenIdle,true);
-	Pbool->Set_help("Enable PC-Speaker emulation.");
+//	Pbool = secprop->Add_bool("sbmixer",Property::Changeable::WhenIdle,true);
+//	Pbool->Set_help("Allow the soundblaster mixer to modify the DOSBox mixer.");
 
-	Pint = secprop->Add_int("pcrate",Property::Changeable::WhenIdle,44100);
-	Pint->Set_values(rates);
-	Pint->Set_help("Sample rate of the PC-Speaker sound generation.");
+	myset.snd.sb_mix = true;
+
+//	Pint = secprop->Add_int("oplrate",Property::Changeable::WhenIdle,44100);
+//	Pint->Set_values(oplrates);
+//	Pint->Set_help("Sample rate of OPL music emulation. Use 49716 for highest quality (set the mixer rate accordingly).");
+
+	myset.snd.sb_opl_freq = 44100;
+
+//	secprop = control->AddSection_prop("speaker",&PCSPEAKER_Init,true);//done
+//	Pbool = secprop->Add_bool("pcspeaker",Property::Changeable::WhenIdle,true);
+//	Pbool->Set_help("Enable PC-Speaker emulation.");
+
+	myset.snd.pcsp_en = true;
+	myset.snd.pcsp_freq = 44100;
+
+//	Pint = secprop->Add_int("pcrate",Property::Changeable::WhenIdle,44100);
+//	Pint->Set_values(rates);
+//	Pint->Set_help("Sample rate of the PC-Speaker sound generation.");
 
 	secprop=control->AddSection_prop("joystick",&BIOS_Init,false);//done
 	secprop->AddInitFunction(&INT10_Init);
@@ -337,17 +357,6 @@ CDosBox::CDosBox()
 	Pmulti_remain->SetValue("dummy");
 	Pstring->Set_values(serials);
 	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::WhenIdle,"");
-	Pmulti_remain->Set_help(
-		"set type of device connected to com port.\n"
-		"Can be disabled, dummy, modem, nullmodem, directserial.\n"
-		"Additional parameters must be in the same line in the form of\n"
-		"parameter:value. Parameter for all types is irq (optional).\n"
-		"for directserial: realport (required), rxdelay (optional).\n"
-		"                 (realport:COM1 realport:ttyS0).\n"
-		"for modem: listenport (optional).\n"
-		"for nullmodem: server, rxdelay, txdelay, telnet, usedtr,\n"
-		"               transparent, port, inhsocket (all optional).\n"
-		"Example: serial1=modem listenport:5000");
 
 	Pmulti_remain = secprop->Add_multiremain("serial2",Property::Changeable::WhenIdle," ");
 	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::WhenIdle,"dummy");
@@ -373,13 +382,16 @@ CDosBox::CDosBox()
 
 	/* All the DOS Related stuff, which will eventually start up in the shell */
 	secprop=control->AddSection_prop("dos",&DOS_Init,false);//done
+
 	secprop->AddInitFunction(&XMS_Init,true);//done
+
 	Pbool = secprop->Add_bool("xms",Property::Changeable::WhenIdle,true);
 	myset.xms = true;
 
 	Pbool->Set_help("Enable XMS support.");
 
 	secprop->AddInitFunction(&EMS_Init,true);//done
+
 	const char* ems_settings[] = { "true", "emsboard", "emm386", "false", 0};
 	Pstring = secprop->Add_string("ems",Property::Changeable::WhenIdle,"true");
 	Pstring->Set_values(ems_settings);

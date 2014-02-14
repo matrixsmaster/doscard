@@ -1500,21 +1500,24 @@ private:
 	OPL_Mode oplmode;
 
 public:
-	SBLASTER(Section* configuration):Module_base(configuration) {
+	SBLASTER(Section* /*configuration*/):Module_base(NULL) {
 		Bitu i;
-		Section_prop * section=static_cast<Section_prop *>(configuration);
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
 
-		sb.hw.base=section->Get_hex("sbbase");
-		sb.hw.irq=section->Get_int("irq");
-		Bitu dma8bit=section->Get_int("dma");
+//		sb.hw.base=section->Get_hex("sbbase");
+		sb.hw.base = myldbi->GetConfig()->snd.sb_base;
+//		sb.hw.irq=section->Get_int("irq");
+		sb.hw.irq = myldbi->GetConfig()->snd.sb_irq;
+		Bitu dma8bit = myldbi->GetConfig()->snd.sb_dma; //section->Get_int("dma");
 		if (dma8bit>0xff) dma8bit=0xff;
 		sb.hw.dma8=(Bit8u)(dma8bit&0xff);
-		Bitu dma16bit=section->Get_int("hdma");
+		Bitu dma16bit = myldbi->GetConfig()->snd.sb_hdma; //section->Get_int("hdma");
 		if (dma16bit>0xff) dma16bit=0xff;
 		sb.hw.dma16=(Bit8u)(dma16bit&0xff);
 
-		sb.mixer.enabled=section->Get_bool("sbmixer");
-		sb.mixer.stereo=false;
+//		sb.mixer.enabled=section->Get_bool("sbmixer");
+		sb.mixer.enabled = myldbi->GetConfig()->snd.sb_mix;
+		sb.mixer.stereo = false;
 
 		sb.type = SBT_16;
 		if ((!IS_EGAVGA_ARCH) || !SecondDMAControllerAvailable()) {
@@ -1523,7 +1526,7 @@ public:
 		}
 		oplmode=OPL_opl3;
 
-		OPL_Init(section,oplmode);
+		OPL_Init(oplmode);
 
 		sb.chan=MixerChan.Install(&SBLASTER_CallBack,22050,"SB");
 		sb.dsp.state=DSP_S_NORMAL;
@@ -1578,10 +1581,10 @@ void SBLASTER_ShutDown(Section* /*sec*/) {
 	delete test;	
 }
 
-void SBLASTER_Init(Section* sec) {
-	test = new SBLASTER(sec);
-//	fprintf(stderr,"WARN: sec->AddDestroyFunction(&SBLASTER_ShutDown,true)\n");
-	sec->AddDestroyFunction(&SBLASTER_ShutDown,true);
+void SBLASTER_Init(Section* /*sec*/) {
+	test = new SBLASTER(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&SBLASTER_ShutDown,true)\n");
+//	sec->AddDestroyFunction(&SBLASTER_ShutDown,true);
 }
 
 }

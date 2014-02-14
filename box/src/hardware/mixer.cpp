@@ -592,15 +592,18 @@ MixerObject::~MixerObject(){
 }
 
 
-void MIXER_Init(Section* sec) {
-	sec->AddDestroyFunction(&MIXER_Stop);
+void MIXER_Init(Section* /*sec*/) {
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MIXER_Stop)\n");
 
-	Section_prop * section=static_cast<Section_prop *>(sec);
+//	Section_prop * section=static_cast<Section_prop *>(sec);
 	/* Read out config section */
-	mixer.freq=section->Get_int("rate");
-	mixer.nosound=section->Get_bool("nosound");
+//	mixer.freq=section->Get_int("rate");
+	mixer.freq = myldbi->GetConfig()->snd.sample_freq;
+//	mixer.nosound=section->Get_bool("nosound");
+	mixer.nosound = !(myldbi->GetConfig()->snd.enabled);
 //	mixer.nosound=true;
-	mixer.blocksize=section->Get_int("blocksize");
+//	mixer.blocksize=section->Get_int("blocksize");
+	mixer.blocksize = myldbi->GetConfig()->snd.blocks;
 
 	/* Initialize the internal stuff */
 	mixer.channels=0;
@@ -633,19 +636,7 @@ void MIXER_Init(Section* sec) {
 		LOG_MSG("MIXER: Silent mode");
 		TIMER_AddTickHandler(MIXER_Mix_NoSound);
 		inf.silent = true;
-	}/* else if (SDL_OpenAudio(&spec, &obtained) <0 ) {
-		mixer.nosound = true;
-		LOG_MSG("MIXER:Can't open audio: %s , running in nosound mode.",SDL_GetError());
-		TIMER_AddTickHandler(MIXER_Mix_NoSound);
 	} else {
-		if((mixer.freq != obtained.freq) || (mixer.blocksize != obtained.samples))
-			LOG_MSG("MIXER:Got different values from SDL: freq %d, blocksize %d",obtained.freq,obtained.samples);
-		mixer.freq=obtained.freq;
-		mixer.blocksize=obtained.samples;
-		TIMER_AddTickHandler(MIXER_Mix);
-		SDL_PauseAudio(0);
-	}*/
-	else {
 		LOG_MSG("MIXER: Starting f=%d, l=%d",mixer.freq,mixer.blocksize);
 		TIMER_AddTickHandler(MIXER_Mix);
 		inf.silent = false;
@@ -653,7 +644,8 @@ void MIXER_Init(Section* sec) {
 
 	myldbi->Callback(DBCB_PushSound,&inf,sizeof(inf));
 
-	mixer.min_needed=section->Get_int("prebuffer");
+//	mixer.min_needed=section->Get_int("prebuffer");
+	mixer.min_needed = myldbi->GetConfig()->snd.prebuf;
 	if (mixer.min_needed>100) mixer.min_needed=100;
 	mixer.min_needed=(mixer.freq*mixer.min_needed)/1000;
 	mixer.max_needed=mixer.blocksize * 2 + 2*mixer.min_needed;
