@@ -171,12 +171,12 @@ void VGA_SetCGA4Table(Bit8u val0,Bit8u val1,Bit8u val2,Bit8u val3) {
 	}	
 }
 
-void VGA_Init(Section* sec) {
+void VGA_Init(Section* /*sec*/) {
 //	Section_prop * section=static_cast<Section_prop *>(sec);
 	vga.draw.resizing=false;
 	vga.mode=M_ERROR;			//For first init
 	SVGA_Setup_Driver();
-	VGA_SetupMemory(sec);
+	VGA_SetupMemory();
 	VGA_SetupMisc();
 	VGA_SetupDAC();
 	VGA_SetupGFX();

@@ -26,13 +26,7 @@ namespace dosbox {
 typedef void (*LDB_INIT_FUN)(void*);
 
 typedef struct ALDB_CPU {
-	enum {
-		LDB_CPU_AUTO = 0,
-		LDB_CPU_386,
-		LDB_CPU_386S,
-		LDB_CPU_486S,
-		LDB_CPU_586S
-	} family;
+	uint8_t family;
 	enum {
 		LDB_CPU_CYCLE_AUTO = 0,
 		LDB_CPU_CYCLE_FIX,
@@ -50,6 +44,7 @@ typedef struct ALDB_CPU {
 typedef struct ALDB_SETTINGS {
 	LDB_CPUType cpu;
 	uint32_t mem;
+	bool xms;
 } LDB_Settings;
 
 class CLDBConf {
@@ -58,8 +53,8 @@ public:
 	virtual ~CLDBConf();
 	void AddInitializer(LDB_INIT_FUN f);
 	void InitAll();
-	LDB_Settings* GetSettings();
-	LDB_CPUType* GetCPU();
+	inline LDB_Settings* GetSettings() { return &set; }
+	inline LDB_CPUType* GetCPU() { return &set.cpu; }
 	uint32_t GetMem();
 private:
 	std::vector<LDB_INIT_FUN> inits;

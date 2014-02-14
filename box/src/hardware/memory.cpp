@@ -542,12 +542,13 @@ private:
 	IO_ReadHandleObject ReadHandler;
 	IO_WriteHandleObject WriteHandler;
 public:	
-	MEMORY(Section* configuration):Module_base(configuration){
+	MEMORY(Section* /*configuration*/):Module_base(NULL){
 		Bitu i;
-		Section_prop * section=static_cast<Section_prop *>(configuration);
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
 	
 		/* Setup the Physical Page Links */
-		Bitu memsize=section->Get_int("memsize");
+//		Bitu memsize=section->Get_int("memsize");
+		Bitu memsize = myldbi->GetConfig()->mem;
 	
 		if (memsize < 1) memsize = 1;
 		/* max 63 to solve problems with certain xms handlers */
@@ -607,10 +608,10 @@ static void MEM_ShutDown(Section * sec) {
 	delete test;
 }
 
-void MEM_Init(Section * sec) {
+void MEM_Init(Section * /*sec*/) {
 	/* shutdown function */
-	test = new MEMORY(sec);
-	sec->AddDestroyFunction(&MEM_ShutDown);
+	test = new MEMORY(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MEM_ShutDown)\n");
 }
 
 }

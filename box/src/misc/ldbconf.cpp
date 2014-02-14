@@ -21,9 +21,10 @@
 
 namespace dosbox {
 
-CLDBConf::CLDBConf(LDB_Settings* p) {
-	// TODO Auto-generated constructor stub
-
+CLDBConf::CLDBConf(LDB_Settings* p)
+{
+	if (p) set = *p;
+	else memset(&set,0,sizeof(set));
 }
 
 CLDBConf::~CLDBConf() {

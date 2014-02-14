@@ -2120,9 +2120,10 @@ class CPU: public Module_base {
 private:
 	static bool inited;
 public:
-	CPU(Section* configuration):Module_base(configuration) {
+	CPU(Section* /*configuration*/):Module_base(NULL)
+	{
 		if(inited) {
-			Change_Config(configuration);
+			Change_Config();
 			return;
 		}
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
@@ -2169,117 +2170,69 @@ public:
 		CPU_Core_Normal_Init();
 		CPU_Core_Simple_Init();
 		CPU_Core_Full_Init();
-		Change_Config(configuration);	
+		Change_Config();
 		CPU_JMP(false,0,0,0);					//Setup the first cpu core
 	}
-	bool Change_Config(Section* newconfig){
-		Section_prop * section=static_cast<Section_prop *>(newconfig);
+	bool Change_Config()
+	{
+//		Section_prop * section=static_cast<Section_prop *>(newconfig);
 		CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
 		//CPU_CycleLeft=0;//needed ?
 		CPU_Cycles=0;
 		CPU_SkipCycleAutoAdjust=false;
+		int val=0;
 
-		Prop_multival* p = section->Get_multival("cycles");
-		std::string type = p->GetSection()->Get_string("type");
-		std::string str ;
-		CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
-		if (type=="max") {
+//		Prop_multival* p = section->Get_multival("cycles");
+//		std::string type = p->GetSection()->Get_string("type");
+//		std::string str ;
+//		CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
+		switch (myldbi->GetConfig()->cpu.cycles_change) {
+		case ALDB_CPU::LDB_CPU_CYCLE_MAX:
 			CPU_CycleMax=0;
 			CPU_CyclePercUsed=100;
 			CPU_CycleAutoAdjust=true;
 			CPU_CycleLimit=-1;
-			for (Bitu cmdnum=1; cmdnum<=cmd.GetCount(); cmdnum++) {
-				if (cmd.FindCommand(cmdnum,str)) {
-					if (str.find('%')==str.length()-1) {
-						str.erase(str.find('%'));
-						int percval=0;
-						std::istringstream stream(str);
-						stream >> percval;
-						if ((percval>0) && (percval<=105)) CPU_CyclePercUsed=(Bit32s)percval;
-					} else if (str=="limit") {
-						cmdnum++;
-						if (cmd.FindCommand(cmdnum,str)) {
-							int cyclimit=0;
-							std::istringstream stream(str);
-							stream >> cyclimit;
-							if (cyclimit>0) CPU_CycleLimit=cyclimit;
-						}
-					}
-				}
+			val = myldbi->GetConfig()->cpu.cycle_perc;
+			if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
+			val = myldbi->GetConfig()->cpu.cycle_limit;
+			if (val) CPU_CycleLimit = val;
+			break;
+
+		case ALDB_CPU::LDB_CPU_CYCLE_AUTO:
+			CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
+			CPU_CycleMax=3000;
+			CPU_OldCycleMax=3000;
+			CPU_CyclePercUsed=100;
+			val = myldbi->GetConfig()->cpu.cycle_perc;
+			if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
+			val = myldbi->GetConfig()->cpu.cycle_limit;
+			if (val) CPU_CycleLimit = val;
+			val = myldbi->GetConfig()->cpu.fix_cycles;
+			if (val) {
+				CPU_CycleMax = val;
+				CPU_OldCycleMax = val;
 			}
-		} else {
-			if (type=="auto") {
-				CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
-				CPU_CycleMax=3000;
-				CPU_OldCycleMax=3000;
-				CPU_CyclePercUsed=100;
-				for (Bitu cmdnum=0; cmdnum<=cmd.GetCount(); cmdnum++) {
-					if (cmd.FindCommand(cmdnum,str)) {
-						if (str.find('%')==str.length()-1) {
-							str.erase(str.find('%'));
-							int percval=0;
-							std::istringstream stream(str);
-							stream >> percval;
-							if ((percval>0) && (percval<=105)) CPU_CyclePercUsed=(Bit32s)percval;
-						} else if (str=="limit") {
-							cmdnum++;
-							if (cmd.FindCommand(cmdnum,str)) {
-								int cyclimit=0;
-								std::istringstream stream(str);
-								stream >> cyclimit;
-								if (cyclimit>0) CPU_CycleLimit=cyclimit;
-							}
-						} else {
-							int rmdval=0;
-							std::istringstream stream(str);
-							stream >> rmdval;
-							if (rmdval>0) {
-								CPU_CycleMax=(Bit32s)rmdval;
-								CPU_OldCycleMax=(Bit32s)rmdval;
-							}
-						}
-					}
-				}
-			} else if(type =="fixed") {
-				cmd.FindCommand(1,str);
-				int rmdval=0;
-				std::istringstream stream(str);
-				stream >> rmdval;
-				CPU_CycleMax=(Bit32s)rmdval;
-			} else {
-				std::istringstream stream(type);
-				int rmdval=0;
-				stream >> rmdval;
-				if(rmdval) CPU_CycleMax=(Bit32s)rmdval;
-			}
-			CPU_CycleAutoAdjust=false;
+			break;
+
+		default:
+			val = myldbi->GetConfig()->cpu.fix_cycles;
+			CPU_CycleMax = (Bit32s)val;
 		}
 
-		std::string core(section->Get_string("core"));
-		cpudecoder=&CPU_Core_Normal_Run;
-		if (core == "normal") {
-			cpudecoder=&CPU_Core_Normal_Run;
-		} else if (core =="simple") {
-			cpudecoder=&CPU_Core_Simple_Run;
-		} else if (core == "full") {
-			cpudecoder=&CPU_Core_Full_Run;
-		} else if (core == "auto") {
-			cpudecoder=&CPU_Core_Normal_Run;
+		switch (myldbi->GetConfig()->cpu.core) {
+		case ALDB_CPU::LDB_CPU_SIMPLE:
+			cpudecoder = &CPU_Core_Simple_Run;
+			break;
+		case ALDB_CPU::LDB_CPU_FULL:
+			cpudecoder = &CPU_Core_Full_Run;
+			break;
+		default:
+			cpudecoder = &CPU_Core_Normal_Run;
 		}
 
-		CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
-		std::string cputype(section->Get_string("cputype"));
-		if (cputype == "auto") {
+		CPU_ArchitectureType = myldbi->GetConfig()->cpu.family;
+		if (!CPU_ArchitectureType)
 			CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
-		} else if (cputype == "386") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_386FAST;
-		} else if (cputype == "386_slow") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_386SLOW;
-		} else if (cputype == "486_slow") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_486NEWSLOW;
-		} else if (cputype == "pentium_slow") {
-			CPU_ArchitectureType = CPU_ARCHTYPE_PENTIUMSLOW;
-		}
 
 		if (CPU_ArchitectureType>=CPU_ARCHTYPE_486NEWSLOW) CPU_extflags_toggle=(FLAG_ID|FLAG_AC);
 		else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
@@ -2299,9 +2252,9 @@ void CPU_ShutDown(Section* sec) {
 	delete test;
 }
 
-void CPU_Init(Section* sec) {
-	test = new CPU(sec);
-	sec->AddDestroyFunction(&CPU_ShutDown,true);
+void CPU_Init(Section* /*sec*/) {
+	test = new CPU(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&CPU_ShutDown,true)\n");
 }
 //initialize static members
 bool CPU::inited=false;

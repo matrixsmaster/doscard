@@ -454,7 +454,7 @@ public:
 	}
 
 	~XMS(){
-		Section_prop * section = static_cast<Section_prop *>(m_configuration);
+//		Section_prop * section = static_cast<Section_prop *>(m_configuration);
 		/* Remove upper memory information */
 		dos_infoblock.SetStartOfUMBChain(0xffff);
 		if (umb_available) {
@@ -462,7 +462,8 @@ public:
 			umb_available=false;
 		}
 
-		if (!section->Get_bool("xms")) return;
+//		if (!section->Get_bool("xms")) return;
+		if (!myldbi->GetConfig()->xms) return;
 		/* Undo biosclearing */
 		BIOS_ZeroExtendedSize(false);
 

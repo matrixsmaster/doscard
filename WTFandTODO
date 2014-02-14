@@ -57,6 +57,10 @@ I had decided that will be a lib, libdosbox. There will be two versions of this:
 (a) x86 GNU/Linux static or/and shared lib; and (b) embeddable library to just
 include in your hobby microcontroller project. Nice, isn't it?
 ->IN PROGRESS
+Notes: It's just incredible thing: class which uses a well-written Configure system,
+implements a good ctor and dtor, but HEAVILY uses GLOBAL VARIABLES just inside itself.
+It's a madness!
+
 
 4. Select a chip to port this thing into and draw the schematics (and PCB
 layers of course)
@@ -85,8 +89,12 @@ localtime()
 errors. For example, W95 will not load properly in hi-res mode without -O2 flag.
 Which means, the richness of functionality of guest OS lies on host system 
 performance. That's bad!
+UPD: I think that isn't an issue. The problem relevant to timing, but in some other
+way. Deep investigation needed!
 
 12. Types unification. Use <inttypes> instead of all of this Bit<xx>[s/u] forms.
 
 13. Deal with manual exceptions and its catches. This might unveil big problems while
 porting on possible target arch.
+
+14. Get rid of static qualifiers. Make sure there's no static methods or members.

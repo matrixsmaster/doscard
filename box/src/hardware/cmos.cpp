@@ -294,7 +294,7 @@ private:
 	IO_ReadHandleObject ReadHandler[2];
 	IO_WriteHandleObject WriteHandler[2];	
 public:
-	CMOS(Section* configuration):Module_base(configuration){
+	CMOS(Section* /*configuration*/):Module_base(NULL){
 		WriteHandler[0].Install(0x70,cmos_selreg,IO_MB);
 		WriteHandler[1].Install(0x71,cmos_writereg,IO_MB);
 		ReadHandler[0].Install(0x71,cmos_readreg,IO_MB);
@@ -325,9 +325,9 @@ void CMOS_Destroy(Section* sec){
 	delete test;
 }
 
-void CMOS_Init(Section* sec) {
-	test = new CMOS(sec);
-	sec->AddDestroyFunction(&CMOS_Destroy,true);
+void CMOS_Init(Section* ) {
+	test = new CMOS(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&CMOS_Destroy,true)\n");
 }
 
 }

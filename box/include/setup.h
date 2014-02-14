@@ -306,9 +306,9 @@ public:
 class Module_base {
 	/* Base for all hardware and software "devices" */
 protected:
-	Section* m_configuration;
+//	Section* m_configuration;
 public:
-	Module_base(Section* configuration){m_configuration=configuration;};
+	Module_base(Section* configuration) { } ;//{m_configuration=configuration;};
 //	Module_base(Section* configuration, SaveState* state) {};
 	virtual ~Module_base(){/*LOG_MSG("executed")*/;};//Destructors are required
 	/* Returns true if succesful.*/

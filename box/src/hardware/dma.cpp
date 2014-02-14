@@ -346,7 +346,7 @@ again:
 
 class DMA:public Module_base{
 public:
-	DMA(Section* configuration):Module_base(configuration){
+	DMA(Section* /*configuration*/):Module_base(NULL){
 		Bitu i;
 		DmaControllers[0] = new DmaController(0);
 		if (IS_EGAVGA_ARCH) DmaControllers[1] = new DmaController(1);
@@ -395,10 +395,10 @@ static DMA* test;
 void DMA_Destroy(Section* /*sec*/){
 	delete test;
 }
-void DMA_Init(Section* sec) {
+void DMA_Init(Section* /*sec*/) {
 	DMA_SetWrapping(0xffff);
-	test = new DMA(sec);
-	sec->AddDestroyFunction(&DMA_Destroy);
+	test = new DMA(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DMA_Destroy)\n");
 	Bitu i;
 	for (i=0;i<LINK_START;i++) {
 		ems_board_mapping[i]=i;

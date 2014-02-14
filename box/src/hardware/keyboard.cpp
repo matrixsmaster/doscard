@@ -376,7 +376,7 @@ static void KEYBOARD_TickHandler(void) {
 	}
 }
 
-void KEYBOARD_Init(Section* sec) {
+void KEYBOARD_Init(Section* /*sec*/) {
 	IO_RegisterWriteHandler(0x60,write_p60,IO_MB);
 	IO_RegisterReadHandler(0x60,read_p60,IO_MB);
 	IO_RegisterWriteHandler(0x61,write_p61,IO_MB);

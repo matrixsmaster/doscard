@@ -407,7 +407,7 @@ private:
 	IO_ReadHandleObject ReadHandler[4];
 	IO_WriteHandleObject WriteHandler[4];
 public:
-	TIMER(Section* configuration):Module_base(configuration){
+	TIMER(Section* /*configuration*/):Module_base(NULL){
 		WriteHandler[0].Install(0x40,write_latch,IO_MB);
 	//	WriteHandler[1].Install(0x41,write_latch,IO_MB);
 		WriteHandler[2].Install(0x42,write_latch,IO_MB);
@@ -463,9 +463,9 @@ static TIMER* test;
 void TIMER_Destroy(Section*){
 	delete test;
 }
-void TIMER_Init(Section* sec) {
-	test = new TIMER(sec);
-	sec->AddDestroyFunction(&TIMER_Destroy);
+void TIMER_Init(Section* ) {
+	test = new TIMER(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&TIMER_Destroy)\n");
 }
 
 uint32_t GetTicks()

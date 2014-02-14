@@ -519,9 +519,9 @@ void IO_Destroy(Section*) {
 	delete test;
 }
 
-void IO_Init(Section * sect) {
-	test = new IO(sect);
-	sect->AddDestroyFunction(&IO_Destroy);
+void IO_Init(Section * /*sect*/) {
+	test = new IO(NULL);
+	fprintf(stderr,"WARN: sect->AddDestroyFunction(&IO_Destroy)\n");
 }
 
 }

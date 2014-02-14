@@ -62,6 +62,28 @@ static void DOSBOX_RealInit(Section *)
 	frameskip = 3;
 	int10.vesa_nolfb = false;
 	int10.vesa_oldvbe = false;
+	//inits
+	IO_Init(NULL);
+	PAGING_Init(NULL);
+	MEM_Init(NULL);
+	CALLBACK_Init(NULL);
+	PIC_Init(NULL);
+	PROGRAMS_Init(NULL);
+	TIMER_Init(NULL);
+	CMOS_Init(NULL);
+	RENDER_Init(NULL);
+	CPU_Init(NULL);
+#if C_FPU
+	FPU_Init(NULL);
+#endif
+	DMA_Init(NULL);
+	VGA_Init(NULL);
+	KEYBOARD_Init(NULL);
+}
+
+static void DOSBOX_RealDelete()
+{
+	//TODO: move all destructor runners here
 }
 
 void CDosBox::RunMachine()
@@ -211,6 +233,7 @@ CDosBox::CDosBox()
 	Prop_multival_remain* Pmulti_remain;
 
 	LDB_Settings myset;
+	memset(&myset,0,sizeof(myset));
 
 	//FIXME: destroy this chain
 	com_line = new CommandLine(0,NULL);
@@ -225,105 +248,51 @@ CDosBox::CDosBox()
 	const char *irqssb[] = { "7", "5", "3", "9", "10", "11", "12", 0 };
 	const char *dmassb[] = { "1", "5", "0", "3", "6", "7", 0 };
 
-
-	/* Setup all the different modules making up DOSBox */
-//	const char* machines[] = {
-//		"hercules", "cga", "tandy", "pcjr", "ega",
-//		"vgaonly", "svga_s3", "svga_et3000", "svga_et4000",
-//		"svga_paradise", "vesa_nolfb", "vesa_oldvbe", 0 };
-
 	secprop=control->AddSection_prop("dosbox",&DOSBOX_RealInit);
-//	Pstring = secprop->Add_path("language",Property::Changeable::Always,"");
-//	Pstring->Set_help("Select another language file.");
-//
-//	Pstring = secprop->Add_string("machine",Property::Changeable::OnlyAtStart,"svga_s3");
-//	Pstring->Set_values(machines);
-//	Pstring->Set_help("The type of machine DOSBox tries to emulate.");
-
-//	Pstring = secprop->Add_path("captures",Property::Changeable::Always,"capture");
-//	Pstring->Set_help("Directory where things like wave, midi, screenshot get captured.");
 
 #if C_DEBUG	
 	LOG_StartUp();
 #endif
-	
-	secprop->AddInitFunction(&IO_Init);//done
-	secprop->AddInitFunction(&PAGING_Init);//done
-	secprop->AddInitFunction(&MEM_Init);//done
-//	secprop->AddInitFunction(&HARDWARE_Init);//done
 
-	Pint = secprop->Add_int("memsize", Property::Changeable::WhenIdle,31);
 	myset.mem = 31;
 
-	Pint->SetMinMax(1,63);
-	Pint->Set_help(
-		"Amount of memory DOSBox has in megabytes.\n"
-		"  This value is best left at its default to avoid problems with some games,\n"
-		"  though few games might require a higher value.\n"
-		"  There is generally no speed advantage when raising this value.");
-	secprop->AddInitFunction(&CALLBACK_Init);
-	secprop->AddInitFunction(&PIC_Init);//done
-	secprop->AddInitFunction(&PROGRAMS_Init);
-	secprop->AddInitFunction(&TIMER_Init);//done
-	secprop->AddInitFunction(&CMOS_Init);//done
+//	secprop=control->AddSection_prop("cpu",&CPU_Init,true);//done
+//	const char* cores[] = { "auto", "normal", "simple",0 };
 
-	secprop=control->AddSection_prop("render",&RENDER_Init,true);
-//	Pint = secprop->Add_int("frameskip",Property::Changeable::Always,0);
-//	Pint->SetMinMax(0,10);
-//	Pint->Set_help("How many frames DOSBox skips before drawing one.");
-//
-//	Pbool = secprop->Add_bool("aspect",Property::Changeable::Always,false);
-//	Pbool->Set_help("Do aspect correction, if your output method doesn't support scaling this can slow things down!.");
-
-	secprop=control->AddSection_prop("cpu",&CPU_Init,true);//done
-	const char* cores[] = { "auto", "normal", "simple",0 };
 	myset.cpu.core = ALDB_CPU::LDB_CPU_NORMAL;
 
-	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"auto");
-	Pstring->Set_values(cores);
-	Pstring->Set_help("CPU Core used in emulation. auto will switch to dynamic if available and\n"
-		"appropriate.");
+//	Pstring = secprop->Add_string("core",Property::Changeable::WhenIdle,"auto");
+//	Pstring->Set_values(cores);
+//	Pstring->Set_help("CPU Core used in emulation. auto will switch to dynamic if available and\n"
+//		"appropriate.");
+	myset.cpu.core = ALDB_CPU::LDB_CPU_NORMAL;
 
-	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", 0};
-	myset.cpu.family = ALDB_CPU::LDB_CPU_486S;
+//	const char* cputype_values[] = { "auto", "386", "386_slow", "486_slow", "pentium_slow", 0};
 
-	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"486_slow");
-	Pstring->Set_values(cputype_values);
-	Pstring->Set_help("CPU Type used in emulation. auto is the fastest choice.");
+	myset.cpu.family = CPU_ARCHTYPE_486NEWSLOW;
+
+//	Pstring = secprop->Add_string("cputype",Property::Changeable::Always,"486_slow");
+//	Pstring->Set_values(cputype_values);
+//	Pstring->Set_help("CPU Type used in emulation. auto is the fastest choice.");
 
 	Pmulti_remain = secprop->Add_multiremain("cycles",Property::Changeable::Always," ");
-	Pmulti_remain->Set_help(
-		"Amount of instructions DOSBox tries to emulate each millisecond.\n"
-		"Setting this value too high results in sound dropouts and lags.\n"
-		"Cycles can be set in 3 ways:\n"
-		"  'auto'          tries to guess what a game needs.\n"
-		"                  It usually works, but can fail for certain games.\n"
-		"  'fixed #number' will set a fixed amount of cycles. This is what you usually\n"
-		"                  need if 'auto' fails (Example: fixed 4000).\n"
-		"  'max'           will allocate as much cycles as your computer is able to\n"
-		"                  handle.");
 
-	const char* cyclest[] = { "auto","fixed","max","%u",0 };
-	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::Always,"auto");
-	Pmulti_remain->SetValue("max");
-	Pstring->Set_values(cyclest);
+	myset.cpu.cycles_change = ALDB_CPU::LDB_CPU_CYCLE_AUTO;
 
-	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::Always,"");
-	
-//	Pint = secprop->Add_int("cycleup",Property::Changeable::Always,10);
-//	Pint->SetMinMax(1,1000000);
-//	Pint->Set_help("Amount of cycles to decrease/increase with keycombos.(CTRL-F11/CTRL-F12)");
-//
-//	Pint = secprop->Add_int("cycledown",Property::Changeable::Always,20);
-//	Pint->SetMinMax(1,1000000);
-//	Pint->Set_help("Setting it lower than 100 will be a percentage.");
+//	const char* cyclest[] = { "auto","fixed","max","%u",0 };
+//	Pstring = Pmulti_remain->GetSection()->Add_string("type",Property::Changeable::Always,"auto");
+//	Pmulti_remain->SetValue("max");
+//	Pstring->Set_values(cyclest);
+
+//	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::Always,"");
+
 		
-#if C_FPU
-	secprop->AddInitFunction(&FPU_Init);
-#endif
-	secprop->AddInitFunction(&DMA_Init);//done
-	secprop->AddInitFunction(&VGA_Init);
-	secprop->AddInitFunction(&KEYBOARD_Init);
+//#if C_FPU
+//	secprop->AddInitFunction(&FPU_Init);
+//#endif
+//	secprop->AddInitFunction(&DMA_Init);//done
+//	secprop->AddInitFunction(&VGA_Init);
+//	secprop->AddInitFunction(&KEYBOARD_Init);
 
 
 #if defined(PCI_FUNCTIONALITY_ENABLED)
@@ -378,16 +347,6 @@ CDosBox::CDosBox()
 
 	Pbool = secprop->Add_bool("sbmixer",Property::Changeable::WhenIdle,true);
 	Pbool->Set_help("Allow the soundblaster mixer to modify the DOSBox mixer.");
-
-//	const char* oplmodes[]={ "auto", "cms", "opl2", "dualopl2", "opl3", "none", 0};
-//	Pstring = secprop->Add_string("oplmode",Property::Changeable::WhenIdle,"auto");
-//	Pstring->Set_values(oplmodes);
-//	Pstring->Set_help("Type of OPL emulation. On 'auto' the mode is determined by sblaster type. All OPL modes are Adlib-compatible, except for 'cms'.");
-
-//	const char* oplemus[]={ "default", "compat", "fast", 0};
-//	Pstring = secprop->Add_string("oplemu",Property::Changeable::WhenIdle,"fast");
-//	Pstring->Set_values(oplemus);
-//	Pstring->Set_help("Provider for the OPL emulation. compat might provide better quality (see oplrate as well).");
 
 	Pint = secprop->Add_int("oplrate",Property::Changeable::WhenIdle,44100);
 	Pint->Set_values(oplrates);
@@ -452,6 +411,8 @@ CDosBox::CDosBox()
 	secprop=control->AddSection_prop("dos",&DOS_Init,false);//done
 	secprop->AddInitFunction(&XMS_Init,true);//done
 	Pbool = secprop->Add_bool("xms",Property::Changeable::WhenIdle,true);
+	myset.xms = true;
+
 	Pbool->Set_help("Enable XMS support.");
 
 	secprop->AddInitFunction(&EMS_Init,true);//done
@@ -474,9 +435,7 @@ CDosBox::CDosBox()
 	secprop->AddInitFunction(&MSCDEX_Init);
 	secprop->AddInitFunction(&DRIVES_Init);
 	secprop->AddInitFunction(&CDROM_Image_Init);
-//	secprop->AddInitFunction(&CREDITS_Init);
 
-	//TODO ?
 	secline=control->AddSection_line("autoexec",&AUTOEXEC_Init);
 	MSG_Add("AUTOEXEC_CONFIGFILE_HELP",
 		"Lines in this section will be run at startup.\n"
@@ -486,11 +445,12 @@ CDosBox::CDosBox()
 
 	control->SetStartUp(&SHELL_Init);
 
-//	config = new CLDBConf(&myset);
+	config = new CLDBConf(&myset);
 }
 
 CDosBox::~CDosBox()
 {
+	if (config) delete config;
 	if (control) delete control;
 	if (com_line) delete com_line;
 }

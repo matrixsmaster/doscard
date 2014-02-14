@@ -433,7 +433,7 @@ void VGA_ATTR_SetEGAMonitorPalette(EGAMonitorMode m);
 
 /* The VGA Subfunction startups */
 void VGA_SetupAttr(void);
-void VGA_SetupMemory(Section* sec);
+void VGA_SetupMemory(/*Section* sec*/);
 void VGA_SetupDAC(void);
 void VGA_SetupCRTC(void);
 void VGA_SetupMisc(void);

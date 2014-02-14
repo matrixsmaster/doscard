@@ -60,7 +60,7 @@ public:
 	void RunMachine();
 	void Execute();
 	void SetConfig(LDB_Settings* c);
-	LDB_Settings* GetConfig();
+	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
 //	void E_Exit(const char * message,...);
 	//
 	Config* control;

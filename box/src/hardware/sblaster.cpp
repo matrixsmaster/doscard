@@ -1567,7 +1567,7 @@ public:
 	}	
 	
 	~SBLASTER() {
-		OPL_ShutDown(m_configuration);
+		OPL_ShutDown(NULL);
 		DSP_Reset(); // Stop everything	
 	}	
 }; //End of SBLASTER class
@@ -1580,6 +1580,7 @@ void SBLASTER_ShutDown(Section* /*sec*/) {
 
 void SBLASTER_Init(Section* sec) {
 	test = new SBLASTER(sec);
+//	fprintf(stderr,"WARN: sec->AddDestroyFunction(&SBLASTER_ShutDown,true)\n");
 	sec->AddDestroyFunction(&SBLASTER_ShutDown,true);
 }
 
