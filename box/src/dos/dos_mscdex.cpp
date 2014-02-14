@@ -1339,9 +1339,9 @@ void MSCDEX_ShutDown(Section* /*sec*/) {
 	curReqheaderPtr = 0;
 }
 
-void MSCDEX_Init(Section* sec) {
+void MSCDEX_Init(Section* /*sec*/) {
 	// AddDestroy func
-	sec->AddDestroyFunction(&MSCDEX_ShutDown);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MSCDEX_ShutDown)\n");
 	/* Register the mscdex device */
 	DOS_Device * newdev = new device_MSCDEX();
 	DOS_AddDevice(newdev);

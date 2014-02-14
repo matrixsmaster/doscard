@@ -1085,12 +1085,13 @@ const char* DOS_GetLoadedLayout(void) {
 
 class DOS_KeyboardLayout: public Module_base {
 public:
-	DOS_KeyboardLayout(Section* configuration):Module_base(configuration){
-		Section_prop * section=static_cast<Section_prop *>(configuration);
+	DOS_KeyboardLayout(Section* /*configuration*/):Module_base(NULL){
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
 		dos.loaded_codepage=437;	// US codepage already initialized
 		loaded_layout=new keyboard_layout();
 
-		const char * layoutname=section->Get_string("keyboardlayout");
+//		const char * layoutname=section->Get_string("keyboardlayout");
+		char* layoutname = "auto";
 
 		Bits wants_dos_codepage = -1;
 		if (!strncmp(layoutname,"auto",4)) {
@@ -1143,9 +1144,9 @@ void DOS_KeyboardLayout_ShutDown(Section* /*sec*/) {
 	delete test;
 }
 
-void DOS_KeyboardLayout_Init(Section* sec) {
-	test = new DOS_KeyboardLayout(sec);
-	sec->AddDestroyFunction(&DOS_KeyboardLayout_ShutDown,true);
+void DOS_KeyboardLayout_Init(Section* /*sec*/) {
+	test = new DOS_KeyboardLayout(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DOS_KeyboardLayout_ShutDown,true)\n");
 	//	MAPPER_AddHandler(switch_keyboard_layout,MK_f2,MMOD1|MMOD2,"sw_layout","Switch Layout");
 }
 

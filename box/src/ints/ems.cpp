@@ -1287,17 +1287,23 @@ static Bitu INT4B_Handler() {
 	return CBRET_NONE;
 }
 
-Bitu GetEMSType(Section_prop * section) {
+Bitu GetEMSType(/*Section_prop * section*/) {
 	Bitu rtype = 0;
-	std::string emstypestr(section->Get_string("ems"));
-	if (emstypestr=="true") {
-		rtype = 1;	// mixed mode
-	} else if (emstypestr=="emsboard") {
-		rtype = 2;
-	} else if (emstypestr=="emm386") {
-		rtype = 3;
-	} else {
-		rtype = 0;
+//	std::string emstypestr(section->Get_string("ems"));
+//	if (emstypestr=="true") {
+//		rtype = 1;	// mixed mode
+//	} else if (emstypestr=="emsboard") {
+//		rtype = 2;
+//	} else if (emstypestr=="emm386") {
+//		rtype = 3;
+//	} else {
+//		rtype = 0;
+//	}
+	switch (myldbi->GetConfig()->mem.ems) {
+	case ALDB_MEM::LDB_MEM_EMS_AUTO: rtype = 1; break;
+	case ALDB_MEM::LDB_MEM_EMS_EMSBRD: rtype = 2; break;
+	case ALDB_MEM::LDB_MEM_EMS_EMM386: rtype = 3; break;
+	default: rtype = 0; break;
 	}
 	return rtype;
 }
@@ -1314,7 +1320,7 @@ private:
 	Bitu call_int67;
 
 public:
-	EMS(Section* configuration):Module_base(configuration) {
+	EMS(Section* /*configuration*/):Module_base(NULL) {
 		emm_device=NULL;
 		ems_type=0;
 
@@ -1325,8 +1331,8 @@ public:
 		vcpi.enabled=false;
 		GEMMIS_seg=0;
 		
-		Section_prop * section=static_cast<Section_prop *>(configuration);
-		ems_type=GetEMSType(section);
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
+		ems_type=GetEMSType();
 		if (ems_type<=0) return;
 
 //		if (machine==MCH_PCJR) {
@@ -1464,9 +1470,9 @@ void EMS_ShutDown(Section* /*sec*/) {
 	delete test;	
 }
 
-void EMS_Init(Section* sec) {
-	test = new EMS(sec);
-	sec->AddDestroyFunction(&EMS_ShutDown,true);
+void EMS_Init(Section* /*sec*/) {
+	test = new EMS(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&EMS_ShutDown,true)\n");
 }
 
 //Initialize static members

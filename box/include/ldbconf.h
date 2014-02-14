@@ -41,6 +41,17 @@ typedef struct ALDB_CPU {
 	int32_t cycle_perc, cycle_limit;
 } LDB_CPUType;
 
+typedef struct ALDB_MEM {
+	enum {
+		LDB_MEM_EMS_DISABLE = 0,
+		LDB_MEM_EMS_AUTO = 1,
+		LDB_MEM_EMS_EMSBRD = 2,
+		LDB_MEM_EMS_EMM386 = 3
+	} ems;
+	uint32_t total_ram;
+	bool xms, umb;
+} LDB_MemorySet;
+
 typedef struct ALDB_SND {
 	bool enabled;
 	uint32_t sample_freq, blocks;
@@ -53,11 +64,16 @@ typedef struct ALDB_SND {
 	uint32_t pcsp_freq;
 } LDB_Sound;
 
+typedef struct ALDB_RS232 {
+	bool enabled;
+	bool dummy;
+} LDB_RS232;
+
 typedef struct ALDB_SETTINGS {
 	LDB_CPUType cpu;
-	uint32_t mem;
-	bool xms;
+	LDB_MemorySet mem;
 	LDB_Sound snd;
+	LDB_RS232 tty[4];
 } LDB_Settings;
 
 class CLDBConf {

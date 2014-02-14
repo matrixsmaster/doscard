@@ -414,16 +414,17 @@ Bitu XMS_Handler(void) {
 	return CBRET_NONE;
 }
 
-Bitu GetEMSType(Section_prop * section);
+Bitu GetEMSType(/*Section_prop * section*/);
 
 class XMS: public Module_base {
 private:
 	CALLBACK_HandlerObject callbackhandler;
 public:
-	XMS(Section* configuration):Module_base(configuration){
-		Section_prop * section=static_cast<Section_prop *>(configuration);
+	XMS(Section* /*configuration*/):Module_base(NULL){
+//		Section_prop * section=static_cast<Section_prop *>(configuration);
 		umb_available=false;
-		if (!section->Get_bool("xms")) return;
+//		if (!section->Get_bool("xms")) return;
+		if (!myldbi->GetConfig()->mem.xms) return;
 		Bitu i;
 		BIOS_ZeroExtendedSize(true);
 		DOS_AddMultiplexHandler(multiplex_xms);
@@ -448,9 +449,9 @@ public:
 		xms_handles[0].free	= false;
 
 		/* Set up UMB chain */
-		umb_available=section->Get_bool("umb");
-		bool ems_available = GetEMSType(section)>0;
-		DOS_BuildUMBChain(section->Get_bool("umb"),ems_available);
+		umb_available = myldbi->GetConfig()->mem.umb; //section->Get_bool("umb");
+		bool ems_available = (GetEMSType() > 0);
+		DOS_BuildUMBChain(umb_available,ems_available);
 	}
 
 	~XMS(){
@@ -463,7 +464,7 @@ public:
 		}
 
 //		if (!section->Get_bool("xms")) return;
-		if (!myldbi->GetConfig()->xms) return;
+		if (!myldbi->GetConfig()->mem.xms) return;
 		/* Undo biosclearing */
 		BIOS_ZeroExtendedSize(false);
 
@@ -482,9 +483,9 @@ void XMS_ShutDown(Section* /*sec*/) {
 	delete test;	
 }
 
-void XMS_Init(Section* sec) {
-	test = new XMS(sec);
-	sec->AddDestroyFunction(&XMS_ShutDown,true);
+void XMS_Init(Section* /*sec*/) {
+	test = new XMS(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&XMS_ShutDown,true)\n");
 }
 
 }

@@ -224,8 +224,8 @@ void DriveManager::Init(Section* /* sec */) {
 //	MAPPER_AddHandler(&CycleDrive, MK_f3, MMOD2, "cycledrive", "Cycle Drv");
 }
 
-void DRIVES_Init(Section* sec) {
-	DriveManager::Init(sec);
+void DRIVES_Init(Section* /*sec*/) {
+	DriveManager::Init(NULL);
 }
 
 }

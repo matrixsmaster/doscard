@@ -548,7 +548,7 @@ public:
 	
 		/* Setup the Physical Page Links */
 //		Bitu memsize=section->Get_int("memsize");
-		Bitu memsize = myldbi->GetConfig()->mem;
+		Bitu memsize = myldbi->GetConfig()->mem.total_ram;
 	
 		if (memsize < 1) memsize = 1;
 		/* max 63 to solve problems with certain xms handlers */

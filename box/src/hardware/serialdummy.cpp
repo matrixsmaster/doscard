@@ -25,7 +25,7 @@
 
 namespace dosbox {
 
-CSerialDummy::CSerialDummy(Bitu id,	CommandLine* cmd):CSerial(id, cmd) {
+CSerialDummy::CSerialDummy(Bitu id, CommandLine * /*cmd*/):CSerial(id, NULL) {
 	CSerial::Init_Registers();
 	setRI(false);
 	setDSR(false);

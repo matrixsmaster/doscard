@@ -33,7 +33,8 @@
 #include "dos_system.h"
 #include "dos_inc.h"
 #include "bios.h"
-#include "bios_disk.h" 
+#include "bios_disk.h"
+//#include "box_inits.h"
 #include "setup.h"
 #include "control.h"
 
@@ -394,6 +395,10 @@ static void MEM_ProgramStart(Program * * make) {
 
 extern Bit32u floppytype;
 
+void XMS_ShutDown(Section* /*sec*/);
+void XMS_Init(Section* /*sec*/);
+void EMS_ShutDown(Section* /*sec*/);
+void EMS_Init(Section* /*sec*/);
 
 class BOOT : public Program {
 private:
@@ -478,17 +483,25 @@ private:
 		WriteOut(MSG_Get("PROGRAM_BOOT_PRINT_ERROR"));
 	}
 
-	void disable_umb_ems_xms(void) {
-		Section* dos_sec = myldbi->control->GetSection("dos");
-		dos_sec->ExecuteDestroy(false);
-		char test[20];
-		strcpy(test,"umb=false");
-		dos_sec->HandleInputline(test);
-		strcpy(test,"xms=false");
-		dos_sec->HandleInputline(test);
-		strcpy(test,"ems=false");
-		dos_sec->HandleInputline(test);
-		dos_sec->ExecuteInit(false);
+	void disable_umb_ems_xms(void)
+	{
+//		Section* dos_sec = myldbi->control->GetSection("dos");
+//		dos_sec->ExecuteDestroy(false);
+//		char test[20];
+//		strcpy(test,"umb=false");
+//		dos_sec->HandleInputline(test);
+//		strcpy(test,"xms=false");
+//		dos_sec->HandleInputline(test);
+//		strcpy(test,"ems=false");
+//		dos_sec->HandleInputline(test);
+//		dos_sec->ExecuteInit(false);
+		EMS_ShutDown(NULL);
+		XMS_ShutDown(NULL);
+		myldbi->GetConfig()->mem.ems = ALDB_MEM::LDB_MEM_EMS_DISABLE;
+		myldbi->GetConfig()->mem.xms = false;
+		myldbi->GetConfig()->mem.umb = false;
+		XMS_Init(NULL);
+		EMS_Init(NULL);
 	}
 
 public:

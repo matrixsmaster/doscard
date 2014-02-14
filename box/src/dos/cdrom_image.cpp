@@ -755,7 +755,7 @@ void CDROM_Image_Destroy(Section*) {
 #endif
 }
 
-void CDROM_Image_Init(Section* section) {
+void CDROM_Image_Init(Section*/* section*/) {
 #if defined(C_SDL_SOUND)
 	Sound_Init();
 	section->AddDestroyFunction(CDROM_Image_Destroy, false);

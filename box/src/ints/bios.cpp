@@ -986,7 +986,7 @@ class BIOS:public Module_base{
 private:
 	CALLBACK_HandlerObject callback[11];
 public:
-	BIOS(Section* configuration):Module_base(configuration){
+	BIOS(Section* /*configuration*/):Module_base(NULL){
 		/* tandy DAC can be requested in tandy_sound.cpp by initializing this field */
 		bool use_tandyDAC=(real_readb(0x40,0xd4)==0xff);
 
@@ -1306,9 +1306,9 @@ void BIOS_Destroy(Section* /*sec*/){
 	delete test;
 }
 
-void BIOS_Init(Section* sec) {
-	test = new BIOS(sec);
-	sec->AddDestroyFunction(&BIOS_Destroy,false);
+void BIOS_Init(Section* /*sec*/) {
+	test = new BIOS(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&BIOS_Destroy,false)\n");
 }
 
 }

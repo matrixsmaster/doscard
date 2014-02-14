@@ -1186,7 +1186,7 @@ class DOS:public Module_base{
 private:
 	CALLBACK_HandlerObject callback[7];
 public:
-	DOS(Section* configuration):Module_base(configuration){
+	DOS(Section* /*configuration*/):Module_base(NULL){
 		callback[0].Install(DOS_20Handler,CB_IRET,"DOS Int 20");
 		callback[0].Set_RealVec(0x20);
 
@@ -1242,10 +1242,10 @@ void DOS_ShutDown(Section* /*sec*/) {
 	delete test;
 }
 
-void DOS_Init(Section* sec) {
-	test = new DOS(sec);
+void DOS_Init(Section* /*sec*/) {
+	test = new DOS(NULL);
 	/* shutdown function */
-	sec->AddDestroyFunction(&DOS_ShutDown,false);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DOS_ShutDown,false)\n");
 }
 
 }

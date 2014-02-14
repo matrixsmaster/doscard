@@ -1070,13 +1070,13 @@ void CSerial::Init_Registers () {
 	PIC_DeActivateIRQ(irq);
 }
 
-CSerial::CSerial(Bitu id, CommandLine* cmd) {
+CSerial::CSerial(Bitu id, CommandLine* /*cmd*/) {
 	idnumber=id;
 	Bit16u base = serial_baseaddr[id];
 
 	irq = serial_defaultirq[id];
-	getBituSubstring("irq:",&irq, cmd);
-	if (irq < 2 || irq > 15) irq = serial_defaultirq[id];
+//	getBituSubstring("irq:",&irq, cmd);
+//	if (irq < 2 || irq > 15) irq = serial_defaultirq[id];
 
 #if SERIAL_DEBUG
 	dbg_serialtraffic = cmd->FindExist("dbgtr", false);
@@ -1217,21 +1217,30 @@ bool CSerial::Putchar(Bit8u data, bool wait_dsr, bool wait_cts, Bitu timeout) {
 
 class SERIALPORTS:public Module_base {
 public:
-	SERIALPORTS (Section * configuration):Module_base (configuration) {
+	SERIALPORTS (Section * /*configuration*/):Module_base (NULL) {
 		Bit16u biosParameter[4] = { 0, 0, 0, 0 };
-		Section_prop *section = static_cast <Section_prop*>(configuration);
+//		Section_prop *section = static_cast <Section_prop*>(configuration);
 
-		char s_property[] = "serialx"; 
+//		char s_property[] = "serialx";
 		for(Bitu i = 0; i < 4; i++) {
 			// get the configuration property
-			s_property[6] = '1' + i;
-			Prop_multival* p = section->Get_multival(s_property);
-			std::string type = p->GetSection()->Get_string("type");
-			CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
-			
+//			s_property[6] = '1' + i;
+//			Prop_multival* p = section->Get_multival(s_property);
+//			std::string type = p->GetSection()->Get_string("type");
+//			CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
+//
 			// detect the type
-			if (type=="dummy") {
-				serialports[i] = new CSerialDummy (i, &cmd);
+
+			serialports[i] = NULL;
+			if (!myldbi->GetConfig()->tty[i].enabled) {
+				LOG_MSG("Serial port %d disabled",i);
+				continue;
+			}
+			
+			if (myldbi->GetConfig()->tty[i].dummy) {
+//			if (type=="dummy") {
+				serialports[i] = new CSerialDummy(i,NULL);
+				LOG_MSG("Serial port %d configured as dummy",i);
 			}
 #if 0
 			else if (type=="directserial") {
@@ -1243,13 +1252,13 @@ public:
 				}
 			}
 #endif
-			else if(type=="disabled") {
-				serialports[i] = NULL;
-			} else {
-				serialports[i] = NULL;
-				LOG_MSG("Invalid type for serial%d",i+1);
-			}
-			if(serialports[i]) biosParameter[i] = serial_baseaddr[i];
+//			else if(type=="disabled") {
+//				serialports[i] = NULL;
+//			} else {
+//				serialports[i] = NULL;
+//				LOG_MSG("Invalid type for serial%d",i+1);
+//			}
+			if (serialports[i]) biosParameter[i] = serial_baseaddr[i];
 		} // for 1-4
 		BIOS_SetComPorts (biosParameter);
 	}
@@ -1270,11 +1279,11 @@ void SERIAL_Destroy (Section * sec) {
 	testSerialPortsBaseclass = NULL;
 }
 
-void SERIAL_Init (Section * sec) {
+void SERIAL_Init (Section* /*sec*/) {
 	// should never happen
 	if (testSerialPortsBaseclass) delete testSerialPortsBaseclass;
-	testSerialPortsBaseclass = new SERIALPORTS (sec);
-	sec->AddDestroyFunction (&SERIAL_Destroy, true);
+	testSerialPortsBaseclass = new SERIALPORTS(NULL);
+	fprintf(stderr,"WARN: sec->AddDestroyFunction (&SERIAL_Destroy, true)\n");
 }
 
 }
