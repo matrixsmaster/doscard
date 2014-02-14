@@ -36,7 +36,6 @@ const char* MSG_Get(char const *);     //get messages from the internal language
 class CommandLine;
 class Section;
 class Config;
-class CPUSubSystem;
 //extern Config * control;
 
 //FIXME: delete that after all
@@ -52,8 +51,6 @@ private:
 	CommandLine* com_line;
 	bool callbacksReady;
 	CLDBConf* config;
-
-	CPUSubSystem* sys_cpu;
 public:
 	CDosBox();
 	~CDosBox();
@@ -65,9 +62,6 @@ public:
 	void SetConfig(LDB_Settings* c);
 	LDB_Settings* GetConfig();
 //	void E_Exit(const char * message,...);
-
-	inline CPUSubSystem* gCPU() { return sys_cpu; }
-
 	//
 	Config* control;
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;

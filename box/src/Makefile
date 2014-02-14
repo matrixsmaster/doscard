@@ -11,7 +11,7 @@ CC_FLAG := -g -O2 -Wall
 CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
 CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
 
-LCPU_SRC := cpu.cpp core_normal.cpp core_simple.cpp core_full.cpp flags.cpp modrm.cpp paging.cpp fpu.cpp callback.cpp
+LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp core_normal.cpp core_simple.cpp fpu.cpp
 
 LDOS_SRC := dos.cpp dos_devices.cpp dos_execute.cpp dos_files.cpp dos_ioctl.cpp dos_memory.cpp dos_misc.cpp dos_classes.cpp dos_programs.cpp 
 LDOS_SRC += dos_tables.cpp drives.cpp drive_virtual.cpp drive_local.cpp drive_cache.cpp drive_fat.cpp drive_iso.cpp dos_mscdex.cpp 
