@@ -312,8 +312,6 @@ CDosBox::CDosBox()
 CDosBox::~CDosBox()
 {
 	if (config) delete config;
-//	if (control) delete control;
-//	if (com_line) delete com_line;
 	if (init_ok) Clear();
 }
 

@@ -19,11 +19,11 @@
 #ifndef CLDBCONF_H_
 #define CLDBCONF_H_
 
-#include <vector>
+//#include <vector>
 
 namespace dosbox {
 
-typedef void (*LDB_INIT_FUN)(void*);
+//typedef void (*LDB_INIT_FUN)(void*);
 
 typedef struct ALDB_CPU {
 	uint8_t family;
@@ -56,7 +56,7 @@ typedef struct ALDB_SND {
 	bool enabled;
 	uint32_t sample_freq, blocks;
 	uint32_t prebuf; //FIXME: cut it
-	//TODO: maybe place SB16/SBPro2 setting here?
+	//TODO: maybe place SB16/SBPro2 switch here?
 	uint16_t sb_base, sb_irq, sb_dma, sb_hdma;
 	uint32_t sb_opl_freq;
 	bool sb_mix;
@@ -82,13 +82,13 @@ class CLDBConf {
 public:
 	CLDBConf(LDB_Settings* p);
 	virtual ~CLDBConf();
-	void AddInitializer(LDB_INIT_FUN f);
-	void InitAll();
+//	void AddInitializer(LDB_INIT_FUN f);
+//	void InitAll();
 	inline LDB_Settings* GetSettings() { return &set; }
-	inline LDB_CPUType* GetCPU() { return &set.cpu; }
-	uint32_t GetMem();
+//	inline LDB_CPUType* GetCPU() { return &set.cpu; }
+//	uint32_t GetMem();
 private:
-	std::vector<LDB_INIT_FUN> inits;
+//	std::vector<LDB_INIT_FUN> inits;
 	LDB_Settings set;
 };
 

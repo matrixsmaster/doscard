@@ -787,6 +787,7 @@ static void RESCAN_ProgramStart(Program * * make) {
 	*make=new RESCAN;
 }
 
+#if 0
 class INTRO : public Program {
 public:
 	void DisplayMount(void) {
@@ -832,6 +833,7 @@ public:
 static void INTRO_ProgramStart(Program * * make) {
 	*make=new INTRO;
 }
+#endif
 
 class IMGMOUNT : public Program {
 public:
@@ -1284,107 +1286,12 @@ void DOS_SetupPrograms(void) {
 
 	MSG_Add("PROGRAM_RESCAN_SUCCESS","Drive cache cleared.\n");
 
-	MSG_Add("PROGRAM_INTRO",
-			"\033[2J\033[32;1mWelcome to DOSBox\033[0m, an x86 emulator with sound and graphics.\n"
-			"DOSBox creates a shell for you which looks like old plain DOS.\n"
-			"\n"
-			"For information about basic mount type \033[34;1mintro mount\033[0m\n"
-			"For information about CD-ROM support type \033[34;1mintro cdrom\033[0m\n"
-			"For information about special keys type \033[34;1mintro special\033[0m\n"
-			"For more information about DOSBox, go to \033[34;1mhttp://www.dosbox.com/wiki\033[0m\n"
-			"\n"
-			"\033[31;1mDOSBox will stop/exit without a warning if an error occured!\033[0m\n"
-			"\n"
-			"\n"
-	);
-	MSG_Add("PROGRAM_INTRO_MOUNT_START",
-			"\033[32;1mHere are some commands to get you started:\033[0m\n"
-			"Before you can use the files located on your own filesystem,\n"
-			"You have to mount the directory containing the files.\n"
-			"\n"
-	);
-	MSG_Add("PROGRAM_INTRO_MOUNT_WINDOWS",
-			"\033[44;1m\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB\n"
-			"\xBA \033[32mmount c c:\\dosprogs\\\033[37m will create a C drive with c:\\dosprogs as contents.\xBA\n"
-			"\xBA                                                                         \xBA\n"
-			"\xBA \033[32mc:\\dosprogs\\\033[37m is an example. Replace it with your own games directory.  \033[37m \xBA\n"
-			"\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC\033[0m\n"
-	);
-	MSG_Add("PROGRAM_INTRO_MOUNT_OTHER",
-			"\033[44;1m\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB\n"
-			"\xBA \033[32mmount c ~/dosprogs\033[37m will create a C drive with ~/dosprogs as contents.\xBA\n"
-			"\xBA                                                                      \xBA\n"
-			"\xBA \033[32m~/dosprogs\033[37m is an example. Replace it with your own games directory.\033[37m  \xBA\n"
-			"\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-			"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC\033[0m\n"
-	);
-	MSG_Add("PROGRAM_INTRO_MOUNT_END",
-			"When the mount has successfully completed you can type \033[34;1mc:\033[0m to go to your freshly\n"
-			"mounted C-drive. Typing \033[34;1mdir\033[0m there will show its contents."
-			" \033[34;1mcd\033[0m will allow you to\n"
-			"enter a directory (recognised by the \033[33;1m[]\033[0m in a directory listing).\n"
-			"You can run programs/files which end with \033[31m.exe .bat\033[0m and \033[31m.com\033[0m.\n"
-	);
-	MSG_Add("PROGRAM_INTRO_CDROM",
-			"\033[2J\033[32;1mHow to mount a Real/Virtual CD-ROM Drive in DOSBox:\033[0m\n"
-			"DOSBox provides CD-ROM emulation on several levels.\n"
-			"\n"
-			"The \033[33mbasic\033[0m level works on all CD-ROM drives and normal directories.\n"
-			"It installs MSCDEX and marks the files read-only.\n"
-			"Usually this is enough for most games:\n"
-			"\033[34;1mmount d \033[0;31mD:\\\033[34;1m -t cdrom\033[0m   or   \033[34;1mmount d C:\\example -t cdrom\033[0m\n"
-			"If it doesn't work you might have to tell DOSBox the label of the CD-ROM:\n"
-			"\033[34;1mmount d C:\\example -t cdrom -label CDLABEL\033[0m\n"
-			"\n"
-			"The \033[33mnext\033[0m level adds some low-level support.\n"
-			"Therefore only works on CD-ROM drives:\n"
-			"\033[34;1mmount d \033[0;31mD:\\\033[34;1m -t cdrom -usecd \033[33m0\033[0m\n"
-			"\n"
-			"The \033[33mlast\033[0m level of support depends on your Operating System:\n"
-			"For \033[1mWindows 2000\033[0m, \033[1mWindows XP\033[0m and \033[1mLinux\033[0m:\n"
-			"\033[34;1mmount d \033[0;31mD:\\\033[34;1m -t cdrom -usecd \033[33m0 \033[34m-ioctl\033[0m\n"
-			"For \033[1mWindows 9x\033[0m with a ASPI layer installed:\n"
-			"\033[34;1mmount d \033[0;31mD:\\\033[34;1m -t cdrom -usecd \033[33m0 \033[34m-aspi\033[0m\n"
-			"\n"
-			"Replace \033[0;31mD:\\\033[0m with the location of your CD-ROM.\n"
-			"Replace the \033[33;1m0\033[0m in \033[34;1m-usecd \033[33m0\033[0m with the number reported for your CD-ROM if you type:\n"
-			"\033[34;1mmount -cd\033[0m\n"
-	);
-	MSG_Add("PROGRAM_INTRO_SPECIAL",
-			"\033[2J\033[32;1mSpecial keys:\033[0m\n"
-			"These are the default keybindings.\n"
-			"They can be changed in the \033[33mkeymapper\033[0m.\n"
-			"\n"
-			"\033[33;1mALT-ENTER\033[0m   : Go full screen and back.\n"
-			"\033[33;1mALT-PAUSE\033[0m   : Pause DOSBox.\n"
-			"\033[33;1mCTRL-F1\033[0m     : Start the \033[33mkeymapper\033[0m.\n"
-			"\033[33;1mCTRL-F4\033[0m     : Update directory cache for all drives! Swap mounted disk-image.\n"
-			"\033[33;1mCTRL-ALT-F5\033[0m : Start/Stop creating a movie of the screen.\n"
-			"\033[33;1mCTRL-F5\033[0m     : Save a screenshot.\n"
-			"\033[33;1mCTRL-F6\033[0m     : Start/Stop recording sound output to a wave file.\n"
-			"\033[33;1mCTRL-ALT-F7\033[0m : Start/Stop recording of OPL commands.\n"
-			"\033[33;1mCTRL-ALT-F8\033[0m : Start/Stop the recording of raw MIDI commands.\n"
-			"\033[33;1mCTRL-F7\033[0m     : Decrease frameskip.\n"
-			"\033[33;1mCTRL-F8\033[0m     : Increase frameskip.\n"
-			"\033[33;1mCTRL-F9\033[0m     : Kill DOSBox.\n"
-			"\033[33;1mCTRL-F10\033[0m    : Capture/Release the mouse.\n"
-			"\033[33;1mCTRL-F11\033[0m    : Slow down emulation (Decrease DOSBox Cycles).\n"
-			"\033[33;1mCTRL-F12\033[0m    : Speed up emulation (Increase DOSBox Cycles).\n"
-			"\033[33;1mALT-F12\033[0m     : Unlock speed (turbo button/fast forward).\n"
-	);
 	MSG_Add("PROGRAM_BOOT_NOT_EXIST","Bootdisk file does not exist.  Failing.\n");
 	MSG_Add("PROGRAM_BOOT_NOT_OPEN","Cannot open bootdisk file.  Failing.\n");
 	MSG_Add("PROGRAM_BOOT_WRITE_PROTECTED","Image file is read-only! Might create problems.\n");
 	MSG_Add("PROGRAM_BOOT_PRINT_ERROR","This command boots DOSBox from either a floppy or hard disk image.\n\n"
 			"For this command, one can specify a succession of floppy disks swappable\n"
-			"by pressing Ctrl-F4, and -l specifies the mounted drive to boot from.  If\n"
+			"by pressing <>, and -l specifies the mounted drive to boot from.  If\n"
 			"no drive letter is specified, this defaults to booting from the A drive.\n"
 			"The only bootable drive letters are A, C, and D.  For booting from a hard\n"
 			"drive (C or D), the image should have already been mounted using the\n"
@@ -1443,7 +1350,7 @@ void DOS_SetupPrograms(void) {
 	PROGRAMS_MakeFile("MEM.COM",MEM_ProgramStart);
 	PROGRAMS_MakeFile("LOADFIX.COM",LOADFIX_ProgramStart);
 	PROGRAMS_MakeFile("RESCAN.COM",RESCAN_ProgramStart);
-	PROGRAMS_MakeFile("INTRO.COM",INTRO_ProgramStart);
+//	PROGRAMS_MakeFile("INTRO.COM",INTRO_ProgramStart);
 	PROGRAMS_MakeFile("BOOT.COM",BOOT_ProgramStart);
 #if C_DEBUG
 	PROGRAMS_MakeFile("LDGFXROM.COM", LDGFXROM_ProgramStart);

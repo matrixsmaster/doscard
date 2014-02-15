@@ -7,7 +7,7 @@ LIBNAME	:= libdosbox
 CXX		:= g++
 MNDIR	:= $(shell pwd)
 BLDINFO := -DBUILDATE="\"$(shell date)\""
-BLDINFO := -DCOMPILERNAME="\"$(shell gcc --version | head -n1)\""
+BLDINFO += -DCOMPILERNAME="\"$(shell gcc --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -D_GNU_SOURCE -DHOST_64BIT
 CC_FLAG := -g -O2 -Wall -Wextra

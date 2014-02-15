@@ -1,0 +1,13 @@
+Original SVN (on date of fork)
+Cpp Files Lines:83366
+H Files Lines:	57847
+--
+Total lines of original code 141 213
+
+DOSCARD LibDosBox (r 111)
+Cpp Files Lines:54459
+H Files Lines:	22128
+--
+Total lines of modified ldb 32 331
+
+Diff: 108 882

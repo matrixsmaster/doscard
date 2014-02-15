@@ -311,7 +311,8 @@ static void XS_SDLoop()
 	bool quit = false;
 	xnfo(0,9,"Loop begins");
 	do {
-		while (!SDL_AtomicGet(&at_flag)) ;
+		while (!SDL_AtomicGet(&at_flag))
+			if (!doscard) return;			//DOS thread had finished
 
 		/* Event Processing*/
 		while (SDL_PollEvent(&e)) {
@@ -484,6 +485,8 @@ void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 int DosRun(void* p)
 {
 	doscard->Execute();
+	delete doscard;
+	doscard = NULL;
 	return 0;
 }
 
@@ -512,8 +515,6 @@ int main(int argc, char* argv[])
 	xnfo(0,1,"DOS Thread Exited (%d)",r);
 
 	XS_SDLKill();
-
-	delete doscard;
 
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);

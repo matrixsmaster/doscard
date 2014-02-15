@@ -4,7 +4,7 @@ which may relatively easily run on something really low-cost. Like STM32
 microcontrollers.
 So the first thing needed to be done is truncation of source code tree.
 The vanilla dosbox compiled on $(see gcc.ver) weights 10.8 MB*
-Current version (on the same machine with the same toolchain) weights 10.7 MB*
+Current version (on the same machine with the same toolchain) weights 9.0 MB*
 and still counting down.
 This is a fun weekend project, so don't expect anything really usable :)
 But if you want to run your beloved DOOM** or even a full Win95 install on a 
@@ -57,9 +57,11 @@ I had decided that will be a lib, libdosbox. There will be two versions of this:
 (a) x86 GNU/Linux static or/and shared lib; and (b) embeddable library to just
 include in your hobby microcontroller project. Nice, isn't it?
 ->IN PROGRESS
-Notes: It's just incredible thing: class which uses a well-written Configure system,
-implements a good ctor and dtor, but HEAVILY uses GLOBAL VARIABLES just inside itself.
-It's a madness!
+Notes: Coding style is not the best I've ever seen. To be honest, it's worstest
+style I've ever seen. Classes scattering around without any real purpose. Huge
+amount of globals everywhere. Almost none of the core classes can be instantiated
+more than once. Really obfuscated function calls, amount of function pointers in
+trivial places, etc, etc.
 
 
 4. Select a chip to port this thing into and draw the schematics (and PCB
@@ -95,6 +97,7 @@ HINT: heavy use of GCC attributes in original code can make GCC crazy.
 ->IN PROGRESS
 
 12. Types unification. Use <inttypes> instead of all of this Bit<xx>[s/u] forms.
+-> PARTIALLY DONE
 
 13. Deal with manual exceptions and its catches. This might unveil big problems while
 porting on possible target arch.
