@@ -32,7 +32,6 @@
 #include "mixer.h"
 #include "timer.h"
 #include "dos_inc.h"
-#include "setup.h"
 #include "control.h"
 #include "cross.h"
 #include "programs.h"
@@ -314,8 +313,8 @@ CDosBox::CDosBox()
 CDosBox::~CDosBox()
 {
 	if (config) delete config;
-	if (control) delete control;
-	if (com_line) delete com_line;
+//	if (control) delete control;
+//	if (com_line) delete com_line;
 	if (init_ok) Clear();
 }
 

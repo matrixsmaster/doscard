@@ -22,7 +22,6 @@
 #include <math.h>
 #include <sys/types.h>
 #include "adlib.h"
-#include "setup.h"
 #include "mem.h"
 #include "dbopl.h"
 
@@ -201,7 +200,8 @@ void OPL_Write(Bitu port,Bitu val,Bitu iolen) {
 
 namespace Adlib {
 
-Module::Module( Section* /*configuration*/) : Module_base(NULL) {
+Module::Module(void*)
+{
 	reg.dual[0] = 0;
 	reg.dual[1] = 0;
 	reg.normal = 0;

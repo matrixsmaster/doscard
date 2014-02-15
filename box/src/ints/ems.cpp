@@ -28,7 +28,6 @@
 #include "regs.h"
 #include "inout.h"
 #include "dos_inc.h"
-#include "setup.h"
 #include "support.h"
 #include "cpu.h"
 #include "dma.h"
@@ -1309,7 +1308,7 @@ Bitu GetEMSType(/*Section_prop * section*/) {
 }
 
 
-class EMS: public Module_base {
+class EMS {
 private:
 	DOS_Device * emm_device;
 	/* location in protected unfreeable memory where the ems name and callback are
@@ -1320,7 +1319,7 @@ private:
 	Bitu call_int67;
 
 public:
-	EMS(Section* /*configuration*/):Module_base(NULL) {
+	EMS(void*) {
 		emm_device=NULL;
 		ems_type=0;
 

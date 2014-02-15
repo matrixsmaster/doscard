@@ -19,7 +19,6 @@
 
 
 #include "dosbox.h"
-#include "setup.h"
 #include "vga.h"
 #include "inout.h"
 #include "mem.h"

@@ -23,7 +23,6 @@
 #include "dosbox.h"
 #include "mixer.h"
 #include "inout.h"
-#include "setup.h"
 #include "pic.h"
 
 namespace dosbox {
@@ -120,7 +119,7 @@ typedef Bit8u RegisterCache[512];
 //Internal class used for dro capturing
 class Capture;
 
-class Module: public Module_base {
+class Module {
 	IO_ReadHandleObject ReadHandler[3];
 	IO_WriteHandleObject WriteHandler[3];
 	MixerObject mixerObject;
@@ -149,7 +148,7 @@ public:
 	Bitu PortRead( Bitu port, Bitu iolen );
 	void Init( Mode m );
 
-	Module( Section* configuration); 
+	Module(void*);
 	~Module();
 };
 

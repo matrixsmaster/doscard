@@ -22,7 +22,6 @@
 #include "dosbox.h"
 #include "cross.h"
 #include "support.h"
-#include "setup.h"
 #include "control.h"
 #include <list>
 #include <string>
@@ -129,7 +128,6 @@ const char * MSG_Get(char const * msg)
 	return "Message not Found!\n";
 }
 
-
 bool MSG_Write(const char * location)
 {
 	DBFILE* out= dbfopen(location,"w+t");
@@ -138,17 +136,6 @@ bool MSG_Write(const char * location)
 		dbfprintf(out,":%s\n%s\n.\n",(*tel).name.c_str(),(*tel).val.c_str());
 	dbfclose(out);
 	return true;
-}
-
-void MSG_Init(Section_prop * section)
-{
-//	std::string file_name;
-//	if (myldbi->control->cmdline->FindString("-lang",file_name,true)) {
-//		LoadMessageFile(file_name.c_str());
-//	} else {
-//		Prop_path* pathprop = section->Get_path("language");
-//		if(pathprop) LoadMessageFile(pathprop->realpath.c_str());
-//	}
 }
 
 }

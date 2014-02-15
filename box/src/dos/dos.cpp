@@ -26,7 +26,6 @@
 #include "callback.h"
 #include "regs.h"
 #include "dos_inc.h"
-#include "setup.h"
 #include "support.h"
 #include "serialport.h"
 #include "cpu.h"
@@ -1182,11 +1181,12 @@ static Bitu DOS_26Handler(void) {
 }
 
 
-class DOS:public Module_base{
+class DOS {
 private:
 	CALLBACK_HandlerObject callback[7];
 public:
-	DOS(Section* /*configuration*/):Module_base(NULL){
+	DOS(void*)
+	{
 		callback[0].Install(DOS_20Handler,CB_IRET,"DOS Int 20");
 		callback[0].Set_RealVec(0x20);
 

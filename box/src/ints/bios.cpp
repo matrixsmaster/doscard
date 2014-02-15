@@ -28,7 +28,6 @@
 #include "pic.h"
 #include "pci_bus.h"
 #include "mouse.h"
-#include "setup.h"
 #include "serialport.h"
 
 namespace dosbox {
@@ -982,11 +981,11 @@ void BIOS_ZeroExtendedSize(bool in) {
 void BIOS_SetupKeyboard(void);
 void BIOS_SetupDisks(void);
 
-class BIOS:public Module_base{
+class BIOS {
 private:
 	CALLBACK_HandlerObject callback[11];
 public:
-	BIOS(Section* /*configuration*/):Module_base(NULL){
+	BIOS(void*) {
 		/* tandy DAC can be requested in tandy_sound.cpp by initializing this field */
 		bool use_tandyDAC=(real_readb(0x40,0xd4)==0xff);
 

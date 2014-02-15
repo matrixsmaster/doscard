@@ -22,7 +22,6 @@
 #include "callback.h"
 #include "pic.h"
 #include "timer.h"
-#include "setup.h"
 
 namespace dosbox {
 
@@ -559,12 +558,12 @@ void TIMER_AddTick(void) {
 }
 
 /* Use full name to avoid name clash with compile option for position-independent code */
-class PIC_8259A: public Module_base {
+class PIC_8259A {
 private:
 	IO_ReadHandleObject ReadHandler[4];
 	IO_WriteHandleObject WriteHandler[4];
 public:
-	PIC_8259A(Section* /*configuration*/):Module_base(NULL){
+	PIC_8259A(void*) {
 		/* Setup pic0 and pic1 with initial values like DOS has normally */
 		PIC_IRQCheck=0;
 		PIC_Ticks=0;

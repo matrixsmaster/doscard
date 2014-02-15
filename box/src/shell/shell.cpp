@@ -331,12 +331,12 @@ void DOS_Shell::SyntaxError(void) {
 	WriteOut(MSG_Get("SHELL_SYNTAXERROR"));
 }
 
-class AUTOEXEC:public Module_base {
+class AUTOEXEC {
 private:
 	AutoexecObject autoexec[17];
 	AutoexecObject autoexec_echo;
 public:
-	AUTOEXEC(Section* /*configuration*/):Module_base(NULL) {
+	AUTOEXEC(void*) {
 		//Register a virtual AUOEXEC.BAT file
 		VFILE_Register("AUTOEXEC.BAT",(Bit8u *)autoexec_data,(Bit32u)strlen(autoexec_data));
 	}

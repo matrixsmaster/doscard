@@ -25,7 +25,6 @@
 #include "mem.h"
 #include "regs.h"
 #include "dos_inc.h"
-#include "setup.h"
 #include "inout.h"
 #include "xms.h"
 #include "bios.h"
@@ -416,11 +415,11 @@ Bitu XMS_Handler(void) {
 
 Bitu GetEMSType(/*Section_prop * section*/);
 
-class XMS: public Module_base {
+class XMS {
 private:
 	CALLBACK_HandlerObject callbackhandler;
 public:
-	XMS(Section* /*configuration*/):Module_base(NULL){
+	XMS(void*) {
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
 		umb_available=false;
 //		if (!section->Get_bool("xms")) return;

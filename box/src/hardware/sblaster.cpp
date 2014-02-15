@@ -26,7 +26,6 @@
 #include "mixer.h"
 #include "dma.h"
 #include "pic.h"
-#include "setup.h"
 #include "support.h"
 #include "shell.h"
 #include "adlib.h"
@@ -1490,7 +1489,7 @@ static void SBLASTER_CallBack(Bitu len) {
 	}
 }
 
-class SBLASTER: public Module_base {
+class SBLASTER {
 private:
 	/* Data */
 	IO_ReadHandleObject ReadHandler[0x10];
@@ -1500,7 +1499,7 @@ private:
 	OPL_Mode oplmode;
 
 public:
-	SBLASTER(Section* /*configuration*/):Module_base(NULL) {
+	SBLASTER(void*) {
 		Bitu i;
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
 

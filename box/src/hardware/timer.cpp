@@ -24,7 +24,6 @@
 #include "mem.h"
 #include "mixer.h"
 #include "timer.h"
-#include "setup.h"
 
 namespace dosbox {
 
@@ -402,12 +401,12 @@ void TIMER_SetGate2(bool in) {
 	gate2 = in; //Set it here so the counter_latch above works
 }
 
-class TIMER:public Module_base{
+class TIMER {
 private:
 	IO_ReadHandleObject ReadHandler[4];
 	IO_WriteHandleObject WriteHandler[4];
 public:
-	TIMER(Section* /*configuration*/):Module_base(NULL){
+	TIMER(void*) {
 		WriteHandler[0].Install(0x40,write_latch,IO_MB);
 	//	WriteHandler[1].Install(0x41,write_latch,IO_MB);
 		WriteHandler[2].Install(0x42,write_latch,IO_MB);

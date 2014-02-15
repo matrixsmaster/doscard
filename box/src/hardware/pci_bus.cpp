@@ -21,7 +21,6 @@
 #include "inout.h"
 #include "mem.h"
 #include "pci_bus.h"
-#include "setup.h"
 #include "callback.h"
 #include "regs.h"
 

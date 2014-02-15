@@ -23,7 +23,6 @@
 #include "dosbox.h"
 #include "cpu.h"
 #include "memory.h"
-#include "setup.h"
 #include "programs.h"
 #include "paging.h"
 #include "lazyflags.h"
@@ -2116,11 +2115,11 @@ void CPU_Reset_AutoAdjust(void) {
 	myldbi->ticksScheduled = 0;
 }
 
-class CPU: public Module_base {
+class CPU {
 private:
 	static bool inited;
 public:
-	CPU(Section* /*configuration*/):Module_base(NULL)
+	CPU(void*)
 	{
 		if(inited) {
 			Change_Config();

@@ -25,7 +25,6 @@
 #include "inout.h"
 #include "mem.h"
 #include "bios_disk.h"
-#include "setup.h"
 #include "cross.h" //fmod on certain platforms
 
 namespace dosbox {
@@ -289,12 +288,12 @@ void CMOS_SetRegister(Bitu regNr, Bit8u val) {
 }
 
 
-class CMOS:public Module_base{
+class CMOS {
 private:
 	IO_ReadHandleObject ReadHandler[2];
 	IO_WriteHandleObject WriteHandler[2];	
 public:
-	CMOS(Section* /*configuration*/):Module_base(NULL){
+	CMOS(void*) {
 		WriteHandler[0].Install(0x70,cmos_selreg,IO_MB);
 		WriteHandler[1].Install(0x71,cmos_writereg,IO_MB);
 		ReadHandler[0].Install(0x71,cmos_readreg,IO_MB);

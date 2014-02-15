@@ -19,21 +19,13 @@
 
 #include <string.h>
 #include <ctype.h>
-
 #include "dosbox.h"
-
 #include "inout.h"
 #include "pic.h"
-#include "setup.h"
 #include "bios.h"					// SetComPorts(..)
 #include "callback.h"				// CALLBACK_Idle
-
 #include "serialport.h"
-//#include "directserial.h"
 #include "serialdummy.h"
-//#include "softmodem.h"
-//#include "nullmodem.h"
-
 #include "cpu.h"
 
 namespace dosbox {
@@ -1215,9 +1207,9 @@ bool CSerial::Putchar(Bit8u data, bool wait_dsr, bool wait_cts, Bitu timeout) {
 	return true;
 }
 
-class SERIALPORTS:public Module_base {
+class SERIALPORTS {
 public:
-	SERIALPORTS (Section * /*configuration*/):Module_base (NULL) {
+	SERIALPORTS(void*) {
 		Bit16u biosParameter[4] = { 0, 0, 0, 0 };
 //		Section_prop *section = static_cast <Section_prop*>(configuration);
 

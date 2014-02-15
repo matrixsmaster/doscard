@@ -26,7 +26,6 @@
 #include "dosbox.h"
 #include "mixer.h"
 #include "timer.h"
-#include "setup.h"
 #include "cross.h"
 #include "support.h"
 #include "programs.h"

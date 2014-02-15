@@ -24,7 +24,6 @@
 #include "dma.h"
 #include "pic.h"
 #include "paging.h"
-#include "setup.h"
 
 namespace dosbox {
 
@@ -344,9 +343,9 @@ again:
 	return done;
 }
 
-class DMA:public Module_base{
+class DMA {
 public:
-	DMA(Section* /*configuration*/):Module_base(NULL){
+	DMA(void*) {
 		Bitu i;
 		DmaControllers[0] = new DmaController(0);
 		if (IS_EGAVGA_ARCH) DmaControllers[1] = new DmaController(1);

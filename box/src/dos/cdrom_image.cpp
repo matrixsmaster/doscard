@@ -21,7 +21,6 @@
 #include "cdrom.h"
 #include "drives.h"
 #include "support.h"
-#include "setup.h"
 
 using namespace std;
 

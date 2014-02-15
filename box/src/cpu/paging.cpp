@@ -26,7 +26,6 @@
 #include "regs.h"
 #include "lazyflags.h"
 #include "cpu.h"
-#include "setup.h"
 
 namespace dosbox {
 
@@ -869,9 +868,10 @@ bool PAGING_Enabled(void) {
 	return paging.enabled;
 }
 
-class PAGING:public Module_base{
+class PAGING {
 public:
-	PAGING(Section* configuration):Module_base(configuration){
+	PAGING(void*)
+	{
 		/* Setup default Page Directory, force it to update */
 		paging.enabled=false;
 		PAGING_InitTLB();

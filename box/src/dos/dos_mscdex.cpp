@@ -23,7 +23,6 @@
 #include "callback.h"
 #include "dos_system.h"
 #include "dos_inc.h"
-#include "setup.h"
 #include "support.h"
 #include "bios_disk.h"
 #include "cpu.h"

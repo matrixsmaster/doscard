@@ -23,19 +23,10 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <sys/types.h>
-#include "cross.h"
 #include "dosbox.h"
-#include "video.h"
 #include "mouse.h"
-#include "pic.h"
-#include "timer.h"
-#include "setup.h"
-#include "support.h"
 #include "vga.h"
 #include "keyboard.h"
-#include "cpu.h"
-#include "cross.h"
-#include "control.h"
 #include "logging.h"
 #include "render.h"
 

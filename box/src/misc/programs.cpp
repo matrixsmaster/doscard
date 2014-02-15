@@ -755,6 +755,247 @@ static void CONFIG_ProgramStart(Program * * make) {
 }
 #endif
 
+bool CommandLine::FindExist(char const * const name,bool remove) {
+	cmd_it it;
+	if (!(FindEntry(name,it,false))) return false;
+	if (remove) cmds.erase(it);
+	return true;
+}
+
+bool CommandLine::FindHex(char const * const name,int & value,bool remove) {
+	cmd_it it,it_next;
+	if (!(FindEntry(name,it,true))) return false;
+	it_next=it;it_next++;
+	sscanf((*it_next).c_str(),"%X",&value);
+	if (remove) cmds.erase(it,++it_next);
+	return true;
+}
+
+bool CommandLine::FindInt(char const * const name,int & value,bool remove) {
+	cmd_it it,it_next;
+	if (!(FindEntry(name,it,true))) return false;
+	it_next=it;it_next++;
+	value=atoi((*it_next).c_str());
+	if (remove) cmds.erase(it,++it_next);
+	return true;
+}
+
+bool CommandLine::FindString(char const * const name,std::string & value,bool remove) {
+	cmd_it it,it_next;
+	if (!(FindEntry(name,it,true))) return false;
+	it_next=it;it_next++;
+	value=*it_next;
+	if (remove) cmds.erase(it,++it_next);
+	return true;
+}
+
+bool CommandLine::FindCommand(unsigned int which,std::string & value) {
+	if (which<1) return false;
+	if (which>cmds.size()) return false;
+	cmd_it it=cmds.begin();
+	for (;which>1;which--) it++;
+	value=(*it);
+	return true;
+}
+
+bool CommandLine::FindEntry(char const * const name,cmd_it & it,bool neednext) {
+	for (it=cmds.begin();it!=cmds.end();it++) {
+		if (!strcasecmp((*it).c_str(),name)) {
+			cmd_it itnext=it;itnext++;
+			if (neednext && (itnext==cmds.end())) return false;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CommandLine::FindStringBegin(char const* const begin,std::string & value, bool remove) {
+	size_t len = strlen(begin);
+	for (cmd_it it=cmds.begin();it!=cmds.end();it++) {
+		if (strncmp(begin,(*it).c_str(),len)==0) {
+			value=((*it).c_str() + len);
+			if (remove) cmds.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CommandLine::FindStringRemain(char const * const name,std::string & value) {
+	cmd_it it;value="";
+	if (!FindEntry(name,it)) return false;
+	it++;
+	for (;it!=cmds.end();it++) {
+		value+=" ";
+		value+=(*it);
+	}
+	return true;
+}
+
+/* Only used for parsing command.com /C
+ * Allowing /C dir and /Cdir
+ * Restoring quotes back into the commands so command /C mount d "/tmp/a b" works as intended
+ */
+bool CommandLine::FindStringRemainBegin(char const * const name,std::string & value) {
+	cmd_it it;value="";
+	if (!FindEntry(name,it)) {
+		size_t len = strlen(name);
+		for (it=cmds.begin();it!=cmds.end();it++) {
+			if (strncasecmp(name,(*it).c_str(),len)==0) {
+				std::string temp = ((*it).c_str() + len);
+				//Restore quotes for correct parsing in later stages
+				if(temp.find(" ") != std::string::npos)
+					value = std::string("\"") + temp + std::string("\"");
+				else
+					value = temp;
+				break;
+			}
+		}
+		if( it == cmds.end()) return false;
+	}
+	it++;
+	for (;it!=cmds.end();it++) {
+		value += " ";
+		std::string temp = (*it);
+		if(temp.find(" ") != std::string::npos)
+			value += std::string("\"") + temp + std::string("\"");
+		else
+			value += temp;
+	}
+	return true;
+}
+
+bool CommandLine::GetStringRemain(std::string & value) {
+	if(!cmds.size()) return false;
+
+	cmd_it it=cmds.begin();value=(*it++);
+	for(;it != cmds.end();it++) {
+		value+=" ";
+		value+=(*it);
+	}
+	return true;
+}
+
+
+unsigned int CommandLine::GetCount(void) {
+	return (unsigned int)cmds.size();
+}
+
+void CommandLine::FillVector(std::vector<std::string> & vector) {
+	for(cmd_it it=cmds.begin(); it != cmds.end(); it++) {
+		vector.push_back((*it));
+	}
+	// add back the \" if the parameter contained a space
+	for(Bitu i = 0; i < vector.size(); i++) {
+		if(vector[i].find(' ') != std::string::npos) {
+			vector[i] = "\""+vector[i]+"\"";
+		}
+	}
+}
+
+int CommandLine::GetParameterFromList(const char* const params[], std::vector<std::string> & output) {
+	// return values: 0 = P_NOMATCH, 1 = P_NOPARAMS
+	// TODO return nomoreparams
+	int retval = 1;
+	output.clear();
+	enum {
+		P_START, P_FIRSTNOMATCH, P_FIRSTMATCH
+	} parsestate = P_START;
+	cmd_it it = cmds.begin();
+	while(it!=cmds.end()) {
+		bool found = false;
+		for(Bitu i = 0; *params[i]!=0; i++) {
+			if (!strcasecmp((*it).c_str(),params[i])) {
+				// found a parameter
+				found = true;
+				switch(parsestate) {
+				case P_START:
+					retval = i+2;
+					parsestate = P_FIRSTMATCH;
+					break;
+				case P_FIRSTMATCH:
+				case P_FIRSTNOMATCH:
+					return retval;
+				}
+			}
+		}
+		if(!found)
+			switch(parsestate) {
+			case P_START:
+				retval = 0; // no match
+				parsestate = P_FIRSTNOMATCH;
+				output.push_back(*it);
+				break;
+			case P_FIRSTMATCH:
+			case P_FIRSTNOMATCH:
+				output.push_back(*it);
+				break;
+			}
+		cmd_it itold = it;
+		it++;
+		cmds.erase(itold);
+
+	}
+	return retval;
+}
+
+
+CommandLine::CommandLine(int argc,char const * const argv[]) {
+	if (argc>0) {
+		file_name=argv[0];
+	}
+	int i=1;
+	while (i<argc) {
+		cmds.push_back(argv[i]);
+		i++;
+	}
+}
+Bit16u CommandLine::Get_arglength() {
+	if(cmds.empty()) return 0;
+	Bit16u i=1;
+	for(cmd_it it=cmds.begin();it != cmds.end();it++)
+		i+=(*it).size() + 1;
+	return --i;
+}
+
+
+CommandLine::CommandLine(char const * const name,char const * const cmdline) {
+	if (name) file_name=name;
+	/* Parse the cmds and put them in the list */
+	bool inword,inquote;char c;
+	inword=false;inquote=false;
+	std::string str;
+	const char * c_cmdline=cmdline;
+	while ((c=*c_cmdline)!=0) {
+		if (inquote) {
+			if (c!='"') str+=c;
+			else {
+				inquote=false;
+				cmds.push_back(str);
+				str.erase();
+			}
+		}else if (inword) {
+			if (c!=' ') str+=c;
+			else {
+				inword=false;
+				cmds.push_back(str);
+				str.erase();
+			}
+		}
+		else if (c=='"') { inquote=true;}
+		else if (c!=' ') { str+=c;inword=true;}
+		c_cmdline++;
+	}
+	if (inword || inquote) cmds.push_back(str);
+}
+
+void CommandLine::Shift(unsigned int amount) {
+	while(amount--) {
+		file_name = cmds.size()?(*(cmds.begin())):"";
+		if(cmds.size()) cmds.erase(cmds.begin());
+	}
+}
+
 void PROGRAMS_Init(Section* /*sec*/) {
 	/* Setup a special callback to start virtual programs */
 	call_program=CALLBACK_Allocate();

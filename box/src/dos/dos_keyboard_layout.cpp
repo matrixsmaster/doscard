@@ -20,7 +20,6 @@
 #include "dosbox.h"
 #include "bios.h"
 #include "bios_disk.h"
-#include "setup.h"
 #include "support.h"
 #include "int10.h"
 #include "regs.h"
@@ -1083,9 +1082,9 @@ const char* DOS_GetLoadedLayout(void) {
 }
 
 
-class DOS_KeyboardLayout: public Module_base {
+class DOS_KeyboardLayout {
 public:
-	DOS_KeyboardLayout(Section* /*configuration*/):Module_base(NULL){
+	DOS_KeyboardLayout(void*) {
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
 		dos.loaded_codepage=437;	// US codepage already initialized
 		loaded_layout=new keyboard_layout();

@@ -23,7 +23,6 @@
 #include "regs.h"
 #include "inout.h"
 #include "int10.h"
-#include "setup.h"
 
 namespace dosbox {
 

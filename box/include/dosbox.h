@@ -48,7 +48,7 @@ class CDosBox {
 private:
 	//FIXME: move vars from public
 	LDB_CallbackFunc ldb_callbacks[LDB_CALLBACKSQ];
-	CommandLine* com_line;
+//	CommandLine* com_line;
 	bool callbacksReady;
 	CLDBConf* config;
 	bool init_ok;
@@ -67,7 +67,7 @@ public:
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
 //	void E_Exit(const char * message,...);
 	//
-	Config* control;
+//	Config* control;
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;
 	bool ticksLocked;

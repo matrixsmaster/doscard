@@ -25,7 +25,6 @@
 #include "paging.h"
 #include "pic.h"
 #include "inout.h"
-#include "setup.h"
 
 namespace dosbox {
 

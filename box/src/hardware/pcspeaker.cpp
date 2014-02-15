@@ -21,7 +21,6 @@
 #include "dosbox.h"
 #include "mixer.h"
 #include "timer.h"
-#include "setup.h"
 #include "pic.h"
 
 namespace dosbox {
@@ -321,11 +320,11 @@ static void PCSPEAKER_CallBack(Bitu len) {
 	} 
 
 }
-class PCSPEAKER:public Module_base {
+class PCSPEAKER {
 private:
 	MixerObject MixerChan;
 public:
-	PCSPEAKER(Section* /*configuration*/):Module_base(NULL){
+	PCSPEAKER(void*) {
 		spkr.chan=0;
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
 //		if(!section->Get_bool("pcspeaker")) return;

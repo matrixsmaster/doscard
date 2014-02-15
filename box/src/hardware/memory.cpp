@@ -20,7 +20,6 @@
 #include "dosbox.h"
 #include "mem.h"
 #include "inout.h"
-#include "setup.h"
 #include "paging.h"
 #include "regs.h"
 
@@ -537,12 +536,12 @@ void PreparePCJRCartRom(void) {
 
 HostPt GetMemBase(void) { return MemBase; }
 
-class MEMORY:public Module_base{
+class MEMORY {
 private:
 	IO_ReadHandleObject ReadHandler;
 	IO_WriteHandleObject WriteHandler;
 public:	
-	MEMORY(Section* /*configuration*/):Module_base(NULL){
+	MEMORY(void*) {
 		Bitu i;
 //		Section_prop * section=static_cast<Section_prop *>(configuration);
 	

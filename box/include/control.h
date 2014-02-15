@@ -24,10 +24,10 @@
 #include <vector>
 #include <string>
 #include "programs.h"
-#include "setup.h"
 
 namespace dosbox {
 
+#if 0
 class Config{
 public:
 	CommandLine * cmdline;
@@ -67,6 +67,7 @@ public:
 	bool SecureMode() const { return secure_mode; }
 	void SwitchToSecureMode() { secure_mode = true; }//can't be undone
 };
+#endif
 
 }
 
