@@ -6,7 +6,7 @@
 APP := xshell
 CXX := g++
 INCLUDES := -I. -I.. -I../box/include
-#DEFINES := -DXSHELL_VERBOSE=1
+DEFINES := -DXSHELL_VERBOSE=1
 CXXFLAGS := -g -O2 -Wall -pthread $(INCLUDES) $(DEFINES)
 LD_STAT := -ldosbox -lSDL2
 LD_BDYN := -lX11 -lrt

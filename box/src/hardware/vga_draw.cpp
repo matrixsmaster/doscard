@@ -31,9 +31,6 @@ namespace dosbox {
 //#define C_DEBUG 1
 //#define LOG(X,Y) LOG_MSG
 
-#define VGA_PARTS 4
-#define VGA_MAXWIDTH 800
-
 typedef Bit8u * (* VGA_Line_Handler)(Bitu vidstart, Bitu line);
 
 static VGA_Line_Handler VGA_DrawLine;
@@ -60,7 +57,7 @@ static Bit8u * VGA_Draw_2BPP_Line(Bitu vidstart, Bitu line) {
 	}
 	return TempLine;
 }
-
+/*
 static Bit8u * VGA_Draw_2BPPHiRes_Line(Bitu vidstart, Bitu line) {
 	const Bit8u *base = vga.tandy.draw_base + ((line & vga.tandy.line_mask) << vga.tandy.line_shift);
 	Bit32u * draw=(Bit32u *)TempLine;
@@ -74,7 +71,7 @@ static Bit8u * VGA_Draw_2BPPHiRes_Line(Bitu vidstart, Bitu line) {
 	}
 	return TempLine;
 }
-
+*/
 static Bitu temp[643]={0};
 
 static Bit8u * VGA_Draw_CGA16_Line(Bitu vidstart, Bitu line) {
@@ -198,6 +195,7 @@ static Bit8u * VGA_Draw_Linear_Line(Bitu vidstart, Bitu /*line*/) {
 	return ret;
 }
 
+#if 0
 static Bit8u * VGA_Draw_Xlat16_Linear_Line(Bitu vidstart, Bitu /*line*/) {
 	Bit8u *ret = &vga.draw.linear_base[ vidstart & vga.draw.linear_mask ];
 	Bit16u* temps = (Bit16u*) TempLine;
@@ -206,7 +204,7 @@ static Bit8u * VGA_Draw_Xlat16_Linear_Line(Bitu vidstart, Bitu /*line*/) {
 	}
 	return TempLine;
 }
-
+#endif
 //Test version, might as well keep it
 /* static Bit8u * VGA_Draw_Chain_Line(Bitu vidstart, Bitu line) {
 	Bitu i = 0;
@@ -505,6 +503,8 @@ static Bit8u* VGA_TEXT_Draw_Line(Bitu vidstart, Bitu line) {
 	return TempLine+16;
 }
 */
+
+#if 0
 // combined 8/9-dot wide text mode 16bpp line drawing function
 static Bit8u* VGA_TEXT_Xlat16_Draw_Line(Bitu vidstart, Bitu line) {
 	// keep it aligned:
@@ -562,6 +562,7 @@ static Bit8u* VGA_TEXT_Xlat16_Draw_Line(Bitu vidstart, Bitu line) {
 	}
 	return TempLine+32;
 }
+#endif
 
 #ifdef VGA_KEEP_CHANGES
 static INLINE void VGA_ChangesEnd(void ) {
@@ -845,6 +846,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 	case M_EGA:
 		if (!(vga.crtc.mode_control&0x1)) vga.draw.linear_mask &= ~0x10000;
 		else vga.draw.linear_mask |= 0x10000;
+		//no break
 	case M_LIN4:
 		vga.draw.byte_panning_shift = 8;
 		vga.draw.address += vga.draw.bytes_skip;
@@ -862,6 +864,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 			vga.draw.linear_base = vga.mem.linear;
 			vga.draw.linear_mask = vga.vmemwrap - 1;
 		}
+		//no break
 	case M_LIN8:
 	case M_LIN15:
 	case M_LIN16:
@@ -877,7 +880,7 @@ static void VGA_VerticalTimer(Bitu /*val*/) {
 	case M_TEXT:
 		vga.draw.byte_panning_shift = 2;
 		vga.draw.address += vga.draw.bytes_skip;
-		// fall-through
+		//no break
 	case M_TANDY_TEXT:
 	case M_HERC_TEXT:
 //		if (machine==MCH_HERC) vga.draw.linear_mask = 0xfff; // 1 page

@@ -49,29 +49,6 @@ typedef struct {
 		double ratio;
 		float fps;
 	} src;
-//	struct {
-//		Bitu count;
-//		Bitu max;
-//		Bitu index;
-//		Bit8u hadSkip[RENDER_SKIP_CACHE];
-//	} frameskip;
-//	struct {
-//		Bitu size;
-//		scalerMode_t inMode;
-//		scalerMode_t outMode;
-//		scalerOperation_t op;
-//		bool clearCache;
-//		bool forced;
-//		ScalerLineHandler_t lineHandler;
-//		ScalerLineHandler_t linePalHandler;
-//		ScalerComplexHandler_t complexHandler;
-//		Bitu blocks, lastBlock;
-//		Bitu outPitch;
-//		Bit8u *outWrite;
-//		Bitu cachePitch;
-//		Bit8u *cacheRead;
-//		Bitu inHeight, inLine, outLine;
-//	} scale;
 	RenderPal_t pal;
 	bool updating;
 	bool active;

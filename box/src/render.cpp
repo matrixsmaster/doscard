@@ -33,6 +33,10 @@ RenderLineHandler_t RENDER_DrawLine;
 static bool init_ok;
 static uint32_t frmsk_cnt;
 
+#ifndef LDB_EMBEDDED
+static uint32_t hungry_buf[VGA_MAXWIDTH];
+#endif
+
 static INLINE void LDB_SendDWord(Bit32u x)
 {
 	myldbi->Callback(DBCB_PushScreen,&x,4);
@@ -57,41 +61,72 @@ void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue)
 	if (render.pal.last<entry) render.pal.last=entry;
 }
 
-static void RENDER_StartLineHandler(const void * src)
+static void RENDER_FullLine(const void* src)
 {
 	if (!src) return;
 	Bit8u* px8 = ((Bit8u*)src);
 	Bit32u x,s;
+	Bit32u* pb32;
+	void* p_temp;
+
 	for (x=0; x<render.src.width; x++) {
 		switch (render.src.bpp) {
 		case 8:
 			s = px8[x];
+#ifdef LDB_EMBEDDED
 			LDB_SendByte(render.pal.rgb[s].blue);
 			LDB_SendByte(render.pal.rgb[s].green);
 			LDB_SendByte(render.pal.rgb[s].red);
+#else
+			hungry_buf[x] = render.pal.rgb[s].blue;
+			hungry_buf[x] |= render.pal.rgb[s].green << 8;
+			hungry_buf[x] |= render.pal.rgb[s].red << 16;
+#endif
 			break;
 		case 15:
 			s = ((Bit16u*)px8)[x];
+#ifdef LDB_EMBEDDED
 			LDB_SendByte(((s & 0x001f) * 0x21) >> 2);
 			LDB_SendByte(((s & 0x03e0) * 0x21) >> 7);
 			LDB_SendByte(((s & 0x7c00) * 0x21) >> 12);
+#else
+			hungry_buf[x] = ((s & 0x001f) * 0x21) >> 2;
+			hungry_buf[x] |= ((s & 0x03e0) * 0x21) >> 7 << 8;
+			hungry_buf[x] |= ((s & 0x7c00) * 0x21) >> 12 << 16;
+#endif
 			break;
 		case 16:
 			s = ((Bit16u*)px8)[x];
+#ifdef LDB_EMBEDDED
 			LDB_SendByte(((s & 0x001f) * 0x21) >> 2);
 			LDB_SendByte(((s & 0x07e0) * 0x41) >> 9);
 			LDB_SendByte(((s & 0xf800) * 0x21) >> 13);
+#else
+			hungry_buf[x] = ((s & 0x001f) * 0x21) >> 2;
+			hungry_buf[x] |= ((s & 0x07e0) * 0x41) >> 9 << 8;
+			hungry_buf[x] |= ((s & 0xf800) * 0x21) >> 13 << 16;
+#endif
 			break;
 		case 32:
+#ifdef LDB_EMBEDDED
 			LDB_SendByte((((Bit32u*)src)[x]) & 255);
 			LDB_SendByte((((Bit32u*)src)[x] >> 8) & 255);
 			LDB_SendByte((((Bit32u*)src)[x] >> 16) & 255);
+#else
+			p_temp = const_cast<void*>(src);
+			pb32 = reinterpret_cast<Bit32u*>(p_temp);
+			myldbi->Callback(DBCB_PushScreen,pb32,render.src.width*4);
+			return;
+#endif
 			break;
 		}
 	}
+#ifndef LDB_EMBEDDED
+	myldbi->Callback(DBCB_PushScreen,hungry_buf,render.src.width*4);
+#endif
 }
 
-static void RENDER_EmptyLineHandler(const void * src)
+static void RENDER_EmptyLine(const void*)
 {
 }
 
@@ -102,7 +137,7 @@ bool RENDER_StartUpdate(void)
 		frmsk_cnt = 0;
 		return false;
 	}
-	RENDER_DrawLine = (frmsk_cnt < RENDER_FRMSK)? RENDER_EmptyLineHandler:RENDER_StartLineHandler;
+	RENDER_DrawLine = (frmsk_cnt < RENDER_FRMSK)? RENDER_EmptyLine:RENDER_FullLine;
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
 	hdr |= ((Bit16u)render.src.height);
@@ -117,9 +152,10 @@ void RENDER_EndUpdate(bool abort)
 		LDB_SendDWord(DISPLAY_ABOR_SIGNATURE);
 	} else {
 		//normal update
-		LDB_SendByte(0x01);
+#ifdef LDB_EMBEDDED
+		LDB_SendByte(0x01); //stop byte
+#endif
 	}
-	//FIXME: frameskip
 	if (frmsk_cnt < RENDER_FRMSK) frmsk_cnt++;
 	else frmsk_cnt = 0;
 }

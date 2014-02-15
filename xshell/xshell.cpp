@@ -72,30 +72,8 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 	if (!buf) return -1;
 	uint32_t* dw;
 	uint8_t* b;
-	switch (len) {
-	case 1:
-		b = reinterpret_cast<uint8_t*>(buf);
-		if (disp_fsm == 2) {
-			if (frame_cnt >= static_cast<uint32_t>(lcd_w*lcd_h)) {
-#if XSHELL_VERBOSE
-				xnfo(0,2,"End-Of-Frame received (0x%02X) CRC=%d",*b,frame_crc);
-#endif
-				if (*b != 0x01) xnfo(0,2,"Bad Frame (wrong stop byte)");
-				disp_fsm = 1;
-				if (SDL_AtomicGet(&at_flag) >= 0)
-					SDL_AtomicIncRef(&at_flag);
-			} else {
-				cur_pixel = (pxclock)? (cur_pixel|(*b << (pxclock*8))):(*b);
-				if (++pxclock > 2) {
-					pxclock = 0;
-					framebuf[frame_cnt++] = cur_pixel;
-					frame_crc += cur_pixel;
-				}
-			}
-		}
-		break;
 
-	case 4:
+	if (len == 4) {
 		dw = reinterpret_cast<uint32_t*>(buf);
 		switch (*dw) {
 		case DISPLAY_INIT_SIGNATURE:
@@ -114,7 +92,8 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #if XSHELL_VERBOSE
 				xnfo(0,2,"Frame abort");
 #endif
-				SDL_AtomicIncRef(&at_flag);
+				if (SDL_AtomicGet(&at_flag) >= 0)
+					SDL_AtomicIncRef(&at_flag);
 			} else
 				xnfo(-1,2,"Frame abort received in wrong state. Data corrupted.");
 			break;
@@ -143,10 +122,16 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 				xnfo(1,2,"Unknown dword received: 0x%08X (pxclk=%d frame_cnt=%d)",*dw,pxclock,frame_cnt);
 			break;
 		}
-		break;
-	default:
-		xnfo(0,2,"Unsupported transfer length (%d)",len);
-		return 1;
+	} else if ((disp_fsm == 2) && (len == lcd_w * 4)) {
+		memcpy(framebuf+(lcd_w*frame_cnt),buf,len);
+		if (++frame_cnt >= lcd_h) {
+			if (SDL_AtomicGet(&at_flag) >= 0)
+				SDL_AtomicIncRef(&at_flag);
+			disp_fsm = 1;
+		}
+	} else {
+		xnfo(1,2,"Unknown data (%u bytes) received",len);
+		return -1;
 	}
 	return 0;
 }
@@ -276,7 +261,7 @@ static int XS_SDLInit()
 		return 1;
 	}
 	if (SDL_CreateWindowAndRenderer(XSHELL_DEF_WND_W,XSHELL_DEF_WND_H,
-			SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE,&wnd,&ren)) {
+			SDL_WINDOW_RESIZABLE,&wnd,&ren)) {
 		xnfo(1,7,"CreateWindowAndRenderer() failed.");
 		return 2;
 	}

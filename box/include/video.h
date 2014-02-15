@@ -22,6 +22,9 @@
 
 namespace dosbox {
 
+#define VGA_PARTS 4
+#define VGA_MAXWIDTH 800
+
 struct GFX_PalEntry {
 	Bit8u r;
 	Bit8u g;
