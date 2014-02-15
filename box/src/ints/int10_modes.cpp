@@ -675,7 +675,7 @@ bool INT10_SetVideoMode(Bit16u mode) {
 				return false;
 			}
 //		}
-		// check for scanline backwards compatibility (VESA text modes??)
+		// check for scanline backwards compatibility (VESA text modes)
 		if (CurMode->type==M_TEXT) {
 			if ((modeset_ctl&0x90)==0x80) { // 200 lines emulation
 				if (CurMode->mode <= 3) {

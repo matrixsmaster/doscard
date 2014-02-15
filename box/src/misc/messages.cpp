@@ -22,7 +22,6 @@
 #include "dosbox.h"
 #include "cross.h"
 #include "support.h"
-#include "control.h"
 #include <list>
 #include <string>
 

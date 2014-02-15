@@ -87,7 +87,6 @@ static bool counter_output(Bitu counter) {
 		if (p->new_mode) return false;
 		if (index>p->delay) return true;
 		else return false;
-		break;
 	case 2:
 		if (p->new_mode) return true;
 		index=fmod(index,(double)p->delay);

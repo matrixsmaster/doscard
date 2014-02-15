@@ -32,7 +32,6 @@
 #include "mixer.h"
 #include "timer.h"
 #include "dos_inc.h"
-#include "control.h"
 #include "cross.h"
 #include "programs.h"
 #include "support.h"

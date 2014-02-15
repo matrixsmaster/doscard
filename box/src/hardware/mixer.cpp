@@ -151,6 +151,7 @@ inline void MixerChannel::AddSamples(Bitu len, const Type* data) {
 	freq_index&=MIXER_REMAIN;
 	Bitu pos=0;Bitu new_pos;
 
+	//FIXME: language standard violation
 	goto thestart;
 	for (;;) {
 		new_pos=freq_index >> MIXER_SHIFT;
@@ -238,7 +239,8 @@ thestart:
 		mixer.work[mixpos][0]+=sample*volmul[0];
 		if (stereo) sample=last[1]+((diff[1]*diff_mul) >> MIXER_SHIFT);
 		mixer.work[mixpos][1]+=sample*volmul[1];
-		mixpos++;done++;
+		mixpos++;
+		done++;
 	}
 }
 

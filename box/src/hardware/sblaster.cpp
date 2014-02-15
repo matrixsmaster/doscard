@@ -788,7 +788,7 @@ static void DSP_DoCommand(void) {
 		if (sb.type == SBT_16) {
 			switch (sb.dsp.in.data[0]) {
 				case 0x03:
-					DSP_AddData(0x18);	// version ID (??)
+					DSP_AddData(0x18);	// version ID
 					break;
 				default:
 					LOG(LOG_SB,LOG_NORMAL)("DSP Unhandled SB16ASP command %X sub %X",sb.dsp.cmd,sb.dsp.in.data[0]);

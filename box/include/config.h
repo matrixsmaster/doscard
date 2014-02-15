@@ -1,19 +1,17 @@
-//32bit machine?
-//#define HOST_32BIT
-#define HOST_64BIT
+#include <inttypes.h>
 
-#define SIZEOF_UNSIGNED_CHAR 1
-#define SIZEOF_UNSIGNED_INT 4
-#define SIZEOF_UNSIGNED_SHORT 2
-#define SIZEOF_UNSIGNED_LONG_LONG 8
-
-#ifdef HOST_32BIT
-#define SIZEOF_INT_P 4
-#define SIZEOF_UNSIGNED_LONG 4
-#else
-#define SIZEOF_INT_P 8
-#define SIZEOF_UNSIGNED_LONG 8
-#endif
+//#define SIZEOF_UNSIGNED_CHAR 1
+//#define SIZEOF_UNSIGNED_INT 4
+//#define SIZEOF_UNSIGNED_SHORT 2
+//#define SIZEOF_UNSIGNED_LONG_LONG 8
+//
+//#ifdef HOST_32BIT
+//#define SIZEOF_INT_P 4
+//#define SIZEOF_UNSIGNED_LONG 4
+//#else
+//#define SIZEOF_INT_P 8
+//#define SIZEOF_UNSIGNED_LONG 8
+//#endif
 
 //#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
 //#define PROFILE_UNIQUE_CALL_LIST 1
@@ -164,43 +162,17 @@
 #endif
 
 
-typedef         double     Real64;
+typedef double Real64;
+typedef uint8_t Bit8u;
+typedef int8_t Bit8s;
+typedef uint16_t Bit16u;
+typedef int16_t Bit16s;
+typedef uint32_t Bit32u;
+typedef int32_t Bit32s;
+typedef uint64_t Bit64u;
+typedef int64_t Bit64s;
 
-#if SIZEOF_UNSIGNED_CHAR != 1
-#  error "sizeof (unsigned char) != 1"
-#else
-  typedef unsigned char Bit8u;
-  typedef   signed char Bit8s;
-#endif
-
-#if SIZEOF_UNSIGNED_SHORT != 2
-#  error "sizeof (unsigned short) != 2"
-#else
-  typedef unsigned short Bit16u;
-  typedef   signed short Bit16s;
-#endif
-
-#if SIZEOF_UNSIGNED_INT == 4
-  typedef unsigned int Bit32u;
-  typedef   signed int Bit32s;
-#elif SIZEOF_UNSIGNED_LONG == 4
-  typedef unsigned long Bit32u;
-  typedef   signed long Bit32s;
-#else
-#  error "can't find sizeof(type) of 4 bytes!"
-#endif
-
-#if SIZEOF_UNSIGNED_LONG == 8
-  typedef unsigned long Bit64u;
-  typedef   signed long Bit64s;
-#elif SIZEOF_UNSIGNED_LONG_LONG == 8
-  typedef unsigned long long Bit64u;
-  typedef   signed long long Bit64s;
-#else
-#  error "can't find data type of 8 bytes"
-#endif
-
-#if SIZEOF_INT_P == 4
+#ifndef HOST_64BIT
   typedef Bit32u Bitu;
   typedef Bit32s Bits;
 #else

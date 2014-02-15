@@ -22,7 +22,6 @@
 #include <string.h>
 #include "dosbox.h"
 #include "regs.h"
-#include "control.h"
 #include "shell.h"
 #include "callback.h"
 #include "support.h"

@@ -165,11 +165,6 @@ Bitu Module::PortRead( Bitu port, Bitu iolen ) {
 	return 0;
 }
 
-
-void Module::Init( Mode m ) {
-	mode = m;
-}
-
 }; //namespace
 
 //TODO: purge all Chinese Code from here

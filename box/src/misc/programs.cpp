@@ -28,7 +28,6 @@
 #include "regs.h"
 #include "support.h"
 #include "cross.h"
-#include "control.h"
 #include "shell.h"
 #include "ldb.h"
 

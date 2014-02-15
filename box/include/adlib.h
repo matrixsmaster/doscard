@@ -80,7 +80,6 @@ struct Timer {
 		delay = 0.001 * (256 - counter ) * scale;
 		start = time + delay;
 	}
-
 };
 
 struct Chip {
@@ -146,7 +145,7 @@ public:
 	//Handle port writes
 	void PortWrite( Bitu port, Bitu val, Bitu iolen );
 	Bitu PortRead( Bitu port, Bitu iolen );
-	void Init( Mode m );
+	inline void Init(Mode m) { mode = m; }
 
 	Module(void*);
 	~Module();

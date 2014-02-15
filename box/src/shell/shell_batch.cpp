@@ -24,7 +24,8 @@
 
 namespace dosbox {
 
-BatchFile::BatchFile(DOS_Shell * host,char const * const resolved_name,char const * const entered_name, char const * const cmd_line) {
+BatchFile::BatchFile(DOS_Shell * host,char const * const resolved_name,char const * const entered_name, char const * const cmd_line)
+{
 	location = 0;
 	prev=host->bf;
 	echo=host->echo;
@@ -42,13 +43,15 @@ BatchFile::BatchFile(DOS_Shell * host,char const * const resolved_name,char cons
 	DOS_CloseFile(file_handle);
 }
 
-BatchFile::~BatchFile() {
+BatchFile::~BatchFile()
+{
 	delete cmd;
 	shell->bf=prev;
 	shell->echo=echo;
 }
 
-bool BatchFile::ReadLine(char * line) {
+bool BatchFile::ReadLine(char * line)
+{
 	//Open the batchfile and seek to stored postion
 	if (!DOS_OpenFile(filename.c_str(),128,&file_handle)) {
 		LOG(LOG_MISC,LOG_ERROR)("ReadLine Can't open BatchFile %s",filename.c_str());
@@ -118,7 +121,10 @@ emptyline:
 				/* Not a command line number has to be an environment */
 				char * first=strchr(cmd_read,'%');
 				/* No env afterall.Somewhat of a hack though as %% and % aren't handled consistent in dosbox. Maybe echo needs to parse % and %% as well. */
-				if (!first) {*cmd_write++ = '%';continue;}
+				if (!first) {
+					*cmd_write++ = '%';
+					continue;
+				}
 				*first++ = 0;
 				std::string env;
 				if (shell->GetEnvStr(cmd_read,env)) {
@@ -131,6 +137,7 @@ emptyline:
 				cmd_read=first;
 			}
 		} else {
+			//FIXME: compiler-dependent
 			*cmd_write++=*cmd_read++;
 		}
 	}
@@ -142,7 +149,8 @@ emptyline:
 	return true;	
 }
 
-bool BatchFile::Goto(char * where) {
+bool BatchFile::Goto(char * where)
+{
 	//Open bat file and search for the where string
 	if (!DOS_OpenFile(filename.c_str(),128,&file_handle)) {
 		LOG(LOG_MISC,LOG_ERROR)("SHELL:Goto Can't open BatchFile %s",filename.c_str());
@@ -154,50 +162,54 @@ bool BatchFile::Goto(char * where) {
 	char * cmd_write;
 
 	/* Scan till we have a match or return false */
-	Bit8u c;Bit16u n;
-again:
-	cmd_write=cmd_buffer;
-	do {
-		n=1;
-		DOS_ReadFile(file_handle,&c,&n);
-		if (n>0) {
-			if (c>31)
-				*cmd_write++=c;
+	Bit8u c;
+	Bit16u n;
+	for(;;) {
+		cmd_write=cmd_buffer;
+		do {
+			n=1;
+			DOS_ReadFile(file_handle,&c,&n);
+			if (n>0) {
+				if (c>31)
+					*cmd_write++=c;
+			}
+		} while (c!='\n' && n);
+		*cmd_write++ = 0;
+		char *nospace = trim(cmd_buffer);
+		if (nospace[0] == ':') {
+			nospace++; //Skip :
+			//Strip spaces and = from it.
+			while ((*nospace) &&
+					(isspace(*reinterpret_cast<unsigned char*>(nospace)) ||
+							(*nospace == '=')))
+				nospace++;
+
+			//label is until space/=/eol
+			char* const beginlabel = nospace;
+			while ((*nospace) &&
+					(!isspace(*reinterpret_cast<unsigned char*>(nospace))) &&
+					(*nospace != '='))
+				nospace++;
+
+			*nospace = 0;
+			if (strcasecmp(beginlabel,where)==0) {
+				//Found it! Store location and continue
+				this->location = 0;
+				DOS_SeekFile(file_handle,&(this->location),DOS_SEEK_CUR);
+				DOS_CloseFile(file_handle);
+				return true;
+			}
 		}
-	} while (c!='\n' && n);
-	*cmd_write++ = 0;
-	char *nospace = trim(cmd_buffer);
-	if (nospace[0] == ':') {
-		nospace++; //Skip :
-		//Strip spaces and = from it.
-		while(*nospace && (isspace(*reinterpret_cast<unsigned char*>(nospace)) || (*nospace == '=')))
-			nospace++;
-
-		//label is until space/=/eol
-		char* const beginlabel = nospace;
-		while(*nospace && !isspace(*reinterpret_cast<unsigned char*>(nospace)) && (*nospace != '=')) 
-			nospace++;
-
-		*nospace = 0;
-		if (strcasecmp(beginlabel,where)==0) {
-		//Found it! Store location and continue
-			this->location = 0;
-			DOS_SeekFile(file_handle,&(this->location),DOS_SEEK_CUR);
+		if (!n) {
 			DOS_CloseFile(file_handle);
-			return true;
+			delete this;
+			return false;
 		}
-	   
 	}
-	if (!n) {
-		DOS_CloseFile(file_handle);
-		delete this;
-		return false;	
-	}
-	goto again;
-	return false;
 }
 
-void BatchFile::Shift(void) {
+void BatchFile::Shift(void)
+{
 	cmd->Shift(1);
 }
 

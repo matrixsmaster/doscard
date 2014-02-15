@@ -24,7 +24,6 @@
 #include "bios.h"
 #include "drives.h"
 #include "support.h"
-#include "control.h"
 #include <cstring>
 #include <cctype>
 #include <cstdlib>

@@ -34,7 +34,6 @@
 #include "dos_inc.h"
 #include "bios.h"
 #include "bios_disk.h"
-#include "control.h"
 
 namespace dosbox {
 
