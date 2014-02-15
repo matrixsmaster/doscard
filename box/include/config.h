@@ -23,7 +23,7 @@
 //#define C_HEAVY_DEBUG 1
 
 /* Determines if the compilers supports always_inline attribute. */
-#define C_ATTRIBUTE_ALWAYS_INLINE 1
+//#define C_ATTRIBUTE_ALWAYS_INLINE 1
 
 /* Determines if the compilers supports fastcall attribute. */
 /* #undef C_ATTRIBUTE_FASTCALL */
