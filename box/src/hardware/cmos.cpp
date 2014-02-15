@@ -321,13 +321,14 @@ public:
 
 static CMOS* test;
 
-void CMOS_Destroy(Section* sec){
-	delete test;
+void CMOS_Init(Section* )
+{
+	test = new CMOS(NULL);
 }
 
-void CMOS_Init(Section* ) {
-	test = new CMOS(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&CMOS_Destroy,true)\n");
+void CMOS_Clear()
+{
+	delete test;
 }
 
 }

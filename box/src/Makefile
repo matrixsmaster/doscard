@@ -54,6 +54,6 @@ all:	$(LIB_OBJS)
 	$(CC_COMP) -c -o $@ $<
 
 clean:
-	rm objs.txt
+	rm -f objs.txt
 	find . -type f -name '*.a' | xargs -n1 rm -fv
 	find . -type f -name '*.o' | xargs -n1 rm -fv

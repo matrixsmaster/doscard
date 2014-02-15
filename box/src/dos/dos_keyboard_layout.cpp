@@ -1140,14 +1140,14 @@ public:
 
 static DOS_KeyboardLayout* test;
 
-void DOS_KeyboardLayout_ShutDown(Section* /*sec*/) {
-	delete test;
+void DOS_KeyboardLayout_Init(Section* /*sec*/)
+{
+	test = new DOS_KeyboardLayout(NULL);
 }
 
-void DOS_KeyboardLayout_Init(Section* /*sec*/) {
-	test = new DOS_KeyboardLayout(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DOS_KeyboardLayout_ShutDown,true)\n");
-	//	MAPPER_AddHandler(switch_keyboard_layout,MK_f2,MMOD1|MMOD2,"sw_layout","Switch Layout");
+void DOS_KeyboardLayout_Clear()
+{
+	delete test;
 }
 
 }

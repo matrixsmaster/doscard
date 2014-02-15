@@ -503,9 +503,6 @@ static void MIXER_CallBack(void * userdata, uint8_t *stream, int len) {
 	}
 }
 
-static void MIXER_Stop(Section* sec) {
-}
-
 class MIXER : public Program {
 public:
 	void MakeVolume(char * scan,float & vol0,float & vol1) {
@@ -592,17 +589,10 @@ MixerObject::~MixerObject(){
 }
 
 
-void MIXER_Init(Section* /*sec*/) {
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MIXER_Stop)\n");
-
-//	Section_prop * section=static_cast<Section_prop *>(sec);
-	/* Read out config section */
-//	mixer.freq=section->Get_int("rate");
+void MIXER_Init(Section* /*sec*/)
+{
 	mixer.freq = myldbi->GetConfig()->snd.sample_freq;
-//	mixer.nosound=section->Get_bool("nosound");
 	mixer.nosound = !(myldbi->GetConfig()->snd.enabled);
-//	mixer.nosound=true;
-//	mixer.blocksize=section->Get_int("blocksize");
 	mixer.blocksize = myldbi->GetConfig()->snd.blocks;
 
 	/* Initialize the internal stuff */
@@ -612,16 +602,6 @@ void MIXER_Init(Section* /*sec*/) {
 	memset(mixer.work,0,sizeof(mixer.work));
 	mixer.mastervol[0]=1.0f;
 	mixer.mastervol[1]=1.0f;
-
-//	SDL_AudioSpec spec;
-//	SDL_AudioSpec obtained;
-//
-//	spec.freq=mixer.freq;
-//	spec.format=AUDIO_S16SYS;
-//	spec.channels=2;
-//	spec.callback=MIXER_CallBack;
-//	spec.userdata=NULL;
-//	spec.samples=(Uint16)mixer.blocksize;
 
 	LDB_SoundInfo inf;
 	inf.width = 16;
@@ -641,16 +621,19 @@ void MIXER_Init(Section* /*sec*/) {
 		TIMER_AddTickHandler(MIXER_Mix);
 		inf.silent = false;
 	}
-
 	myldbi->Callback(DBCB_PushSound,&inf,sizeof(inf));
 
-//	mixer.min_needed=section->Get_int("prebuffer");
 	mixer.min_needed = myldbi->GetConfig()->snd.prebuf;
 	if (mixer.min_needed>100) mixer.min_needed=100;
 	mixer.min_needed=(mixer.freq*mixer.min_needed)/1000;
 	mixer.max_needed=mixer.blocksize * 2 + 2*mixer.min_needed;
 	mixer.needed=mixer.min_needed+1;
 	PROGRAMS_MakeFile("MIXER.COM",MIXER_ProgramStart);
+}
+
+void MIXER_Clear()
+{
+	//TODO: clean up something :)
 }
 
 }

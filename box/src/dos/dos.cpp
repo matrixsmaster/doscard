@@ -1238,14 +1238,14 @@ public:
 
 static DOS* test;
 
-void DOS_ShutDown(Section* /*sec*/) {
-	delete test;
+void DOS_Init(Section* /*sec*/)
+{
+	test = new DOS(NULL);
 }
 
-void DOS_Init(Section* /*sec*/) {
-	test = new DOS(NULL);
-	/* shutdown function */
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DOS_ShutDown,false)\n");
+void DOS_Clear()
+{
+	delete test;
 }
 
 }

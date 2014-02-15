@@ -460,12 +460,14 @@ public:
 };
 static TIMER* test;
 
-void TIMER_Destroy(Section*){
-	delete test;
-}
-void TIMER_Init(Section* ) {
+void TIMER_Init(Section* )
+{
 	test = new TIMER(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&TIMER_Destroy)\n");
+}
+
+void TIMER_Clear()
+{
+	delete test;
 }
 
 uint32_t GetTicks()

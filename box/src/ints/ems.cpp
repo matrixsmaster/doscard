@@ -1466,13 +1466,14 @@ public:
 		
 static EMS* test;
 
-void EMS_ShutDown(Section* /*sec*/) {
-	delete test;	
+void EMS_Init(Section* /*sec*/)
+{
+	test = new EMS(NULL);
 }
 
-void EMS_Init(Section* /*sec*/) {
-	test = new EMS(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&EMS_ShutDown,true)\n");
+void EMS_Clear()
+{
+	delete test;
 }
 
 //Initialize static members

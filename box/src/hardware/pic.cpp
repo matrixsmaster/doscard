@@ -616,13 +616,14 @@ public:
 
 static PIC_8259A* test;
 
-void PIC_Destroy(Section* sec){
-	delete test;
+void PIC_Init(Section* /*sec*/)
+{
+	test = new PIC_8259A(NULL);
 }
 
-void PIC_Init(Section* /*sec*/) {
-	test = new PIC_8259A(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&PIC_Destroy)\n");
+void PIC_Clear()
+{
+	delete test;
 }
 
 }

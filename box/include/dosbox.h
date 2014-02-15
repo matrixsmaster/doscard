@@ -61,6 +61,7 @@ public:
 	Bitu NormalLoop();
 	void RunMachine();
 	void Init();
+	void Clear();
 	void Execute();
 	void SetConfig(LDB_Settings* c);
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }

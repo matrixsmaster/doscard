@@ -1565,7 +1565,7 @@ void CPU_SET_CRX(Bitu cr,Bitu value) {
 					GFX_SetTitle(CPU_CyclePercUsed,-1,false);
 					if(!printed_cycles_auto_info) {
 						printed_cycles_auto_info = true;
-						LOG_MSG("DOSBox switched to max cycles, because of the setting: cycles=auto. If the game runs too fast try a fixed cycles amount in DOSBox's options.");
+						LOG_MSG("DOSBox switched to max cycles, because of the setting: auto cycles");
 					}
 				} else {
 					GFX_SetTitle(-1,-1,false);
@@ -2248,14 +2248,16 @@ public:
 	
 static CPU * test;
 
-void CPU_ShutDown(Section* sec) {
+void CPU_Init(Section* /*sec*/)
+{
+	test = new CPU(NULL);
+}
+
+void CPU_Clear()
+{
 	delete test;
 }
 
-void CPU_Init(Section* /*sec*/) {
-	test = new CPU(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&CPU_ShutDown,true)\n");
-}
 //initialize static members
 bool CPU::inited=false;
 

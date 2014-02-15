@@ -503,9 +503,9 @@ Bitu IO_ReadD(Bitu port) {
 class IO :public Module_base {
 public:
 	IO(Section* configuration):Module_base(configuration){
-	iof_queue.used=0;
-	IO_FreeReadHandler(0,IO_MA,IO_MAX);
-	IO_FreeWriteHandler(0,IO_MA,IO_MAX);
+		iof_queue.used=0;
+		IO_FreeReadHandler(0,IO_MA,IO_MAX);
+		IO_FreeWriteHandler(0,IO_MA,IO_MAX);
 	}
 	~IO()
 	{
@@ -515,13 +515,14 @@ public:
 
 static IO* test;
 
-void IO_Destroy(Section*) {
-	delete test;
+void IO_Init(Section * /*sect*/)
+{
+	test = new IO(NULL);
 }
 
-void IO_Init(Section * /*sect*/) {
-	test = new IO(NULL);
-	fprintf(stderr,"WARN: sect->AddDestroyFunction(&IO_Destroy)\n");
+void IO_Clear()
+{
+	delete test;
 }
 
 }

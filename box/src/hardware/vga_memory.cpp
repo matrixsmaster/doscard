@@ -919,15 +919,8 @@ void VGA_StartUpdateLFB(void) {
 	MEM_SetLFB(vga.s3.la_window << 4 ,vga.vmemsize/4096, vga.lfb.handler, &vgaph.mmio);
 }
 
-static void VGA_Memory_ShutDown(Section * /*sec*/) {
-	delete[] vga.mem.linear_orgptr;
-	delete[] vga.fastmem_orgptr;
-#ifdef VGA_KEEP_CHANGES
-	delete[] vga.changes.map;
-#endif
-}
-
-void VGA_SetupMemory(/*Section* sec*/) {
+void VGA_SetupMemory(/*Section* sec*/)
+{
 	vga.svga.bank_read = vga.svga.bank_write = 0;
 	vga.svga.bank_read_full = vga.svga.bank_write_full = 0;
 
@@ -956,8 +949,15 @@ void VGA_SetupMemory(/*Section* sec*/) {
 	vga.svga.bank_read = vga.svga.bank_write = 0;
 	vga.svga.bank_read_full = vga.svga.bank_write_full = 0;
 	vga.svga.bank_size = 0x10000; /* most common bank size is 64K */
+}
 
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&VGA_Memory_ShutDown)\n");
+void VGA_Memory_Clear()
+{
+	delete[] vga.mem.linear_orgptr;
+	delete[] vga.fastmem_orgptr;
+#ifdef VGA_KEEP_CHANGES
+	delete[] vga.changes.map;
+#endif
 }
 
 }

@@ -1,0 +1,465 @@
+[PROFILE]: Started
+[PROFILE]: Stub mode
+[XSHELL MAIN]: ALIVE!
+[XSHELL MAIN]: Class instance created
+[XSHELL MAIN]: SDL2 context created successfully
+[XSHELL MAIN]: DOS Thread running!
+[XS_SDLoop]: Loop begins
+[XS_Message]: CDosBox::Execute(): Enter
+[XS_Message]: DOSCARD version 0.0.3 build 247
+[XS_Message]: Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL.
+[XS_Message]: Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry.
+[XS_Message]: Compiled with gcc (Debian 4.4.5-8) 4.4.5 Sat Feb 15 13:12:26 MSK 2014
+[XS_Message]: CDosBox::Execute(): Initializing subsystems...
+[XS_UpdateScreenBuffer]: Signature received
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed:     3000 cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: MIXER: Starting f=44100, l=256
+[XS_UpdateSoundBuffer]: Audio opened successfully
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port 0 configured as dummy
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port params changed
+[XS_Message]: Serial port 1 configured as dummy
+[XS_Message]: Serial port 2 disabled
+[XS_Message]: Serial port 3 disabled
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file auto.kl for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keyboard.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd2.sys for rb
+[XS_Message]: dbfopen(): Pretend to open file keybrd3.sys for rb
+[XS_Message]: CDosBox::Execute(): Run!
+[XS_Message]: ht 100 vt 449 ratio 1.000000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 640x400
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed:     3000 cycles, Frameskip  0, Program:    MOUNT]
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed:     3000 cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.EXE for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed:     3000 cycles, Frameskip  0, Program:    HEXEN]
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.EXE for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.ETX for rb
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed: max 100% cycles, Frameskip  0, Program:    HEXEN]
+[XS_Message]: DOSBox switched to max cycles, because of the setting: auto cycles
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.EXE for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.CFG for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.WAD for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: ht 100 vt 525 ratio 1.000000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 640x480
+[XS_Message]: ht 100 vt 449 ratio 1.200000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 320x200
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX0.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX1.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX2.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX3.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX4.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX5.HXS for rb
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX000.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX001.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX001.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for wb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX002.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX003.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX004.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX005.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX006.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX007.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX008.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX009.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX010.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX011.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX012.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX013.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX014.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX015.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX016.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX017.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX018.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX019.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX020.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX021.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX022.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX023.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX024.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX025.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX026.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX027.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX028.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX029.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX030.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX031.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX032.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX033.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX034.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX035.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX036.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX037.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX038.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX039.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX040.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX041.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX042.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX043.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX044.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX045.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX046.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX047.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX048.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX049.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX050.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX051.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX052.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX053.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX054.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX055.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX056.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX057.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX058.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX059.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX060.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX061.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX062.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX063.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX064.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX065.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX066.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX067.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX068.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX069.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX070.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX071.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX072.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX073.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX074.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX075.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX076.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX077.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX078.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX079.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX080.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX081.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX082.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX083.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX084.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX085.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX086.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX087.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX088.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX089.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX090.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX091.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX092.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX093.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX094.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX095.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX096.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX097.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX098.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX0.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX0.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for wb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: close_directory()
+[XS_Message]: open_directory()
+[XS_Message]: read_directory_first()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: read_directory_next()
+[XS_Message]: close_directory()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX600.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX601.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX701.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX701.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX701.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX701.HXS for wb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX701.HXS for rb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX602.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX603.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX604.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX605.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX606.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX607.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX608.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX609.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX610.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX611.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX612.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX613.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX614.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX615.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX616.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX617.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX618.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX619.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX620.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX621.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX622.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX623.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX624.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX625.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX626.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX627.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX628.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX629.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX630.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX631.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX632.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX633.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX634.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX635.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX636.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX637.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX638.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX639.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX640.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX641.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX642.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX643.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX644.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX645.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX646.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX647.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX648.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX649.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX650.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX651.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX652.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX653.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX654.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX655.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX656.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX657.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX658.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX659.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX660.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX661.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX662.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX663.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX664.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX665.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX666.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX667.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX668.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX669.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX670.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX671.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX672.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX673.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX674.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX675.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX676.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX677.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX678.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX679.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX680.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX681.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX682.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX683.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX684.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX685.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX686.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX687.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX688.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX689.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX690.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX691.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX692.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX693.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX694.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX695.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX696.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX697.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX698.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX6.HXS for rb
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX7.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX7.HXS for rb
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX7.HXS for rb+
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX7.HXS for wb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXNDATA/HEX7.HXS for rb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: dbfopen(): Pretend to open file /mnt/angar/dosgame/HEXEN/HEXEN.CFG for rb+
+[XS_Message]: FIXME: localFile::UpdateDateTimeFromHost()
+[XS_Message]: ht 100 vt 449 ratio 1.000000
+[XS_UpdateScreenBuffer]: Framebuffer resized to 640x400
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed: max 100% cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: TITLE [DOSCARD 0.0.3, CPU speed:     3000 cycles, Frameskip  0, Program:   DOSBOX]
+[XS_Message]: CDosBox::Execute(): killer exception catch
+[XS_Message]: CDosBox::Execute(): loopcount = 192869720
+[XS_Message]: Cleaning subsystems...
+[XS_Message]: CDosBox::Execute(): Exit
+[XSHELL MAIN]: SDLoop() Exited
+[XSHELL MAIN]: DOS Thread Exited (0)
+[XSHELL MAIN]: QUIT
+[PROFILE]: Exit

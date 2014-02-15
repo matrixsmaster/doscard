@@ -1577,14 +1577,15 @@ public:
 
 
 static SBLASTER* test;
-void SBLASTER_ShutDown(Section* /*sec*/) {
-	delete test;	
+
+void SBLASTER_Init(Section* /*sec*/)
+{
+	test = new SBLASTER(NULL);
 }
 
-void SBLASTER_Init(Section* /*sec*/) {
-	test = new SBLASTER(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&SBLASTER_ShutDown,true)\n");
-//	sec->AddDestroyFunction(&SBLASTER_ShutDown,true);
+void SBLASTER_Clear()
+{
+	delete test;
 }
 
 }

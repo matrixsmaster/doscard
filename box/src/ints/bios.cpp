@@ -1302,13 +1302,14 @@ void BIOS_SetComPorts(Bit16u baseaddr[]) {
 
 static BIOS* test;
 
-void BIOS_Destroy(Section* /*sec*/){
-	delete test;
+void BIOS_Init(Section* /*sec*/)
+{
+	test = new BIOS(NULL);
 }
 
-void BIOS_Init(Section* /*sec*/) {
-	test = new BIOS(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&BIOS_Destroy,false)\n");
+void BIOS_Clear()
+{
+	delete test;
 }
 
 }

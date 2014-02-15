@@ -352,13 +352,14 @@ public:
 };
 static PCSPEAKER* test;
 
-void PCSPEAKER_ShutDown(Section* sec){
-	delete test;
+void PCSPEAKER_Init(Section* sec)
+{
+	test = new PCSPEAKER(sec);
 }
 
-void PCSPEAKER_Init(Section* sec) {
-	test = new PCSPEAKER(sec);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&PCSPEAKER_ShutDown,true)\n");
+void PCSPEAKER_Clear()
+{
+	delete test;
 }
 
 }

@@ -479,13 +479,14 @@ public:
 };
 static XMS* test;
 
-void XMS_ShutDown(Section* /*sec*/) {
-	delete test;	
+void XMS_Init(Section* /*sec*/)
+{
+	test = new XMS(NULL);
 }
 
-void XMS_Init(Section* /*sec*/) {
-	test = new XMS(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&XMS_ShutDown,true)\n");
+void XMS_Clear()
+{
+	delete test;
 }
 
 }

@@ -1274,16 +1274,17 @@ public:
 
 static SERIALPORTS *testSerialPortsBaseclass;
 
-void SERIAL_Destroy (Section * sec) {
-	delete testSerialPortsBaseclass;
-	testSerialPortsBaseclass = NULL;
-}
-
-void SERIAL_Init (Section* /*sec*/) {
+void SERIAL_Init(Section* /*sec*/)
+{
 	// should never happen
 	if (testSerialPortsBaseclass) delete testSerialPortsBaseclass;
 	testSerialPortsBaseclass = new SERIALPORTS(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction (&SERIAL_Destroy, true)\n");
+}
+
+void SERIAL_Clear()
+{
+	delete testSerialPortsBaseclass;
+	testSerialPortsBaseclass = NULL;
 }
 
 }

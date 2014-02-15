@@ -1333,15 +1333,8 @@ void MSCDEX_SetCDInterface(int intNr, int numCD) {
 //	forceCD	= numCD;
 }
 
-void MSCDEX_ShutDown(Section* /*sec*/) {
-	delete mscdex;
-	mscdex = 0;
-	curReqheaderPtr = 0;
-}
-
-void MSCDEX_Init(Section* /*sec*/) {
-	// AddDestroy func
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MSCDEX_ShutDown)\n");
+void MSCDEX_Init(Section* /*sec*/)
+{
 	/* Register the mscdex device */
 	DOS_Device * newdev = new device_MSCDEX();
 	DOS_AddDevice(newdev);
@@ -1350,6 +1343,13 @@ void MSCDEX_Init(Section* /*sec*/) {
 	DOS_AddMultiplexHandler(MSCDEX_Handler);
 	/* Create MSCDEX */
 	mscdex = new CMscdex;
+}
+
+void MSCDEX_Clear()
+{
+	delete mscdex;
+	mscdex = 0;
+	curReqheaderPtr = 0;
 }
 
 }

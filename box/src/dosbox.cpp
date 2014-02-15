@@ -234,16 +234,37 @@ void CDosBox::Init()
 	init_ok = true;
 }
 
+void CDosBox::Clear()
+{
+	if (!init_ok) return;
+	LOG_MSG("Cleaning subsystems...");
+	SBLASTER_Clear();
+	PCSPEAKER_Clear();
+	XMS_Clear();
+	EMS_Clear();
+	DOS_Clear();
+	DOS_KeyboardLayout_Clear();
+	MSCDEX_Clear();
+	BIOS_Clear();
+	SERIAL_Clear();
+	IO_Clear();
+	PAGING_Clear();
+	MEM_Clear();
+	PIC_Clear();
+	TIMER_Clear();
+	CMOS_Clear();
+	CPU_Clear();
+	DMA_Clear();
+	MIXER_Clear();
+	VGA_Memory_Clear();
+	init_ok = false;
+}
+
 CDosBox::CDosBox()
 {
 	LDB_Settings myset;
 	memset(&myset,0,sizeof(myset));
 	init_ok = false;
-
-	//FIXME: destroy this chain
-//	com_line = new CommandLine(0,NULL);
-	control = NULL; //new Config(com_line);
-	//FIXME: don't use globals! :)
 	myldbi = this;
 
 #if C_DEBUG	
@@ -295,8 +316,7 @@ CDosBox::~CDosBox()
 	if (config) delete config;
 	if (control) delete control;
 	if (com_line) delete com_line;
-	if (!init_ok) return;
-	//TODO: Destroyer functions
+	if (init_ok) Clear();
 }
 
 int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
@@ -316,25 +336,26 @@ void CDosBox::Execute()
 {
 	LOG_MSG("CDosBox::Execute(): Enter");
 	if (!config) return;
-	LOG_MSG("DOSCARD version %s bld %s",VERSION,BUILDNUMBER);
+	LOG_MSG("DOSCARD version %s build %s",VERSION,BUILDNUMBER);
 	LOG_MSG(COPYRIGHT_STRING_ORIGINAL);
 	LOG_MSG(COPYRIGHT_STRING_NEW);
 	LOG_MSG("Compiled with %s %s",COMPILERNAME,BUILDATE);
 	LOG_MSG("CDosBox::Execute(): Initializing subsystems...");
-//	control->Init();
 	Init();
 	loopcount = 0;
 	LOG_MSG("CDosBox::Execute(): Run!");
+
 	/*that's really ugly way to control the quit state of VM
 	 * but original Box was written in that way in mind, so...*/
 	try {
-//		control->StartUp();
 		SHELL_Init();
 	}
 	catch (int) {
 		LOG_MSG("CDosBox::Execute(): killer exception catch");
 	}
+
 	LOG_MSG("CDosBox::Execute(): loopcount = %lu",loopcount);
+	Clear();
 	LOG_MSG("CDosBox::Execute(): Exit");
 	return;
 }

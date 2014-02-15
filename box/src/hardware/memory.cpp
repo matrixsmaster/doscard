@@ -603,15 +603,16 @@ public:
 
 	
 static MEMORY* test;	
-	
-static void MEM_ShutDown(Section * sec) {
-	delete test;
+
+
+void MEM_Init(Section * /*sec*/)
+{
+	test = new MEMORY(NULL);
 }
 
-void MEM_Init(Section * /*sec*/) {
-	/* shutdown function */
-	test = new MEMORY(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&MEM_ShutDown)\n");
+void MEM_Clear()
+{
+	delete test;
 }
 
 }

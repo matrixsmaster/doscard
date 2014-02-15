@@ -212,19 +212,17 @@ int DriveManager::UnmountDrive(int drive) {
 	return result;
 }
 
-void DriveManager::Init(Section* /* sec */) {
-	
+void DriveManager::Init(Section* /* sec */)
+{
 	// setup driveInfos structure
 	currentDrive = 0;
 	for(int i = 0; i < DOS_DRIVES; i++) {
 		driveInfos[i].currentDisk = 0;
 	}
-	
-//	MAPPER_AddHandler(&CycleDisk, MK_f3, MMOD1, "cycledisk", "Cycle Disk");
-//	MAPPER_AddHandler(&CycleDrive, MK_f3, MMOD2, "cycledrive", "Cycle Drv");
 }
 
-void DRIVES_Init(Section* /*sec*/) {
+void DRIVES_Init(Section* /*sec*/)
+{
 	DriveManager::Init(NULL);
 }
 

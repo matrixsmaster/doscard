@@ -392,17 +392,19 @@ void DMA_SetWrapping(Bitu wrap) {
 
 static DMA* test;
 
-void DMA_Destroy(Section* /*sec*/){
-	delete test;
-}
-void DMA_Init(Section* /*sec*/) {
+void DMA_Init(Section* /*sec*/)
+{
 	DMA_SetWrapping(0xffff);
 	test = new DMA(NULL);
-	fprintf(stderr,"WARN: sec->AddDestroyFunction(&DMA_Destroy)\n");
 	Bitu i;
 	for (i=0;i<LINK_START;i++) {
 		ems_board_mapping[i]=i;
 	}
+}
+
+void DMA_Clear()
+{
+	delete test;
 }
 
 }

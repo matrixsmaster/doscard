@@ -337,46 +337,15 @@ private:
 	AutoexecObject autoexec_echo;
 public:
 	AUTOEXEC(Section* /*configuration*/):Module_base(NULL) {
-		/* Register a virtual AUOEXEC.BAT file */
-//		std::string line;
-//		Section_line * section=static_cast<Section_line *>(configuration);
-
-		/* Check -securemode switch to disable mount/imgmount/boot after running autoexec.bat */
-//		bool secure = myldbi->GetConfig()->secure;//myldbi->control->cmdline->FindExist("-securemode",true);
-
-		/* add stuff from the configfile unless -noautexec or -securemode is specified. */
-//		char * extra = const_cast<char*>(section->data.c_str());
-//		if (extra && !secure && !myldbi->control->cmdline->FindExist("-noautoexec",true)) {
-////		if (extra && !secure) {
-//			/* detect if "echo off" is the first line */
-//			bool echo_off  = !strncasecmp(extra,"echo off",8);
-//			if (!echo_off) echo_off = !strncasecmp(extra,"@echo off",9);
-//
-//			/* if "echo off" add it to the front of autoexec.bat */
-//			if(echo_off) autoexec_echo.InstallBefore("@echo off");
-//
-//			/* Install the stuff from the configfile */
-//			autoexec[0].Install(section->data);
-//		}
-
-		/* Check to see for extra command line options to be added (before the command specified on commandline) */
-		/* Maximum of extra commands: 10 */
-//		Bitu i = 1;
-		//		while (myldbi->control->cmdline->FindString("-c",line,true) && (i <= 11)) {
-		//			autoexec[i++].Install(line);
-		//		}
-
-		/* Check for the -exit switch which causes dosbox to when the command on the commandline has finished */
-//		bool addexit = false;//myldbi->control->cmdline->FindExist("-exit",true);
-
-//nomount:
+		//Register a virtual AUOEXEC.BAT file
 		VFILE_Register("AUTOEXEC.BAT",(Bit8u *)autoexec_data,(Bit32u)strlen(autoexec_data));
 	}
 };
 
 static AUTOEXEC* test;
 
-void AUTOEXEC_Init(Section * /*sec*/) {
+void AUTOEXEC_Init(Section * /*sec*/)
+{
 	test = new AUTOEXEC(NULL);
 }
 
