@@ -48,9 +48,8 @@ static SDL_Renderer* ren = NULL;
 static struct timespec* clkres = NULL;
 static uint32_t* clkbeg = NULL;
 static uint8_t disp_fsm = 0;
-static uint8_t pxclock;
 static uint16_t lcd_w,lcd_h;
-static uint32_t frame_cnt,cur_pixel,frame_crc;
+static uint32_t frame_cnt;
 static uint32_t* framebuf = NULL;
 static SDL_Texture* frame_sdl = NULL;
 static bool frame_dirty = false;
@@ -59,6 +58,9 @@ static int frame_block = 0;
 SDL_atomic_t at_flag;
 static XS_SoundRing sndring;
 static SDL_AudioDeviceID audio = 0;
+static uint8_t frameskip_cnt;
+
+#define FRAMESKIP_MAX 10
 
 using namespace std;
 using namespace dosbox;
@@ -78,6 +80,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		switch (*dw) {
 		case DISPLAY_INIT_SIGNATURE:
 			xnfo(0,2,"Signature received: init");
+			frameskip_cnt = 0;
 			if (!disp_fsm) disp_fsm = 1;
 			else xnfo(-1,2,"Double init!");
 			break;
@@ -100,7 +103,16 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 		default:
 			if (disp_fsm == 1) {
-				if (SDL_AtomicGet(&at_flag) > 0) return DISPLAY_RET_BUSY;
+				if (SDL_AtomicGet(&at_flag) > 0) {
+					if (frameskip_cnt++ >= FRAMESKIP_MAX) {
+#if XSHELL_VERBOSE
+						xnfo(0,2,"Force frame");
+#endif
+						while (SDL_AtomicGet(&at_flag) > 0) ;
+					} else
+						return DISPLAY_RET_BUSY;
+				}
+				frameskip_cnt = 0;
 
 				uint16_t old_w = lcd_w;
 				uint16_t old_h = lcd_h;
