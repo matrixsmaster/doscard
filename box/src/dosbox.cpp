@@ -303,7 +303,7 @@ CDosBox::CDosBox()
 	myset.mem.ems = ALDB_MEM::LDB_MEM_EMS_AUTO;
 	myset.mem.umb = true;
 
-	myset.frameskip = 3;
+	myset.frameskip = 0;
 	myset.secure = false;
 
 	config = new CLDBConf(&myset);

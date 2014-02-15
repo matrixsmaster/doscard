@@ -37,9 +37,9 @@ static uint32_t frmsk_cnt;
 static uint32_t hungry_buf[VGA_MAXWIDTH];
 #endif
 
-static INLINE void LDB_SendDWord(Bit32u x)
+static INLINE int LDB_SendDWord(Bit32u x)
 {
-	myldbi->Callback(DBCB_PushScreen,&x,4);
+	return myldbi->Callback(DBCB_PushScreen,&x,4);
 }
 /*
 static inline void LDB_SendWord(Bit16u x)
@@ -47,9 +47,9 @@ static inline void LDB_SendWord(Bit16u x)
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,2);
 }
 */
-static INLINE void LDB_SendByte(Bit8u x)
+static INLINE int LDB_SendByte(Bit8u x)
 {
-	myldbi->Callback(DBCB_PushScreen,&x,1);
+	return myldbi->Callback(DBCB_PushScreen,&x,1);
 }
 
 void RENDER_SetPal(Bit8u entry,Bit8u red,Bit8u green,Bit8u blue)
@@ -141,7 +141,9 @@ bool RENDER_StartUpdate(void)
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
 	hdr |= ((Bit16u)render.src.height);
-	LDB_SendDWord(hdr);
+	int ret = LDB_SendDWord(hdr);
+	if (ret == DISPLAY_RET_BUSY)
+		RENDER_DrawLine = RENDER_EmptyLine;
 	return true;
 }
 

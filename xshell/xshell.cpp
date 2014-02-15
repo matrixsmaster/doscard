@@ -77,7 +77,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 		dw = reinterpret_cast<uint32_t*>(buf);
 		switch (*dw) {
 		case DISPLAY_INIT_SIGNATURE:
-			xnfo(0,2,"Signature received");
+			xnfo(0,2,"Signature received: init");
 			if (!disp_fsm) disp_fsm = 1;
 			else xnfo(-1,2,"Double init!");
 			break;
@@ -100,7 +100,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 
 		default:
 			if (disp_fsm == 1) {
-				while (SDL_AtomicGet(&at_flag) > 0) ;
+				if (SDL_AtomicGet(&at_flag) > 0) return DISPLAY_RET_BUSY;
 
 				uint16_t old_w = lcd_w;
 				uint16_t old_h = lcd_h;
@@ -109,9 +109,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 #if XSHELL_VERBOSE
 				xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
 #endif
-				pxclock = 0;
 				frame_cnt = 0;
-				frame_crc = 0;
 				disp_fsm = 2;
 				if ((!framebuf) || (old_w*old_h != lcd_w*lcd_h)) {
 					framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*lcd_w*lcd_h));
@@ -119,7 +117,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 					xnfo(0,2,"Framebuffer resized to %dx%d",lcd_w,lcd_h);
 				}
 			} else
-				xnfo(1,2,"Unknown dword received: 0x%08X (pxclk=%d frame_cnt=%d)",*dw,pxclock,frame_cnt);
+				xnfo(1,2,"Unknown dword received: 0x%08X (frame_cnt=%d)",*dw,frame_cnt);
 			break;
 		}
 	} else if ((disp_fsm == 2) && (len == lcd_w * 4)) {

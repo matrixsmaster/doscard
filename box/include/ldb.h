@@ -36,6 +36,8 @@ namespace dosbox {
 #define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
 #define DISPLAY_ABOR_SIGNATURE 0xABCDABCD
 
+#define DISPLAY_RET_BUSY 10
+
 enum LDB_CallbackType {
 	DBCB_GetTicks = 0,
 	DBCB_PushScreen = 1,
