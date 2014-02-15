@@ -142,13 +142,13 @@ bool MSG_Write(const char * location)
 
 void MSG_Init(Section_prop * section)
 {
-	std::string file_name;
-	if (myldbi->control->cmdline->FindString("-lang",file_name,true)) {
-		LoadMessageFile(file_name.c_str());
-	} else {
-		Prop_path* pathprop = section->Get_path("language");
-		if(pathprop) LoadMessageFile(pathprop->realpath.c_str());
-	}
+//	std::string file_name;
+//	if (myldbi->control->cmdline->FindString("-lang",file_name,true)) {
+//		LoadMessageFile(file_name.c_str());
+//	} else {
+//		Prop_path* pathprop = section->Get_path("language");
+//		if(pathprop) LoadMessageFile(pathprop->realpath.c_str());
+//	}
 }
 
 }

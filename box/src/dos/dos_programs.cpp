@@ -95,7 +95,7 @@ public:
 
 		/* In secure mode don't allow people to change mount points. 
 		 * Neither mount nor unmount */
-		if(myldbi->control->SecureMode()) {
+		if(myldbi->GetConfig()->secure) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}
@@ -511,7 +511,7 @@ public:
 		ChangeToLongCmd();
 		/* In secure mode don't allow people to boot stuff. 
 		 * They might try to corrupt the data on it */
-		if(myldbi->control->SecureMode()) {
+		if(myldbi->GetConfig()->secure) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}
@@ -992,7 +992,7 @@ public:
 		ChangeToLongCmd();
 		/* In secure mode don't allow people to change imgmount points. 
 		 * Neither mount nor unmount */
-		if(myldbi->control->SecureMode()) {
+		if(myldbi->GetConfig()->secure) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return;
 		}

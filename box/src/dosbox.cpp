@@ -236,25 +236,15 @@ void CDosBox::Init()
 
 CDosBox::CDosBox()
 {
-//	Section_prop * secprop;
-//	Section_line * secline;
-//	Prop_int* Pint;
-//	Prop_hex* Phex;
-//	Prop_string* Pstring;
-//	Prop_bool* Pbool;
-//	Prop_multival_remain* Pmulti_remain;
-
 	LDB_Settings myset;
 	memset(&myset,0,sizeof(myset));
 	init_ok = false;
 
 	//FIXME: destroy this chain
-	com_line = new CommandLine(0,NULL);
-	control = new Config(com_line);
+//	com_line = new CommandLine(0,NULL);
+	control = NULL; //new Config(com_line);
 	//FIXME: don't use globals! :)
 	myldbi = this;
-
-//	secprop=control->AddSection_prop("dosbox",&DOSBOX_RealInit);
 
 #if C_DEBUG	
 	LOG_StartUp();
@@ -295,15 +285,7 @@ CDosBox::CDosBox()
 	myset.mem.umb = true;
 
 	myset.frameskip = 3;
-
-//	secline=control->AddSection_line("autoexec",&AUTOEXEC_Init);
-//	MSG_Add("AUTOEXEC_CONFIGFILE_HELP",
-//		"Lines in this section will be run at startup.\n"
-//		"You can put your MOUNT lines here.\n"
-//	);
-//	MSG_Add("CONFIG_SUGGESTED_VALUES", "Possible values");
-
-//	control->SetStartUp(&SHELL_Init);
+	myset.secure = false;
 
 	config = new CLDBConf(&myset);
 }

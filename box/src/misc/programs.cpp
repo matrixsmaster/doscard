@@ -249,6 +249,7 @@ bool Program::SetEnv(const char * entry,const char * new_string) {
 bool MSG_Write(const char *);
 void restart_program(std::vector<std::string> & parameters);
 
+#if 0
 class CONFIG : public Program {
 public:
 	void Run(void);
@@ -263,14 +264,14 @@ private:
 			name = config_path + name;
 		}
 		WriteOut(MSG_Get("PROGRAM_CONFIG_FILE_WHICH"),name.c_str());
-		if (!myldbi->control->PrintConfig(name.c_str())) {
-			WriteOut(MSG_Get("PROGRAM_CONFIG_FILE_ERROR"),name.c_str());
-		}
+//		if (!myldbi->control->PrintConfig(name.c_str())) {
+//			WriteOut(MSG_Get("PROGRAM_CONFIG_FILE_ERROR"),name.c_str());
+//		}
 		return;
 	}
 	
 	bool securemode_check() {
-		if (myldbi->control->SecureMode()) {
+		if (myldbi->GetConfig()->secure) {
 			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
 			return true;
 		}
@@ -752,13 +753,13 @@ void CONFIG::Run(void) {
 static void CONFIG_ProgramStart(Program * * make) {
 	*make=new CONFIG;
 }
-
+#endif
 
 void PROGRAMS_Init(Section* /*sec*/) {
 	/* Setup a special callback to start virtual programs */
 	call_program=CALLBACK_Allocate();
 	CALLBACK_Setup(call_program,&PROGRAMS_Handler,CB_RETF,"internal program");
-	PROGRAMS_MakeFile("CONFIG.COM",CONFIG_ProgramStart);
+//	PROGRAMS_MakeFile("CONFIG.COM",CONFIG_ProgramStart);
 
 	// listconf
 	MSG_Add("PROGRAM_CONFIG_NOCONFIGFILE","No config file loaded!\n");

@@ -297,13 +297,8 @@ void DOS_Shell::Run(void) {
 		return;
 	}
 	/* Start a normal shell and check for a first command init */
-	WriteOut(MSG_Get("SHELL_STARTUP_BEGIN"),VERSION);
-#if C_DEBUG
-	WriteOut(MSG_Get("SHELL_STARTUP_DEBUG"));
-#endif
-//	if (machine == MCH_CGA) WriteOut(MSG_Get("SHELL_STARTUP_CGA"));
-//	if (machine == MCH_HERC) WriteOut(MSG_Get("SHELL_STARTUP_HERC"));
-	WriteOut(MSG_Get("SHELL_STARTUP_END"));
+	WriteOut("DOSCARD ver.%s bld.%s\n%s\n%s\n\n\n",
+			VERSION,BUILDNUMBER,COPYRIGHT_STRING_ORIGINAL,COPYRIGHT_STRING_NEW);
 
 	if (cmd->FindString("/INIT",line,true)) {
 		strcpy(input_line,line.c_str());
@@ -343,11 +338,11 @@ private:
 public:
 	AUTOEXEC(Section* /*configuration*/):Module_base(NULL) {
 		/* Register a virtual AUOEXEC.BAT file */
-		std::string line;
+//		std::string line;
 //		Section_line * section=static_cast<Section_line *>(configuration);
 
 		/* Check -securemode switch to disable mount/imgmount/boot after running autoexec.bat */
-		bool secure = false;//myldbi->control->cmdline->FindExist("-securemode",true);
+//		bool secure = myldbi->GetConfig()->secure;//myldbi->control->cmdline->FindExist("-securemode",true);
 
 		/* add stuff from the configfile unless -noautexec or -securemode is specified. */
 //		char * extra = const_cast<char*>(section->data.c_str());
@@ -366,76 +361,15 @@ public:
 
 		/* Check to see for extra command line options to be added (before the command specified on commandline) */
 		/* Maximum of extra commands: 10 */
-		Bitu i = 1;
-		while (myldbi->control->cmdline->FindString("-c",line,true) && (i <= 11)) {
-			autoexec[i++].Install(line);
-		}
+//		Bitu i = 1;
+		//		while (myldbi->control->cmdline->FindString("-c",line,true) && (i <= 11)) {
+		//			autoexec[i++].Install(line);
+		//		}
 
 		/* Check for the -exit switch which causes dosbox to when the command on the commandline has finished */
-		bool addexit = myldbi->control->cmdline->FindExist("-exit",true);
+//		bool addexit = false;//myldbi->control->cmdline->FindExist("-exit",true);
 
-		/* Check for first command being a directory or file */
-		char buffer[CROSS_LEN];
-		char orig[CROSS_LEN];
-		char cross_filesplit[2] = {CROSS_FILESPLIT , 0};
-		/* Combining -securemode and no parameter leaves you with a lovely Z:\. */ 
-		if ( !myldbi->control->cmdline->FindCommand(1,line) ) {
-			if ( secure ) autoexec[12].Install("z:\\config.com -securemode");
-		} else {
-			struct stat test;
-			strcpy(buffer,line.c_str());
-			if (stat(buffer,&test)){
-				getcwd(buffer,CROSS_LEN);
-				strcat(buffer,cross_filesplit);
-				strcat(buffer,line.c_str());
-				if (stat(buffer,&test)) goto nomount;
-			}
-			if (test.st_mode & S_IFDIR) { 
-				autoexec[12].Install(std::string("MOUNT C \"") + buffer + "\"");
-				autoexec[13].Install("C:");
-				if(secure) autoexec[14].Install("z:\\config.com -securemode");
-			} else {
-				char* name = strrchr(buffer,CROSS_FILESPLIT);
-				if (!name) { //Only a filename 
-					line = buffer;
-					getcwd(buffer,CROSS_LEN);
-					strcat(buffer,cross_filesplit);
-					strcat(buffer,line.c_str());
-					if(stat(buffer,&test)) goto nomount;
-					name = strrchr(buffer,CROSS_FILESPLIT);
-					if(!name) goto nomount;
-				}
-				*name++ = 0;
-				if (access(buffer,F_OK)) goto nomount;
-				autoexec[12].Install(std::string("MOUNT C \"") + buffer + "\"");
-				autoexec[13].Install("C:");
-				/* Save the non-modified filename (so boot and imgmount can use it (long filenames, case sensivitive)) */
-				strcpy(orig,name);
-				upcase(name);
-				if(strstr(name,".BAT") != 0) {
-					if(secure) autoexec[14].Install("z:\\config.com -securemode");
-					/* BATch files are called else exit will not work */
-					autoexec[15].Install(std::string("CALL ") + name);
-					if(addexit) autoexec[16].Install("exit");
-				} else if((strstr(name,".IMG") != 0) || (strstr(name,".IMA") !=0 )) {
-					//No secure mode here as boot is destructive and enabling securemode disables boot
-					/* Boot image files */
-					autoexec[15].Install(std::string("BOOT ") + orig);
-				} else if((strstr(name,".ISO") != 0) || (strstr(name,".CUE") !=0 )) {
-					/* imgmount CD image files */
-					/* securemode gets a different number from the previous branches! */
-					autoexec[14].Install(std::string("IMGMOUNT D \"") + orig + std::string("\" -t iso"));
-					//autoexec[16].Install("D:");
-					if(secure) autoexec[15].Install("z:\\config.com -securemode");
-					/* Makes no sense to exit here */
-				} else {
-					if(secure) autoexec[14].Install("z:\\config.com -securemode");
-					autoexec[15].Install(name);
-					if(addexit) autoexec[16].Install("exit");
-				}
-			}
-		}
-nomount:
+//nomount:
 		VFILE_Register("AUTOEXEC.BAT",(Bit8u *)autoexec_data,(Bit32u)strlen(autoexec_data));
 	}
 };
@@ -505,34 +439,6 @@ void SHELL_Init() {
 	MSG_Add("SHELL_CMD_SUBST_NO_REMOVE","Unable to remove, drive not in use.\n");
 	MSG_Add("SHELL_CMD_SUBST_FAILURE","SUBST failed. You either made an error in your commandline or the target drive is already used.\nIt's only possible to use SUBST on Local drives");
 
-	MSG_Add("SHELL_STARTUP_BEGIN",
-		"\033[44;1m\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-		"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-		"\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB\n"
-		"\xBA \033[32mWelcome to DOSCARD %-8s\033[37m                                        \xBA\n"
-		"\xBA                                                                    \xBA\n"
-		"\xBA                                                                    \xBA\n"
-	);
-//	MSG_Add("SHELL_STARTUP_CGA","\xBA DOSBox supports Composite CGA mode.                                \xBA\n"
-//	        "\xBA Use \033[31mF12\033[37m to set composite output ON, OFF, or AUTO (default).        \xBA\n"
-//	        "\xBA \033[31m(Alt-)F11\033[37m changes hue; \033[31mctrl-alt-F11\033[37m selects early/late CGA model.  \xBA\n"
-//	        "\xBA                                                                    \xBA\n"
-//	);
-//	MSG_Add("SHELL_STARTUP_HERC","\xBA Use \033[31mF11\033[37m to cycle through white, amber, and green monochrome color. \xBA\n"
-//	        "\xBA                                                                    \xBA\n"
-//	);
-	MSG_Add("SHELL_STARTUP_DEBUG",
-	        "\xBA Press \033[31malt-Pause\033[37m to enter the debugger or start the exe with \033[33mDEBUG\033[37m. \xBA\n"
-	        "\xBA                                                                    \xBA\n"
-	);
-	MSG_Add("SHELL_STARTUP_END",
-//	        "\xBA \033[32mHAVE FUN!\033[37m                                                          \xBA\n"
-//	        "\xBA \033[32mThe DOSBox Team \033[33mhttp://www.dosbox.com\033[37m                              \xBA\n"
-	        "\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-	        "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD"
-	        "\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC\033[0m\n"
-	        //"\n" //Breaks the startup message if you type a mount and a drive change.
-	);
 	MSG_Add("SHELL_CMD_CHDIR_HELP","Displays/changes the current directory.\n");
 	MSG_Add("SHELL_CMD_CHDIR_HELP_LONG","CHDIR [drive:][path]\n"
 	        "CHDIR [..]\n"
