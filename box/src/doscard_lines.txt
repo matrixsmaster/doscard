@@ -4,10 +4,10 @@ H Files Lines:	57847
 --
 Total lines of original code 141 213
 
-DOSCARD LibDosBox (r 111)
-Cpp Files Lines:54459
-H Files Lines:	22128
+DOSCARD LibDosBox (r 114)
+Cpp Files Lines:53746
+H Files Lines:	22054
 --
-Total lines of modified ldb 32 331
+Total lines of modified ldb 75 800
 
-Diff: 108 882
+Diff: 65 413

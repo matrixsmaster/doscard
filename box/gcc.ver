@@ -1,7 +1,8 @@
-gcc (Debian 4.4.5-8) 4.4.5
-Copyright (C) 2010 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+GCC Versions Proved to Compile DosCard correctly:
+gcc 4.4
+gcc 4.8
 
-WARNING!
-DOSCARD WILL NOT WORK IF COMPILED WITH GCC 4.7
+GCC Versions Proved To NOT compile it correctly:
+gcc 4.6
+gcc 4.7
+

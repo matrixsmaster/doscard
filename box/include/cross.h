@@ -35,16 +35,6 @@ namespace dosbox {
 #define	CROSS_FILENAME(blah) strreplace(blah,'\\','/')
 #define CROSS_FILESPLIT '/'
 
-//#define CROSS_NONE	0
-//#define CROSS_FILE	1
-//#define CROSS_DIR	2
-
-//class Cross {
-//public:
-//	static void CreateDir(std::string const& temp);
-//	static bool IsPathAbsolute(std::string const& in);
-//};
-
 typedef struct dir_struct { 
 	DIR*  dir;
 	char base_path[CROSS_LEN];
