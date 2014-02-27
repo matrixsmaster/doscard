@@ -116,6 +116,7 @@ int32_t dbftruncate(DBFILE* f, int64_t len);
 int32_t dbfprintf(DBFILE* f, const char *fmt, ...);
 int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
 //int32_t dbfstat(DBFILE* f, struct stat* p);
+bool dbisfilex(const char* name);
 
 }
 

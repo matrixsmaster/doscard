@@ -5,5 +5,9 @@ all:
 	cd src; make all
 .PHONY:	all
 
+llvm:
+	cd src; make -f Makefile.llvm all
+.PHONY: llvm
+
 clean:
 	cd src; make clean

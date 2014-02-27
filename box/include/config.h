@@ -1,18 +1,5 @@
 #include <inttypes.h>
 
-//#define SIZEOF_UNSIGNED_CHAR 1
-//#define SIZEOF_UNSIGNED_INT 4
-//#define SIZEOF_UNSIGNED_SHORT 2
-//#define SIZEOF_UNSIGNED_LONG_LONG 8
-//
-//#ifdef HOST_32BIT
-//#define SIZEOF_INT_P 4
-//#define SIZEOF_UNSIGNED_LONG 4
-//#else
-//#define SIZEOF_INT_P 8
-//#define SIZEOF_UNSIGNED_LONG 8
-//#endif
-
 //#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
 //#define PROFILE_UNIQUE_CALL_LIST 1
 //#define PROFILE_TREE_CALL_TRACE 1
@@ -32,7 +19,7 @@
 /* #undef C_CORE_INLINE */
 
 /* Define to 1 if you want serial passthrough support (Win32, Posix and OS/2).
-   */
+ */
 //#define C_DIRECTSERIAL 1
 
 /* Define to 1 to enable floating point emulation */
@@ -47,15 +34,6 @@
 
 /* Define to 1 if you have the mprotect function */
 //#define C_HAVE_MPROTECT 1
-
-/* Define to 1 to enable SDL_sound support */
-//#define C_SDL_SOUND 1
-
-/* Define to 1 if you have setpriority support */
-//#define C_SET_PRIORITY 1
-
-/* Define to 1 to enable screenshots, requires libpng */
-//#define C_SSHOT 1
 
 /* Define to 1 to use a unaligned memory access */
 #define C_UNALIGNED_MEMORY 1
@@ -112,10 +90,10 @@ typedef int32_t Bit32s;
 typedef uint64_t Bit64u;
 typedef int64_t Bit64s;
 
-#ifndef HOST_64BIT
-  typedef Bit32u Bitu;
-  typedef Bit32s Bits;
+#if defined __x86_64__ || defined HOST_64BIT
+typedef Bit64u Bitu;
+typedef Bit64s Bits;
 #else
-  typedef Bit64u Bitu;
-  typedef Bit64s Bits;
+typedef Bit32u Bitu;
+typedef Bit32s Bits;
 #endif

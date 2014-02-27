@@ -34,8 +34,9 @@ int CDROM_GetMountType(char* path/*, int forceCD*/) {
 	// if ((strlen(path)<=3) && (path[2]=='\\') && (strchr(path,'\\')==strrchr(path,'\\')) && 	(GetDriveType(path)==DRIVE_CDROM)) return 0;
 	
 	// Detect ISO
-	struct stat file_stat;
-	if ((stat(path, &file_stat) == 0) && (file_stat.st_mode & S_IFREG)) return 1; 
+//	struct stat file_stat;
+//	if ((stat(path, &file_stat) == 0) && (file_stat.st_mode & S_IFREG)) return 1;
+	if (dbisfilex(path)) return 1;
 	return 2;
 }
 

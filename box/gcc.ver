@@ -1,8 +1,7 @@
-GCC Versions Proved to Compile DosCard correctly:
-gcc 4.4
-gcc 4.8
+GCC versions proven to compile DosCard correctly:
+gcc 4.4 (debian)
+gcc 4.8 (opensuse, gentoo)
 
-GCC Versions Proved To NOT compile it correctly:
-gcc 4.6
-gcc 4.7
-
+GCC versions proven to NOT compile it correctly:
+gcc 4.6 (debian)
+gcc 4.7 (gentoo)

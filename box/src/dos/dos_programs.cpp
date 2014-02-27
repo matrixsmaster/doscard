@@ -244,7 +244,7 @@ public:
 //				//Try again after resolving ~
 //				if(!stat(temp_line.c_str(),&test)) failed = false;
 			}
-			if(failed) {
+			if (failed) {
 				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"),temp_line.c_str());
 				return;
 			}

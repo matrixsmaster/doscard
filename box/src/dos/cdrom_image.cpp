@@ -643,12 +643,14 @@ bool CDROM_Interface_Image::HasDataTrack(void)
 bool CDROM_Interface_Image::GetRealFileName(string &filename, string &pathname)
 {
 	// check if file exists
-	struct stat test;
-	if (stat(filename.c_str(), &test) == 0) return true;
+//	struct stat test;
+//	if (stat(filename.c_str(), &test) == 0) return true;
+	if (dbisfilex(filename.c_str())) return true;
 	
 	// check if file with path relative to cue file exists
 	string tmpstr(pathname + "/" + filename);
-	if (stat(tmpstr.c_str(), &test) == 0) {
+//	if (stat(tmpstr.c_str(), &test) == 0) {
+	if (dbisfilex(tmpstr.c_str())) {
 		filename = tmpstr;
 		return true;
 	}
@@ -662,14 +664,12 @@ bool CDROM_Interface_Image::GetRealFileName(string &filename, string &pathname)
 	localDrive *ldp = dynamic_cast<localDrive*>(Drives[drive]);
 	if (ldp) {
 		ldp->GetSystemFilename(tmp, fullname);
-		if (stat(tmp, &test) == 0) {
+//		if (stat(tmp, &test) == 0) {
+		if (dbisfilex(tmp)) {
 			filename = tmp;
 			return true;
 		}
 	}
-#if defined (WIN32) || defined(OS2)
-	//Nothing
-#else
 	//Consider the possibility that the filename has a windows directory seperator (inside the CUE file) 
 	//which is common for some commercial rereleases of DOS games using DOSBox
 
@@ -679,18 +679,19 @@ bool CDROM_Interface_Image::GetRealFileName(string &filename, string &pathname)
 		if(copy[i] == '\\') copy[i] = '/';
 	}
 
-	if (stat(copy.c_str(), &test) == 0) {
+//	if (stat(copy.c_str(), &test) == 0) {
+	if (dbisfilex(copy.c_str())) {
 		filename = copy;
 		return true;
 	}
 
 	tmpstr = pathname + "/" + copy;
-	if (stat(tmpstr.c_str(), &test) == 0) {
+//	if (stat(tmpstr.c_str(), &test) == 0) {
+	if (dbisfilex(tmpstr.c_str())) {
 		filename = tmpstr;
 		return true;
 	}
 
-#endif
 	return false;
 }
 
