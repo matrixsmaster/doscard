@@ -21,70 +21,42 @@
 #include "dosbox.h"
 #include "cross.h"
 #include "support.h"
+//#include <sys/types.h>
+//#include <pwd.h>
 
 namespace dosbox {
 
-#if defined HAVE_SYS_TYPES_H && defined HAVE_PWD_H
-#include <sys/types.h>
-#include <pwd.h>
-#endif
+//void Cross::ResolveHomedir(std::string & temp_line)
+//{
+//	LOG_MSG("ResolveHomedir()");
+//	if(!temp_line.size() || temp_line[0] != '~') return; //No ~
+//
+//	if(temp_line.size() == 1 || temp_line[1] == CROSS_FILESPLIT) { //The ~ and ~/ variant
+//		char * home = getenv("HOME");
+//		if(home) temp_line.replace(0,1,std::string(home));
+//#if defined HAVE_SYS_TYPES_H && defined HAVE_PWD_H
+//	} else { // The ~username variant
+//		std::string::size_type namelen = temp_line.find(CROSS_FILESPLIT);
+//		if(namelen == std::string::npos) namelen = temp_line.size();
+//		std::string username = temp_line.substr(1,namelen - 1);
+//		struct passwd* pass = getpwnam(username.c_str());
+//		if(pass) temp_line.replace(0,namelen,pass->pw_dir); //namelen -1 +1(for the ~)
+//#endif // USERNAME lookup code
+//	}
+//}
 
-#define DEFAULT_CONFIG_FILE "dosbox-" VERSION ".conf"
-
-void Cross::GetPlatformConfigDir(std::string& in)
-{
-	LOG_MSG("GetPlatformConfigDir()");
-	in = "~/.dosbox";
-	ResolveHomedir(in);
-	in += CROSS_FILESPLIT;
-}
-
-void Cross::GetPlatformConfigName(std::string& in)
-{
-	LOG_MSG("GetPlatformConfigName()");
-	in = DEFAULT_CONFIG_FILE;
-}
-
-void Cross::CreatePlatformConfigDir(std::string& in)
-{
-	LOG_MSG("CreatePlatformConfigDir()");
-	in = "~/.dosbox";
-	ResolveHomedir(in);
-	mkdir(in.c_str(),0700);
-	in += CROSS_FILESPLIT;
-}
-
-void Cross::ResolveHomedir(std::string & temp_line)
-{
-	LOG_MSG("ResolveHomedir()");
-	if(!temp_line.size() || temp_line[0] != '~') return; //No ~
-
-	if(temp_line.size() == 1 || temp_line[1] == CROSS_FILESPLIT) { //The ~ and ~/ variant
-		char * home = getenv("HOME");
-		if(home) temp_line.replace(0,1,std::string(home));
-#if defined HAVE_SYS_TYPES_H && defined HAVE_PWD_H
-	} else { // The ~username variant
-		std::string::size_type namelen = temp_line.find(CROSS_FILESPLIT);
-		if(namelen == std::string::npos) namelen = temp_line.size();
-		std::string username = temp_line.substr(1,namelen - 1);
-		struct passwd* pass = getpwnam(username.c_str());
-		if(pass) temp_line.replace(0,namelen,pass->pw_dir); //namelen -1 +1(for the ~)
-#endif // USERNAME lookup code
-	}
-}
-
-void Cross::CreateDir(std::string const& in)
-{
-	LOG_MSG("CreateDir()");
-	mkdir(in.c_str(),0700);
-}
-
-bool Cross::IsPathAbsolute(std::string const& in)
-{
-	LOG_MSG("IsPathAbsolute()");
-	if (in.size() > 1 && in[0] == '/' ) return true;
-	return false;
-}
+//void Cross::CreateDir(std::string const& in)
+//{
+//	LOG_MSG("CreateDir()");
+//	mkdir(in.c_str(),0700);
+//}
+//
+//bool Cross::IsPathAbsolute(std::string const& in)
+//{
+//	LOG_MSG("IsPathAbsolute()");
+//	if (in.size() > 1 && in[0] == '/' ) return true;
+//	return false;
+//}
 
 dir_information* open_directory(const char* dirname)
 {

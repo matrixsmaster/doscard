@@ -7,9 +7,9 @@ APP := xshell
 CXX := g++
 INCLUDES := -I. -I.. -I../box/include
 #DEFINES := -DXSHELL_VERBOSE=1
-CXXFLAGS := -g -O2 -Wall -pthread $(INCLUDES) $(DEFINES)
+CXXFLAGS := -g -O2 -Wall $(INCLUDES) $(DEFINES)
 LD_STAT := -ldosbox -lSDL2
-LD_BDYN := -lX11 -lrt
+LD_BDYN := -lX11 -lrt -ldl -lpthread
 LD_LIBS := -L../SDL2/build/.libs -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := fake_threading.o xsupport.o
 GLOB_OBJS := $(addprefix ../box/src/,$(shell cat ../box/src/objs.txt)) $(SUPPORTS)

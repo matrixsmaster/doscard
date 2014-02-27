@@ -35,19 +35,15 @@ namespace dosbox {
 #define	CROSS_FILENAME(blah) strreplace(blah,'\\','/')
 #define CROSS_FILESPLIT '/'
 
-#define CROSS_NONE	0
-#define CROSS_FILE	1
-#define CROSS_DIR	2
+//#define CROSS_NONE	0
+//#define CROSS_FILE	1
+//#define CROSS_DIR	2
 
-class Cross {
-public:
-	static void GetPlatformConfigDir(std::string& in);
-	static void GetPlatformConfigName(std::string& in);
-	static void CreatePlatformConfigDir(std::string& in);
-	static void ResolveHomedir(std::string & temp_line);
-	static void CreateDir(std::string const& temp);
-	static bool IsPathAbsolute(std::string const& in);
-};
+//class Cross {
+//public:
+//	static void CreateDir(std::string const& temp);
+//	static bool IsPathAbsolute(std::string const& in);
+//};
 
 typedef struct dir_struct { 
 	DIR*  dir;

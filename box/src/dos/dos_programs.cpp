@@ -240,9 +240,9 @@ public:
 			bool failed = false;
 			if (stat(temp_line.c_str(),&test)) {
 				failed = true;
-				Cross::ResolveHomedir(temp_line);
-				//Try again after resolving ~
-				if(!stat(temp_line.c_str(),&test)) failed = false;
+//				Cross::ResolveHomedir(temp_line);
+//				//Try again after resolving ~
+//				if(!stat(temp_line.c_str(),&test)) failed = false;
 			}
 			if(failed) {
 				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"),temp_line.c_str());
@@ -452,7 +452,7 @@ private:
 		if(tmpfile) return tmpfile;
 		//File not found on mounted filesystem. Try regular filesystem
 		std::string filename_s(filename);
-		Cross::ResolveHomedir(filename_s);
+//		Cross::ResolveHomedir(filename_s);
 		tmpfile = dbfopen(filename_s.c_str(),"rb+");
 		if(!tmpfile) {
 			if( (tmpfile = dbfopen(filename_s.c_str(),"rb")) ) {
@@ -787,54 +787,6 @@ static void RESCAN_ProgramStart(Program * * make) {
 	*make=new RESCAN;
 }
 
-#if 0
-class INTRO : public Program {
-public:
-	void DisplayMount(void) {
-		/* Basic mounting has a version for each operating system.
-		 * This is done this way so both messages appear in the language file*/
-		WriteOut(MSG_Get("PROGRAM_INTRO_MOUNT_START"));
-#if (WIN32)
-		WriteOut(MSG_Get("PROGRAM_INTRO_MOUNT_WINDOWS"));
-#else			
-		WriteOut(MSG_Get("PROGRAM_INTRO_MOUNT_OTHER"));
-#endif
-		WriteOut(MSG_Get("PROGRAM_INTRO_MOUNT_END"));
-	}
-
-	void Run(void) {
-		/* Only run if called from the first shell (Xcom TFTD runs any intro file in the path) */
-		if(DOS_PSP(dos.psp()).GetParent() != DOS_PSP(DOS_PSP(dos.psp()).GetParent()).GetParent()) return;
-		if(cmd->FindExist("cdrom",false)) {
-			WriteOut(MSG_Get("PROGRAM_INTRO_CDROM"));
-			return;
-		}
-		if(cmd->FindExist("mount",false)) {
-			WriteOut("\033[2J");//Clear screen before printing
-			DisplayMount();
-			return;
-		}
-		if(cmd->FindExist("special",false)) {
-			WriteOut(MSG_Get("PROGRAM_INTRO_SPECIAL"));
-			return;
-		}
-		/* Default action is to show all pages */
-		WriteOut(MSG_Get("PROGRAM_INTRO"));
-		Bit8u c;Bit16u n=1;
-		DOS_ReadFile (STDIN,&c,&n);
-		DisplayMount();
-		DOS_ReadFile (STDIN,&c,&n);
-		WriteOut(MSG_Get("PROGRAM_INTRO_CDROM"));
-		DOS_ReadFile (STDIN,&c,&n);
-		WriteOut(MSG_Get("PROGRAM_INTRO_SPECIAL"));
-	}
-};
-
-static void INTRO_ProgramStart(Program * * make) {
-	*make=new INTRO;
-}
-#endif
-
 class IMGMOUNT : public Program {
 public:
 	void Run(void) {
@@ -950,11 +902,12 @@ public:
 				struct stat test;
 				if (stat(temp_line.c_str(),&test)) {
 					//See if it works if the ~ are written out
-					std::string homedir(temp_line);
-					Cross::ResolveHomedir(homedir);
-					if(!stat(homedir.c_str(),&test)) {
-						temp_line = homedir;
-					} else {
+//					std::string homedir(temp_line);
+//					Cross::ResolveHomedir(homedir);
+//					if(!stat(homedir.c_str(),&test)) {
+//						temp_line = homedir;
+//					} else {
+					if (stat(temp_line.c_str(),&test)) { //native filename couldn't be resolved
 						// convert dosbox filename to system filename
 						char fullname[CROSS_LEN];
 						char tmp[CROSS_LEN];

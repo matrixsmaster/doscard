@@ -111,3 +111,7 @@ Note: Understand 3.1 had found >19000 violations on a smallest ruleset. More com
 rulesets may unveil much more violations and potential problems. The number was
 lowered to 3973 after unchecking some unimportant checks. About 3-5% of this number
 is really potential problems.
+
+16. Get rid of HOST_xxBIT define. Use some standard type, which will have properly
+width on all platforms.
+
