@@ -118,6 +118,8 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
 //int32_t dbfstat(DBFILE* f, struct stat* p);
 bool dbisfilex(const char* name);
 bool dbisdirex(const char* path);
+bool dbisitexist(const char* path);
+int32_t dbgetfilesize(const char* path);
 
 
 } // namespace dosbox

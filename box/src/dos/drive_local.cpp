@@ -160,10 +160,11 @@ bool localDrive::FileUnlink(char * name) {
 	if (unlink(fullname)) {
 		//Unlink failed for some reason try finding it.
 		struct stat buffer;
-		if(stat(fullname,&buffer)) return false; // File not found.
+//		if(stat(fullname,&buffer)) return false; // File not found.
+//		if (!dbisfilex(fullname)) return false; // File not found
 
 		DBFILE* file_writable = dbfopen(fullname,"rb+");
-		if(!file_writable) return false; //No acces ? ERROR MESSAGE NOT SET. FIXME ?
+		if (!file_writable) return false;
 		dbfclose(file_writable);
 
 		//File exists and can technically be deleted, nevertheless it failed.
@@ -248,7 +249,7 @@ bool localDrive::FindFirst(char * _dir,DOS_DTA & dta,bool fcb_findfirst) {
 bool localDrive::FindNext(DOS_DTA & dta) {
 
 	char * dir_ent;
-	struct stat stat_block;
+//	struct stat stat_block;
 	char full_name[CROSS_LEN];
 	char dir_entcopy[CROSS_LEN];
 
@@ -272,12 +273,21 @@ bool localDrive::FindNext(DOS_DTA & dta) {
 	//and due to its design dir_ent might be lost.)
 	//Copying dir_ent first
 	strcpy(dir_entcopy,dir_ent);
-	if (stat(dirCache.GetExpandName(full_name),&stat_block)!=0) { 
-		goto again;//No symlinks and such
-	}	
+//	if (stat(dirCache.GetExpandName(full_name),&stat_block)!=0) {
+//		goto again;//No symlinks and such
+//	}
+//	if (!dbisitexist(dirCache.GetExpandName(full_name))) goto again;
 
-	if(stat_block.st_mode & S_IFDIR) find_attr=DOS_ATTR_DIRECTORY;
-	else find_attr=DOS_ATTR_ARCHIVE;
+//	if(stat_block.st_mode & S_IFDIR) find_attr=DOS_ATTR_DIRECTORY;
+//	else find_attr=DOS_ATTR_ARCHIVE;
+
+	if (dbisdirex(dirCache.GetExpandName(full_name)))
+		find_attr = DOS_ATTR_DIRECTORY;
+	else if (dbisfilex(dirCache.GetExpandName(full_name)))
+		find_attr = DOS_ATTR_ARCHIVE;
+	else
+		goto again;
+
 	if (~srch_attr & find_attr & (DOS_ATTR_DIRECTORY | DOS_ATTR_HIDDEN | DOS_ATTR_SYSTEM)) goto again;
 
 	/*file is okay, setup everything to be copied in DTA Block */

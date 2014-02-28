@@ -16,13 +16,12 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#include "dosbox.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <string>
 #include <vector>
+#include "dosbox.h"
 #include "programs.h"
 #include "support.h"
 #include "drives.h"
@@ -34,6 +33,7 @@
 #include "dos_inc.h"
 #include "bios.h"
 #include "bios_disk.h"
+#include "ldb.h"
 
 namespace dosbox {
 
@@ -233,12 +233,10 @@ public:
 
 			if (!cmd->FindCommand(2,temp_line)) goto showusage;
 			if (!temp_line.size()) goto showusage;
-			struct stat test;
-			//Win32 : strip tailing backslashes
-			//os2: some special drive check
-			//rest: substiture ~ for home
+//			struct stat test;
 			bool failed = false;
-			if (stat(temp_line.c_str(),&test)) {
+//			if (stat(temp_line.c_str(),&test)) {
+			if (dbisitexist(temp_line.c_str())) {
 				failed = true;
 //				Cross::ResolveHomedir(temp_line);
 //				//Try again after resolving ~
@@ -249,7 +247,8 @@ public:
 				return;
 			}
 			/* Not a switch so a normal directory/file */
-			if (!(test.st_mode & S_IFDIR)) {
+//			if (!(test.st_mode & S_IFDIR)) {
+			if (!dbisdirex(temp_line.c_str())) {
 				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_2"),temp_line.c_str());
 				return;
 			}
@@ -899,41 +898,36 @@ public:
 			// find all file parameters, assuming that all option parameters have been removed
 			while(cmd->FindCommand((unsigned int)(paths.size() + 2), temp_line) && temp_line.size()) {
 
-				struct stat test;
-				if (stat(temp_line.c_str(),&test)) {
-					//See if it works if the ~ are written out
-//					std::string homedir(temp_line);
-//					Cross::ResolveHomedir(homedir);
-//					if(!stat(homedir.c_str(),&test)) {
-//						temp_line = homedir;
-//					} else {
-					if (stat(temp_line.c_str(),&test)) { //native filename couldn't be resolved
-						// convert dosbox filename to system filename
-						char fullname[CROSS_LEN];
-						char tmp[CROSS_LEN];
-						safe_strncpy(tmp, temp_line.c_str(), CROSS_LEN);
+//				struct stat test;
+//				if (stat(temp_line.c_str(),&test)) { //native filename couldn't be resolved
+				if (!dbisitexist(temp_line.c_str())) { //native filename couldn't be resolved
+					// convert dosbox filename to system filename
+					char fullname[CROSS_LEN];
+					char tmp[CROSS_LEN];
+					safe_strncpy(tmp, temp_line.c_str(), CROSS_LEN);
 
-						Bit8u dummy;
-						if (!DOS_MakeName(tmp, fullname, &dummy) || strncmp(Drives[dummy]->GetInfo(),"local directory",15)) {
-							WriteOut(MSG_Get("PROGRAM_IMGMOUNT_NON_LOCAL_DRIVE"));
-							return;
-						}
+					Bit8u dummy;
+					if (!DOS_MakeName(tmp, fullname, &dummy) || strncmp(Drives[dummy]->GetInfo(),"local directory",15)) {
+						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_NON_LOCAL_DRIVE"));
+						return;
+					}
 
-						localDrive *ldp = dynamic_cast<localDrive*>(Drives[dummy]);
-						if (ldp==NULL) {
-							WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
-							return;
-						}
-						ldp->GetSystemFilename(tmp, fullname);
-						temp_line = tmp;
+					localDrive *ldp = dynamic_cast<localDrive*>(Drives[dummy]);
+					if (ldp==NULL) {
+						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
+						return;
+					}
+					ldp->GetSystemFilename(tmp, fullname);
+					temp_line = tmp;
 
-						if (stat(temp_line.c_str(),&test)) {
-							WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
-							return;
-						}
+//					if (stat(temp_line.c_str(),&test)) {
+					if (!dbisitexist(temp_line.c_str())) {
+						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
+						return;
 					}
 				}
-				if ((test.st_mode & S_IFDIR)) {
+//				if ((test.st_mode & S_IFDIR)) {
+				if (dbisdirex(temp_line.c_str())) {
 					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_MOUNT"));
 					return;
 				}

@@ -34,7 +34,7 @@ namespace dosbox {
 #define LONGTYPE(a) a##LL
 #define CROSS_LEN 512						/* Maximum filename size */
 
-#define	CROSS_FILENAME(blah) strreplace(blah,'\\','/')
+#define	CROSS_FILENAME(x) strreplace(x,'\\','/')
 #define CROSS_FILESPLIT '/'
 
 typedef struct dir_struct { 

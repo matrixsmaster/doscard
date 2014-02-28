@@ -187,22 +187,33 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 	return cnt;
 }
 
-bool dbisfilex(const char* name)
+static int32_t dbgetinfo(const char* name, int kind)
 {
 	DBFILE f;
 	memset(&f,0,sizeof(f));
 	f.name = const_cast<char*> (name);
-	f.todo = 10;
+	f.todo = kind + 10;
 	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)) == 0);
 }
 
-bool dbisdirex(const char* path)
+inline bool dbisfilex(const char* name)
 {
-	DBFILE f;
-	memset(&f,0,sizeof(f));
-	f.name = const_cast<char*> (path);
-	f.todo = 11;
-	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)) == 0);
+	return (dbgetinfo(name,0) == 0);
+}
+
+inline bool dbisdirex(const char* path)
+{
+	return (dbgetinfo(path,1) == 0);
+}
+
+inline bool dbisitexist(const char* path)
+{
+	return (dbisfilex(path) || dbisdirex(path));
+}
+
+inline int32_t dbgetfilesize(const char* path)
+{
+	return (dbgetinfo(path,2));
 }
 
 } //namespace dosbox
