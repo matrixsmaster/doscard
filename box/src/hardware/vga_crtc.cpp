@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 
 #include <stdlib.h>
 #include "dosbox.h"
@@ -33,18 +33,18 @@ namespace dosbox {
 void VGA_MapMMIO(void);
 void VGA_UnmapMMIO(void);
 
-void vga_write_p3d5(Bitu port,Bitu val,Bitu iolen);
+void vga_write_p3d5(Bitu, Bitu, Bitu);
 Bitu DEBUG_EnableDebugger(void);
 
-void vga_write_p3d4(Bitu port,Bitu val,Bitu iolen) {
+void vga_write_p3d4(Bitu /*port*/,Bitu val,Bitu /*iolen*/) {
 	crtc(index)=val;
 }
 
-Bitu vga_read_p3d4(Bitu port,Bitu iolen) {
+Bitu vga_read_p3d4(Bitu /*port*/,Bitu /*iolen*/) {
 	return crtc(index);
 }
 
-void vga_write_p3d5(Bitu port,Bitu val,Bitu iolen) {
+void vga_write_p3d5(Bitu /*port*/,Bitu val,Bitu iolen) {
 //	if (crtc(index)>0x18) LOG_MSG("VGA CRCT write %X to reg %X",val,crtc(index));
 	switch(crtc(index)) {
 	case 0x00:	/* Horizontal Total Register */
@@ -368,7 +368,7 @@ void vga_write_p3d5(Bitu port,Bitu val,Bitu iolen) {
 	}
 }
 
-Bitu vga_read_p3d5(Bitu port,Bitu iolen) {
+Bitu vga_read_p3d5(Bitu /*port*/,Bitu iolen) {
 //	LOG_MSG("VGA CRCT read from reg %X",crtc(index));
 	switch(crtc(index)) {
 	case 0x00:	/* Horizontal Total Register */

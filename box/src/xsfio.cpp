@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/stat.h>
 #include "dosbox.h"
 #include "ldb.h"
 
@@ -184,6 +185,13 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 		if (cnt >= n) break;
 	}
 	return cnt;
+}
+
+bool dbisfilex(const char* name)
+{
+	//FIXME
+	struct stat t;
+	return (stat(name,&t) == 0);
 }
 
 } //namespace dosbox
