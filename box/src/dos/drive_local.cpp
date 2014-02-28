@@ -281,32 +281,38 @@ bool localDrive::FindNext(DOS_DTA & dta) {
 //	if(stat_block.st_mode & S_IFDIR) find_attr=DOS_ATTR_DIRECTORY;
 //	else find_attr=DOS_ATTR_ARCHIVE;
 
-	if (dbisdirex(dirCache.GetExpandName(full_name)))
+	char* temp_fname = dirCache.GetExpandName(full_name);
+	if (dbisdirex(temp_fname))
 		find_attr = DOS_ATTR_DIRECTORY;
-	else if (dbisfilex(dirCache.GetExpandName(full_name)))
+	else if (dbisfilex(temp_fname))
 		find_attr = DOS_ATTR_ARCHIVE;
 	else
 		goto again;
 
-	if (~srch_attr & find_attr & (DOS_ATTR_DIRECTORY | DOS_ATTR_HIDDEN | DOS_ATTR_SYSTEM)) goto again;
+	if (~srch_attr & find_attr & (DOS_ATTR_DIRECTORY | DOS_ATTR_HIDDEN | DOS_ATTR_SYSTEM))
+		goto again;
 
 	/*file is okay, setup everything to be copied in DTA Block */
-	char find_name[DOS_NAMELENGTH_ASCII];Bit16u find_date,find_time;Bit32u find_size;
+	char find_name[DOS_NAMELENGTH_ASCII];
+	Bit16u find_date,find_time;
+	Bit32u find_size;
 
 	if(strlen(dir_entcopy)<DOS_NAMELENGTH_ASCII){
 		strcpy(find_name,dir_entcopy);
 		upcase(find_name);
 	} 
 
-	find_size=(Bit32u) stat_block.st_size;
+//	find_size=(Bit32u) stat_block.st_size;
+	find_size=(Bit32u) dbgetfilesize(temp_fname);
+
 	struct tm *time;
-	if((time=localtime(&stat_block.st_mtime))!=0){
-		find_date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
-		find_time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
-	} else {
-		find_time=6; 
-		find_date=4;
-	}
+//	if((time=localtime(&stat_block.st_mtime))!=0){
+//		find_date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
+//		find_time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
+//	} else {
+		find_time = DOS_DEFAULTTIME;
+		find_date = DOS_DEFAULTDATE;
+//	}
 	dta.SetResult(find_name,find_size,find_date,find_time,find_attr);
 	return true;
 }
@@ -318,10 +324,12 @@ bool localDrive::GetFileAttr(char * name,Bit16u * attr) {
 	CROSS_FILENAME(newname);
 	dirCache.ExpandName(newname);
 
-	struct stat status;
-	if (stat(newname,&status)==0) {
+//	struct stat status;
+//	if (stat(newname,&status)==0) {
+	if (dbisitexist(newname)) {
 		*attr=DOS_ATTR_ARCHIVE;
-		if(status.st_mode & S_IFDIR) *attr|=DOS_ATTR_DIRECTORY;
+//		if(status.st_mode & S_IFDIR) *attr|=DOS_ATTR_DIRECTORY;
+		if (dbisdirex(newname)) *attr |= DOS_ATTR_DIRECTORY;
 		return true;
 	}
 	*attr=0;
@@ -359,10 +367,11 @@ bool localDrive::TestDir(char * dir) {
 	size_t len = strlen(newdir);
 	if (len && (newdir[len-1]!='\\')) {
 		// It has to be a directory !
-		struct stat test;
-		if (stat(newdir,&test))			return false;
-		if ((test.st_mode & S_IFDIR)==0)	return false;
-	};
+//		struct stat test;
+//		if (stat(newdir,&test))			return false;
+//		if ((test.st_mode & S_IFDIR)==0)	return false;
+		if (!dbisdirex(newdir)) return false;
+	}
 	int temp=access(newdir,F_OK);
 	return (temp==0);
 }
@@ -400,9 +409,10 @@ bool localDrive::FileExists(const char* name) {
 	strcat(newname,name);
 	CROSS_FILENAME(newname);
 	dirCache.ExpandName(newname);
-	struct stat temp_stat;
-	if(stat(newname,&temp_stat)!=0) return false;
-	if(temp_stat.st_mode & S_IFDIR) return false;
+//	struct stat temp_stat;
+//	if(stat(newname,&temp_stat)!=0) return false;
+//	if(temp_stat.st_mode & S_IFDIR) return false;
+	if (!dbisfilex(newname)) return false;
 	return true;
 }
 
@@ -412,17 +422,20 @@ bool localDrive::FileStat(const char* name, FileStat_Block * const stat_block) {
 	strcat(newname,name);
 	CROSS_FILENAME(newname);
 	dirCache.ExpandName(newname);
-	struct stat temp_stat;
-	if(stat(newname,&temp_stat)!=0) return false;
+//	struct stat temp_stat;
+//	if(stat(newname,&temp_stat)!=0) return false;
+	if (!dbisitexist(newname)) return false;
 	/* Convert the stat to a FileStat */
-	struct tm *time;
-	if((time=localtime(&temp_stat.st_mtime))!=0) {
-		stat_block->time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
-		stat_block->date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
-	} else {
-
-	}
-	stat_block->size=(Bit32u)temp_stat.st_size;
+//	struct tm *time;
+//	if((time=localtime(&temp_stat.st_mtime))!=0) {
+//		stat_block->time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
+//		stat_block->date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
+//	} else {
+		stat_block->time = DOS_DEFAULTTIME;
+		stat_block->date = DOS_DEFAULTDATE;
+//	}
+//	stat_block->size=(Bit32u)temp_stat.st_size;
+	stat_block->size = (Bit32u)dbgetfilesize(newname);
 	return true;
 }
 
@@ -550,22 +563,21 @@ void localFile::FlagReadOnlyMedium(void)
 	read_only_medium = true;
 }
 
-//FIXME: THATS FOR TESTING PURPOSES ONLY!!!!
-#include <stdio.h>
 bool localFile::UpdateDateTimeFromHost(void)
 {
-	if(!open) return false;
-	struct stat temp_stat;
-	fstat(fileno(fhandle->rf),&temp_stat);
+	if (!open) return false;
+//	struct stat temp_stat;
+//	fstat(fileno(fhandle->rf),&temp_stat);
 //	memset(&temp_stat,0,sizeof(temp_stat));
 	LOG_MSG("FIXME: localFile::UpdateDateTimeFromHost()");
-	struct tm * ltime;
-	if((ltime=localtime(&temp_stat.st_mtime))!=0) {
-		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);
-		date=DOS_PackDate((Bit16u)(ltime->tm_year+1900),(Bit16u)(ltime->tm_mon+1),(Bit16u)ltime->tm_mday);
-	} else {
-		time=1;date=1;
-	}
+//	struct tm * ltime;
+//	if((ltime=localtime(&temp_stat.st_mtime))!=0) {
+//		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);
+//		date=DOS_PackDate((Bit16u)(ltime->tm_year+1900),(Bit16u)(ltime->tm_mon+1),(Bit16u)ltime->tm_mday);
+//	} else {
+		time = DOS_DEFAULTTIME;
+		date = DOS_DEFAULTDATE;
+//	}
 	return true;
 }
 

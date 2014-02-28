@@ -193,25 +193,25 @@ static int32_t dbgetinfo(const char* name, int kind)
 	memset(&f,0,sizeof(f));
 	f.name = const_cast<char*> (name);
 	f.todo = kind + 10;
-	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)) == 0);
+	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)));
 }
 
-inline bool dbisfilex(const char* name)
+bool dbisfilex(const char* name)
 {
 	return (dbgetinfo(name,0) == 0);
 }
 
-inline bool dbisdirex(const char* path)
+bool dbisdirex(const char* path)
 {
 	return (dbgetinfo(path,1) == 0);
 }
 
-inline bool dbisitexist(const char* path)
+bool dbisitexist(const char* path)
 {
 	return (dbisfilex(path) || dbisdirex(path));
 }
 
-inline int32_t dbgetfilesize(const char* path)
+int32_t dbgetfilesize(const char* path)
 {
 	return (dbgetinfo(path,2));
 }

@@ -467,9 +467,9 @@ int XS_FIO(void* buf, size_t len)
 		if ((stat(f->name,&tstat) == 0) && (tstat.st_mode & S_IFDIR)) return 0;
 		return -1;
 	case 12:
-		//get file size
-		//TODO:
-		break;
+		//get file size (we can't handle >2GB filesize, but that's OK)
+		if (!stat(f->name,&tstat)) return static_cast<int>(tstat.st_size);
+		return 0;
 	default:
 		xnfo(1,11,"Unknown operation %d for file '%s'",f->todo,f->name);
 		return -1;

@@ -73,10 +73,10 @@ layers of course)
 7. Made something with CDROM_ImageFile AudioFile - Using SDL_sound is just unreal.
 
 8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
-we surely didn't have a "normal" disk filesystem.
+we obviously won't have a "normal" disk filesystem.
 List of functions remains to be moved (not FIO only):
-stat()/fstat()
-localtime()
+stat()/fstat() -> OK
+time()/localtime()
 
 -> ALMOST DONE
 
