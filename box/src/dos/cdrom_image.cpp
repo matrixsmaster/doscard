@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <sstream>
+#include <libgen.h>
 #include "cdrom.h"
 #include "drives.h"
 #include "support.h"

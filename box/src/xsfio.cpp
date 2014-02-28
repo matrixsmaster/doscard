@@ -189,9 +189,20 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 
 bool dbisfilex(const char* name)
 {
-	//FIXME
-	struct stat t;
-	return (stat(name,&t) == 0);
+	DBFILE f;
+	memset(&f,0,sizeof(f));
+	f.name = const_cast<char*> (name);
+	f.todo = 10;
+	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)) == 0);
+}
+
+bool dbisdirex(const char* path)
+{
+	DBFILE f;
+	memset(&f,0,sizeof(f));
+	f.name = const_cast<char*> (path);
+	f.todo = 11;
+	return (myldbi->Callback(DBCB_FileIOReq,&f,sizeof(f)) == 0);
 }
 
 } //namespace dosbox

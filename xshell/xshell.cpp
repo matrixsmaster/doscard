@@ -412,9 +412,10 @@ int XS_FIO(void* buf, size_t len)
 #endif
 	if ((!buf) || (len < sizeof(DBFILE))) return -1;
 	DBFILE* f = reinterpret_cast<DBFILE*>(buf);
-	if ((f->todo) && (!f->rf)) return -1;
+	if ((f->todo > 0) && (f->todo < 10) && (!f->rf)) return -1;
 	uint64_t* x;
 	int64_t* sx;
+	struct stat tstat;
 #if XSHELL_VERBOSE
 	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
 			f->name,f->todo,f->p_x,f->p_y,f->buf);
@@ -428,7 +429,7 @@ int XS_FIO(void* buf, size_t len)
 		break;
 	case 1:
 		//close
-		if (f->rf) fclose(f->rf);
+		fclose(f->rf);
 		break;
 	case 2:
 		//fread
@@ -455,6 +456,16 @@ int XS_FIO(void* buf, size_t len)
 		if (f->p_y != 8) return -1;
 		sx = reinterpret_cast<int64_t*>(f->buf);
 		return (ftruncate(fileno(f->rf),*sx));
+	case 10:
+		//isfileexist
+		if (!f->name) return 254;
+		if ((stat(f->name,&tstat) == 0) && (tstat.st_mode & S_IFREG)) return 0;
+		return -1;
+	case 11:
+		//isdirexist
+		if (!f->name) return 254;
+		if ((stat(f->name,&tstat) == 0) && (tstat.st_mode & S_IFDIR)) return 0;
+		return -1;
 	default:
 		xnfo(1,11,"Unknown operation %d for file '%s'",f->todo,f->name);
 		return -1;

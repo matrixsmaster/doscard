@@ -117,7 +117,9 @@ int32_t dbfprintf(DBFILE* f, const char *fmt, ...);
 int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
 //int32_t dbfstat(DBFILE* f, struct stat* p);
 bool dbisfilex(const char* name);
+bool dbisdirex(const char* path);
 
-}
+
+} // namespace dosbox
 
 #endif

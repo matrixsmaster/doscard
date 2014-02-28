@@ -20,12 +20,14 @@
 #ifndef DOSBOX_CROSS_H
 #define DOSBOX_CROSS_H
 
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <string>
-#include <dirent.h>
 #include <unistd.h>
 #include "dosbox.h"
+
+//FIXME: remove them
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 namespace dosbox {
 

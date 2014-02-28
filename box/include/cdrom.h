@@ -28,8 +28,8 @@
 #include <limits>
 #include <vector>
 //#include <sstream>
-#include <sys/stat.h>
-#include <libgen.h>
+//#include <sys/stat.h>
+//#include <libgen.h>
 #include "dosbox.h"
 #include "mem.h"
 #include "mixer.h"
