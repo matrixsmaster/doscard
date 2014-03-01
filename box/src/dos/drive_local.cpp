@@ -159,7 +159,7 @@ bool localDrive::FileUnlink(char * name) {
 	char *fullname = dirCache.GetExpandName(newname);
 	if (unlink(fullname)) {
 		//Unlink failed for some reason try finding it.
-		struct stat buffer;
+//		struct stat buffer;
 //		if(stat(fullname,&buffer)) return false; // File not found.
 //		if (!dbisfilex(fullname)) return false; // File not found
 
@@ -341,7 +341,7 @@ bool localDrive::MakeDir(char * dir) {
 	strcpy(newdir,basedir);
 	strcat(newdir,dir);
 	CROSS_FILENAME(newdir);
-	int temp=mkdir(dirCache.GetExpandName(newdir),0700);
+	int temp = dbdirmake(dirCache.GetExpandName(newdir));
 	if (temp==0) dirCache.CacheOut(newdir,true);
 
 	return (temp==0);// || ((temp!=0) && (errno==EEXIST));
@@ -352,7 +352,7 @@ bool localDrive::RemoveDir(char * dir) {
 	strcpy(newdir,basedir);
 	strcat(newdir,dir);
 	CROSS_FILENAME(newdir);
-	int temp=rmdir(dirCache.GetExpandName(newdir));
+	int temp = dbdirdel(dirCache.GetExpandName(newdir));
 	if (temp==0) dirCache.DeleteEntry(newdir,true);
 	return (temp==0);
 }

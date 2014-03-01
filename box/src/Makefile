@@ -29,8 +29,8 @@ LIRQ_SRC += int10_put_pixel.cpp int10_video_state.cpp int10_vptable.cpp bios.cpp
 
 LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 
-LMSC_SRC := cross.cpp messages.cpp programs.cpp support.cpp ldbconf.cpp
-
+LMSC_SRC := messages.cpp programs.cpp support.cpp ldbconf.cpp
+##cross.cpp 
 LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp dosbox.cpp
 
 

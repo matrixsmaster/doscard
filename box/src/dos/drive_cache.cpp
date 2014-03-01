@@ -55,7 +55,10 @@ DOS_Drive_Cache::DOS_Drive_Cache(void) {
 	srchNr			= 0;
 	label[0]		= 0;
 	nextFreeFindFirst	= 0;
-	for (Bit32u i=0; i<MAX_OPENDIRS; i++) { dirSearch[i] = 0; dirFindFirst[i] = 0; };
+	for (Bit32u i=0; i<MAX_OPENDIRS; i++) {
+		dirSearch[i] = 0;
+		dirFindFirst[i] = 0;
+	}
 	SetDirSort(DIRALPHABETICAL);
 	updatelabel = true;
 }
@@ -66,7 +69,10 @@ DOS_Drive_Cache::DOS_Drive_Cache(const char* path) {
 	srchNr			= 0;
 	label[0]		= 0;
 	nextFreeFindFirst	= 0;
-	for (Bit32u i=0; i<MAX_OPENDIRS; i++) { dirSearch[i] = 0; dirFindFirst[i] = 0; };
+	for (Bit32u i=0; i<MAX_OPENDIRS; i++) {
+		dirSearch[i] = 0;
+		dirFindFirst[i] = 0;
+	}
 	SetDirSort(DIRALPHABETICAL);
 	SetBaseDir(path);
 	updatelabel = true;
@@ -74,13 +80,18 @@ DOS_Drive_Cache::DOS_Drive_Cache(const char* path) {
 
 DOS_Drive_Cache::~DOS_Drive_Cache(void) {
 	Clear();
-	for (Bit32u i=0; i<MAX_OPENDIRS; i++) { DeleteFileInfo(dirFindFirst[i]); dirFindFirst[i]=0; };
+	for (Bit32u i=0; i<MAX_OPENDIRS; i++) {
+		DeleteFileInfo(dirFindFirst[i]);
+		dirFindFirst[i]=0;
+	}
 }
 
 void DOS_Drive_Cache::Clear(void) {
-	DeleteFileInfo(dirBase); dirBase = 0;
-	nextFreeFindFirst	= 0;
-	for (Bit32u i=0; i<MAX_OPENDIRS; i++) dirSearch[i] = 0;
+	DeleteFileInfo(dirBase);
+	dirBase = 0;
+	nextFreeFindFirst = 0;
+	for (Bit32u i=0; i<MAX_OPENDIRS; i++)
+		dirSearch[i] = 0;
 }
 
 void DOS_Drive_Cache::EmptyCache(void) {
@@ -123,31 +134,7 @@ void DOS_Drive_Cache::SetBaseDir(const char* baseDir) {
 	if (OpenDir(baseDir,id)) {
 		char* result = 0;
 		ReadDir(id,result);
-	};
-	// Get Volume Label
-#if defined (WIN32) || defined (OS2)
-	bool cdrom = false;
-	char labellocal[256]={ 0 };
-	char drive[4] = "C:\\";
-	drive[0] = basePath[0];
-#if defined (WIN32)
-	if (GetVolumeInformation(drive,labellocal,256,NULL,NULL,NULL,NULL,0)) {
-	UINT test = GetDriveType(drive);
-	if(test == DRIVE_CDROM) cdrom = true;
-#else // OS2
-	//TODO determine wether cdrom or not!
-	FSINFO fsinfo;
-	ULONG drivenumber = drive[0];
-	if (drivenumber > 26) { // drive letter was lowercase
-		drivenumber = drive[0] - 'a' + 1;
 	}
-	APIRET rc = DosQueryFSInfo(drivenumber, FSIL_VOLSER, &fsinfo, sizeof(FSINFO));
-	if (rc == NO_ERROR) {
-#endif
-		/* Set label and allow being updated */
-		SetLabel(labellocal,cdrom,true);
-	}
-#endif
 }
 
 void DOS_Drive_Cache::ExpandName(char* path) {
@@ -370,8 +357,6 @@ bool DOS_Drive_Cache::RemoveTrailingDot(char* shortname) {
 //Changes to interact with WINE by supporting their namemangling.
 //The code is rather slow, because orglist is unordered, so it needs to be avoided if possible.
 //Hence the tests in GetLongFileName
-
-
 // From the Wine project
 static Bits wine_hash_short_file_name( char* name, char* buffer )
 {
@@ -663,10 +648,10 @@ bool DOS_Drive_Cache::OpenDir(CFileInfo* dir, const char* expand, Bit16u& id) {
 	// open dir
 	if (dirSearch[id]) {
 		// open dir
-		dir_information* dirp = open_directory(expandcopy);
+		DBFILE* dirp = dbdiropen(expandcopy);
 		if (dirp) { 
 			// Reset it..
-			close_directory(dirp);
+			dbdirclose(dirp);
 			strcpy(dirPath,expandcopy);
 			return true;
 		}
@@ -730,7 +715,7 @@ bool DOS_Drive_Cache::ReadDir(Bit16u id, char* &result) {
 
 	if (!IsCachedIn(dirSearch[id])) {
 		// Try to open directory
-		dir_information* dirp = open_directory(dirPath);
+		DBFILE* dirp = dbdiropen(dirPath);
 		if (!dirp) {
 			if (dirSearch[id]) {
 				dirSearch[id]->id = MAX_OPENDIRS;
@@ -741,15 +726,15 @@ bool DOS_Drive_Cache::ReadDir(Bit16u id, char* &result) {
 		// Read complete directory
 		char dir_name[CROSS_LEN];
 		bool is_directory;
-		if (read_directory_first(dirp, dir_name, is_directory)) {
+		if (dbdirread(dirp, dir_name, is_directory)) {
 			CreateEntry(dirSearch[id], dir_name, is_directory);
-			while (read_directory_next(dirp, dir_name, is_directory)) {
+			while (dbdirread(dirp, dir_name, is_directory)) {
 				CreateEntry(dirSearch[id], dir_name, is_directory);
 			}
 		}
 
 		// close dir
-		close_directory(dirp);
+		dbdirclose(dirp);
 
 		// Info
 /*		if (!dirp) {

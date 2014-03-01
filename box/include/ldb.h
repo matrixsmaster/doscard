@@ -22,6 +22,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <string.h>
+#include <dirent.h>
 #include "keyboard.h"
 
 //LDB_EMBEDDED should be defined when compiling for a real chip target
@@ -105,6 +106,7 @@ typedef struct {
 #else
 	char* op;
 	FILE* rf;
+	DIR* df;
 #endif
 	int16_t todo;
 	uint32_t p_x,p_y;
@@ -134,6 +136,12 @@ bool dbisfilex(const char* name);
 bool dbisdirex(const char* path);
 bool dbisitexist(const char* path);
 int32_t dbgetfilesize(const char* path);
+
+DBFILE* dbdiropen(const char* p);
+bool dbdirread(DBFILE* d, char* entry, bool& is_dir);
+void dbdirclose(DBFILE* d);
+int32_t dbdirmake(const char* n);
+int32_t dbdirdel(const char* n);
 
 } // namespace dosbox
 

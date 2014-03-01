@@ -407,19 +407,26 @@ int XS_Message(void* buf, size_t len)
 
 int XS_FIO(void* buf, size_t len)
 {
-#if XSHELL_VERBOSE > 1
-	xnfo(0,11,"len=%d",len);
-#endif
-	if ((!buf) || (len < sizeof(DBFILE))) return -1;
-	DBFILE* f = reinterpret_cast<DBFILE*>(buf);
-	if ((f->todo > 0) && (f->todo < 10) && (!f->rf)) return -1;
 	uint64_t* x;
 	int64_t* sx;
 	struct stat tstat;
+	struct dirent* pdir;
+
+#if XSHELL_VERBOSE > 1
+	xnfo(0,11,"len=%d",len);
+#endif
+
+	if ((!buf) || (len < sizeof(DBFILE))) return -1;
+	DBFILE* f = reinterpret_cast<DBFILE*>(buf);
+
+	if ((f->todo > 0) && (f->todo < 10) && (!f->rf)) return -1;
+	if ((f->todo > 20) && (!f->df)) return -1;
+
 #if XSHELL_VERBOSE
 	xnfo(0,11,"file '%s': action is %d (param X=%d; Y=%d), buffer points to 0x%x",
 			f->name,f->todo,f->p_x,f->p_y,f->buf);
 #endif
+
 	switch (f->todo) {
 	case 0:
 		//open
@@ -427,53 +434,82 @@ int XS_FIO(void* buf, size_t len)
 		f->rf = fopen(f->name,f->op);
 		if (!f->rf) return -1;
 		break;
+
 	case 1:
 		//close
 		fclose(f->rf);
 		break;
+
 	case 2:
 		//fread
 		return (fread(f->buf,f->p_x,f->p_y,f->rf));
+
 	case 3:
 		//fwrite
 		return (fwrite(f->buf,f->p_x,f->p_y,f->rf));
+
 	case 4:
 		//fseek
 		if (f->p_y != 8) return -1;
 		x = reinterpret_cast<uint64_t*>(f->buf);
 		return (fseek(f->rf,*x,f->p_x));
+
 	case 5:
 		//ftell
 		if (f->p_y != 8) return 0;
 		x = reinterpret_cast<uint64_t*>(f->buf);
 		*x = ftell(f->rf);
 		break;
+
 	case 6:
 		//feof
 		return (feof(f->rf));
+
 	case 7:
 		//ftruncate
 		if (f->p_y != 8) return -1;
 		sx = reinterpret_cast<int64_t*>(f->buf);
 		return (ftruncate(fileno(f->rf),*sx));
+
 	case 10:
 		//isfileexist
-		if (!f->name) return 254;
 		if ((stat(f->name,&tstat) == 0) && (tstat.st_mode & S_IFREG)) return 0;
 		return -1;
+
 	case 11:
 		//isdirexist
-		if (!f->name) return 254;
 		if ((stat(f->name,&tstat) == 0) && (tstat.st_mode & S_IFDIR)) return 0;
 		return -1;
+
 	case 12:
 		//get file size (we can't handle >2GB filesize, but that's OK)
 		if (!stat(f->name,&tstat)) return static_cast<int>(tstat.st_size);
-		return 0;
+		break;
+
+	case 20:
+		//open dir
+		f->df = opendir(f->name);
+		if (!f->df) return -1;
+		break;
+
+	case 21:
+		//read dir (X param = is directory)
+		pdir = readdir(f->df);
+		if (!pdir) return -1;
+		strncpy(reinterpret_cast<char*>(f->buf),pdir->d_name,f->p_y);
+		f->p_x = (pdir->d_type == DT_DIR)? 1:0;
+		break;
+
+	case 22:
+		//close dir
+		closedir(f->df);
+		break;
+
 	default:
 		xnfo(1,11,"Unknown operation %d for file '%s'",f->todo,f->name);
 		return -1;
 	}
+
 #if XSHELL_VERBOSE > 1
 	xnfo(0,11,"default return");
 #endif

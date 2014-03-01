@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "dosbox.h"
+#include "cross.h"
 #include "ldb.h"
 
 namespace dosbox {
@@ -189,6 +190,7 @@ int32_t dbfngetl(char* buf, int32_t n, DBFILE* f)
 static int32_t dbgetinfo(const char* name, int kind)
 {
 	DBFILE f;
+	if (!name) return -1;
 	memset(&f,0,sizeof(f));
 	f.name = const_cast<char*> (name);
 	f.todo = kind + 10;
@@ -213,6 +215,59 @@ bool dbisitexist(const char* path)
 int32_t dbgetfilesize(const char* path)
 {
 	return (dbgetinfo(path,2));
+}
+
+DBFILE* dbdiropen(const char* p)
+{
+#ifdef LDB_SUPPORT_DIRS
+	if (!p) return NULL;
+	DBFILE* nd = new DBFILE;
+	memset(nd,0,sizeof(DBFILE));
+	LOG_MSG("dbdiropen(): Pretend to open directory %s",p);
+	nd->name = reinterpret_cast<char*>(malloc(strlen(p) + 1));
+	if (!nd->name) return NULL;
+	strcpy(nd->name,p);
+	nd->todo = 20;
+	if (!myldbi->Callback(DBCB_FileIOReq,nd,sizeof(DBFILE))) return nd;
+	delete nd;
+#endif
+	return NULL;
+}
+
+bool dbdirread(DBFILE* d, char* entry, bool& is_dir)
+{
+	if ((!d) || (!entry)) return false;
+#ifdef LDB_SUPPORT_DIRS
+	d->todo = 21;
+	d->buf = entry;
+	d->p_x = 0;
+	d->p_y = CROSS_LEN;
+	if (!myldbi->Callback(DBCB_FileIOReq,d,sizeof(DBFILE))) {
+		is_dir = (d->p_x > 0);
+		return true;
+	}
+#endif
+	return false;
+}
+
+void dbdirclose(DBFILE* d)
+{
+#ifdef LDB_SUPPORT_DIRS
+	if (d) return;
+	d->todo = 22;
+	myldbi->Callback(DBCB_FileIOReq,d,sizeof(DBFILE));
+	if (d->name) free(d->name);
+#endif
+}
+
+int32_t dbdirmake(const char* n)
+{
+	return -1;
+}
+
+int32_t dbdirdel(const char* n)
+{
+	return -1;
 }
 
 } //namespace dosbox

@@ -27,6 +27,7 @@
 #include <pthread.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include "SDL2/include/SDL.h"
 #include "ldb.h"
 

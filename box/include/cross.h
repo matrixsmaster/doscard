@@ -25,9 +25,9 @@
 #include "dosbox.h"
 
 //FIXME: remove them
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
+//#include <sys/stat.h>
+//#include <sys/types.h>
+//#include <dirent.h>
 
 namespace dosbox {
 
@@ -37,16 +37,15 @@ namespace dosbox {
 #define	CROSS_FILENAME(x) strreplace(x,'\\','/')
 #define CROSS_FILESPLIT '/'
 
-typedef struct dir_struct { 
-	DIR*  dir;
-	char base_path[CROSS_LEN];
-} dir_information;
+//typedef struct dir_struct {
+//	DIR*  dir;
+//	char base_path[CROSS_LEN];
+//} dir_information;
 
-dir_information* open_directory(const char* dirname);
-bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory);
-//bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory);
-#define read_directory_next(x,y,z) read_directory_first(x,y,z)
-void close_directory(dir_information* dirp);
+//dir_information* open_directory(const char* dirname);
+//bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory);
+//#define read_directory_next(x,y,z) read_directory_first(x,y,z)
+//void close_directory(dir_information* dirp);
 
 }
 
