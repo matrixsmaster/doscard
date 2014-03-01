@@ -16,4 +16,34 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//lli
+#include "ldbwrap.h"
+
+int LDBCB_LCD(void* buf, size_t len)
+{
+	return -1;
+}
+
+int LDBCB_SND(void* buf, size_t len)
+{
+	return -1;
+}
+
+int LDBCB_UIE(void* buf, size_t len)
+{
+	return -1;
+}
+
+int LDBCB_TCK(void* buf, size_t len)
+{
+	return -1;
+}
+
+int LDBCB_MSG(void* buf, size_t len)
+{
+	return -1;
+}
+
+int LDBCB_FIO(void* buf, size_t len)
+{
+	return -1;
+}

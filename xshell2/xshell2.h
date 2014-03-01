@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,4 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//lli
+#ifndef XSHELL2_H_
+#define XSHELL2_H_
+
+#include "SDL2/include/SDL.h"
+#include "doscard.h"
+
+#endif /* XSHELL2_H_ */

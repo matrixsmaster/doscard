@@ -16,4 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//lli
+#ifndef DOSCARD_H_
+#define DOSCARD_H_
+
+#include "ldbwrap.h"
+
+#endif /* DOSCARD_H_ */

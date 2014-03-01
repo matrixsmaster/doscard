@@ -16,4 +16,50 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//lli
+#include "ldbwrap.h"
+
+using namespace dosbox;
+
+namespace doscard {
+
+int CreateInstance(LDB_Settings* set)
+{
+	return -1;
+}
+
+int TryDestroyInstance(void)
+{
+	return -1;
+}
+
+int RunInstance(void)
+{
+	return -1;
+}
+
+int GetInstanceRuntime(void*,uint64_t)
+{
+	return -1;
+}
+
+int GetInstanceScreen(void*,uint64_t)
+{
+	return -1;
+}
+
+int GetInstanceSound(void*,uint64_t)
+{
+	return -1;
+}
+
+int AddInstanceEvents(void*,uint64_t)
+{
+	return -1;
+}
+
+int GetInstanceMessages(void*,uint64_t)
+{
+	return -1;
+}
+
+} //namespace doscard
