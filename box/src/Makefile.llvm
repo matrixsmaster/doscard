@@ -1,4 +1,4 @@
-## DosCard Project DosBox Module Main MAKEFILE
+## DosCard Project DosBox Module Main MAKEFILE for LLVM
 ## Copyright (C) 2013-2014 Soloviov Dmitry
 
 ## Internal name. Do not use 'libdosbox' in external projects as it may interfere with
@@ -11,7 +11,7 @@ BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -DHOST_64BIT
 CC_FLAG := -g -O2 -Weverything -fno-strict-aliasing
-CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
+CC_INCL := -I$(MNDIR)/../include -I. -I../..
 CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -emit-llvm
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp 
@@ -59,8 +59,3 @@ all:	$(LIB_OBJS)
 
 %.o:	%.cpp
 	$(CC_COMP) -c -o $@ $<
-
-clean:
-	rm -f objs.txt
-	find . -type f -name '*.a' | xargs -n1 rm -fv
-	find . -type f -name '*.o' | xargs -n1 rm -fv

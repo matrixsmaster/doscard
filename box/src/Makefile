@@ -11,7 +11,7 @@ BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -D_GNU_SOURCE -DHOST_64BIT
 CC_FLAG := -g -O2 -Wall -Wextra -finstrument-functions -fno-strict-aliasing
-CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
+CC_INCL := -I$(MNDIR)/../include -I. -I../..
 CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp 

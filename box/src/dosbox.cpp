@@ -41,7 +41,7 @@
 #include "box_inits.h"
 #include "ldb.h"
 #include "ldbconf.h"
-#include "xshell.h"
+//#include "xshell.h"
 
 namespace dosbox {
 
