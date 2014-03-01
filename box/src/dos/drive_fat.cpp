@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+//#include <time.h>
 #include "dosbox.h"
 #include "dos_inc.h"
 #include "drives.h"

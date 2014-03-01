@@ -10,9 +10,9 @@ BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -D_GNU_SOURCE -DHOST_64BIT
-CC_FLAG := -g -O2 -Wall -Wextra
+CC_FLAG := -g -O2 -Wall -Wextra -finstrument-functions -fno-strict-aliasing
 CC_INCL := -I$(MNDIR)/../include -I. -I../.. -I$(MNDIR)/../../xshell
-CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -finstrument-functions
+CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp 
 LCPU_SRC += core_normal.cpp core_simple.cpp fpu.cpp
@@ -35,7 +35,7 @@ LSHL_SRC := shell.cpp shell_batch.cpp shell_cmds.cpp shell_misc.cpp
 
 LMSC_SRC := programs.cpp support.cpp ldbconf.cpp
 
-LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp dosbox.cpp
+LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp fake_threading.cpp dosbox.cpp
 
 
 LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))

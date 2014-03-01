@@ -478,12 +478,39 @@ uint32_t GetTicks()
 
 void TIMER_Delay(Bitu c)
 {
+#ifdef LDB_ALLOW_TIMER_DELAY
 	uint32_t r = 0;
 	if (!c) return;
 	myldbi->Callback(DBCB_GetTicks,&r,sizeof(r));
 	c += r;
 	while (r < c)
 		myldbi->Callback(DBCB_GetTicks,&r,sizeof(r));
+#endif
+}
+
+//Algorithm by Gary Katch
+//http://alcor.concordia.ca/~gpkatch/gdate-algorithm.html
+static uint32_t conv_to_days(prtc_data* in)
+{
+	uint32_t r;
+	in->tm_mon = (in->tm_mon + 9) % 12;
+	in->tm_year = in->tm_year - in->tm_mon / 10;
+	r = 365 * in->tm_year + in->tm_year/4 - in->tm_year/100;
+	r += in->tm_year/400 + (in->tm_mon*306 + 5)/10 + (in->tm_mday - 1);
+	return r;
+}
+static void conv_to_date(prtc_data* out, uint32_t in)
+{
+	out->tm_year = (10000*in + 14780)/3652425;
+	int32_t ddd = in - (365*out->tm_year + out->tm_year/4 - out->tm_year/100 + out->tm_year/400);
+	if (ddd < 0) {
+		out->tm_year = out->tm_year - 1;
+		ddd = in - (365*out->tm_year + out->tm_year/4 - out->tm_year/100 + out->tm_year/400);
+	}
+	int32_t mi = (100*ddd + 52)/3060;
+	out->tm_mon = (mi + 2)%12 + 1;
+	out->tm_year = out->tm_year + (mi + 2)/12;
+	out->tm_mday = ddd - (mi*306 + 5)/10 + 1;
 }
 
 void PRTC_GetDateTime(prtc_data* buf)

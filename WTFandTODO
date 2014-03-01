@@ -56,12 +56,12 @@ from upstream DosBox due to fact of everything we want is already working.
 I had decided that will be a lib, libdosbox. There will be two versions of this:
 (a) x86 GNU/Linux static or/and shared lib; and (b) embeddable library to just
 include in your hobby microcontroller project. Nice, isn't it?
-->IN PROGRESS
 Notes: Coding style is not the best I've ever seen. To be honest, it's worstest
 style I've ever seen. Classes scattering around without any real purpose. Huge
 amount of globals everywhere. Almost none of the core classes can be instantiated
-more than once. Really obfuscated function calls, amount of function pointers in
-trivial places, etc, etc.
+more than once. Really obfuscated function calls, amount of function pointers 
+magic in trivial places, etc, etc.
+->IN PROGRESS
 
 
 4. Select a chip to port this thing into and draw the schematics (and PCB
@@ -78,8 +78,7 @@ List of functions remains to be (re)moved (not FIO only):
 stat()/fstat() -> OK
 time()/localtime() -> OK
 opendir()/readdir() -> OK
-
--> ALMOST DONE
+-> I THINK IT'S DONE
 
 
 9. Move all of the libdosbox code into it's own namespace.
@@ -95,23 +94,26 @@ performance. That's bad!
 UPD: I think that isn't an issue. The problem relevant to timing, but in some other
 way. Deep investigation needed!
 HINT: heavy use of GCC attributes in original code can make GCC crazy.
-->IN PROGRESS
+UPD: different GCC versions generates very different code. Program won't work with
+gcc 4.6 or 4.7. Moreover, linkage order have it's own magic on the code stability.
+->STALLED
 
 12. Types unification. Use <inttypes> instead of all of this Bit<xx>[s/u] forms.
--> PARTIALLY DONE
+-> DONE! (by typedef kludge)
 
 13. Deal with manual exceptions and its catches. This might unveil big problems while
 porting on possible target arch.
 
 14. Get rid of static qualifiers. Make sure there's no static methods or members.
+->STALLED
 
 15. Run a set of statical analysis processes to seek and eliminate violations,
 unused code, creepy pointer arithmetic and so on.
-->IN PROGRESS
 Note: Understand 3.1 had found >19000 violations on a smallest ruleset. More complex
 rulesets may unveil much more violations and potential problems. The number was
 lowered to 3973 after unchecking some unimportant checks. About 3-5% of this number
 is really potential problems.
+->STALLED
 
 16. Get rid of HOST_xxBIT define. Use some standard type, which will have properly
 width on all platforms.

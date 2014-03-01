@@ -27,8 +27,8 @@
 
 //LDB_EMBEDDED should be defined when compiling for a real chip target
 //#define LDB_EMBEDDED
-
 #define LDB_SUPPORT_DIRS
+//#define LDB_ALLOW_TIMER_DELAY
 
 #ifndef LDB_EMBEDDED
 #include <stdio.h>
