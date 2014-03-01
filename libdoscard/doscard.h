@@ -21,4 +21,31 @@
 
 #include "ldbwrap.h"
 
+namespace doscard {
+
+enum EDOSCRDState {
+	DOSCRD_NOT_READY = 0,
+	DOSCRD_LOADED,
+	DOSCRD_INITED,
+	DOSCRD_RUNNING,
+	DOSCRD_SHUTDOWN,
+	DOSCRD_LOADFAIL
+};
+
+class CDosCard {
+public:
+	CDosCard(bool autoload);
+	~CDosCard();
+	bool TryLoad(const char* filename);
+	EDOSCRDState GetCurrentState();
+	dosbox::LDB_Settings* GetSettings();
+	bool ApplySettings(dosbox::LDB_Settings* pset);
+	bool Prepare();
+	int Run();
+private:
+	dosbox::LDB_Settings* settings;
+};
+
+} //namespace doscard
+
 #endif /* DOSCARD_H_ */

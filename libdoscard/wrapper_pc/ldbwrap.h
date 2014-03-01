@@ -28,6 +28,8 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <vector>
+#include <string>
 #include "dosbox.h"
 #include "ldbconf.h"
 #include "ldb.h"
@@ -40,6 +42,9 @@ typedef struct {
 	uint64_t sndsize;
 } LDBI_RuntimeData;
 
+typedef vector<dosbox::LDB_UIEvent> LDBI_EventVec;
+typedef vector<string> LDBI_MesgVec;
+
 int LDBCB_LCD(void* buf, size_t len);
 int LDBCB_SND(void* buf, size_t len);
 int LDBCB_UIE(void* buf, size_t len);
@@ -47,8 +52,12 @@ int LDBCB_TCK(void* buf, size_t len);
 int LDBCB_MSG(void* buf, size_t len);
 int LDBCB_FIO(void* buf, size_t len);
 
-dosbox::CDosBox* DOS;
-LDBI_RuntimeData* Runtime;
+extern dosbox::CDosBox* DOS;
+extern LDBI_RuntimeData* Runtime;
+extern uint32_t* Screen;
+extern int16_t* Sound;
+extern LDBI_EventVec Events;
+extern LDBI_MesgVec Messages;
 
 int CreateInstance(dosbox::LDB_Settings* set);
 int TryDestroyInstance(void);
