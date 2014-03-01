@@ -22,16 +22,21 @@
 #include "dosbox.h"
 #include "cross.h"
 #include "support.h"
+#include "ldb.h"
 
 namespace dosbox {
 
 dir_information* open_directory(const char* dirname)
 {
-	LOG_MSG("open_directory()");
+#ifndef LDB_SUPPORT_DIRS
+	LOG_MSG("open_directory(): STUB");
+	return NULL;
+#else
 	static dir_information dir;
 	dir.dir=opendir(dirname);
 	safe_strncpy(dir.base_path,dirname,CROSS_LEN);
 	return dir.dir?&dir:NULL;
+#endif
 }
 
 bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory)
@@ -41,10 +46,7 @@ bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_dire
 	if (dentry==NULL) {
 		return false;
 	}
-
-//	safe_strncpy(entry_name,dentry->d_name,(FILENAME_MAX<MAX_PATH)?FILENAME_MAX:MAX_PATH);	// [include stdio.h], maybe pathconf()
 	safe_strncpy(entry_name,dentry->d_name,CROSS_LEN);
-
 #ifdef DIRENT_HAS_D_TYPE
 	if(dentry->d_type == DT_DIR) {
 		is_directory = true;
@@ -54,7 +56,6 @@ bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_dire
 		return true;
 	}
 #endif
-
 	// probably use d_type here instead of a full stat()
 	static char buffer[2*CROSS_LEN] = { 0 };
 	buffer[0] = 0;
@@ -63,41 +64,6 @@ bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_dire
 	struct stat status;
 	if (stat(buffer,&status)==0) is_directory = (S_ISDIR(status.st_mode)>0);
 	else is_directory = false;
-
-	return true;
-}
-
-bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory)
-{
-	LOG_MSG("read_directory_next()");
-	struct dirent* dentry = readdir(dirp->dir);
-	if (dentry==NULL) {
-		return false;
-	}
-
-//	safe_strncpy(entry_name,dentry->d_name,(FILENAME_MAX<MAX_PATH)?FILENAME_MAX:MAX_PATH);	// [include stdio.h], maybe pathconf()
-	safe_strncpy(entry_name,dentry->d_name,CROSS_LEN);
-
-#ifdef DIRENT_HAS_D_TYPE
-	if(dentry->d_type == DT_DIR) {
-		is_directory = true;
-		return true;
-	} else if(dentry->d_type == DT_REG) {
-		is_directory = false;
-		return true;
-	}
-#endif
-
-	// probably use d_type here instead of a full stat()
-	static char buffer[2*CROSS_LEN] = { 0 };
-	buffer[0] = 0;
-	strcpy(buffer,dirp->base_path);
-	strcat(buffer,entry_name);
-	struct stat status;
-
-	if (stat(buffer,&status)==0) is_directory = (S_ISDIR(status.st_mode)>0);
-	else is_directory = false;
-
 	return true;
 }
 

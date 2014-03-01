@@ -115,3 +115,13 @@ is really potential problems.
 16. Get rid of HOST_xxBIT define. Use some standard type, which will have properly
 width on all platforms.
 
+17. Near the end of porting we should finally check all of inclusions in all our
+files by find'ing, grep'ing and sort'ing.
+
+18. Destroy MSG system to move all this string constants from data to code area and
+save some amount of RAM. Moreover, DOS in any language different from English is just
+a stupid crazy thing (lobotomized vegetables may prefer it). May be I don't speak
+Englush very well (and it's true), but I can't use OS with my native language
+interface. Sometimes I was forced to do such things, but now I switched to Gentoo, so
+I'm a boss :)
+

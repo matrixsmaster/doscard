@@ -24,19 +24,28 @@
 #include <string.h>
 #include "keyboard.h"
 
+//LDB_EMBEDDED should be defined when compiling for a real chip target
 //#define LDB_EMBEDDED
+
+#define LDB_SUPPORT_DIRS
 
 #ifndef LDB_EMBEDDED
 #include <stdio.h>
+#else
+#undef LDB_SUPPORT_DIRS
 #endif
 
 namespace dosbox {
+
+/* ****************** LDB LCD Display Pipe Macros ****************** */
 
 #define DISPLAY_INIT_SIGNATURE 0xFFABCD00
 #define DISPLAY_NFRM_SIGNATURE 0xAABBCCDD
 #define DISPLAY_ABOR_SIGNATURE 0xABCDABCD
 
 #define DISPLAY_RET_BUSY 10
+
+/* ****************** LDB Basic Data ****************** */
 
 enum LDB_CallbackType {
 	DBCB_GetTicks = 0,
@@ -50,8 +59,12 @@ enum LDB_CallbackType {
 
 typedef int (*LDB_CallbackFunc)(void*,size_t);
 
-int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
-int Dosbox_Run(void*);
+/* ****************** LDB Basic Functions Prototypes ****************** */
+
+//int Dosbox_RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
+//int Dosbox_Run(void*);
+
+/* ****************** Events Pipe Data Structures ****************** */
 
 enum LDB_UIEventE {
 	LDB_UIE_NONE = 0,
@@ -82,6 +95,8 @@ typedef struct {
 	bool sign,silent;
 } LDB_SoundInfo;
 
+/* ****************** FIO Wrapper Data ****************** */
+
 typedef struct {
 	char* name;
 #ifdef LDB_EMBEDDED
@@ -103,24 +118,22 @@ typedef struct {
 #define LDB_FOP_WRAPP 0x08
 #define LDB_FOP_TRUNC 0x10
 
+/* ****************** FIO Wrapper Functions Prototypes ****************** */
+
 DBFILE* dbfopen(const char* p, const char* m);
 void dbfclose(DBFILE* f);
 uint32_t dbfread(void* p, uint32_t sz, uint32_t q, DBFILE* f);
 uint32_t dbfwrite(const void* p, uint32_t sz, uint32_t q, DBFILE* f);
 int32_t dbfseek(DBFILE* f, uint64_t off, int32_t wh);
 uint64_t dbftell(DBFILE* f);
-//int dbfileno(DBFILE* f);
 int32_t dbfeof(DBFILE* f);
 int32_t dbftruncate(DBFILE* f, int64_t len);
-//char *dbfgets(char *s, int n, DBFILE *f);
 int32_t dbfprintf(DBFILE* f, const char *fmt, ...);
 int32_t dbfngetl(char* buf, int32_t n, DBFILE* f);
-//int32_t dbfstat(DBFILE* f, struct stat* p);
 bool dbisfilex(const char* name);
 bool dbisdirex(const char* path);
 bool dbisitexist(const char* path);
 int32_t dbgetfilesize(const char* path);
-
 
 } // namespace dosbox
 

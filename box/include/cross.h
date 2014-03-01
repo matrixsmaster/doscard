@@ -44,7 +44,8 @@ typedef struct dir_struct {
 
 dir_information* open_directory(const char* dirname);
 bool read_directory_first(dir_information* dirp, char* entry_name, bool& is_directory);
-bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory);
+//bool read_directory_next(dir_information* dirp, char* entry_name, bool& is_directory);
+#define read_directory_next(x,y,z) read_directory_first(x,y,z)
 void close_directory(dir_information* dirp);
 
 }

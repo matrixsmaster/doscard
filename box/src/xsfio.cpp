@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <sys/stat.h>
 #include "dosbox.h"
 #include "ldb.h"
 

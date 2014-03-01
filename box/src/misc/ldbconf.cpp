@@ -27,8 +27,7 @@ CLDBConf::CLDBConf(LDB_Settings* p)
 	else memset(&set,0,sizeof(set));
 }
 
-CLDBConf::~CLDBConf() {
-	// TODO Auto-generated destructor stub
-}
+CLDBConf::~CLDBConf() { }
+
 
 } /* namespace dosbox */

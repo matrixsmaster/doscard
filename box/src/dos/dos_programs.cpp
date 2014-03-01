@@ -236,7 +236,7 @@ public:
 //			struct stat test;
 			bool failed = false;
 //			if (stat(temp_line.c_str(),&test)) {
-			if (dbisitexist(temp_line.c_str())) {
+			if (!dbisitexist(temp_line.c_str())) {
 				failed = true;
 //				Cross::ResolveHomedir(temp_line);
 //				//Try again after resolving ~

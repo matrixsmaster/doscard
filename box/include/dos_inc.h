@@ -206,8 +206,8 @@ static INLINE Bit16u DOS_PackDate(Bit16u year,Bit16u mon,Bit16u day) {
 	return ((year-1980)&0x7f)<<9 | (mon&0x3f) << 5 | (day&0x1f);
 }
 
-#define DOS_DEFAULTTIME 6
-#define DOS_DEFAULTDATE 4
+#define DOS_DEFAULTTIME 2
+#define DOS_DEFAULTDATE 4641
 
 /* Dos Error Codes */
 #define DOSERR_NONE 0
