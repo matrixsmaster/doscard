@@ -77,7 +77,7 @@ public:
 	void DoCommand(char * cmd);
 	bool Execute(char * name,char * args);
 	/* Checks if it matches a hardware-property */
-	bool CheckConfig(char* cmd_in,char*line);
+//	bool CheckConfig(char* cmd_in,char*line);
 /* Some internal used functions */
 	char * Which(char * name);
 /* Some supported commands */

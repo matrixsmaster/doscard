@@ -47,7 +47,7 @@ static SHELL_Cmd cmd_list[]={
 {	"DELETE",	1,			&DOS_Shell::CMD_DELETE,		"SHELL_CMD_DELETE_HELP"},
 {	"ERASE",	1,			&DOS_Shell::CMD_DELETE,		"SHELL_CMD_DELETE_HELP"},
 {	"ECHO",		1,			&DOS_Shell::CMD_ECHO,		"SHELL_CMD_ECHO_HELP"},
-{	"EXIT",		0,			&DOS_Shell::CMD_EXIT,		"SHELL_CMD_EXIT_HELP"},	
+{	"EXIT",		0,			&DOS_Shell::CMD_EXIT,		"SHELL_CMD_EXIT_HELP"},
 {	"GOTO",		1,			&DOS_Shell::CMD_GOTO,		"SHELL_CMD_GOTO_HELP"},
 {	"HELP",		1,			&DOS_Shell::CMD_HELP,		"SHELL_CMD_HELP_HELP"},
 {	"IF",		1,			&DOS_Shell::CMD_IF,			"SHELL_CMD_IF_HELP"},
@@ -69,7 +69,7 @@ static SHELL_Cmd cmd_list[]={
 {	"TYPE",		0,			&DOS_Shell::CMD_TYPE,		"SHELL_CMD_TYPE_HELP"},
 {	"VER",		0,			&DOS_Shell::CMD_VER,		"SHELL_CMD_VER_HELP"},
 {0,0,0,0}
-}; 
+};
 
 /* support functions */
 static char empty_char = 0;
@@ -104,7 +104,7 @@ static char* ExpandDot(char*args, char* buffer) {
 
 
 
-bool DOS_Shell::CheckConfig(char* cmd_in,char*line) {
+//bool DOS_Shell::CheckConfig(char* cmd_in,char*line) {
 //	Section* test = myldbi->control->GetSectionFromProperty(cmd_in);
 //	if(!test) return false;
 //	if(line && !line[0]) {
@@ -117,8 +117,8 @@ bool DOS_Shell::CheckConfig(char* cmd_in,char*line) {
 //	strcat(newcom,cmd_in);strcat(newcom,line);
 //	DoCommand(newcom);
 //	return true;
-	return false;
-}
+//	return false;
+//}
 
 void DOS_Shell::DoCommand(char * line) {
 /* First split the line into command and arguments */
