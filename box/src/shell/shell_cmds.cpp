@@ -21,7 +21,6 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
-#include <time.h>
 #include "messages.h"
 #include "dosbox.h"
 #include "shell.h"
@@ -30,6 +29,7 @@
 #include "bios.h"
 #include "drives.h"
 #include "support.h"
+#include "timer.h"
 
 namespace dosbox {
 
@@ -961,14 +961,12 @@ void DOS_Shell::CMD_DATE(char * args) {
 	HELP(SHELL_CMD_DATE_HELP_LONG);
 	if(ScanCMDBool(args,"H")) {
 		// synchronize date with host parameter
-		time_t curtime;
-		struct tm *loctime;
-		curtime = time (NULL);
-		loctime = localtime (&curtime);
+		prtc_data loctime;
+		PRTC_GetDateTime(&loctime);
 		
-		reg_cx = loctime->tm_year+1900;
-		reg_dh = loctime->tm_mon+1;
-		reg_dl = loctime->tm_mday;
+		reg_cx = loctime.tm_year+1900;
+		reg_dh = loctime.tm_mon+1;
+		reg_dl = loctime.tm_mday;
 
 		reg_ah=0x2b; // set system date
 		CALLBACK_RunRealInt(0x21);
@@ -1022,10 +1020,8 @@ void DOS_Shell::CMD_TIME(char * args) {
 	HELP(SHELL_CMD_TIME_HELP_LONG);
 	if(ScanCMDBool(args,"H")) {
 		// synchronize time with host parameter
-		time_t curtime;
-		struct tm *loctime;
-		curtime = time (NULL);
-		loctime = localtime (&curtime);
+		prtc_data loctime;
+		PRTC_GetDateTime(&loctime);
 		
 		//reg_cx = loctime->;
 		//reg_dh = loctime->;
@@ -1034,9 +1030,9 @@ void DOS_Shell::CMD_TIME(char * args) {
 		// reg_ah=0x2d; // set system time TODO
 		// CALLBACK_RunRealInt(0x21);
 		
-		Bit32u ticks=(Bit32u)(((double)(loctime->tm_hour*3600+
-										loctime->tm_min*60+
-										loctime->tm_sec))*18.206481481);
+		Bit32u ticks=(Bit32u)(((double)(loctime.tm_hour*3600+
+										loctime.tm_min*60+
+										loctime.tm_sec))*18.206481481);
 		mem_writed(BIOS_TIMER,ticks);
 		return;
 	}

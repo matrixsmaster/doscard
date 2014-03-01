@@ -144,6 +144,15 @@ void dbdirclose(DBFILE* d);
 int32_t dbdirmake(const char* n);
 int32_t dbdirdel(const char* n);
 
+/* ****************** Initial Date and Time ****************** */
+
+#define LDB_DEFTIME_HR 1
+#define LDB_DEFTIME_MN 0
+#define LDB_DEFTIME_SC 1
+#define LDB_DEFDATE_YR 1999
+#define LDB_DEFDATE_MN 1
+#define LDB_DEFDATE_DY 1
+
 } // namespace dosbox
 
 #endif

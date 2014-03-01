@@ -38,9 +38,6 @@
 /* Define to 1 to use a unaligned memory access */
 #define C_UNALIGNED_MEMORY 1
 
-/* struct dirent has d_type */
-#define DIRENT_HAS_D_TYPE 1
-
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD
@@ -78,7 +75,6 @@
 #define GCC_UNLIKELY(x) (x)
 #define GCC_LIKELY(x) (x)
 #endif
-
 
 typedef double Real64;
 typedef uint8_t Bit8u;

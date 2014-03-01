@@ -16,8 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #include <math.h>
+#include <time.h>
 #include "dosbox.h"
 #include "inout.h"
 #include "pic.h"
@@ -456,6 +456,7 @@ public:
 		PIC_RemoveEvents(PIT0_Event);
 	}
 };
+
 static TIMER* test;
 
 void TIMER_Init(Section* )
@@ -480,4 +481,37 @@ void TIMER_Delay(Bitu c)
 	//TODO
 }
 
+void PRTC_GetDateTime(prtc_data* buf)
+{
+	uint64_t tmp;
+	uint32_t base;
+	struct tm temp;
+	struct tm* rptr;
+	time_t bsec;
+	if (!buf) return;
+	//This algorithm is a kludge, but it's OK for our current needs
+	base = GetTicks(); //to call it only once
+	buf->tm_millis = (int32_t)(base % 1000);
+	tmp = base / 1000;
+	memset(&temp,0,sizeof(temp));
+	temp.tm_sec = LDB_DEFTIME_SC;
+	temp.tm_min = LDB_DEFTIME_MN;
+	temp.tm_hour = LDB_DEFTIME_HR;
+	temp.tm_mday = LDB_DEFDATE_DY;
+	temp.tm_mon = LDB_DEFDATE_MN;
+	temp.tm_year = LDB_DEFDATE_YR - 1900;
+	//FIXME: fuck mktime! it uses your environmental settings, and that sucks!
+	bsec = mktime(&temp);
+	bsec += (time_t)tmp;
+	rptr = gmtime(&bsec);
+	buf->tm_sec = rptr->tm_sec;
+	buf->tm_min = rptr->tm_min;
+	buf->tm_hour = rptr->tm_hour;
+	buf->tm_mday = rptr->tm_mday;
+	buf->tm_mon = rptr->tm_mon;
+	buf->tm_year = rptr->tm_year;
+	buf->tm_yday = rptr->tm_yday;
+	buf->tm_wday = rptr->tm_wday;
 }
+
+} // namespace dosbox

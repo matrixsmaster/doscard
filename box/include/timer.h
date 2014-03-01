@@ -23,6 +23,19 @@
 
 namespace dosbox {
 
+//ripped from time.h
+typedef struct Sprtc_data {
+	int32_t tm_sec;			/* Seconds.	[0-60] (1 leap second) */
+	int32_t tm_min;			/* Minutes.	[0-59] */
+	int32_t tm_hour;		/* Hours.	[0-23] */
+	int32_t tm_mday;		/* Day.		[1-31] */
+	int32_t tm_mon;			/* Month.	[0-11] */
+	int32_t tm_year;		/* Year	- 1900.  */
+	int32_t tm_wday;		/* Day of week.	[0-6] */
+	int32_t tm_yday;		/* Days in year.[0-365]	*/
+	int32_t	tm_millis;		/* Milliseconds (added) */
+} prtc_data;
+
 #define PIT_TICK_RATE 1193182
 
 //#define GetTicks() XS_GetTicks()
@@ -38,6 +51,9 @@ void TIMER_DelTickHandler(TIMER_TickHandler handler);
 
 /* This will add 1 milliscond to all timers */
 void TIMER_AddTick(void);
+
+/* Get the pseudo-RTC data */
+void PRTC_GetDateTime(prtc_data* buf);
 
 }
 

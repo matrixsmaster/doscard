@@ -16,8 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#include <time.h>
 #include <math.h>
 #include "dosbox.h"
 #include "timer.h"
@@ -25,7 +23,6 @@
 #include "inout.h"
 #include "mem.h"
 #include "bios_disk.h"
-#include "cross.h" //fmod on certain platforms
 
 namespace dosbox {
 
@@ -48,7 +45,7 @@ static struct {
 	bool update_ended;
 } cmos;
 
-static void cmos_timerevent(Bitu val) {
+static void cmos_timerevent(Bitu /*val*/) {
 	if (cmos.timer.acknowledged) {
 		cmos.timer.acknowledged=false;
 		PIC_ActivateIRQ(8);
@@ -67,7 +64,7 @@ static void cmos_checktimer(void) {
 	LOG(LOG_PIT,LOG_NORMAL)("RTC Timer at %.2f hz",1000.0/cmos.timer.delay);
 //	PIC_AddEvent(cmos_timerevent,cmos.timer.delay);
 	/* A rtc is always running */
-	double remd=fmod(PIC_FullIndex(),(double)cmos.timer.delay);
+	double remd = fmod(PIC_FullIndex(),(double)cmos.timer.delay);
 	PIC_AddEvent(cmos_timerevent,(float)((double)cmos.timer.delay-remd)); //Should be more like a real pc. Check
 //	status reg A reading with this (and with other delays actually)
 }
@@ -109,7 +106,7 @@ static void cmos_writereg(Bitu port,Bitu val,Bitu iolen) {
 		cmos_checktimer();
 		break;
 	case 0x0d:/* Status reg D */
-		cmos.regs[cmos.reg]=val & 0x80;	/*Bit 7=1:RTC Pown on*/
+		cmos.regs[cmos.reg]=val & 0x80;	/*Bit 7=1:RTC Power on*/
 		break;
 	case 0x0f:		/* Shutdown status byte */
 		cmos.regs[cmos.reg]=val & 0x7f;
@@ -123,38 +120,33 @@ static void cmos_writereg(Bitu port,Bitu val,Bitu iolen) {
 
 #define MAKE_RETURN(_VAL) (cmos.bcd ? ((((_VAL) / 10) << 4) | ((_VAL) % 10)) : (_VAL));
 
-static Bitu cmos_readreg(Bitu port,Bitu iolen) {
+static Bitu cmos_readreg(Bitu /*port*/,Bitu /*iolen*/) {
 	if (cmos.reg>0x3f) {
 		LOG(LOG_BIOS,LOG_ERROR)("CMOS:Read from illegal register %x",cmos.reg);
 		return 0xff;
 	}
 	Bitu drive_a, drive_b;
 	Bit8u hdparm;
-	time_t curtime;
-	struct tm *loctime;
-	/* Get the current time. */
-	curtime = time (NULL);
-
-	/* Convert it to local time representation. */
-	loctime = localtime (&curtime);
+	prtc_data loctime;
+	PRTC_GetDateTime(&loctime);
 
 	switch (cmos.reg) {
 	case 0x00:		/* Seconds */
-		return 	MAKE_RETURN(loctime->tm_sec);
+		return 	MAKE_RETURN(loctime.tm_sec);
 	case 0x02:		/* Minutes */
-		return 	MAKE_RETURN(loctime->tm_min);
+		return 	MAKE_RETURN(loctime.tm_min);
 	case 0x04:		/* Hours */
-		return 	MAKE_RETURN(loctime->tm_hour);
+		return 	MAKE_RETURN(loctime.tm_hour);
 	case 0x06:		/* Day of week */
-		return 	MAKE_RETURN(loctime->tm_wday + 1);
+		return 	MAKE_RETURN(loctime.tm_wday + 1);
 	case 0x07:		/* Date of month */
-		return 	MAKE_RETURN(loctime->tm_mday);
+		return 	MAKE_RETURN(loctime.tm_mday);
 	case 0x08:		/* Month */
-		return 	MAKE_RETURN(loctime->tm_mon + 1);
+		return 	MAKE_RETURN(loctime.tm_mon + 1);
 	case 0x09:		/* Year */
-		return 	MAKE_RETURN(loctime->tm_year % 100);
+		return 	MAKE_RETURN(loctime.tm_year % 100);
 	case 0x32:		/* Century */
-		return 	MAKE_RETURN(loctime->tm_year / 100 + 19);
+		return 	MAKE_RETURN(loctime.tm_year / 100 + 19);
 	case 0x01:		/* Seconds Alarm */
 	case 0x03:		/* Minutes Alarm */
 	case 0x05:		/* Hours Alarm */
