@@ -136,6 +136,7 @@ bool dbisfilex(const char* name);
 bool dbisdirex(const char* path);
 bool dbisitexist(const char* path);
 int32_t dbgetfilesize(const char* path);
+int32_t dbrename(const char* oldn, const char* newn);
 
 DBFILE* dbdiropen(const char* p);
 bool dbdirread(DBFILE* d, char* entry, bool& is_dir);

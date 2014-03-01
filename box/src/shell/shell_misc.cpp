@@ -21,6 +21,7 @@
 #include <string.h>
 #include <algorithm> //std::copy
 #include <iterator>  //std::front_inserter
+#include "messages.h"
 #include "shell.h"
 #include "regs.h"
 #include "callback.h"
@@ -398,7 +399,7 @@ bool DOS_Shell::Execute(char * name,char * args) {
 	if (((strcmp(name + 1, ":") == 0) || (strcmp(name + 1, ":\\") == 0)) && isalpha(*name))
 	{
 		if (!DOS_SetDrive(toupper(name[0])-'A')) {
-			WriteOut(MSG_Get("SHELL_EXECUTE_DRIVE_NOT_FOUND"),toupper(name[0]));
+			WriteOut(SHELL_EXECUTE_DRIVE_NOT_FOUND,toupper(name[0]));
 		}
 		return true;
 	}

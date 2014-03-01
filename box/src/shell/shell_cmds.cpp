@@ -16,7 +16,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
+#include <cstring>
+#include <cctype>
+#include <cstdlib>
+#include <vector>
+#include <string>
+#include <time.h>
+#include "messages.h"
 #include "dosbox.h"
 #include "shell.h"
 #include "callback.h"
@@ -24,12 +30,6 @@
 #include "bios.h"
 #include "drives.h"
 #include "support.h"
-#include <cstring>
-#include <cctype>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include <time.h>
 
 namespace dosbox {
 
@@ -158,34 +158,40 @@ void DOS_Shell::DoCommand(char * line) {
 /* This isn't an internal command execute it */
 	if(Execute(cmd_buffer,line)) return;
 //	if(CheckConfig(cmd_buffer,line)) return;
-	WriteOut(MSG_Get("SHELL_EXECUTE_ILLEGAL_COMMAND"),cmd_buffer);
+	WriteOut(SHELL_EXECUTE_ILLEGAL_COMMAND,cmd_buffer);
 }
 
-#define HELP(command) \
+//#define HELP(command) \
+//	if (ScanCMDBool(args,"?")) { \
+//		WriteOut(SHELL_CMD_" command "_HELP); \
+//		const char* long_m = SHELL_CMD_" command "_HELP_LONG; \
+//		WriteOut("\n"); \
+//		if(strcmp("Message not Found!\n",long_m)) WriteOut(long_m); \
+//		else WriteOut(command "\n"); \
+//		return; \
+//	}
+
+#define HELP(x) \
 	if (ScanCMDBool(args,"?")) { \
-		WriteOut(MSG_Get("SHELL_CMD_" command "_HELP")); \
-		const char* long_m = MSG_Get("SHELL_CMD_" command "_HELP_LONG"); \
-		WriteOut("\n"); \
-		if(strcmp("Message not Found!\n",long_m)) WriteOut(long_m); \
-		else WriteOut(command "\n"); \
+		WriteOut(x); \
 		return; \
 	}
 
 void DOS_Shell::CMD_CLS(char * args) {
-	HELP("CLS");
+	HELP(SHELL_CMD_CLS_HELP);
 	reg_ax=0x0003;
 	CALLBACK_RunRealInt(0x10);
 }
 
 void DOS_Shell::CMD_DELETE(char * args) {
-	HELP("DELETE");
+	HELP(SHELL_CMD_DELETE_HELP);
 	/* Command uses dta so set it to our internal dta */
 	RealPt save_dta=dos.dta();
 	dos.dta(dos.tables.tempdta);
 
 	char * rem=ScanCMDRemain(args);
 	if (rem) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+		WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 		return;
 	}
 	/* If delete accept switches mind the space infront of them. See the dir /p code */ 
@@ -194,11 +200,11 @@ void DOS_Shell::CMD_DELETE(char * args) {
 	char buffer[CROSS_LEN];
 	args = ExpandDot(args,buffer);
 	StripSpaces(args);
-	if (!DOS_Canonicalize(args,full)) { WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));return; }
-//TODO Maybe support confirmation for *.* like dos does.	
+	if (!DOS_Canonicalize(args,full)) { WriteOut(SHELL_ILLEGAL_PATH);return; }
+	//TODO Maybe support confirmation for *.* like dos does.
 	bool res=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME);
 	if (!res) {
-		WriteOut(MSG_Get("SHELL_CMD_DEL_ERROR"),args);
+		WriteOut(SHELL_CMD_DEL_ERROR,args);
 		dos.dta(save_dta);
 		return;
 	}
@@ -210,7 +216,7 @@ void DOS_Shell::CMD_DELETE(char * args) {
 		dta.GetResult(name,size,date,time,attr);	
 		if (!(attr & (DOS_ATTR_DIRECTORY|DOS_ATTR_READ_ONLY))) {
 			strcpy(end,name);
-			if (!DOS_UnlinkFile(full)) WriteOut(MSG_Get("SHELL_CMD_DEL_ERROR"),full);
+			if (!DOS_UnlinkFile(full)) WriteOut(SHELL_CMD_DEL_ERROR,full);
 		}
 		res=DOS_FindNext();
 	}
@@ -218,25 +224,26 @@ void DOS_Shell::CMD_DELETE(char * args) {
 }
 
 void DOS_Shell::CMD_HELP(char * args){
-	HELP("HELP");
-	bool optall=ScanCMDBool(args,"ALL");
+	HELP(SHELL_CMD_HELP_HELP);
 	/* Print the help */
-	if(!optall) WriteOut(MSG_Get("SHELL_CMD_HELP"));
-	Bit32u cmd_index=0,write_count=0;
-	while (cmd_list[cmd_index].name) {
-		if (optall || !cmd_list[cmd_index].flags) {
-			WriteOut("<\033[34;1m%-8s\033[0m> %s",cmd_list[cmd_index].name,MSG_Get(cmd_list[cmd_index].help));
-			if(!(++write_count%22)) CMD_PAUSE(empty_string);
-		}
-		cmd_index++;
-	}
+//	bool optall = ScanCMDBool(args,"ALL");
+//	if (!optall) WriteOut(SHELL_CMD_HELP);
+//	Bit32u cmd_index=0,write_count=0;
+//	while (cmd_list[cmd_index].name) {
+//		if (optall || !cmd_list[cmd_index].flags) {
+//			WriteOut("<\033[34;1m%-8s\033[0m> %s",cmd_list[cmd_index].name,MSG_Get(cmd_list[cmd_index].help));
+//			if(!(++write_count%22)) CMD_PAUSE(empty_string);
+//		}
+//		cmd_index++;
+//	}
+	WriteOut("DOS_Shell::CMD_HELP(): STUB!\n");
 }
 
 void DOS_Shell::CMD_RENAME(char * args){
-	HELP("RENAME");
+	HELP(SHELL_CMD_RENAME_HELP_LONG);
 	StripSpaces(args);
 	if(!*args) {SyntaxError();return;}
-	if((strchr(args,'*')!=NULL) || (strchr(args,'?')!=NULL) ) { WriteOut(MSG_Get("SHELL_CMD_NO_WILD"));return;}
+	if((strchr(args,'*')!=NULL) || (strchr(args,'?')!=NULL) ) { WriteOut(SHELL_CMD_NO_WILD);return;}
 	char * arg1=StripWord(args);
 	char* slash = strrchr(arg1,'\\');
 	if(slash) { 
@@ -258,7 +265,7 @@ void DOS_Shell::CMD_RENAME(char * args){
 		dir_current[0] = '\\'; //Absolute addressing so we can return properly
 		DOS_GetCurrentDir(0,dir_current + 1);
 		if(!DOS_ChangeDir(dir_source)) {
-			WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));
+			WriteOut(SHELL_ILLEGAL_PATH);
 			return;
 		}
 		DOS_Rename(slash,args);
@@ -270,8 +277,8 @@ void DOS_Shell::CMD_RENAME(char * args){
 
 void DOS_Shell::CMD_ECHO(char * args){
 	if (!*args) {
-		if (echo) { WriteOut(MSG_Get("SHELL_CMD_ECHO_ON"));}
-		else { WriteOut(MSG_Get("SHELL_CMD_ECHO_OFF"));}
+		if (echo) { WriteOut(SHELL_CMD_ECHO_ON);}
+		else { WriteOut(SHELL_CMD_ECHO_OFF);}
 		return;
 	}
 	char buffer[512];
@@ -286,7 +293,7 @@ void DOS_Shell::CMD_ECHO(char * args){
 		echo=true;		
 		return;
 	}
-	if(strcasecmp(pbuffer,"/?")==0) { HELP("ECHO"); }
+	if(strcasecmp(pbuffer,"/?")==0) { HELP(SHELL_CMD_ECHO_HELP); }
 
 	args++;//skip first character. either a slash or dot or space
 	size_t len = strlen(args); //TODO check input of else ook nodig is.
@@ -298,12 +305,12 @@ void DOS_Shell::CMD_ECHO(char * args){
 
 
 void DOS_Shell::CMD_EXIT(char * args) {
-	HELP("EXIT");
+	HELP(SHELL_CMD_EXIT_HELP);
 	exit = true;
 }
 
 void DOS_Shell::CMD_CHDIR(char * args) {
-	HELP("CHDIR");
+	HELP(SHELL_CMD_CHDIR_HELP_LONG);
 	StripSpaces(args);
 	if (!*args) {
 		Bit8u drive=DOS_GetDefaultDrive()+'A';
@@ -311,7 +318,7 @@ void DOS_Shell::CMD_CHDIR(char * args) {
 		DOS_GetCurrentDir(0,dir);
 		WriteOut("%c:\\%s\n",drive,dir);
 	} else if(strlen(args) == 2 && args[1]==':') {
-		WriteOut(MSG_Get("SHELL_CMD_CHDIR_HINT"),toupper(*reinterpret_cast<unsigned char*>(&args[0])));
+		WriteOut(SHELL_CMD_CHDIR_HINT,toupper(*reinterpret_cast<unsigned char*>(&args[0])));
 	} else 	if (!DOS_ChangeDir(args)) {
 		/* Changedir failed. Check if the filename is longer then 8 and/or contains spaces */
 	   
@@ -330,45 +337,45 @@ void DOS_Shell::CMD_CHDIR(char * args) {
 			temps.erase(separator);
 			if(temps.size() >6) temps.erase(6);
 			temps += "~1";
-			WriteOut(MSG_Get("SHELL_CMD_CHDIR_HINT_2"),temps.insert(0,slashpart).c_str());
+			WriteOut(SHELL_CMD_CHDIR_HINT_2,temps.insert(0,slashpart).c_str());
 		} else if (temps.size()>8) {
 			temps.erase(6);
 			temps += "~1";
-			WriteOut(MSG_Get("SHELL_CMD_CHDIR_HINT_2"),temps.insert(0,slashpart).c_str());
+			WriteOut(SHELL_CMD_CHDIR_HINT_2,temps.insert(0,slashpart).c_str());
 		} else {
 			Bit8u drive=DOS_GetDefaultDrive()+'A';
 			if (drive=='Z') {
-				WriteOut(MSG_Get("SHELL_CMD_CHDIR_HINT_3"));
+				WriteOut(SHELL_CMD_CHDIR_HINT_3);
 			} else {
-				WriteOut(MSG_Get("SHELL_CMD_CHDIR_ERROR"),args);
+				WriteOut(SHELL_CMD_CHDIR_ERROR,args);
 			}
 		}
 	}
 }
 
 void DOS_Shell::CMD_MKDIR(char * args) {
-	HELP("MKDIR");
+	HELP(SHELL_CMD_MKDIR_HELP_LONG);
 	StripSpaces(args);
 	char * rem=ScanCMDRemain(args);
 	if (rem) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+		WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 		return;
 	}
 	if (!DOS_MakeDir(args)) {
-		WriteOut(MSG_Get("SHELL_CMD_MKDIR_ERROR"),args);
+		WriteOut(SHELL_CMD_MKDIR_ERROR,args);
 	}
 }
 
 void DOS_Shell::CMD_RMDIR(char * args) {
-	HELP("RMDIR");
+	HELP(SHELL_CMD_RMDIR_HELP_LONG);
 	StripSpaces(args);
 	char * rem=ScanCMDRemain(args);
 	if (rem) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+		WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 		return;
 	}
 	if (!DOS_RemoveDir(args)) {
-		WriteOut(MSG_Get("SHELL_CMD_RMDIR_ERROR"),args);
+		WriteOut(SHELL_CMD_RMDIR_ERROR,args);
 	}
 }
 
@@ -397,7 +404,7 @@ static void FormatNumber(Bit32u num,char * buf) {
 }	
 
 void DOS_Shell::CMD_DIR(char * args) {
-	HELP("DIR");
+	HELP(SHELL_CMD_DIR_HELP);
 	char numformat[16];
 	char path[DOS_PATHLENGTH];
 
@@ -419,7 +426,7 @@ void DOS_Shell::CMD_DIR(char * args) {
 	bool optAD=ScanCMDBool(args,"AD");
 	char * rem=ScanCMDRemain(args);
 	if (rem) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+		WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 		return;
 	}
 	Bit32u byte_count,file_count,dir_count;
@@ -458,11 +465,11 @@ void DOS_Shell::CMD_DIR(char * args) {
 
 	/* Make a full path in the args */
 	if (!DOS_Canonicalize(args,path)) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));
+		WriteOut(SHELL_ILLEGAL_PATH);
 		return;
 	}
 	*(strrchr(path,'\\')+1)=0;
-	if (!optB) WriteOut(MSG_Get("SHELL_CMD_DIR_INTRO"),path);
+	if (!optB) WriteOut(SHELL_CMD_DIR_INTRO,path);
 
 	/* Command uses dta so set it to our internal dta */
 	RealPt save_dta=dos.dta();
@@ -470,7 +477,7 @@ void DOS_Shell::CMD_DIR(char * args) {
 	DOS_DTA dta(dos.dta());
 	bool ret=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME);
 	if (!ret) {
-		if (!optB) WriteOut(MSG_Get("SHELL_CMD_FILE_NOT_FOUND"),args);
+		if (!optB) WriteOut(SHELL_CMD_FILE_NOT_FOUND,args);
 		dos.dta(save_dta);
 		return;
 	}
@@ -536,7 +543,7 @@ void DOS_Shell::CMD_DIR(char * args) {
 	if (!optB) {
 		/* Show the summary of results */
 		FormatNumber(byte_count,numformat);
-		WriteOut(MSG_Get("SHELL_CMD_DIR_BYTES_USED"),file_count,numformat);
+		WriteOut(SHELL_CMD_DIR_BYTES_USED,file_count,numformat);
 		Bit8u drive=dta.GetSearchDrive();
 		//TODO Free Space
 		Bitu free_space=1024*1024*100;
@@ -546,7 +553,7 @@ void DOS_Shell::CMD_DIR(char * args) {
 			free_space=bytes_sector*sectors_cluster*free_clusters;
 		}
 		FormatNumber(free_space,numformat);
-		WriteOut(MSG_Get("SHELL_CMD_DIR_BYTES_FREE"),dir_count,numformat);
+		WriteOut(SHELL_CMD_DIR_BYTES_FREE,dir_count,numformat);
 	}
 	dos.dta(save_dta);
 }
@@ -561,7 +568,7 @@ struct copysource {
 
 
 void DOS_Shell::CMD_COPY(char * args) {
-	HELP("COPY");
+	HELP(SHELL_CMD_COPY_HELP);
 	static char defaulttarget[] = ".";
 	StripSpaces(args);
 	/* Command uses dta so set it to our internal dta */
@@ -581,7 +588,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 
 	char * rem=ScanCMDRemain(args);
 	if (rem) {
-		WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+		WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 		dos.dta(save_dta);
 		return;
 	}
@@ -621,7 +628,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 	}
 	// At least one source has to be there
 	if (!sources.size() || !sources[0].filename.size()) {
-		WriteOut(MSG_Get("SHELL_MISSING_PARAMETER"));
+		WriteOut(SHELL_MISSING_PARAMETER);
 		dos.dta(save_dta);
 		return;
 	};
@@ -656,7 +663,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 		char pathTarget[DOS_PATHLENGTH];
 
 		if (!DOS_Canonicalize(const_cast<char*>(source.filename.c_str()),pathSource)) {
-			WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));
+			WriteOut(SHELL_ILLEGAL_PATH);
 			dos.dta(save_dta);
 			return;
 		}
@@ -665,7 +672,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 		if (pos) *(pos+1) = 0;
 
 		if (!DOS_Canonicalize(const_cast<char*>(target.filename.c_str()),pathTarget)) {
-			WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));
+			WriteOut(SHELL_ILLEGAL_PATH);
 			dos.dta(save_dta);
 			return;
 		}
@@ -684,7 +691,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 		//Find first sourcefile
 		bool ret = DOS_FindFirst(const_cast<char*>(source.filename.c_str()),0xffff & ~DOS_ATTR_VOLUME);
 		if (!ret) {
-			WriteOut(MSG_Get("SHELL_CMD_FILE_NOT_FOUND"),const_cast<char*>(source.filename.c_str()));
+			WriteOut(SHELL_CMD_FILE_NOT_FOUND,const_cast<char*>(source.filename.c_str()));
 			dos.dta(save_dta);
 			return;
 		}
@@ -725,25 +732,25 @@ void DOS_Shell::CMD_COPY(char * args) {
 							if(!source.concat) count++; //Only count concat files once
 						} else {
 							DOS_CloseFile(sourceHandle);
-							WriteOut(MSG_Get("SHELL_CMD_COPY_FAILURE"),const_cast<char*>(target.filename.c_str()));
+							WriteOut(SHELL_CMD_COPY_FAILURE,const_cast<char*>(target.filename.c_str()));
 						}
 					} else {
 						DOS_CloseFile(sourceHandle);
-						WriteOut(MSG_Get("SHELL_CMD_COPY_FAILURE"),const_cast<char*>(target.filename.c_str()));
+						WriteOut(SHELL_CMD_COPY_FAILURE,const_cast<char*>(target.filename.c_str()));
 					}
-				} else WriteOut(MSG_Get("SHELL_CMD_COPY_FAILURE"),const_cast<char*>(source.filename.c_str()));
+				} else WriteOut(SHELL_CMD_COPY_FAILURE,const_cast<char*>(source.filename.c_str()));
 			};
 			//On the next file
 			ret = DOS_FindNext();
 		};
 	}
 
-	WriteOut(MSG_Get("SHELL_CMD_COPY_SUCCESS"),count);
+	WriteOut(SHELL_CMD_COPY_SUCCESS,count);
 	dos.dta(save_dta);
 }
 
 void DOS_Shell::CMD_SET(char * args) {
-	HELP("SET");
+	HELP(SHELL_CMD_SET_HELP);
 	StripSpaces(args);
 	std::string line;
 	if (!*args) {
@@ -761,7 +768,7 @@ void DOS_Shell::CMD_SET(char * args) {
 
 	char * p=strpbrk(args, "=");
 	if (!p) {
-		if (!GetEnvStr(args,line)) WriteOut(MSG_Get("SHELL_CMD_SET_NOT_SET"),args);
+		if (!GetEnvStr(args,line)) WriteOut(SHELL_CMD_SET_NOT_SET,args);
 		WriteOut("%s\n",line.c_str());
 	} else {
 		*p++=0;
@@ -788,13 +795,13 @@ void DOS_Shell::CMD_SET(char * args) {
 		*p_parsed = 0;
 		/* Try setting the variable */
 		if (!SetEnv(args,parsed)) {
-			WriteOut(MSG_Get("SHELL_CMD_SET_OUT_OF_SPACE"));
+			WriteOut(SHELL_CMD_SET_OUT_OF_SPACE);
 		}
 	}
 }
 
 void DOS_Shell::CMD_IF(char * args) {
-	HELP("IF");
+	HELP(SHELL_CMD_IF_HELP);
 	StripSpaces(args,'=');
 	bool has_not=false;
 
@@ -812,7 +819,7 @@ void DOS_Shell::CMD_IF(char * args) {
 		StripSpaces(args,'=');
 		char* word = StripWord(args);
 		if(!isdigit(*word)) {
-			WriteOut(MSG_Get("SHELL_CMD_IF_ERRORLEVEL_MISSING_NUMBER"));
+			WriteOut(SHELL_CMD_IF_ERRORLEVEL_MISSING_NUMBER);
 			return;
 		}
 
@@ -820,7 +827,7 @@ void DOS_Shell::CMD_IF(char * args) {
 		do n = n * 10 + (*word - '0');
 		while (isdigit(*++word));
 		if(*word && !isspace(*word)) {
-			WriteOut(MSG_Get("SHELL_CMD_IF_ERRORLEVEL_INVALID_NUMBER"));
+			WriteOut(SHELL_CMD_IF_ERRORLEVEL_INVALID_NUMBER);
 			return;
 		}
 		/* Read the error code from DOS */
@@ -833,7 +840,7 @@ void DOS_Shell::CMD_IF(char * args) {
 		StripSpaces(args);
 		char* word = StripWord(args);
 		if (!*word) {
-			WriteOut(MSG_Get("SHELL_CMD_IF_EXIST_MISSING_FILENAME"));
+			WriteOut(SHELL_CMD_IF_EXIST_MISSING_FILENAME);
 			return;
 		}
 
@@ -881,7 +888,7 @@ void DOS_Shell::CMD_IF(char * args) {
 }
 
 void DOS_Shell::CMD_GOTO(char * args) {
-	HELP("GOTO");
+	HELP(SHELL_CMD_GOTO_HELP);
 	StripSpaces(args);
 	if (!bf) return;
 	if (*args &&(*args==':')) args++;
@@ -893,25 +900,25 @@ void DOS_Shell::CMD_GOTO(char * args) {
 		else non_space++;
 	}
 	if (!*args) {
-		WriteOut(MSG_Get("SHELL_CMD_GOTO_MISSING_LABEL"));
+		WriteOut(SHELL_CMD_GOTO_MISSING_LABEL);
 		return;
 	}
 	if (!bf->Goto(args)) {
-		WriteOut(MSG_Get("SHELL_CMD_GOTO_LABEL_NOT_FOUND"),args);
+		WriteOut(SHELL_CMD_GOTO_LABEL_NOT_FOUND,args);
 		return;
 	}
 }
 
 void DOS_Shell::CMD_SHIFT(char * args ) {
-	HELP("SHIFT");
+	HELP(SHELL_CMD_SHIFT_HELP);
 	if(bf) bf->Shift();
 }
 
 void DOS_Shell::CMD_TYPE(char * args) {
-	HELP("TYPE");
+	HELP(SHELL_CMD_TYPE_HELP_LONG);
 	StripSpaces(args);
 	if (!*args) {
-		WriteOut(MSG_Get("SHELL_SYNTAXERROR"));
+		WriteOut(SHELL_SYNTAXERROR);
 		return;
 	}
 	Bit16u handle;
@@ -919,7 +926,7 @@ void DOS_Shell::CMD_TYPE(char * args) {
 nextfile:
 	word=StripWord(args);
 	if (!DOS_OpenFile(word,0,&handle)) {
-		WriteOut(MSG_Get("SHELL_CMD_FILE_NOT_FOUND"),word);
+		WriteOut(SHELL_CMD_FILE_NOT_FOUND,word);
 		return;
 	}
 	Bit16u n;Bit8u c;
@@ -933,25 +940,25 @@ nextfile:
 }
 
 void DOS_Shell::CMD_REM(char * args) {
-	HELP("REM");
+	HELP(SHELL_CMD_REM_HELP_LONG);
 }
 
 void DOS_Shell::CMD_PAUSE(char * args){
-	HELP("PAUSE");
-	WriteOut(MSG_Get("SHELL_CMD_PAUSE"));
+	HELP(SHELL_CMD_PAUSE_HELP);
+	WriteOut(SHELL_CMD_PAUSE);
 	Bit8u c;Bit16u n=1;
 	DOS_ReadFile (STDIN,&c,&n);
 }
 
 void DOS_Shell::CMD_CALL(char * args){
-	HELP("CALL");
+	HELP(SHELL_CMD_CALL_HELP);
 	this->call=true; /* else the old batchfile will be closed first */
 	this->ParseLine(args);
 	this->call=false;
 }
 
 void DOS_Shell::CMD_DATE(char * args) {
-	HELP("DATE");	
+	HELP(SHELL_CMD_DATE_HELP_LONG);
 	if(ScanCMDBool(args,"H")) {
 		// synchronize date with host parameter
 		time_t curtime;
@@ -976,14 +983,14 @@ void DOS_Shell::CMD_DATE(char * args) {
 
 		reg_ah=0x2b; // set system date
 		CALLBACK_RunRealInt(0x21);
-		if(reg_al==0xff) WriteOut(MSG_Get("SHELL_CMD_DATE_ERROR"));
+		if(reg_al==0xff) WriteOut(SHELL_CMD_DATE_ERROR);
 		return;
 	}
 	// display the current date
 	reg_ah=0x2a; // get system date
 	CALLBACK_RunRealInt(0x21);
 
-	const char* datestring = MSG_Get("SHELL_CMD_DATE_DAYS");
+	const char* datestring = SHELL_CMD_DATE_DAYS;
 	Bit32u length;
 	char day[6] = {0};
 	if(sscanf(datestring,"%u",&length) && (length<5) && (strlen(datestring)==(length*7+1))) {
@@ -991,9 +998,9 @@ void DOS_Shell::CMD_DATE(char * args) {
 		for(Bit32u i = 0; i < length; i++) day[i] = datestring[reg_al*length+1+i];
 	}
 	bool dateonly = ScanCMDBool(args,"T");
-	if(!dateonly) WriteOut(MSG_Get("SHELL_CMD_DATE_NOW"));
+	if(!dateonly) WriteOut(SHELL_CMD_DATE_NOW);
 
-	const char* formatstring = MSG_Get("SHELL_CMD_DATE_FORMAT");
+	const char* formatstring = SHELL_CMD_DATE_FORMAT;
 	if(strlen(formatstring)!=5) return;
 	char buffer[15] = {0};
 	Bitu bufferptr=0;
@@ -1008,11 +1015,11 @@ void DOS_Shell::CMD_DATE(char * args) {
 		}
 	}
 	WriteOut("%s %s\n",day, buffer);
-	if(!dateonly) WriteOut(MSG_Get("SHELL_CMD_DATE_SETHLP"));
+	if(!dateonly) WriteOut(SHELL_CMD_DATE_SETHLP);
 };
 
 void DOS_Shell::CMD_TIME(char * args) {
-	HELP("TIME");
+	HELP(SHELL_CMD_TIME_HELP_LONG);
 	if(ScanCMDBool(args,"H")) {
 		// synchronize time with host parameter
 		time_t curtime;
@@ -1046,7 +1053,7 @@ void DOS_Shell::CMD_TIME(char * args) {
 	if(timeonly) {
 		WriteOut("%2u:%02u\n",reg_ch,reg_cl);
 	} else {
-		WriteOut(MSG_Get("SHELL_CMD_TIME_NOW"));
+		WriteOut(SHELL_CMD_TIME_NOW);
 		WriteOut("%2u:%02u:%02u,%02u\n",reg_ch,reg_cl,reg_dh,reg_dl);
 	}
 };
@@ -1055,7 +1062,7 @@ void DOS_Shell::CMD_SUBST (char * args) {
 /* If more that one type can be substed think of something else 
  * E.g. make basedir member dos_drive instead of localdrive
  */
-	HELP("SUBST");
+	HELP(SHELL_CMD_SUBST_HELP);
 	localDrive* ldp=0;
 	char mountstring[DOS_PATHLENGTH+CROSS_LEN+20];
 	char temp_str[2] = { 0,0 };
@@ -1098,14 +1105,14 @@ void DOS_Shell::CMD_SUBST (char * args) {
 	}
 	catch(int a){
 		if(a == 0) {
-			WriteOut(MSG_Get("SHELL_CMD_SUBST_FAILURE"));
+			WriteOut(SHELL_CMD_SUBST_FAILURE);
 		} else {
-		       	WriteOut(MSG_Get("SHELL_CMD_SUBST_NO_REMOVE"));
+		       	WriteOut(SHELL_CMD_SUBST_NO_REMOVE);
 		}
 		return;
 	}
 	catch(...) {		//dynamic cast failed =>so no localdrive
-		WriteOut(MSG_Get("SHELL_CMD_SUBST_FAILURE"));
+		WriteOut(SHELL_CMD_SUBST_FAILURE);
 		return;
 	}
    
@@ -1113,7 +1120,7 @@ void DOS_Shell::CMD_SUBST (char * args) {
 }
 
 void DOS_Shell::CMD_LOADHIGH(char *args){
-	HELP("LOADHIGH");
+	HELP(SHELL_CMD_LOADHIGH_HELP);
 	Bit16u umb_start=dos_infoblock.GetStartOfUMBChain();
 	Bit8u umb_flag=dos_infoblock.GetUMBChainState();
 	Bit8u old_memstrat=(Bit8u)(DOS_GetMemAllocStrategy()&0xff);
@@ -1128,7 +1135,7 @@ void DOS_Shell::CMD_LOADHIGH(char *args){
 }
 
 void DOS_Shell::CMD_CHOICE(char * args){
-	HELP("CHOICE");
+	HELP(SHELL_CMD_CHOICE_HELP_LONG);
 	static char defchoice[3] = {'y','n',0};
 	char *rem = NULL, *ptr;
 	bool optN = ScanCMDBool(args,"N");
@@ -1139,7 +1146,7 @@ void DOS_Shell::CMD_CHOICE(char * args){
 		StripSpaces(args);
 		rem = ScanCMDRemain(args);
 		if (rem && *rem && (tolower(rem[1]) != 'c')) {
-			WriteOut(MSG_Get("SHELL_ILLEGAL_SWITCH"),rem);
+			WriteOut(SHELL_ILLEGAL_SWITCH,rem);
 			return;
 		}
 		if (args == rem) args = strchr(rem,0)+1;
@@ -1181,12 +1188,12 @@ void DOS_Shell::CMD_CHOICE(char * args){
 }
 
 void DOS_Shell::CMD_ATTRIB(char *args){
-	HELP("ATTRIB");
-	// No-Op for now.
+	HELP(SHELL_CMD_ATTRIB_HELP);
+	WriteOut("DOS_Shell::CMD_ATTRIB(): STUB!\n");
 }
 
 void DOS_Shell::CMD_PATH(char *args){
-	HELP("PATH");
+	HELP(SHELL_CMD_PATH_HELP);
 	if(args && *args && strlen(args)){
 		char pathstring[DOS_PATHLENGTH+CROSS_LEN+20]={ 0 };
 		strcpy(pathstring,"set PATH=");
@@ -1206,14 +1213,14 @@ void DOS_Shell::CMD_PATH(char *args){
 }
 
 void DOS_Shell::CMD_VER(char *args) {
-	HELP("VER");
+	HELP(SHELL_CMD_VER_HELP);
 	if(args && *args) {
 		char* word = StripWord(args);
 		if(strcasecmp(word,"set")) return;
 		word = StripWord(args);
 		dos.version.major = (Bit8u)(atoi(word));
 		dos.version.minor = (Bit8u)(atoi(args));
-	} else WriteOut(MSG_Get("SHELL_CMD_VER_VER"),VERSION,dos.version.major,dos.version.minor);
+	} else WriteOut(SHELL_CMD_VER_VER,VERSION,dos.version.major,dos.version.minor);
 }
 
 }

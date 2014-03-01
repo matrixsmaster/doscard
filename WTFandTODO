@@ -121,7 +121,10 @@ files by find'ing, grep'ing and sort'ing.
 18. Destroy MSG system to move all this string constants from data to code area and
 save some amount of RAM. Moreover, DOS in any language different from English is just
 a stupid crazy thing (lobotomized vegetables may prefer it). May be I don't speak
-Englush very well (and it's true), but I can't use OS with my native language
+Englush very well (and it's true), but I can't use any OS with my native language
 interface. Sometimes I was forced to do such things, but now I switched to Gentoo, so
 I'm a boss :)
-
+Note: while moving to a "new" system (just defines, nothing more) some of old "macro"
+strings was detected as broken e.g. "PROGAM_MOUNT_ILL_TYPE" or "MSCDEX_ERROR_PATH"
+some of them contains typos, some just missing. The system wasn't be able to catch
+such errors.

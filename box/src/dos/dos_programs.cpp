@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include "dosbox.h"
+#include "messages.h"
 #include "programs.h"
 #include "support.h"
 #include "drives.h"
@@ -37,7 +38,7 @@
 
 namespace dosbox {
 
-void MSCDEX_SetCDInterface(int intNr, int forceCD);
+//void MSCDEX_SetCDInterface(int intNr, int forceCD);
 static Bitu ZDRIVE_NUM = 25;
 
 class MOUNT : public Program {
@@ -49,8 +50,8 @@ public:
 		dos.dta(dos.tables.tempdta);
 		DOS_DTA dta(dos.dta());
 
-		WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_1"));
-		WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_FORMAT"),"Drive","Type","Label");
+		WriteOut(PROGRAM_MOUNT_STATUS_1);
+		WriteOut(PROGRAM_MOUNT_STATUS_FORMAT,"Drive","Type","Label");
 		for(int p = 0;p < 8;p++) WriteOut("----------");
 
 		for (int d = 0;d < DOS_DRIVES;d++) {
@@ -70,7 +71,7 @@ public:
 			}
 
 			root[1] = 0; //This way, the format string can be reused.
-			WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_FORMAT"),root, Drives[d]->GetInfo(),name);		
+			WriteOut(PROGRAM_MOUNT_STATUS_FORMAT,root, Drives[d]->GetInfo(),name);
 		}
 		dos.dta(save_dta);
 	}
@@ -93,7 +94,7 @@ public:
 		/* In secure mode don't allow people to change mount points. 
 		 * Neither mount nor unmount */
 		if(myldbi->GetConfig()->secure) {
-			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
+			WriteOut(PROGRAM_CONFIG_SECURE_DISALLOW);
 			return;
 		}
 
@@ -107,17 +108,17 @@ public:
 					Drives[i_drive] = 0;
 					if(i_drive == DOS_GetDefaultDrive())
 						DOS_SetDrive(ZDRIVE_NUM);
-					WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_SUCCESS"),umount[0]);
+					WriteOut(PROGRAM_MOUNT_UMOUNT_SUCCESS,umount[0]);
 					break;
 				case 1:
-					WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_NO_VIRTUAL"));
+					WriteOut(PROGRAM_MOUNT_UMOUNT_NO_VIRTUAL);
 					break;
 				case 2:
-					WriteOut(MSG_Get("MSCDEX_ERROR_MULTIPLE_CDROMS"));
+					WriteOut(MSCDEX_ERROR_MULTIPLE_CDROMS);
 					break;
 				}
 			} else {
-				WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_NOT_MOUNTED"),umount[0]);
+				WriteOut(PROGRAM_MOUNT_UMOUNT_NOT_MOUNTED,umount[0]);
 			}
 			return;
 		}
@@ -164,7 +165,7 @@ public:
 		if (cmd->FindExist("-cd",false)) {
 			WriteOut("SDL and IOCTL drives not found. Are you joking you want to mount real CD on DosCard?!\n");
 			//			int num = SDL_CDNumDrives();
-			//   		WriteOut(MSG_Get("PROGRAM_MOUNT_CDROMS_FOUND"),num);
+			//   		WriteOut(PROGRAM_MOUNT_CDROMS_FOUND,num);
 			//			for (int i=0; i<num; i++) {
 			//				WriteOut("%2d. %s\n",i,SDL_CDName(i));
 			//			};
@@ -190,7 +191,7 @@ public:
 				str_size="2048,1,65535,0";
 				mediaid=0xF8;		/* Hard Disk */
 			} else {
-				WriteOut(MSG_Get("PROGAM_MOUNT_ILL_TYPE"),type.c_str());
+				WriteOut(PROGRAM_MOUNT_ILL_TYPE,type.c_str());
 				return;
 			}
 			/* Parse the free space in mb's (kb's for floppies) */
@@ -243,13 +244,13 @@ public:
 //				if(!stat(temp_line.c_str(),&test)) failed = false;
 			}
 			if (failed) {
-				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_1"),temp_line.c_str());
+				WriteOut(PROGRAM_MOUNT_ERROR_1,temp_line.c_str());
 				return;
 			}
 			/* Not a switch so a normal directory/file */
 //			if (!(test.st_mode & S_IFDIR)) {
 			if (!dbisdirex(temp_line.c_str())) {
-				WriteOut(MSG_Get("PROGRAM_MOUNT_ERROR_2"),temp_line.c_str());
+				WriteOut(PROGRAM_MOUNT_ERROR_2,temp_line.c_str());
 				return;
 			}
 
@@ -260,13 +261,13 @@ public:
 				newdrive  = new cdromDrive(drive,temp_line.c_str(),sizes[0],bit8size,sizes[2],0,mediaid,error);
 				// Check Mscdex, if it worked out...
 				switch (error) {
-				case 0  :	WriteOut(MSG_Get("MSCDEX_SUCCESS"));				break;
-				case 1  :	WriteOut(MSG_Get("MSCDEX_ERROR_MULTIPLE_CDROMS"));	break;
-				case 2  :	WriteOut(MSG_Get("MSCDEX_ERROR_NOT_SUPPORTED"));	break;
-				case 3  :	WriteOut(MSG_Get("MSCDEX_ERROR_PATH"));				break;
-				case 4  :	WriteOut(MSG_Get("MSCDEX_TOO_MANY_DRIVES"));		break;
-				case 5  :	WriteOut(MSG_Get("MSCDEX_LIMITED_SUPPORT"));		break;
-				default :	WriteOut(MSG_Get("MSCDEX_UNKNOWN_ERROR"));			break;
+				case 0  :	WriteOut(MSCDEX_SUCCESS);				break;
+				case 1  :	WriteOut(MSCDEX_ERROR_MULTIPLE_CDROMS);	break;
+				case 2  :	WriteOut(MSCDEX_ERROR_NOT_SUPPORTED);	break;
+				case 3  :	WriteOut(MSCDEX_ERROR_PATH);			break;
+				case 4  :	WriteOut(MSCDEX_TOO_MANY_DRIVES);		break;
+				case 5  :	WriteOut(MSCDEX_LIMITED_SUPPORT);		break;
+				default :	WriteOut(MSCDEX_UNKNOWN_ERROR);			break;
 				};
 				if (error && error!=5) {
 					delete newdrive;
@@ -274,15 +275,15 @@ public:
 				}
 			} else {
 				/* Give a warning when mount c:\ or the / */
-				if(temp_line == "/") WriteOut(MSG_Get("PROGRAM_MOUNT_WARNING_OTHER"));
+				if(temp_line == "/") WriteOut(PROGRAM_MOUNT_WARNING_OTHER);
 				newdrive=new localDrive(temp_line.c_str(),sizes[0],bit8size,sizes[2],sizes[3],mediaid);
 			}
 		} else {
-			WriteOut(MSG_Get("PROGRAM_MOUNT_ILL_TYPE"),type.c_str());
+			WriteOut(PROGRAM_MOUNT_ILL_TYPE,type.c_str());
 			return;
 		}
 		if (Drives[drive-'A']) {
-			WriteOut(MSG_Get("PROGRAM_MOUNT_ALREADY_MOUNTED"),drive,Drives[drive-'A']->GetInfo());
+			WriteOut(PROGRAM_MOUNT_ALREADY_MOUNTED,drive,Drives[drive-'A']->GetInfo());
 			if (newdrive) delete newdrive;
 			return;
 		}
@@ -290,7 +291,7 @@ public:
 		Drives[drive-'A']=newdrive;
 		/* Set the correct media byte in the table */
 		mem_writeb(Real2Phys(dos.tables.mediaid)+(drive-'A')*2,newdrive->GetMediaByte());
-		WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_2"),drive,newdrive->GetInfo());
+		WriteOut(PROGRAM_MOUNT_STATUS_2,drive,newdrive->GetInfo());
 		/* check if volume label is given and don't allow it to updated in the future */
 		if (cmd->FindString("-label",label,true)) newdrive->dirCache.SetLabel(label.c_str(),iscdrom,false);
 		/* For hard drives set the label to DRIVELETTER_Drive.
@@ -305,12 +306,8 @@ public:
 		}
 		if(type == "floppy") incrementFDD();
 		return;
-		showusage:
-#if defined (WIN32) || defined(OS2)
-		WriteOut(MSG_Get("PROGRAM_MOUNT_USAGE"),"d:\\dosprogs","d:\\dosprogs");
-#else
-		WriteOut(MSG_Get("PROGRAM_MOUNT_USAGE"),"~/dosprogs","~/dosprogs");
-#endif
+	showusage:
+		WriteOut(PROGRAM_MOUNT_USAGE,"/dosprogs","/dosprogs");
 		return;
 	}
 };
@@ -336,9 +333,9 @@ public:
 		Bit16u seg,blocks;blocks=0xffff;
 		DOS_AllocateMemory(&seg,&blocks);
 //		if ((machine==MCH_PCJR) && (real_readb(0x2000,0)==0x5a) && (real_readw(0x2000,1)==0) && (real_readw(0x2000,3)==0x7ffe)) {
-//			WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),0x7ffe*16/1024);
+//			WriteOut(PROGRAM_MEM_CONVEN,0x7ffe*16/1024);
 //		} else
-			WriteOut(MSG_Get("PROGRAM_MEM_CONVEN"),blocks*16/1024);
+			WriteOut(PROGRAM_MEM_CONVEN,blocks*16/1024);
 
 		if (umb_start!=0xffff) {
 			DOS_LinkUMBsToMemChain(1);
@@ -358,7 +355,7 @@ public:
 			if ((current_umb_flag&1)!=(umb_flag&1)) DOS_LinkUMBsToMemChain(umb_flag);
 			DOS_SetMemAllocStrategy(old_memstrat);	// restore strategy
 
-			if (block_count>0) WriteOut(MSG_Get("PROGRAM_MEM_UPPER"),total_blocks*16/1024,block_count,largest_block*16/1024);
+			if (block_count>0) WriteOut(PROGRAM_MEM_UPPER,total_blocks*16/1024,block_count,largest_block*16/1024);
 		}
 
 		/* Test for and show free XMS */
@@ -369,7 +366,7 @@ public:
 			reg_ah=8;
 			CALLBACK_RunRealFar(xms_seg,xms_off);
 			if (!reg_bl) {
-				WriteOut(MSG_Get("PROGRAM_MEM_EXTEND"),reg_dx);
+				WriteOut(PROGRAM_MEM_EXTEND,reg_dx);
 			}
 		}	
 		/* Test for and show free EMS */
@@ -379,7 +376,7 @@ public:
 			DOS_CloseFile(handle);
 			reg_ah=0x42;
 			CALLBACK_RunRealInt(0x67);
-			WriteOut(MSG_Get("PROGRAM_MEM_EXPAND"),reg_bx*16);
+			WriteOut(PROGRAM_MEM_EXPAND,reg_bx*16);
 		}
 	}
 };
@@ -430,7 +427,7 @@ private:
 			if(tmpfile == NULL) {
 				//				if (!tryload) *error=2;
 				//				return NULL;
-				WriteOut(MSG_Get("PROGRAM_BOOT_WRITE_PROTECTED"));
+				WriteOut(PROGRAM_BOOT_WRITE_PROTECTED);
 				tmpfile = ldp->GetSystemFilePtr(fullname, "rb");
 				if(tmpfile == NULL) {
 					if (!tryload) *error=1;
@@ -458,15 +455,15 @@ private:
 				//File exists; So can't be opened in correct mode => error 2
 				// dbfclose(tmpfile);
 				//				if(tryload) error = 2;
-				WriteOut(MSG_Get("PROGRAM_BOOT_WRITE_PROTECTED"));
+				WriteOut(PROGRAM_BOOT_WRITE_PROTECTED);
 				dbfseek(tmpfile,0L, SEEK_END);
 				*ksize = ( dbftell(tmpfile) / 1024);
 				*bsize = dbftell(tmpfile);
 				return tmpfile;
 			}
 			// Give the delayed errormessages from the mounted variant (or from above)
-			if(error == 1) WriteOut(MSG_Get("PROGRAM_BOOT_NOT_EXIST"));
-			if(error == 2) WriteOut(MSG_Get("PROGRAM_BOOT_NOT_OPEN"));
+			if(error == 1) WriteOut(PROGRAM_BOOT_NOT_EXIST);
+			if(error == 2) WriteOut(PROGRAM_BOOT_NOT_OPEN);
 			return NULL;
 		}
 		dbfseek(tmpfile,0L, SEEK_END);
@@ -476,7 +473,7 @@ private:
 	}
 
 	void printError(void) {
-		WriteOut(MSG_Get("PROGRAM_BOOT_PRINT_ERROR"));
+		WriteOut(PROGRAM_BOOT_PRINT_ERROR);
 	}
 
 	void disable_umb_ems_xms(void)
@@ -508,7 +505,7 @@ public:
 		/* In secure mode don't allow people to boot stuff. 
 		 * They might try to corrupt the data on it */
 		if(myldbi->GetConfig()->secure) {
-			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
+			WriteOut(PROGRAM_CONFIG_SECURE_DISALLOW);
 			return;
 		}
 
@@ -559,7 +556,7 @@ public:
 					continue;
 				}
 
-				WriteOut(MSG_Get("PROGRAM_BOOT_IMAGE_OPEN"), temp_line.c_str());
+				WriteOut(PROGRAM_BOOT_IMAGE_OPEN, temp_line.c_str());
 				Bit32u rombytesize;
 				DBFILE*usefile = getFSFile(temp_line.c_str(), &floppysize, &rombytesize);
 				if(usefile != NULL) {
@@ -573,7 +570,7 @@ public:
 						rombytesize_2=rombytesize;
 					}
 				} else {
-					WriteOut(MSG_Get("PROGRAM_BOOT_IMAGE_NOT_OPEN"), temp_line.c_str());
+					WriteOut(PROGRAM_BOOT_IMAGE_NOT_OPEN, temp_line.c_str());
 					return;
 				}
 
@@ -586,19 +583,19 @@ public:
 		swapInDisks();
 
 		if(imageDiskList[drive-65]==NULL) {
-			WriteOut(MSG_Get("PROGRAM_BOOT_UNABLE"), drive);
+			WriteOut(PROGRAM_BOOT_UNABLE, drive);
 			return;
 		}
 
 		bootSector bootarea;
 		imageDiskList[drive-65]->Read_Sector(0,0,1,(Bit8u *)&bootarea);
 		if ((bootarea.rawdata[0]==0x50) && (bootarea.rawdata[1]==0x43) && (bootarea.rawdata[2]==0x6a) && (bootarea.rawdata[3]==0x72)) {
-			WriteOut(MSG_Get("PROGRAM_BOOT_CART_WO_PCJR"));
+			WriteOut(PROGRAM_BOOT_CART_WO_PCJR);
 		} else {
 			disable_umb_ems_xms();
 			void RemoveEMSPageFrame(void);
 			RemoveEMSPageFrame();
-			WriteOut(MSG_Get("PROGRAM_BOOT_BOOT"), drive);
+			WriteOut(PROGRAM_BOOT_BOOT, drive);
 			for(i=0;i<512;i++) real_writeb(0, 0x7c00 + i, bootarea.rawdata[i]);
 
 			/* revector some dos-allocated interrupts */
@@ -699,7 +696,7 @@ void LOADFIX::Run(void)
 			if ((*upcase(&ch)=='D') || (*upcase(&ch)=='F')) {
 				// Deallocate all
 				DOS_FreeProcessMemory(0x40);
-				WriteOut(MSG_Get("PROGRAM_LOADFIX_DEALLOCALL"),kb);
+				WriteOut(PROGRAM_LOADFIX_DEALLOCALL,kb);
 				return;
 			} else {
 				// Set mem amount to allocate
@@ -715,7 +712,7 @@ void LOADFIX::Run(void)
 	if (DOS_AllocateMemory(&segment,&blocks)) {
 		DOS_MCB mcb((Bit16u)(segment-1));
 		mcb.SetPSPSeg(0x40);			// use fake segment
-		WriteOut(MSG_Get("PROGRAM_LOADFIX_ALLOC"),kb);
+		WriteOut(PROGRAM_LOADFIX_ALLOC,kb);
 		// Prepare commandline...
 		if (cmd->FindCommand(commandNr++,temp_line)) {
 			// get Filename
@@ -736,10 +733,10 @@ void LOADFIX::Run(void)
 			DOS_Shell shell;
 			shell.Execute(filename,args);
 			DOS_FreeMemory(segment);		
-			WriteOut(MSG_Get("PROGRAM_LOADFIX_DEALLOC"),kb);
+			WriteOut(PROGRAM_LOADFIX_DEALLOC,kb);
 		}
 	} else {
-		WriteOut(MSG_Get("PROGRAM_LOADFIX_ERROR"),kb);	
+		WriteOut(PROGRAM_LOADFIX_ERROR,kb);
 	}
 }
 
@@ -773,11 +770,11 @@ void RESCAN::Run(void)
 		for(Bitu i =0; i<DOS_DRIVES;i++) {
 			if (Drives[i]) Drives[i]->EmptyCache();
 		}
-		WriteOut(MSG_Get("PROGRAM_RESCAN_SUCCESS"));
+		WriteOut(PROGRAM_RESCAN_SUCCESS);
 	} else {
 		if (drive < DOS_DRIVES && Drives[drive]) {
 			Drives[drive]->EmptyCache();
-			WriteOut(MSG_Get("PROGRAM_RESCAN_SUCCESS"));
+			WriteOut(PROGRAM_RESCAN_SUCCESS);
 		}
 	}
 }
@@ -794,7 +791,7 @@ public:
 		/* In secure mode don't allow people to change imgmount points. 
 		 * Neither mount nor unmount */
 		if(myldbi->GetConfig()->secure) {
-			WriteOut(MSG_Get("PROGRAM_CONFIG_SECURE_DISALLOW"));
+			WriteOut(PROGRAM_CONFIG_SECURE_DISALLOW);
 			return;
 		}
 		DOS_Drive * newdrive = NULL;
@@ -814,17 +811,17 @@ public:
 					Drives[i_drive] = 0;
 					if (i_drive == DOS_GetDefaultDrive())
 						DOS_SetDrive(toupper('Z') - 'A');
-					WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_SUCCESS"),umount[0]);
+					WriteOut(PROGRAM_MOUNT_UMOUNT_SUCCESS,umount[0]);
 					break;
 				case 1:
-					WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_NO_VIRTUAL"));
+					WriteOut(PROGRAM_MOUNT_UMOUNT_NO_VIRTUAL);
 					break;
 				case 2:
-					WriteOut(MSG_Get("MSCDEX_ERROR_MULTIPLE_CDROMS"));
+					WriteOut(MSCDEX_ERROR_MULTIPLE_CDROMS);
 					break;
 				}
 			} else {
-				WriteOut(MSG_Get("PROGRAM_MOUNT_UMOUNT_NOT_MOUNTED"),umount[0]);
+				WriteOut(PROGRAM_MOUNT_UMOUNT_NOT_MOUNTED,umount[0]);
 			}
 			return;
 		}
@@ -871,27 +868,27 @@ public:
 			if(fstype=="fat" || fstype=="iso") {
 				// get the drive letter
 				if (!cmd->FindCommand(1,temp_line) || (temp_line.size() > 2) || ((temp_line.size()>1) && (temp_line[1]!=':'))) {
-					WriteOut_NoParsing(MSG_Get("PROGRAM_IMGMOUNT_SPECIFY_DRIVE"));
+					WriteOut_NoParsing(PROGRAM_IMGMOUNT_SPECIFY_DRIVE);
 					return;
 				}
 				drive=toupper(temp_line[0]);
 				if (!isalpha(drive)) {
-					WriteOut_NoParsing(MSG_Get("PROGRAM_IMGMOUNT_SPECIFY_DRIVE"));
+					WriteOut_NoParsing(PROGRAM_IMGMOUNT_SPECIFY_DRIVE);
 					return;
 				}
 			} else if (fstype=="none") {
 				cmd->FindCommand(1,temp_line);
 				if ((temp_line.size() > 1) || (!isdigit(temp_line[0]))) {
-					WriteOut_NoParsing(MSG_Get("PROGRAM_IMGMOUNT_SPECIFY2"));
+					WriteOut_NoParsing(PROGRAM_IMGMOUNT_SPECIFY2);
 					return;
 				}
 				drive=temp_line[0];
 				if ((drive<'0') || (drive>3+'0')) {
-					WriteOut_NoParsing(MSG_Get("PROGRAM_IMGMOUNT_SPECIFY2"));
+					WriteOut_NoParsing(PROGRAM_IMGMOUNT_SPECIFY2);
 					return;
 				}
 			} else {
-				WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FORMAT_UNSUPPORTED"),fstype.c_str());
+				WriteOut(PROGRAM_IMGMOUNT_FORMAT_UNSUPPORTED,fstype.c_str());
 				return;
 			}
 
@@ -908,13 +905,13 @@ public:
 
 					Bit8u dummy;
 					if (!DOS_MakeName(tmp, fullname, &dummy) || strncmp(Drives[dummy]->GetInfo(),"local directory",15)) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_NON_LOCAL_DRIVE"));
+						WriteOut(PROGRAM_IMGMOUNT_NON_LOCAL_DRIVE);
 						return;
 					}
 
 					localDrive *ldp = dynamic_cast<localDrive*>(Drives[dummy]);
 					if (ldp==NULL) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
+						WriteOut(PROGRAM_IMGMOUNT_FILE_NOT_FOUND);
 						return;
 					}
 					ldp->GetSystemFilename(tmp, fullname);
@@ -922,19 +919,19 @@ public:
 
 //					if (stat(temp_line.c_str(),&test)) {
 					if (!dbisitexist(temp_line.c_str())) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_FILE_NOT_FOUND"));
+						WriteOut(PROGRAM_IMGMOUNT_FILE_NOT_FOUND);
 						return;
 					}
 				}
 //				if ((test.st_mode & S_IFDIR)) {
 				if (dbisdirex(temp_line.c_str())) {
-					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_MOUNT"));
+					WriteOut(PROGRAM_IMGMOUNT_MOUNT);
 					return;
 				}
 				paths.push_back(temp_line);
 			}
 			if (paths.size() == 0) {
-				WriteOut(MSG_Get("PROGRAM_IMGMOUNT_SPECIFY_FILE"));
+				WriteOut(PROGRAM_IMGMOUNT_SPECIFY_FILE);
 				return;	
 			}
 			if (paths.size() == 1)
@@ -944,7 +941,7 @@ public:
 				if (imgsizedetect) {
 					DBFILE* diskfile = dbfopen(temp_line.c_str(), "rb+");
 					if(!diskfile) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_IMAGE"));
+						WriteOut(PROGRAM_IMGMOUNT_INVALID_IMAGE);
 						return;
 					}
 					dbfseek(diskfile, 0L, SEEK_END);
@@ -953,17 +950,17 @@ public:
 					dbfseek(diskfile, 0L, SEEK_SET);
 					if (dbfread(buf,sizeof(Bit8u),512,diskfile)<512) {
 						dbfclose(diskfile);
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_IMAGE"));
+						WriteOut(PROGRAM_IMGMOUNT_INVALID_IMAGE);
 						return;
 					}
 					dbfclose(diskfile);
 					if ((buf[510]!=0x55) || (buf[511]!=0xaa)) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_GEOMETRY"));
+						WriteOut(PROGRAM_IMGMOUNT_INVALID_GEOMETRY);
 						return;
 					}
 					Bitu sectors=(Bitu)(fcsize/(16*63));
 					if (sectors*16*63!=fcsize) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_INVALID_GEOMETRY"));
+						WriteOut(PROGRAM_IMGMOUNT_INVALID_GEOMETRY);
 						return;
 					}
 					sizes[0]=512;	sizes[1]=63;	sizes[2]=16;	sizes[3]=sectors;
@@ -971,7 +968,7 @@ public:
 				}
 
 				if (Drives[drive-'A']) {
-					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_ALREADY_MOUNTED"));
+					WriteOut(PROGRAM_IMGMOUNT_ALREADY_MOUNTED);
 					return;
 				}
 
@@ -983,7 +980,7 @@ public:
 					DOS_Drive* newDrive = new fatDrive(paths[i].c_str(),sizes[0],sizes[1],sizes[2],sizes[3],0);
 					imgDisks.push_back(newDrive);
 					if(!(dynamic_cast<fatDrive*>(newDrive))->created_successfully) {
-						WriteOut(MSG_Get("PROGRAM_IMGMOUNT_CANT_CREATE"));
+						WriteOut(PROGRAM_IMGMOUNT_CANT_CREATE);
 						for(ct = 0; ct < imgDisks.size(); ct++) {
 							delete imgDisks[ct];
 						}
@@ -1016,7 +1013,7 @@ public:
 				for (i = 1; i < paths.size(); i++) {
 					tmp += "; " + paths[i];
 				}
-				WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_2"), drive, tmp.c_str());
+				WriteOut(PROGRAM_MOUNT_STATUS_2, drive, tmp.c_str());
 
 				if (paths.size() == 1) {
 					newdrive = imgDisks[0];
@@ -1039,7 +1036,7 @@ public:
 			} else if (fstype=="iso") {
 
 				if (Drives[drive-'A']) {
-					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_ALREADY_MOUNTED"));
+					WriteOut(PROGRAM_IMGMOUNT_ALREADY_MOUNTED);
 					return;
 				}
 				//				MSCDEX_SetCDInterface(CDROM_USE_SDL, -1);
@@ -1053,13 +1050,13 @@ public:
 					isoDisks.push_back(newDrive);
 					switch (error) {
 					case 0  :	break;
-					case 1  :	WriteOut(MSG_Get("MSCDEX_ERROR_MULTIPLE_CDROMS"));	break;
-					case 2  :	WriteOut(MSG_Get("MSCDEX_ERROR_NOT_SUPPORTED"));	break;
-					case 3  :	WriteOut(MSG_Get("MSCDEX_ERROR_OPEN"));				break;
-					case 4  :	WriteOut(MSG_Get("MSCDEX_TOO_MANY_DRIVES"));		break;
-					case 5  :	WriteOut(MSG_Get("MSCDEX_LIMITED_SUPPORT"));		break;
-					case 6  :	WriteOut(MSG_Get("MSCDEX_INVALID_FILEFORMAT"));		break;
-					default :	WriteOut(MSG_Get("MSCDEX_UNKNOWN_ERROR"));			break;
+					case 1  :	WriteOut(MSCDEX_ERROR_MULTIPLE_CDROMS);	break;
+					case 2  :	WriteOut(MSCDEX_ERROR_NOT_SUPPORTED);	break;
+					case 3  :	WriteOut(MSCDEX_ERROR_OPEN);				break;
+					case 4  :	WriteOut(MSCDEX_TOO_MANY_DRIVES);		break;
+					case 5  :	WriteOut(MSCDEX_LIMITED_SUPPORT);		break;
+					case 6  :	WriteOut(MSCDEX_INVALID_FILEFORMAT);		break;
+					default :	WriteOut(MSCDEX_UNKNOWN_ERROR);			break;
 					}
 					// error: clean up and leave
 					if (error) {
@@ -1079,12 +1076,12 @@ public:
 				mem_writeb(Real2Phys(dos.tables.mediaid) + (drive - 'A') * 2, mediaid);
 
 				// Print status message (success)
-				WriteOut(MSG_Get("MSCDEX_SUCCESS"));
+				WriteOut(MSCDEX_SUCCESS);
 				std::string tmp(paths[0]);
 				for (i = 1; i < paths.size(); i++) {
 					tmp += "; " + paths[i];
 				}
-				WriteOut(MSG_Get("PROGRAM_MOUNT_STATUS_2"), drive, tmp.c_str());
+				WriteOut(PROGRAM_MOUNT_STATUS_2, drive, tmp.c_str());
 
 			} else {
 				DBFILE*newDisk = dbfopen(temp_line.c_str(), "rb+");
@@ -1095,7 +1092,7 @@ public:
 				if(imagesize>2880) newImage->Set_Geometry(sizes[2],sizes[3],sizes[1],sizes[0]);
 			}
 		} else {
-			WriteOut(MSG_Get("PROGRAM_IMGMOUNT_TYPE_UNSUPPORTED"),type.c_str());
+			WriteOut(PROGRAM_IMGMOUNT_TYPE_UNSUPPORTED,type.c_str());
 			return;
 		}
 
@@ -1103,7 +1100,7 @@ public:
 			if(imageDiskList[drive-'0'] != NULL) delete imageDiskList[drive-'0'];
 			imageDiskList[drive-'0'] = newImage;
 			updateDPT();
-			WriteOut(MSG_Get("PROGRAM_IMGMOUNT_MOUNT_NUMBER"),drive-'0',temp_line.c_str());
+			WriteOut(PROGRAM_IMGMOUNT_MOUNT_NUMBER,drive-'0',temp_line.c_str());
 		}
 
 		// check if volume label is given. becareful for cdrom
@@ -1129,7 +1126,7 @@ public:
 void KEYB::Run(void) {
 	if (cmd->FindCommand(1,temp_line)) {
 		if (cmd->FindString("?",temp_line,false)) {
-			WriteOut(MSG_Get("PROGRAM_KEYB_SHOWHELP"));
+			WriteOut(PROGRAM_KEYB_SHOWHELP);
 		} else {
 			/* first parameter is layout ID */
 			Bitu keyb_error=0;
@@ -1153,21 +1150,21 @@ void KEYB::Run(void) {
 			}
 			switch (keyb_error) {
 			case KEYB_NOERROR:
-				WriteOut(MSG_Get("PROGRAM_KEYB_NOERROR"),temp_line.c_str(),dos.loaded_codepage);
+				WriteOut(PROGRAM_KEYB_NOERROR,temp_line.c_str(),dos.loaded_codepage);
 				break;
 			case KEYB_FILENOTFOUND:
-				WriteOut(MSG_Get("PROGRAM_KEYB_FILENOTFOUND"),temp_line.c_str());
-				WriteOut(MSG_Get("PROGRAM_KEYB_SHOWHELP"));
+				WriteOut(PROGRAM_KEYB_FILENOTFOUND,temp_line.c_str());
+				WriteOut(PROGRAM_KEYB_SHOWHELP);
 				break;
 			case KEYB_INVALIDFILE:
-				WriteOut(MSG_Get("PROGRAM_KEYB_INVALIDFILE"),temp_line.c_str());
+				WriteOut(PROGRAM_KEYB_INVALIDFILE,temp_line.c_str());
 				break;
 			case KEYB_LAYOUTNOTFOUND:
-				WriteOut(MSG_Get("PROGRAM_KEYB_LAYOUTNOTFOUND"),temp_line.c_str(),tried_cp);
+				WriteOut(PROGRAM_KEYB_LAYOUTNOTFOUND,temp_line.c_str(),tried_cp);
 				break;
 			case KEYB_INVALIDCPFILE:
-				WriteOut(MSG_Get("PROGRAM_KEYB_INVCPFILE"),temp_line.c_str());
-				WriteOut(MSG_Get("PROGRAM_KEYB_SHOWHELP"));
+				WriteOut(PROGRAM_KEYB_INVCPFILE,temp_line.c_str());
+				WriteOut(PROGRAM_KEYB_SHOWHELP);
 				break;
 			default:
 				LOG(LOG_DOSMISC,LOG_ERROR)("KEYB:Invalid returncode %x",keyb_error);
@@ -1178,126 +1175,25 @@ void KEYB::Run(void) {
 		/* no parameter in the command line, just output codepage info and possibly loaded layout ID */
 		const char* layout_name = DOS_GetLoadedLayout();
 		if (layout_name==NULL) {
-			WriteOut(MSG_Get("PROGRAM_KEYB_INFO"),dos.loaded_codepage);
+			WriteOut(PROGRAM_KEYB_INFO,dos.loaded_codepage);
 		} else {
-			WriteOut(MSG_Get("PROGRAM_KEYB_INFO_LAYOUT"),dos.loaded_codepage,layout_name);
+			WriteOut(PROGRAM_KEYB_INFO_LAYOUT,dos.loaded_codepage,layout_name);
 		}
 	}
 }
 
-static void KEYB_ProgramStart(Program * * make) {
+static void KEYB_ProgramStart(Program * * make)
+{
 	*make=new KEYB;
 }
 
 
-void DOS_SetupPrograms(void) {
-	/*Add Messages */
-
-	MSG_Add("PROGRAM_MOUNT_CDROMS_FOUND","CDROMs found: %d\n");
-	MSG_Add("PROGRAM_MOUNT_STATUS_FORMAT","%-5s  %-58s %-12s\n");
-	MSG_Add("PROGRAM_MOUNT_STATUS_2","Drive %c is mounted as %s\n");
-	MSG_Add("PROGRAM_MOUNT_STATUS_1","The currently mounted drives are:\n");
-	MSG_Add("PROGRAM_MOUNT_ERROR_1","Directory %s doesn't exist.\n");
-	MSG_Add("PROGRAM_MOUNT_ERROR_2","%s isn't a directory\n");
-	MSG_Add("PROGRAM_MOUNT_ILL_TYPE","Illegal type %s\n");
-	MSG_Add("PROGRAM_MOUNT_ALREADY_MOUNTED","Drive %c already mounted with %s\n");
-	MSG_Add("PROGRAM_MOUNT_USAGE",
-			"Usage \033[34;1mMOUNT Drive-Letter Local-Directory\033[0m\n"
-			"For example: MOUNT c %s\n"
-			"This makes the directory %s act as the C: drive inside DOSBox.\n"
-			"The directory has to exist.\n");
-	MSG_Add("PROGRAM_MOUNT_UMOUNT_NOT_MOUNTED","Drive %c isn't mounted.\n");
-	MSG_Add("PROGRAM_MOUNT_UMOUNT_SUCCESS","Drive %c has successfully been removed.\n");
-	MSG_Add("PROGRAM_MOUNT_UMOUNT_NO_VIRTUAL","Virtual Drives can not be unMOUNTed.\n");
-	MSG_Add("PROGRAM_MOUNT_WARNING_WIN","\033[31;1mMounting c:\\ is NOT recommended. Please mount a (sub)directory next time.\033[0m\n");
-	MSG_Add("PROGRAM_MOUNT_WARNING_OTHER","\033[31;1mMounting / is NOT recommended. Please mount a (sub)directory next time.\033[0m\n");
-
-	MSG_Add("PROGRAM_MEM_CONVEN","%10d Kb free conventional memory\n");
-	MSG_Add("PROGRAM_MEM_EXTEND","%10d Kb free extended memory\n");
-	MSG_Add("PROGRAM_MEM_EXPAND","%10d Kb free expanded memory\n");
-	MSG_Add("PROGRAM_MEM_UPPER","%10d Kb free upper memory in %d blocks (largest UMB %d Kb)\n");
-
-	MSG_Add("PROGRAM_LOADFIX_ALLOC","%d kb allocated.\n");
-	MSG_Add("PROGRAM_LOADFIX_DEALLOC","%d kb freed.\n");
-	MSG_Add("PROGRAM_LOADFIX_DEALLOCALL","Used memory freed.\n");
-	MSG_Add("PROGRAM_LOADFIX_ERROR","Memory allocation error.\n");
-
-	MSG_Add("MSCDEX_SUCCESS","MSCDEX installed.\n");
-	MSG_Add("MSCDEX_ERROR_MULTIPLE_CDROMS","MSCDEX: Failure: Drive-letters of multiple CDRom-drives have to be continuous.\n");
-	MSG_Add("MSCDEX_ERROR_NOT_SUPPORTED","MSCDEX: Failure: Not yet supported.\n");
-	MSG_Add("MSCDEX_ERROR_OPEN","MSCDEX: Failure: Invalid file or unable to open.\n");
-	MSG_Add("MSCDEX_TOO_MANY_DRIVES","MSCDEX: Failure: Too many CDRom-drives (max: 5). MSCDEX Installation failed.\n");
-	MSG_Add("MSCDEX_LIMITED_SUPPORT","MSCDEX: Mounted subdirectory: limited support.\n");
-	MSG_Add("MSCDEX_INVALID_FILEFORMAT","MSCDEX: Failure: File is either no iso/cue image or contains errors.\n");
-	MSG_Add("MSCDEX_UNKNOWN_ERROR","MSCDEX: Failure: Unknown error.\n");
-
-	MSG_Add("PROGRAM_RESCAN_SUCCESS","Drive cache cleared.\n");
-
-	MSG_Add("PROGRAM_BOOT_NOT_EXIST","Bootdisk file does not exist.  Failing.\n");
-	MSG_Add("PROGRAM_BOOT_NOT_OPEN","Cannot open bootdisk file.  Failing.\n");
-	MSG_Add("PROGRAM_BOOT_WRITE_PROTECTED","Image file is read-only! Might create problems.\n");
-	MSG_Add("PROGRAM_BOOT_PRINT_ERROR","This command boots DOSBox from either a floppy or hard disk image.\n\n"
-			"For this command, one can specify a succession of floppy disks swappable\n"
-			"by pressing <>, and -l specifies the mounted drive to boot from.  If\n"
-			"no drive letter is specified, this defaults to booting from the A drive.\n"
-			"The only bootable drive letters are A, C, and D.  For booting from a hard\n"
-			"drive (C or D), the image should have already been mounted using the\n"
-			"\033[34;1mIMGMOUNT\033[0m command.\n\n"
-			"The syntax of this command is:\n\n"
-			"\033[34;1mBOOT [diskimg1.img diskimg2.img] [-l driveletter]\033[0m\n"
-	);
-	MSG_Add("PROGRAM_BOOT_UNABLE","Unable to boot off of drive %c");
-	MSG_Add("PROGRAM_BOOT_IMAGE_OPEN","Opening image file: %s\n");
-	MSG_Add("PROGRAM_BOOT_IMAGE_NOT_OPEN","Cannot open %s");
-	MSG_Add("PROGRAM_BOOT_BOOT","Booting from drive %c...\n");
-	MSG_Add("PROGRAM_BOOT_CART_WO_PCJR","PCjr cartridge found, but machine is not PCjr");
-	MSG_Add("PROGRAM_BOOT_CART_LIST_CMDS","Available PCjr cartridge commandos:%s");
-	MSG_Add("PROGRAM_BOOT_CART_NO_CMDS","No PCjr cartridge commandos found");
-
-	MSG_Add("PROGRAM_IMGMOUNT_SPECIFY_DRIVE","Must specify drive letter to mount image at.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_SPECIFY2","Must specify drive number (0 or 3) to mount image at (0,1=fda,fdb;2,3=hda,hdb).\n");
-	MSG_Add("PROGRAM_IMGMOUNT_SPECIFY_GEOMETRY",
-			"For \033[33mCD-ROM\033[0m images:   \033[34;1mIMGMOUNT drive-letter location-of-image -t iso\033[0m\n"
-			"\n"
-			"For \033[33mhardrive\033[0m images: Must specify drive geometry for hard drives:\n"
-			"bytes_per_sector, sectors_per_cylinder, heads_per_cylinder, cylinder_count.\n"
-			"\033[34;1mIMGMOUNT drive-letter location-of-image -size bps,spc,hpc,cyl\033[0m\n");
-	MSG_Add("PROGRAM_IMGMOUNT_INVALID_IMAGE","Could not load image file.\n"
-			"Check that the path is correct and the image is accessible.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_INVALID_GEOMETRY","Could not extract drive geometry from image.\n"
-			"Use parameter -size bps,spc,hpc,cyl to specify the geometry.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_TYPE_UNSUPPORTED","Type \"%s\" is unsupported. Specify \"hdd\" or \"floppy\" or\"iso\".\n");
-	MSG_Add("PROGRAM_IMGMOUNT_FORMAT_UNSUPPORTED","Format \"%s\" is unsupported. Specify \"fat\" or \"iso\" or \"none\".\n");
-	MSG_Add("PROGRAM_IMGMOUNT_SPECIFY_FILE","Must specify file-image to mount.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_FILE_NOT_FOUND","Image file not found.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_MOUNT","To mount directories, use the \033[34;1mMOUNT\033[0m command, not the \033[34;1mIMGMOUNT\033[0m command.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_ALREADY_MOUNTED","Drive already mounted at that letter.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_CANT_CREATE","Can't create drive from file.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_MOUNT_NUMBER","Drive number %d mounted as %s\n");
-	MSG_Add("PROGRAM_IMGMOUNT_NON_LOCAL_DRIVE", "The image must be on a host or local drive.\n");
-	MSG_Add("PROGRAM_IMGMOUNT_MULTIPLE_NON_CUEISO_FILES", "Using multiple files is only supported for cue/iso images.\n");
-
-	MSG_Add("PROGRAM_KEYB_INFO","Codepage %i has been loaded\n");
-	MSG_Add("PROGRAM_KEYB_INFO_LAYOUT","Codepage %i has been loaded for layout %s\n");
-	MSG_Add("PROGRAM_KEYB_SHOWHELP",
-			"\033[32;1mKEYB\033[0m [keyboard layout ID[ codepage number[ codepage file]]]\n\n"
-			"Some examples:\n"
-			"  \033[32;1mKEYB\033[0m: Display currently loaded codepage.\n"
-			"  \033[32;1mKEYB\033[0m sp: Load the spanish (SP) layout, use an appropriate codepage.\n"
-			"  \033[32;1mKEYB\033[0m sp 850: Load the spanish (SP) layout, use codepage 850.\n"
-			"  \033[32;1mKEYB\033[0m sp 850 mycp.cpi: Same as above, but use file mycp.cpi.\n");
-	MSG_Add("PROGRAM_KEYB_NOERROR","Keyboard layout %s loaded for codepage %i\n");
-	MSG_Add("PROGRAM_KEYB_FILENOTFOUND","Keyboard file %s not found\n\n");
-	MSG_Add("PROGRAM_KEYB_INVALIDFILE","Keyboard file %s invalid\n");
-	MSG_Add("PROGRAM_KEYB_LAYOUTNOTFOUND","No layout in %s for codepage %i\n");
-	MSG_Add("PROGRAM_KEYB_INVCPFILE","None or invalid codepage file for layout %s\n\n");
-
-	/*regular setup*/
+void DOS_SetupPrograms(void)
+{
 	PROGRAMS_MakeFile("MOUNT.COM",MOUNT_ProgramStart);
 	PROGRAMS_MakeFile("MEM.COM",MEM_ProgramStart);
 	PROGRAMS_MakeFile("LOADFIX.COM",LOADFIX_ProgramStart);
 	PROGRAMS_MakeFile("RESCAN.COM",RESCAN_ProgramStart);
-//	PROGRAMS_MakeFile("INTRO.COM",INTRO_ProgramStart);
 	PROGRAMS_MakeFile("BOOT.COM",BOOT_ProgramStart);
 #if C_DEBUG
 	PROGRAMS_MakeFile("LDGFXROM.COM", LDGFXROM_ProgramStart);

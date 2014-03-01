@@ -343,8 +343,7 @@ bool localDrive::MakeDir(char * dir) {
 	CROSS_FILENAME(newdir);
 	int temp = dbdirmake(dirCache.GetExpandName(newdir));
 	if (temp==0) dirCache.CacheOut(newdir,true);
-
-	return (temp==0);// || ((temp!=0) && (errno==EEXIST));
+	return (temp==0);
 }
 
 bool localDrive::RemoveDir(char * dir) {
@@ -383,16 +382,13 @@ bool localDrive::Rename(char * oldname,char * newname)
 	strcat(newold,oldname);
 	CROSS_FILENAME(newold);
 	dirCache.ExpandName(newold);
-
 	char newnew[CROSS_LEN];
 	strcpy(newnew,basedir);
 	strcat(newnew,newname);
 	CROSS_FILENAME(newnew);
-//	int temp=rename(newold,dirCache.GetExpandName(newnew));
-	LOG_MSG("localDrive::Rename(): STUB!");
-//	if (temp==0) dirCache.CacheOut(newnew);
-//	return (temp==0);
-	return false;
+	int temp = dbrename(newold,dirCache.GetExpandName(newnew));
+	if (temp==0) dirCache.CacheOut(newnew);
+	return (temp==0);
 }
 
 bool localDrive::AllocationInfo(Bit16u * _bytes_sector,Bit8u * _sectors_cluster,Bit16u * _total_clusters,Bit16u * _free_clusters) {

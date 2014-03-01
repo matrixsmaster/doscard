@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "dosbox.h"
+#include "messages.h"
 #include "regs.h"
 #include "shell.h"
 #include "callback.h"
@@ -327,7 +328,7 @@ void DOS_Shell::Run(void) {
 }
 
 void DOS_Shell::SyntaxError(void) {
-	WriteOut(MSG_Get("SHELL_SYNTAXERROR"));
+	WriteOut(SHELL_SYNTAXERROR);
 }
 
 class AUTOEXEC {
@@ -353,109 +354,8 @@ static char const * const comspec_string="COMSPEC=Z:\\COMMAND.COM";
 static char const * const full_name="Z:\\COMMAND.COM";
 static char const * const init_line="/INIT AUTOEXEC.BAT";
 
-void SHELL_Init() {
-	/* Add messages */
-	MSG_Add("SHELL_ILLEGAL_PATH","Illegal Path.\n");
-	MSG_Add("SHELL_CMD_HELP","If you want a list of all supported commands type \033[33;1mhelp /all\033[0m .\nA short list of the most often used commands:\n");
-	MSG_Add("SHELL_CMD_ECHO_ON","ECHO is on.\n");
-	MSG_Add("SHELL_CMD_ECHO_OFF","ECHO is off.\n");
-	MSG_Add("SHELL_ILLEGAL_SWITCH","Illegal switch: %s.\n");
-	MSG_Add("SHELL_MISSING_PARAMETER","Required parameter missing.\n");
-	MSG_Add("SHELL_CMD_CHDIR_ERROR","Unable to change to: %s.\n");
-	MSG_Add("SHELL_CMD_CHDIR_HINT","To change to different drive type \033[31m%c:\033[0m\n");
-	MSG_Add("SHELL_CMD_CHDIR_HINT_2","directoryname is longer than 8 characters and/or contains spaces.\nTry \033[31mcd %s\033[0m\n");
-	MSG_Add("SHELL_CMD_CHDIR_HINT_3","You are still on drive Z:, change to a mounted drive with \033[31mC:\033[0m.\n");
-	MSG_Add("SHELL_CMD_DATE_HELP","Displays or changes the internal date.\n");
-	MSG_Add("SHELL_CMD_DATE_ERROR","The specified date is not correct.\n");
-	MSG_Add("SHELL_CMD_DATE_DAYS","3SunMonTueWedThuFriSat"); // "2SoMoDiMiDoFrSa"
-	MSG_Add("SHELL_CMD_DATE_NOW","Current date: ");
-	MSG_Add("SHELL_CMD_DATE_SETHLP","Type 'date MM-DD-YYYY' to change.\n");
-	MSG_Add("SHELL_CMD_DATE_FORMAT","M/D/Y");
-	MSG_Add("SHELL_CMD_DATE_HELP_LONG","DATE [[/T] [/H] [/S] | MM-DD-YYYY]\n"\
-									"  MM-DD-YYYY: new date to set\n"\
-									"  /S:         Permanently use host time and date as DOS time\n"\
-                                    "  /F:         Switch back to DOSBox internal time (opposite of /S)\n"\
-									"  /T:         Only display date\n"\
-									"  /H:         Synchronize with host\n");
-	MSG_Add("SHELL_CMD_TIME_HELP","Displays the internal time.\n");
-	MSG_Add("SHELL_CMD_TIME_NOW","Current time: ");
-	MSG_Add("SHELL_CMD_TIME_HELP_LONG","TIME [/T] [/H]\n"\
-									"  /T:         Display simple time\n"\
-									"  /H:         Synchronize with host\n");
-	MSG_Add("SHELL_CMD_MKDIR_ERROR","Unable to make: %s.\n");
-	MSG_Add("SHELL_CMD_RMDIR_ERROR","Unable to remove: %s.\n");
-	MSG_Add("SHELL_CMD_DEL_ERROR","Unable to delete: %s.\n");
-	MSG_Add("SHELL_SYNTAXERROR","The syntax of the command is incorrect.\n");
-	MSG_Add("SHELL_CMD_SET_NOT_SET","Environment variable %s not defined.\n");
-	MSG_Add("SHELL_CMD_SET_OUT_OF_SPACE","Not enough environment space left.\n");
-	MSG_Add("SHELL_CMD_IF_EXIST_MISSING_FILENAME","IF EXIST: Missing filename.\n");
-	MSG_Add("SHELL_CMD_IF_ERRORLEVEL_MISSING_NUMBER","IF ERRORLEVEL: Missing number.\n");
-	MSG_Add("SHELL_CMD_IF_ERRORLEVEL_INVALID_NUMBER","IF ERRORLEVEL: Invalid number.\n");
-	MSG_Add("SHELL_CMD_GOTO_MISSING_LABEL","No label supplied to GOTO command.\n");
-	MSG_Add("SHELL_CMD_GOTO_LABEL_NOT_FOUND","GOTO: Label %s not found.\n");
-	MSG_Add("SHELL_CMD_FILE_NOT_FOUND","File %s not found.\n");
-	MSG_Add("SHELL_CMD_FILE_EXISTS","File %s already exists.\n");
-	MSG_Add("SHELL_CMD_DIR_INTRO","Directory of %s.\n");
-	MSG_Add("SHELL_CMD_DIR_BYTES_USED","%5d File(s) %17s Bytes.\n");
-	MSG_Add("SHELL_CMD_DIR_BYTES_FREE","%5d Dir(s)  %17s Bytes free.\n");
-	MSG_Add("SHELL_EXECUTE_DRIVE_NOT_FOUND","Drive %c does not exist!\nYou must \033[31mmount\033[0m it first.\n");
-	MSG_Add("SHELL_EXECUTE_ILLEGAL_COMMAND","Illegal command: %s.\n");
-	MSG_Add("SHELL_CMD_PAUSE","Press any key to continue.\n");
-	MSG_Add("SHELL_CMD_PAUSE_HELP","Waits for 1 keystroke to continue.\n");
-	MSG_Add("SHELL_CMD_COPY_FAILURE","Copy failure : %s.\n");
-	MSG_Add("SHELL_CMD_COPY_SUCCESS","   %d File(s) copied.\n");
-	MSG_Add("SHELL_CMD_SUBST_NO_REMOVE","Unable to remove, drive not in use.\n");
-	MSG_Add("SHELL_CMD_SUBST_FAILURE","SUBST failed. You either made an error in your commandline or the target drive is already used.\nIt's only possible to use SUBST on Local drives");
-
-	MSG_Add("SHELL_CMD_CHDIR_HELP","Displays/changes the current directory.\n");
-	MSG_Add("SHELL_CMD_CHDIR_HELP_LONG","CHDIR [drive:][path]\n"
-	        "CHDIR [..]\n"
-	        "CD [drive:][path]\n"
-	        "CD [..]\n\n"
-	        "  ..   Specifies that you want to change to the parent directory.\n\n"
-	        "Type CD drive: to display the current directory in the specified drive.\n"
-	        "Type CD without parameters to display the current drive and directory.\n");
-	MSG_Add("SHELL_CMD_CLS_HELP","Clear screen.\n");
-	MSG_Add("SHELL_CMD_DIR_HELP","Directory View.\n");
-	MSG_Add("SHELL_CMD_ECHO_HELP","Display messages and enable/disable command echoing.\n");
-	MSG_Add("SHELL_CMD_EXIT_HELP","Exit from the shell.\n");
-	MSG_Add("SHELL_CMD_HELP_HELP","Show help.\n");
-	MSG_Add("SHELL_CMD_MKDIR_HELP","Make Directory.\n");
-	MSG_Add("SHELL_CMD_MKDIR_HELP_LONG","MKDIR [drive:][path]\n"
-	        "MD [drive:][path]\n");
-	MSG_Add("SHELL_CMD_RMDIR_HELP","Remove Directory.\n");
-	MSG_Add("SHELL_CMD_RMDIR_HELP_LONG","RMDIR [drive:][path]\n"
-	        "RD [drive:][path]\n");
-	MSG_Add("SHELL_CMD_SET_HELP","Change environment variables.\n");
-	MSG_Add("SHELL_CMD_IF_HELP","Performs conditional processing in batch programs.\n");
-	MSG_Add("SHELL_CMD_GOTO_HELP","Jump to a labeled line in a batch script.\n");
-	MSG_Add("SHELL_CMD_SHIFT_HELP","Leftshift commandline parameters in a batch script.\n");
-	MSG_Add("SHELL_CMD_TYPE_HELP","Display the contents of a text-file.\n");
-	MSG_Add("SHELL_CMD_TYPE_HELP_LONG","TYPE [drive:][path][filename]\n");
-	MSG_Add("SHELL_CMD_REM_HELP","Add comments in a batch file.\n");
-	MSG_Add("SHELL_CMD_REM_HELP_LONG","REM [comment]\n");
-	MSG_Add("SHELL_CMD_NO_WILD","This is a simple version of the command, no wildcards allowed!\n");
-	MSG_Add("SHELL_CMD_RENAME_HELP","Renames one or more files.\n");
-	MSG_Add("SHELL_CMD_RENAME_HELP_LONG","RENAME [drive:][path]filename1 filename2.\n"
-	        "REN [drive:][path]filename1 filename2.\n\n"
-	        "Note that you can not specify a new drive or path for your destination file.\n");
-	MSG_Add("SHELL_CMD_DELETE_HELP","Removes one or more files.\n");
-	MSG_Add("SHELL_CMD_COPY_HELP","Copy files.\n");
-	MSG_Add("SHELL_CMD_CALL_HELP","Start a batch file from within another batch file.\n");
-	MSG_Add("SHELL_CMD_SUBST_HELP","Assign an internal directory to a drive.\n");
-	MSG_Add("SHELL_CMD_LOADHIGH_HELP","Loads a program into upper memory (requires xms=true,umb=true).\n");
-	MSG_Add("SHELL_CMD_CHOICE_HELP","Waits for a keypress and sets ERRORLEVEL.\n");
-	MSG_Add("SHELL_CMD_CHOICE_HELP_LONG","CHOICE [/C:choices] [/N] [/S] text\n"
-	        "  /C[:]choices  -  Specifies allowable keys.  Default is: yn.\n"
-	        "  /N  -  Do not display the choices at end of prompt.\n"
-	        "  /S  -  Enables case-sensitive choices to be selected.\n"
-	        "  text  -  The text to display as a prompt.\n");
-	MSG_Add("SHELL_CMD_ATTRIB_HELP","Does nothing. Provided for compatibility.\n");
-	MSG_Add("SHELL_CMD_PATH_HELP","Provided for compatibility.\n");
-	MSG_Add("SHELL_CMD_VER_HELP","View and set the reported DOS version.\n");
-	MSG_Add("SHELL_CMD_VER_VER","DOSCARD version %s. Reported DOS version %d.%02d.\n");
-
-	/* Regular startup */
+void SHELL_Init()
+{
 	call_shellstop=CALLBACK_Allocate();
 	/* Setup the startup CS:IP to kill the last running machine when exitted */
 	RealPt newcsip=CALLBACK_RealPointer(call_shellstop);

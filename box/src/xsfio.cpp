@@ -217,6 +217,14 @@ int32_t dbgetfilesize(const char* path)
 	return (dbgetinfo(path,2));
 }
 
+int32_t dbrename(const char* oldn, const char* newn)
+{
+#ifndef LDB_EMBEDDED
+	//FIXME: impl
+#endif
+	return -1;
+}
+
 DBFILE* dbdiropen(const char* p)
 {
 #ifdef LDB_SUPPORT_DIRS
@@ -262,11 +270,14 @@ void dbdirclose(DBFILE* d)
 
 int32_t dbdirmake(const char* n)
 {
+	//return valid value if dir is already exists
+	//FIXME: impl
 	return -1;
 }
 
 int32_t dbdirdel(const char* n)
 {
+	//FIXME: impl
 	return -1;
 }
 
