@@ -74,9 +74,10 @@ layers of course)
 
 8. Cut and replace all filesystem IO code with XShell Callbacks - in real chip
 we obviously won't have a "normal" disk filesystem.
-List of functions remains to be moved (not FIO only):
+List of functions remains to be (re)moved (not FIO only):
 stat()/fstat() -> OK
-time()/localtime()
+time()/localtime() -> OK
+opendir()/readdir() -> OK
 
 -> ALMOST DONE
 

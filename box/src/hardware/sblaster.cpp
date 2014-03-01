@@ -587,7 +587,7 @@ static void DSP_RaiseIRQEvent(Bitu /*val*/) {
 }
 
 static void DSP_DoDMATransfer(DMA_MODES mode,Bitu freq,bool stereo) {
-	char const * type;
+//	char const * type;
 	sb.mode=MODE_DMA_MASKED;
 	sb.chan->FillUp();
 	sb.dma.left=sb.dma.total;
@@ -597,27 +597,27 @@ static void DSP_DoDMATransfer(DMA_MODES mode,Bitu freq,bool stereo) {
 	sb.irq.pending_16bit=false;
 	switch (mode) {
 	case DSP_DMA_2:
-		type="2-bits ADPCM";
+//		type="2-bits ADPCM";
 		sb.dma.mul=(1 << SB_SH)/4;
 		break;
 	case DSP_DMA_3:
-		type="3-bits ADPCM";
+//		type="3-bits ADPCM";
 		sb.dma.mul=(1 << SB_SH)/3;
 		break;
 	case DSP_DMA_4:
-		type="4-bits ADPCM";
+//		type="4-bits ADPCM";
 		sb.dma.mul=(1 << SB_SH)/2;
 		break;
 	case DSP_DMA_8:
-		type="8-bits PCM";
+//		type="8-bits PCM";
 		sb.dma.mul=(1 << SB_SH);
 		break;
 	case DSP_DMA_16_ALIASED:
-		type="16-bits(aliased) PCM";
+//		type="16-bits(aliased) PCM";
 		sb.dma.mul=(1 << SB_SH)*2;
 		break;
 	case DSP_DMA_16:
-		type="16-bits PCM";
+//		type="16-bits PCM";
 		sb.dma.mul=(1 << SB_SH);
 		break;
 	default:

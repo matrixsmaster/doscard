@@ -478,7 +478,12 @@ uint32_t GetTicks()
 
 void TIMER_Delay(Bitu c)
 {
-	//TODO
+	uint32_t r = 0;
+	if (!c) return;
+	myldbi->Callback(DBCB_GetTicks,&r,sizeof(r));
+	c += r;
+	while (r < c)
+		myldbi->Callback(DBCB_GetTicks,&r,sizeof(r));
 }
 
 void PRTC_GetDateTime(prtc_data* buf)
