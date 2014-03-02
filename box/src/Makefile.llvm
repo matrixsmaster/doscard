@@ -38,25 +38,25 @@ LMSC_SRC := programs.cpp support.cpp ldbconf.cpp
 LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp fake_threading.cpp dosbox.cpp
 
 
-LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.bc))
-LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.bc))
-LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.bc))
-LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.bc))
-LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.bc))
-LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.bc))
-LIB_OBJS += $(LTOP_SRC:.cpp=.bc)
+LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))
+LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.o))
+LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.o))
+LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.o))
+LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.o))
+LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.o))
+LIB_OBJS += $(LTOP_SRC:.cpp=.o)
 
 
 all:	$(LIB_OBJS)
-##	$(CXX) -g -c instrument.cpp -o instrument.bc
+##	$(CXX) -g -c instrument.cpp -o instrument.o
 	rm -f $(LIBNAME).a
-##	llvm-ar cr $(LIBNAME).a $(LIB_OBJS)
-##	echo $(LIBNAME).a instrument.bc $(LIB_OBJS) 1> objs.txt
+	llvm-link -o $(LIBNAME).bc $(LIB_OBJS)
+##	echo $(LIBNAME).a instrument.o $(LIB_OBJS) 1> objs.txt
 	echo $(LIB_OBJS) 1> objs.txt
 ##	llvm-ranlib $(LIBNAME).a
 	expr `cat buildno` + 1 > buildno
 
 .PHONY:	all
 
-%.bc:	%.cpp
+%.o:	%.cpp
 	$(CC_COMP) -c -o $@ $<

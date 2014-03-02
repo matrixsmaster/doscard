@@ -8,15 +8,15 @@ DEFINES  :=
 CXXFLAGS := -c -emit-llvm -g -O2 -Wall $(INCLUDES) $(DEFINES)
 LD_STAT  := -ldosbox-llvm
 LD_BDYN  := 
-#LD_LIBS  := ../../box/src/libdosbox-llvm.a
+LD_LIBS  := ../../box/src/libdosbox-llvm.bc
 ## -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
-LD_LIBS  := $(addprefix ../../box/src/,$(shell cat ../../box/src/objs.txt))
-SUPPORTS := pchost.bc ldbwrap.bc
+#LD_LIBS  := $(addprefix ../../box/src/,$(shell cat ../../box/src/objs.txt))
+SUPPORTS := pchost.o ldbwrap.o
 
 all:	$(SUPPORTS)
-	$(CXX) $(CXXFLAGS) -o $(LIBNAME).bc $(SUPPORTS) $(LD_LIBS)
+	llvm-link -o $(LIBNAME).bc $(SUPPORTS) $(LD_LIBS)
 
-%.bc:	%.cpp
+%.o:	%.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 	
 clean:
