@@ -189,14 +189,14 @@ int DosRun(void* p)
 int main(int argc, char* argv[])
 {
 	int r;
-	LibDosCardInit();
+	LibDosCardInit(1);
 	xnfo(0,1,"ALIVE!");
 	card = new CDosCard(true);
 	xnfo(0,1,"CDosCard created");
 	r = 0;
 	if (card->GetCurrentState() != DOSCRD_LOADED) {
 		r = 1;
-		xnfo(1,1,"Default loading failed. Trying with another path...");
+		xnfo(2,1,"Default loading failed. Trying with another path...");
 		if (card->TryLoad("../libdoscard/libdbwrap.bc")) {
 			xnfo(0,1,"Loaded successfully!");
 			r = 0;

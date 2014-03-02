@@ -18,7 +18,7 @@
 
 #include "xsupport.h"
 
-
+//FIXME: messages length
 void xnfo(int sev, int ctx, char const* format,...)
 {
 	char buf[256];
@@ -37,6 +37,9 @@ void xnfo(int sev, int ctx, char const* format,...)
 		break;
 	case 1:
 		fprintf(stdout,"Error: %s\n",buff);
+		break;
+	case 2:
+		fprintf(stdout,"Warning: %s\n",buff);
 		break;
 	default:
 		fprintf(stdout,"%s\n",buff);

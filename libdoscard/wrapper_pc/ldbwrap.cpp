@@ -26,10 +26,6 @@
 #define COMPILERNAME "unknown compiler"
 #endif
 
-#ifndef BUILDNUMBER
-#define BUILDNUMBER "0"
-#endif
-
 #define FA_TEST if ((!ptr) || (!len)) return -1
 
 using namespace dosbox;
@@ -140,8 +136,8 @@ int GetVersionString(void* ptr, uint64_t len)
 	char* tmp = reinterpret_cast<char*> (malloc(1024));
 	char* out = reinterpret_cast<char*> (ptr);
 	if (!tmp) return -10;
-	snprintf(tmp,1023,"libdoscard ver.%s build %s [API %d]\nCompiled with %s on %s\n",
-			LDBWVERSIONSTRING,BUILDNUMBER,LDBWINTVER,COMPILERNAME,BUILDATE);
+	snprintf(tmp,1023,"libdoscard wrapper [API %d]\nCompiled with %s on %s\n",
+			LDBWINTVER,COMPILERNAME,BUILDATE);
 	strncpy(out,tmp,len-1);
 	out[len-1] = 0;
 	return 0;

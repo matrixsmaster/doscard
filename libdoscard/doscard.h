@@ -55,9 +55,12 @@
 #include "ldbwrap.h"
 #endif
 
+#include <vector>
+#include <string>
 #include "dosbox.h"
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
+#define VERSTRMAXLEN 1535
 
 namespace doscard {
 
@@ -72,9 +75,23 @@ enum EDOSCRDState {
 
 #ifdef DOSCARD_SOURCE
 
-typedef struct {
-	llvm::Function* getVersionString;
-} DCFuncs;
+//FIXME: list or hash needed
+typedef std::vector<llvm::Function*> DCFuncs;
+
+static const char fnames_table[LDBWRAP_FUNCS_Q][32] = {
+		"LDBWrapperInit\0",
+		"CreateInstance\0",
+		"TryDestroyInstance\0",
+		"RunInstance\0",
+		"GetInstanceSettings\0",
+		"SetInstanceSettings\0",
+		"GetInstanceRuntime\0",
+		"GetInstanceScreen\0",
+		"GetInstanceSound\0",
+		"AddInstanceEvents\0",
+		"GetInstanceMessages\0",
+		"GetVersionString\0"
+};
 
 typedef struct {
 	llvm::LLVMContext* context;
@@ -84,11 +101,16 @@ typedef struct {
 	DCFuncs* funcs;
 } DCPHolder;
 
+typedef std::vector<llvm::GenericValue> DCArgs;
+
 #else
 
+//Fillers
 typedef int DCPHolder;
+typedef std::vector<std::string> DCArgs;
 
 #endif
+
 
 class CDosCard {
 public:
@@ -101,14 +123,23 @@ public:
 	bool ApplySettings(dosbox::LDB_Settings* pset);
 	bool Prepare();
 	int Run();
+
 private:
 	EDOSCRDState state;
 	dosbox::LDB_Settings* settings;
 	char* verstr;
 	DCPHolder* phld;
+
+	bool LoadFunctions();
+	//(void)
+	DCArgs GenArgs(void);
+	//(LDB_Settings*)
+	DCArgs GenArgs(dosbox::LDB_Settings* pset);
+	//(void*,uint64_t)
+	DCArgs GenArgs(void* ptr, uint64_t len);
 };
 
-void LibDosCardInit(void);
+void LibDosCardInit(int verb);
 
 } //namespace doscard
 

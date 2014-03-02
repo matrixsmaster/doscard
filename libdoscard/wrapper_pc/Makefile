@@ -5,6 +5,9 @@ LIBNAME	 := libdbwrap
 CXX		 := clang++
 INCLUDES := -I. -I.. -I../../box/include
 DEFINES  := 
+BLDINFO := -DBUILDATE="\"$(shell date)\""
+BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
+DEFINES += $(BLDINFO)
 CXXFLAGS := -c -emit-llvm -g -O2 -Wall $(INCLUDES) $(DEFINES)
 #LD_STAT  := -ldosbox-llvm
 #LD_BDYN  := 

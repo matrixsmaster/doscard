@@ -19,17 +19,40 @@
 #define DOSCARD_SOURCE
 #include "doscard.h"
 
+#ifndef BUILDATE
+#define BUILDATE "unknown date"
+#endif
+
+#ifndef COMPILERNAME
+#define COMPILERNAME "unknown compiler"
+#endif
+
+#ifndef BUILDNUMBER
+#define BUILDNUMBER "0"
+#endif
+
 using namespace std;
 using namespace dosbox;
 using namespace llvm;
 
 namespace doscard {
 
-void LibDosCardInit()
+static int verbose;
+
+void LibDosCardInit(int verb)
 {
 	InitializeNativeTarget();
 	llvm_start_multithreaded();
-	fprintf(stderr,"INIT()\n");
+	verbose = verb;
+}
+
+static void verb(const char* fmt,...)
+{
+	va_list l;
+	if (!verbose) return;
+	va_start(l,fmt);
+	vfprintf(stdout,fmt,l);
+	va_end(l);
 }
 
 CDosCard::CDosCard(bool autoload)
@@ -42,8 +65,8 @@ CDosCard::CDosCard(bool autoload)
 	phld->engbld = NULL;
 	phld->engine = NULL;
 	phld->funcs = NULL;
-	verstr = reinterpret_cast<char*> (malloc(1024));
-	memset(verstr,0,1024);
+	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
+	memset(verstr,0,VERSTRMAXLEN);
 	if (autoload) TryLoad(NULL);
 }
 
@@ -72,7 +95,7 @@ bool CDosCard::TryLoad(const char* filename)
 	phld->module = ParseIRFile(fn,err,(*(phld->context)));
 	if (!phld->module) return false;
 	if (phld->module->MaterializeAllPermanently(&errstr)) {
-		fprintf(stderr,"TryLoad(): bitcode didn't read correctly (%s)\n",errstr.c_str());
+		verb("TryLoad(): bitcode didn't read correctly (%s)\n",errstr.c_str());
 		return false;
 	}
 
@@ -84,36 +107,59 @@ bool CDosCard::TryLoad(const char* filename)
 	phld->engbld->setOptLevel(CodeGenOpt::Default);
 	phld->engine = phld->engbld->create();
 	if (!phld->engine) {
-		fprintf(stderr,"TryLoad(): couldn't create EE (%s)\n",errstr.c_str());
+		verb("TryLoad(): couldn't create EE (%s)\n",errstr.c_str());
 		return false;
 	}
 
 	//Load Functions
-	phld->funcs = new DCFuncs;
-//	phld->engine->getPointerToFunction()
-	for (Module::iterator I = phld->module->begin(), E = phld->module->end(); I != E; ++I) {
-		printf("-> %s\n",I->getName().str().c_str());
-//		Function *Fn = &*I;
-	}
-	phld->funcs->getVersionString = phld->module->getFunction("GetVersionString");
-	if (!phld->funcs->getVersionString) {
-		fprintf(stderr,"TryLoad(): GetVersionString not found!\n");
-		return false;
-	}
-	std::vector<GenericValue> Args;
-	GenericValue rr;
-	rr.PointerVal = this->verstr;
-	Args.push_back(rr);
-	GenericValue rb;
-	rb.IntVal = APInt(64,1024,false);
-	Args.push_back(rb);
-//	EE->runFunction(ExitF, Args);
-	phld->engine->runFunction(phld->funcs->getVersionString,Args);
-	printf("\n%s\n",verstr);
+	if (!LoadFunctions()) return false;
+
+	//Check API
+//	if (phld->engine->runFunction())
 
 	//OK
 	state = DOSCRD_LOADED;
 	return true;
+}
+
+bool CDosCard::LoadFunctions()
+{
+	if (phld->funcs) delete phld->funcs;
+	phld->funcs = new DCFuncs;
+	Function* fptr;
+	for (int i=0; i<LDBWRAP_FUNCS_Q; i++) {
+		fptr = phld->module->getFunction(StringRef(fnames_table[i]));
+		if (!fptr) {
+			verb("LoadFunctions(): Failed to load fn '%s'\n",fnames_table[i]);
+			return false;
+		}
+		phld->funcs->push_back(fptr);
+	}
+	return true;
+}
+
+DCArgs CDosCard::GenArgs(void)
+{
+	DCArgs ret;
+	return ret;
+}
+
+DCArgs CDosCard::GenArgs(dosbox::LDB_Settings* pset)
+{
+	DCArgs ret;
+	return ret;
+}
+
+DCArgs CDosCard::GenArgs(void* ptr, uint64_t len)
+{
+	DCArgs ret;
+	GenericValue x;
+	x.PointerVal = ptr;
+	ret.push_back(x);
+	GenericValue y;
+	y.IntVal = APInt(64,len,false);
+	ret.push_back(y);
+	return ret;
 }
 
 EDOSCRDState CDosCard::GetCurrentState()
@@ -137,6 +183,7 @@ bool CDosCard::Prepare()
 {
 	if (state != DOSCRD_LOADED) return false;
 	//
+	state = DOSCRD_INITED;
 	return true;
 }
 

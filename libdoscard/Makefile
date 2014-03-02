@@ -19,6 +19,7 @@ SUPPORTS := doscard.o
 
 all:	$(WRAPLIB) $(SUPPORTS)
 	$(CXX) -shared $(CXXFLAGS) -o $(LIB).so $(SUPPORTS) $(LD_LIBS)
+	expr `cat buildno` + 1 > buildno
 .PHONY: all
 
 $(WRAPLIB):

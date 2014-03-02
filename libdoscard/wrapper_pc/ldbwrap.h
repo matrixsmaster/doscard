@@ -36,7 +36,6 @@
 
 namespace doscard {
 
-#define LDBWVERSIONSTRING "0.0.1"
 #define LDBWINTVER 1
 
 typedef struct {
@@ -76,6 +75,8 @@ int AddInstanceEvents(void*,uint64_t);
 int GetInstanceMessages(void*,uint64_t);
 int GetVersionString(void*,uint64_t);
 }
+
+#define LDBWRAP_FUNCS_Q 12
 
 } //namespace doscard
 
