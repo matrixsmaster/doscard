@@ -28,7 +28,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "SDL2/include/SDL.h"
+#include <SDL2/SDL.h>
 #include "ldb.h"
 
 #ifdef LDB_EMBEDDED

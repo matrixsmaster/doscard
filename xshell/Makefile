@@ -5,14 +5,15 @@
 
 APP := xshell
 CXX	:= g++-4.8.2
-INCLUDES := -I. -I.. -I../box/include
+INCLUDES := -I. -I../box/include
 DEFINES := -DXSHELL_VERBOSE=1
 CXXFLAGS := -g -O2 -Wall $(INCLUDES) $(DEFINES)
-LD_STAT := -ldosbox -lSDL2
-LD_BDYN := -lX11 -lrt -ldl -lpthread
-LD_LIBS := -L../SDL2/build/.libs -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+LD_STAT := -ldosbox
+LD_BDYN := -lSDL2 -lX11 -lrt -ldl -lpthread
+LD_LIBS := -L../box/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+#-L../SDL2/build/.libs 
 SUPPORTS := xsupport.o
-GLOB_OBJS := $(addprefix ../box/src/,$(shell cat ../box/src/objs.txt)) $(SUPPORTS)
+##GLOB_OBJS := $(addprefix ../box/src/,$(shell cat ../box/src/objs.txt)) $(SUPPORTS)
 
 all:	$(SUPPORTS) $(APP).o
 	$(CXX) -g -o $(APP) $(SUPPORTS) $(APP).o $(LD_LIBS)

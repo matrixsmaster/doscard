@@ -19,7 +19,7 @@
 #ifndef XSKBD_H_
 #define XSKBD_H_
 
-#include "SDL2/include/SDL.h"
+#include <SDL2/SDL.h>
 #include "keyboard.h"
 
 namespace dosbox {

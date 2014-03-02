@@ -3,14 +3,14 @@
 
 ## Internal name. Do not use 'libdosbox' in external projects as it may interfere with
 ## some existing code and/or libraries.
-LIBNAME	:= libdosbox
+LIBNAME	:= libdosbox-llvm
 CXX		:= clang++
 MNDIR	:= $(shell pwd)
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -DHOST_64BIT
-CC_FLAG := -g -O2 -Weverything -fno-strict-aliasing
+CC_FLAG := -g -O2 -Weverything -fno-strict-aliasing -fPIC
 CC_INCL := -I$(MNDIR)/../include -I. -I../..
 CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -emit-llvm
 

@@ -19,7 +19,7 @@
 #ifndef XSHELL2_H_
 #define XSHELL2_H_
 
-#include "SDL2/include/SDL.h"
+#include <SDL2/SDL.h>
 #include "doscard.h"
 
 #endif /* XSHELL2_H_ */
