@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,38 +16,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DOSCARD_H_
-#define DOSCARD_H_
+#ifndef XSUPPORT_H_
+#define XSUPPORT_H_
 
-#include "ldbwrap.h"
+#include <string.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
-#define DEFAULTLIBNAME "libdbwrap.bc"
-
-namespace doscard {
-
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL
+#define XS_CONTEXT_COUNT 2
+static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
+		"Undefined context","XSHELL2 MAIN"
 };
 
-class CDosCard {
-public:
-	CDosCard(bool autoload);
-	~CDosCard();
-	bool TryLoad(const char* filename);
-	EDOSCRDState GetCurrentState();
-	dosbox::LDB_Settings* GetSettings();
-	bool ApplySettings(dosbox::LDB_Settings* pset);
-	bool Prepare();
-	int Run();
-private:
-	dosbox::LDB_Settings* settings;
-};
+/*
+ * xnfo(int sev, int ctx, char const* format,...)
+ * sev: severity (-1-fatal; 0-info; 1-error;)
+ * ctx: context (function number)
+ */
+void xnfo(int sev, int ctx, char const* format,...);
 
-} //namespace doscard
-
-#endif /* DOSCARD_H_ */
+#endif /* XSUPPORT_H_ */

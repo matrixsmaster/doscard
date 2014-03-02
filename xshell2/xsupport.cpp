@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,38 +16,29 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef DOSCARD_H_
-#define DOSCARD_H_
+#include "xsupport.h"
 
-#include "ldbwrap.h"
 
-#define DEFAULTLIBNAME "libdbwrap.bc"
-
-namespace doscard {
-
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL
-};
-
-class CDosCard {
-public:
-	CDosCard(bool autoload);
-	~CDosCard();
-	bool TryLoad(const char* filename);
-	EDOSCRDState GetCurrentState();
-	dosbox::LDB_Settings* GetSettings();
-	bool ApplySettings(dosbox::LDB_Settings* pset);
-	bool Prepare();
-	int Run();
-private:
-	dosbox::LDB_Settings* settings;
-};
-
-} //namespace doscard
-
-#endif /* DOSCARD_H_ */
+void xnfo(int sev, int ctx, char const* format,...)
+{
+	char buf[256];
+	char buff[320];
+	va_list msg;
+	va_start(msg,format);
+	vsnprintf(buf,255,format,msg);
+	va_end(msg);
+	ctx = ((ctx < 1) || (ctx >= XS_CONTEXT_COUNT))? 0:ctx;
+	sprintf(buff,"[%s]: ",xs_contexts[ctx]);
+	strcat(buff,buf);
+	switch (sev) {
+	case -1:
+		fprintf(stderr,"FATAL: %s\n",buff);
+		abort();
+		break;
+	case 1:
+		fprintf(stdout,"Error: %s\n",buff);
+		break;
+	default:
+		fprintf(stdout,"%s\n",buff);
+	}
+}

@@ -1,0 +1,22 @@
+## DosCard Project XShell-2 MAKEFILE
+## Copyright (C) 2013-2014 Soloviov Dmitry
+
+APP	:= xshell2
+CXX	:= g++-4.8.2
+INCLUDES := -I. -I../box/include -I../libdoscard -I../libdoscard/wrapper_pc
+DEFINES := 
+CXXFLAGS := -g -O2 -Wall -Wextra $(INCLUDES) $(DEFINES)
+#LD_STAT := 
+#LD_BDYN := 
+#LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+SUPPORTS := xsupport.o
+
+all:	$(SUPPORTS) $(APP).o
+	$(CXX) $(CXXFLAGS) -o $(APP) $(APP).o $(SUPPORTS) $(LD_LIBS)
+.PHONY: all
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f *.o $(APP)

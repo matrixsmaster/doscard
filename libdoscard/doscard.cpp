@@ -16,4 +16,51 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//lli
+#include "doscard.h"
+
+using namespace std;
+using namespace dosbox;
+
+namespace doscard {
+
+CDosCard::CDosCard(bool autoload)
+{
+	//
+}
+
+CDosCard::~CDosCard()
+{
+	//
+}
+
+bool CDosCard::TryLoad(const char* filename)
+{
+	//
+}
+
+EDOSCRDState CDosCard::GetCurrentState()
+{
+	//
+}
+
+LDB_Settings* CDosCard::GetSettings()
+{
+	//
+}
+
+bool CDosCard::ApplySettings(LDB_Settings* pset)
+{
+	//
+}
+
+bool CDosCard::Prepare()
+{
+	//
+}
+
+int CDosCard::Run()
+{
+	//
+}
+
+} //namespace doscard

@@ -17,14 +17,16 @@
  */
 
 #include "xshell2.h"
-
+#include "xsupport.h"
 
 static SDL_Texture* frame_sdl = NULL;
 static SDL_AudioDeviceID audio = 0;
 
 using namespace std;
 using namespace dosbox;
+using namespace doscard;
 
+#if 0
 static int XS_SDLInit()
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
@@ -181,32 +183,12 @@ int DosRun(void* p)
 	doscard = NULL;
 	return 0;
 }
+#endif
 
 int main(int argc, char* argv[])
 {
 	int r;
 	xnfo(0,1,"ALIVE!");
-
-	doscard = new CDosBox();
-	if (doscard) xnfo(0,1,"Class instance created");
-	else abort();
-
-	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
-	xnfo(0,1,"SDL2 context created successfully");
-
-	XS_ldb_register();
-
-	dosboxthr = SDL_CreateThread(DosRun,"DosThread",NULL);
-	if (!dosboxthr) xnfo(-1,1,"Unable to create DOS thread!");
-	xnfo(0,1,"DOS Thread running!");
-
-	XS_SDLoop();
-	xnfo(0,1,"SDLoop() Exited");
-
-	SDL_WaitThread(dosboxthr,&r);
-	xnfo(0,1,"DOS Thread Exited (%d)",r);
-
-	XS_SDLKill();
 
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);
