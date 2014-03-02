@@ -12,7 +12,7 @@ BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -DHOST_64BIT
 CC_FLAG := -g -O2 -Weverything -fno-strict-aliasing -fPIC
 CC_INCL := -I$(MNDIR)/../include -I. -I../..
-CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL) -emit-llvm
+CC_COMP := $(CXX) -emit-llvm $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 
 LCPU_SRC := callback.cpp cpu.cpp flags.cpp modrm.cpp core_full.cpp paging.cpp 
 LCPU_SRC += core_normal.cpp core_simple.cpp fpu.cpp
@@ -38,24 +38,25 @@ LMSC_SRC := programs.cpp support.cpp ldbconf.cpp
 LTOP_SRC := render.cpp xsgfx.cpp xsfio.cpp fake_threading.cpp dosbox.cpp
 
 
-LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.o))
-LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.o))
-LIB_OBJS += $(LTOP_SRC:.cpp=.o)
+LIB_OBJS := $(addprefix cpu/,$(LCPU_SRC:.cpp=.bc))
+LIB_OBJS += $(addprefix dos/,$(LDOS_SRC:.cpp=.bc))
+LIB_OBJS += $(addprefix hardware/,$(LHDW_SRC:.cpp=.bc))
+LIB_OBJS += $(addprefix ints/,$(LIRQ_SRC:.cpp=.bc))
+LIB_OBJS += $(addprefix shell/,$(LSHL_SRC:.cpp=.bc))
+LIB_OBJS += $(addprefix misc/,$(LMSC_SRC:.cpp=.bc))
+LIB_OBJS += $(LTOP_SRC:.cpp=.bc)
 
 
 all:	$(LIB_OBJS)
-##	$(CXX) -g -c instrument.cpp -o instrument.o
+##	$(CXX) -g -c instrument.cpp -o instrument.bc
 	rm -f $(LIBNAME).a
-	llvm-ar cr $(LIBNAME).a $(LIB_OBJS)
-##	echo $(LIBNAME).a instrument.o $(LIB_OBJS) 1> objs.txt
-	llvm-ranlib $(LIBNAME).a
+##	llvm-ar cr $(LIBNAME).a $(LIB_OBJS)
+##	echo $(LIBNAME).a instrument.bc $(LIB_OBJS) 1> objs.txt
+	echo $(LIB_OBJS) 1> objs.txt
+##	llvm-ranlib $(LIBNAME).a
 	expr `cat buildno` + 1 > buildno
 
 .PHONY:	all
 
-%.o:	%.cpp
+%.bc:	%.cpp
 	$(CC_COMP) -c -o $@ $<

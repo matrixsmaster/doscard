@@ -42,8 +42,8 @@ typedef struct {
 	uint64_t sndsize;
 } LDBI_RuntimeData;
 
-typedef vector<dosbox::LDB_UIEvent> LDBI_EventVec;
-typedef vector<string> LDBI_MesgVec;
+typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
+typedef std::vector<std::string> LDBI_MesgVec;
 
 int LDBCB_LCD(void* buf, size_t len);
 int LDBCB_SND(void* buf, size_t len);
