@@ -30,6 +30,8 @@
 #define BUILDNUMBER "0"
 #endif
 
+#define FA_TEST if ((!ptr) || (!len)) return -1
+
 using namespace dosbox;
 
 namespace doscard {
@@ -55,52 +57,86 @@ int LDBWrapperInit(void)
 
 int CreateInstance(LDB_Settings* set)
 {
-	return -1;
+	if (DOS) return -1;
+	DOS = new CDosBox();
+	Runtime = new LDBI_RuntimeData;
+	Events = new LDBI_EventVec;
+	Messages = new LDBI_MesgVec;
+	return 0;
 }
 
 int TryDestroyInstance(void)
 {
-	return -1;
+	if ((!DOS) && (!Runtime)) return 0;
+	if (Runtime->on) return -1;
+	delete DOS;
+	delete Runtime;
+	if (Screen) free(Screen);
+	if (Sound) free(Sound);
+	if (Events) delete Events;
+	if (Messages) delete Messages;
+	return 0;
 }
 
 int RunInstance(void)
 {
-	return -1;
+	if ((!DOS) || (!Runtime)) return -1;
+	Runtime->on = true;
+	//
+	Runtime->on = false;
+	return 0;
 }
 
-int GetInstanceSettings(dosbox::LDB_Settings* set)
+int GetInstanceSettings(LDB_Settings* set)
 {
-	return -1;
+	if ((!DOS) || (!set)) return -1;
+	LDB_Settings* tmp = DOS->GetConfig();
+	memcpy(set,tmp,sizeof(LDB_Settings));
+	return 0;
+}
+
+int SetInstanceSettings(LDB_Settings* set)
+{
+	if ((!DOS) || (!Runtime) || (Runtime->on) || (!set)) return -1;
+	DOS->SetConfig(set);
+	return 0;
 }
 
 int GetInstanceRuntime(void* ptr, uint64_t len)
 {
-	return -1;
+	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
+		return -1;
+	memcpy(ptr,Runtime,len);
+	return 0;
 }
 
 int GetInstanceScreen(void* ptr, uint64_t len)
 {
+	FA_TEST;
 	return -1;
 }
 
 int GetInstanceSound(void* ptr, uint64_t len)
 {
+	FA_TEST;
 	return -1;
 }
 
 int AddInstanceEvents(void* ptr, uint64_t len)
 {
+	FA_TEST;
 	return -1;
 }
 
 int GetInstanceMessages(void* ptr, uint64_t len)
 {
+	FA_TEST;
 	return -1;
 }
 
 int GetVersionString(void* ptr, uint64_t len)
 {
-	if ((!ptr) || (!len)) return -1;
+	FA_TEST;
 	char* tmp = reinterpret_cast<char*> (malloc(1024));
 	char* out = reinterpret_cast<char*> (ptr);
 	if (!tmp) return -10;

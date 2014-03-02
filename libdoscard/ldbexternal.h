@@ -21,22 +21,14 @@
 
 #include "dosbox.h"
 
-#define DEFAULTLIBNAME "libdbwrap.bc"
+
 
 namespace doscard {
 
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL
-};
 
+
+#ifndef DOSCARD_H_
 class CDosCard;
-
-void LibDosCardInit(void);
 
 } //namespace doscard
 

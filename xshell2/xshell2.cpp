@@ -19,12 +19,13 @@
 #include "xshell2.h"
 #include "xsupport.h"
 
-static SDL_Texture* frame_sdl = NULL;
-static SDL_AudioDeviceID audio = 0;
-
 using namespace std;
 using namespace dosbox;
 using namespace doscard;
+
+static CDosCard* card = NULL;
+static SDL_Texture* frame = NULL;
+static SDL_AudioDeviceID audio = 0;
 
 #if 0
 static int XS_SDLInit()
@@ -190,7 +191,9 @@ int main(int argc, char* argv[])
 	int r;
 	LibDosCardInit();
 	xnfo(0,1,"ALIVE!");
-
+	card = new CDosCard(true);
+	xnfo(0,1,"CDosCard created");
+	delete card;
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);
 }

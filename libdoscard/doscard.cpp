@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#define DOSCARD_SOURCE
 #include "doscard.h"
 
 using namespace std;
@@ -40,14 +41,17 @@ CDosCard::CDosCard(bool autoload)
 {
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
-	context = new LLVMContext();
-	module = NULL;
+	phld = new DCPHolder;
+	phld->context = new LLVMContext();
+	phld->module = NULL;
 	if (autoload) TryLoad(NULL);
 }
 
 CDosCard::~CDosCard()
 {
-	delete context;
+	if (phld->module) delete phld->module;
+	delete phld->context;
+	delete phld;
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -57,9 +61,20 @@ bool CDosCard::TryLoad(const char* filename)
 	SMDiagnostic err;
 	std::string fn;
 	fn = (filename)? filename:DEFAULTLIBNAME;
-	module = ParseIRFile(fn,err,(*context));
-	state = (module)? DOSCRD_LOADED:DOSCRD_LOADFAIL;
-	return (module != NULL);
+	phld->module = ParseIRFile(fn,err,(*(phld->context)));
+	state = (phld->module)? DOSCRD_LOADED:DOSCRD_LOADFAIL;
+	return (phld->module != NULL);
+}
+
+EDOSCRDState CDosCard::GetCurrentState()
+{
+	return state;
+}
+
+LDB_Settings* CDosCard::GetSettings()
+{
+	//TODO: get settings from machine
+	return settings;
 }
 
 bool CDosCard::ApplySettings(LDB_Settings* pset)

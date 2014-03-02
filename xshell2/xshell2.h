@@ -19,7 +19,9 @@
 #ifndef XSHELL2_H_
 #define XSHELL2_H_
 
+#include <string>
+#include <vector>
 #include <SDL2/SDL.h>
-#include "ldbexternal.h"
+#include "doscard.h"
 
 #endif /* XSHELL2_H_ */

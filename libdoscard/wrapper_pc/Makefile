@@ -6,14 +6,15 @@ CXX		 := clang++
 INCLUDES := -I. -I.. -I../../box/include
 DEFINES  := 
 CXXFLAGS := -c -emit-llvm -g -O2 -Wall $(INCLUDES) $(DEFINES)
-LD_STAT  := -ldosbox-llvm
-LD_BDYN  := 
+#LD_STAT  := -ldosbox-llvm
+#LD_BDYN  := 
 LD_LIBS  := ../../box/src/libdosbox-llvm.bc
 ## -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 #LD_LIBS  := $(addprefix ../../box/src/,$(shell cat ../../box/src/objs.txt))
 SUPPORTS := pchost.o ldbwrap.o
 
 all:	$(SUPPORTS)
+	cd ../../box; make llvm
 	llvm-link -o $(LIBNAME).bc $(SUPPORTS) $(LD_LIBS)
 
 %.o:	%.cpp

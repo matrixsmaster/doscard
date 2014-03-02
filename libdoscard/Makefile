@@ -13,7 +13,7 @@ BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 DEFINES += $(BLDINFO)
 CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := 
-LD_BDYN := -lLLVM-3.4
+LD_BDYN := -lLLVM-3.4 -lpthread -ldl -lrt
 LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := doscard.o
 

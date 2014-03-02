@@ -328,6 +328,13 @@ int CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
 	return ((*ldb_callbacks[t])(p,l));
 }
 
+void CDosBox::SetConfig(LDB_Settings* c)
+{
+	if ((!c) || init_ok) return;
+	if (config) delete config;
+	config = new CLDBConf(c);
+}
+
 void CDosBox::Execute()
 {
 	LOG_MSG("CDosBox::Execute(): Enter");

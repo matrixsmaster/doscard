@@ -19,6 +19,7 @@
 #ifndef DOSCARD_H_
 #define DOSCARD_H_
 
+#ifdef DOSCARD_SOURCE
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/ADT/Triple.h>
 #include <llvm/Bitcode/ReaderWriter.h>
@@ -28,7 +29,6 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/JITEventListener.h>
 #include <llvm/ExecutionEngine/JITMemoryManager.h>
-#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/SectionMemoryManager.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
@@ -53,26 +53,49 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Transforms/Instrumentation.h>
 #include "ldbwrap.h"
-#include "ldbexternal.h"
+#endif
+
+#include "dosbox.h"
+
+#define DEFAULTLIBNAME "libdbwrap.bc"
 
 namespace doscard {
+
+enum EDOSCRDState {
+	DOSCRD_NOT_READY = 0,
+	DOSCRD_LOADED,
+	DOSCRD_INITED,
+	DOSCRD_RUNNING,
+	DOSCRD_SHUTDOWN,
+	DOSCRD_LOADFAIL
+};
+
+#ifdef DOSCARD_SOURCE
+typedef struct {
+	llvm::LLVMContext* context;
+	llvm::Module* module;
+} DCPHolder;
+#else
+typedef int DCPHolder;
+#endif
 
 class CDosCard {
 public:
 	CDosCard(bool autoload);
 	~CDosCard();
 	bool TryLoad(const char* filename);
-	EDOSCRDState GetCurrentState()		{ return state; }
-	dosbox::LDB_Settings* GetSettings() { return settings; }
+	EDOSCRDState GetCurrentState();
+	dosbox::LDB_Settings* GetSettings();
 	bool ApplySettings(dosbox::LDB_Settings* pset);
 	bool Prepare();
 	int Run();
 private:
 	EDOSCRDState state;
 	dosbox::LDB_Settings* settings;
-	llvm::LLVMContext* context;
-	llvm::Module* module;
+	DCPHolder* phld;
 };
+
+void LibDosCardInit(void);
 
 } //namespace doscard
 

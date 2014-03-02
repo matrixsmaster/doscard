@@ -82,13 +82,10 @@ class CLDBConf {
 public:
 	CLDBConf(LDB_Settings* p);
 	virtual ~CLDBConf();
-//	void AddInitializer(LDB_INIT_FUN f);
-//	void InitAll();
 	inline LDB_Settings* GetSettings() { return &set; }
 //	inline LDB_CPUType* GetCPU() { return &set.cpu; }
 //	uint32_t GetMem();
 private:
-//	std::vector<LDB_INIT_FUN> inits;
 	LDB_Settings set;
 };
 

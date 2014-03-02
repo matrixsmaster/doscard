@@ -67,6 +67,7 @@ int CreateInstance(dosbox::LDB_Settings*);
 int TryDestroyInstance(void);
 int RunInstance(void);
 int GetInstanceSettings(dosbox::LDB_Settings*);
+int SetInstanceSettings(dosbox::LDB_Settings*);
 int GetInstanceRuntime(void*,uint64_t);
 int GetInstanceScreen(void*,uint64_t);
 int GetInstanceSound(void*,uint64_t);
