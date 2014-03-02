@@ -43,6 +43,7 @@ CDosCard::CDosCard(bool autoload)
 	phld->engine = NULL;
 	phld->funcs = NULL;
 	verstr = reinterpret_cast<char*> (malloc(1024));
+	memset(verstr,0,1024);
 	if (autoload) TryLoad(NULL);
 }
 
@@ -99,6 +100,16 @@ bool CDosCard::TryLoad(const char* filename)
 		fprintf(stderr,"TryLoad(): GetVersionString not found!\n");
 		return false;
 	}
+	std::vector<GenericValue> Args;
+	GenericValue rr;
+	rr.PointerVal = this->verstr;
+	Args.push_back(rr);
+	GenericValue rb;
+	rb.IntVal = APInt(64,1024,false);
+	Args.push_back(rb);
+//	EE->runFunction(ExitF, Args);
+	phld->engine->runFunction(phld->funcs->getVersionString,Args);
+	printf("\n%s\n",verstr);
 
 	//OK
 	state = DOSCRD_LOADED;
