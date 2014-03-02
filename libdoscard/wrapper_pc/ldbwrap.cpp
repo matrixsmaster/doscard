@@ -18,9 +18,40 @@
 
 #include "ldbwrap.h"
 
+#ifndef BUILDATE
+#define BUILDATE "unknown date"
+#endif
+
+#ifndef COMPILERNAME
+#define COMPILERNAME "unknown compiler"
+#endif
+
+#ifndef BUILDNUMBER
+#define BUILDNUMBER "0"
+#endif
+
 using namespace dosbox;
 
 namespace doscard {
+
+CDosBox* DOS;
+LDBI_RuntimeData* Runtime;
+uint32_t* Screen;
+int16_t* Sound;
+LDBI_EventVec* Events;
+LDBI_MesgVec* Messages;
+
+int LDBWrapperInit(void)
+{
+	DOS = NULL;
+	Runtime = NULL;
+	Screen = NULL;
+	Sound = NULL;
+	Events = NULL;
+	Messages = NULL;
+	//return magic value, which is simply an internal version
+	return LDBWINTVER;
+}
 
 int CreateInstance(LDB_Settings* set)
 {
@@ -37,29 +68,47 @@ int RunInstance(void)
 	return -1;
 }
 
-int GetInstanceRuntime(void*,uint64_t)
+int GetInstanceSettings(dosbox::LDB_Settings* set)
 {
 	return -1;
 }
 
-int GetInstanceScreen(void*,uint64_t)
+int GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	return -1;
 }
 
-int GetInstanceSound(void*,uint64_t)
+int GetInstanceScreen(void* ptr, uint64_t len)
 {
 	return -1;
 }
 
-int AddInstanceEvents(void*,uint64_t)
+int GetInstanceSound(void* ptr, uint64_t len)
 {
 	return -1;
 }
 
-int GetInstanceMessages(void*,uint64_t)
+int AddInstanceEvents(void* ptr, uint64_t len)
 {
 	return -1;
+}
+
+int GetInstanceMessages(void* ptr, uint64_t len)
+{
+	return -1;
+}
+
+int GetVersionString(void* ptr, uint64_t len)
+{
+	if ((!ptr) || (!len)) return -1;
+	char* tmp = reinterpret_cast<char*> (malloc(1024));
+	char* out = reinterpret_cast<char*> (ptr);
+	if (!tmp) return -10;
+	snprintf(tmp,1023,"libdoscard ver.%s build %s [API %d]\nCompiled with %s on %s\n",
+			LDBWVERSIONSTRING,BUILDNUMBER,LDBWINTVER,COMPILERNAME,BUILDATE);
+	strncpy(out,tmp,len-1);
+	out[len-1] = 0;
+	return 0;
 }
 
 } //namespace doscard

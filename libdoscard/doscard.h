@@ -19,33 +19,59 @@
 #ifndef DOSCARD_H_
 #define DOSCARD_H_
 
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/ADT/Triple.h>
+#include <llvm/Bitcode/ReaderWriter.h>
+#include <llvm/CodeGen/LinkAllCodegenComponents.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/ExecutionEngine/Interpreter.h>
+#include <llvm/ExecutionEngine/JIT.h>
+#include <llvm/ExecutionEngine/JITEventListener.h>
+#include <llvm/ExecutionEngine/JITMemoryManager.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
+#include <llvm/ExecutionEngine/SectionMemoryManager.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/TypeBuilder.h>
+#include <llvm/IRReader/IRReader.h>
+#include <llvm/Support/CommandLine.h>
+#include <llvm/Support/Debug.h>
+#include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/Format.h>
+#include <llvm/Support/ManagedStatic.h>
+#include <llvm/Support/MathExtras.h>
+#include <llvm/Support/Memory.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/PluginLoader.h>
+#include <llvm/Support/PrettyStackTrace.h>
+#include <llvm/Support/Process.h>
+#include <llvm/Support/Program.h>
+#include <llvm/Support/Signals.h>
+#include <llvm/Support/SourceMgr.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Transforms/Instrumentation.h>
 #include "ldbwrap.h"
-
-#define DEFAULTLIBNAME "libdbwrap.bc"
+#include "ldbexternal.h"
 
 namespace doscard {
-
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL
-};
 
 class CDosCard {
 public:
 	CDosCard(bool autoload);
 	~CDosCard();
 	bool TryLoad(const char* filename);
-	EDOSCRDState GetCurrentState();
-	dosbox::LDB_Settings* GetSettings();
+	EDOSCRDState GetCurrentState()		{ return state; }
+	dosbox::LDB_Settings* GetSettings() { return settings; }
 	bool ApplySettings(dosbox::LDB_Settings* pset);
 	bool Prepare();
 	int Run();
 private:
+	EDOSCRDState state;
 	dosbox::LDB_Settings* settings;
+	llvm::LLVMContext* context;
+	llvm::Module* module;
 };
 
 } //namespace doscard

@@ -96,6 +96,7 @@ way. Deep investigation needed!
 HINT: heavy use of GCC attributes in original code can make GCC crazy.
 UPD: different GCC versions generates very different code. Program won't work with
 gcc 4.6 or 4.7. Moreover, linkage order have it's own magic on the code stability.
+UPD: -fPIC changes nothing
 ->STALLED
 
 12. Types unification. Use <inttypes> instead of all of this Bit<xx>[s/u] forms.

@@ -36,6 +36,9 @@
 
 namespace doscard {
 
+#define LDBWVERSIONSTRING "0.0.1"
+#define LDBWINTVER 1
+
 typedef struct {
 	bool on;
 	uint16_t lcdw,lcdh;
@@ -56,17 +59,20 @@ extern dosbox::CDosBox* DOS;
 extern LDBI_RuntimeData* Runtime;
 extern uint32_t* Screen;
 extern int16_t* Sound;
-extern LDBI_EventVec Events;
-extern LDBI_MesgVec Messages;
+extern LDBI_EventVec* Events;
+extern LDBI_MesgVec* Messages;
 
-int CreateInstance(dosbox::LDB_Settings* set);
+int LDBWrapperInit(void);
+int CreateInstance(dosbox::LDB_Settings*);
 int TryDestroyInstance(void);
 int RunInstance(void);
+int GetInstanceSettings(dosbox::LDB_Settings*);
 int GetInstanceRuntime(void*,uint64_t);
 int GetInstanceScreen(void*,uint64_t);
 int GetInstanceSound(void*,uint64_t);
 int AddInstanceEvents(void*,uint64_t);
 int GetInstanceMessages(void*,uint64_t);
+int GetVersionString(void*,uint64_t);
 
 
 } //namespace doscard

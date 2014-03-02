@@ -6,15 +6,15 @@ CXX	:= g++-4.8.2
 WRAPSRC  := wrapper_pc
 WRAPLIB  := libdbwrap.bc
 INCLUDES := -I. -I.. -I../box/include -I$(WRAPSRC)
-DEFINES := 
+DEFINES := -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 DEFINES += $(BLDINFO)
-CXXFLAGS := -g -O2 -Wall -Wextra $(INCLUDES) $(DEFINES)
-#LD_STAT := 
-#LD_BDYN := 
-#LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
+LD_STAT := 
+LD_BDYN := -lLLVM-3.4
+LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := doscard.o
 
 all:	$(WRAPLIB) $(SUPPORTS)

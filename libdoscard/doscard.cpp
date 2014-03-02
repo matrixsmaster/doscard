@@ -20,47 +20,67 @@
 
 using namespace std;
 using namespace dosbox;
+using namespace llvm;
 
 namespace doscard {
 
+//http://stackoverflow.com/questions/2437914/llvm-jit-segfaults-what-am-i-doing-wrong
+//http://stackoverflow.com/questions/1838304/call-the-llvm-jit-from-c-program/1976378#1976378
+//http://llvm.org/docs/ProgrammersManual.html#entering-and-exiting-multithreaded-mode
+//http://llvm.org/docs/ProgrammersManual.html#jitthreading
+
+void LibDosCardInit()
+{
+	InitializeNativeTarget();
+	llvm_start_multithreaded();
+	fprintf(stderr,"INIT()\n");
+}
+
 CDosCard::CDosCard(bool autoload)
 {
-	//
+	state = DOSCRD_NOT_READY;
+	settings = NULL;
+	context = new LLVMContext();
+	module = NULL;
+	if (autoload) TryLoad(NULL);
 }
 
 CDosCard::~CDosCard()
 {
-	//
+	delete context;
 }
 
 bool CDosCard::TryLoad(const char* filename)
 {
-	//
-}
-
-EDOSCRDState CDosCard::GetCurrentState()
-{
-	//
-}
-
-LDB_Settings* CDosCard::GetSettings()
-{
-	//
+	if ((state != DOSCRD_NOT_READY) && (state != DOSCRD_LOADFAIL))
+		return false;
+	SMDiagnostic err;
+	std::string fn;
+	fn = (filename)? filename:DEFAULTLIBNAME;
+	module = ParseIRFile(fn,err,(*context));
+	state = (module)? DOSCRD_LOADED:DOSCRD_LOADFAIL;
+	return (module != NULL);
 }
 
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
-	//
+	return false;
 }
 
 bool CDosCard::Prepare()
 {
+	if (state != DOSCRD_LOADED) return false;
 	//
+	return true;
 }
 
 int CDosCard::Run()
 {
+	if (state != DOSCRD_INITED) return -1;
+	state = DOSCRD_RUNNING;
 	//
+	state = DOSCRD_SHUTDOWN;
+	return 0;
 }
 
 } //namespace doscard

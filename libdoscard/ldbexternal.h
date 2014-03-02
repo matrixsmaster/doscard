@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2014  Soloviov Dmitry
+ *  Copyright (C) 2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,28 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef XSHELL2_H_
-#define XSHELL2_H_
+#ifndef LDBEXTERNAL_H_
+#define LDBEXTERNAL_H_
 
-#include <SDL2/SDL.h>
-#include "ldbexternal.h"
+#include "dosbox.h"
 
-#endif /* XSHELL2_H_ */
+#define DEFAULTLIBNAME "libdbwrap.bc"
+
+namespace doscard {
+
+enum EDOSCRDState {
+	DOSCRD_NOT_READY = 0,
+	DOSCRD_LOADED,
+	DOSCRD_INITED,
+	DOSCRD_RUNNING,
+	DOSCRD_SHUTDOWN,
+	DOSCRD_LOADFAIL
+};
+
+class CDosCard;
+
+void LibDosCardInit(void);
+
+} //namespace doscard
+
+#endif /* LDBEXTERNAL_H_ */

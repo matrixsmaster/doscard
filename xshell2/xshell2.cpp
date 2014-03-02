@@ -188,6 +188,7 @@ int DosRun(void* p)
 int main(int argc, char* argv[])
 {
 	int r;
+	LibDosCardInit();
 	xnfo(0,1,"ALIVE!");
 
 	xnfo(0,1,"QUIT");
