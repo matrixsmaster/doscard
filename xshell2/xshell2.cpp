@@ -202,7 +202,17 @@ int main(int argc, char* argv[])
 			r = 0;
 		}
 	}
-	if (r) xnfo(1,1,"Unable to load ldbw!");
+	if (r) {
+		xnfo(1,1,"Unable to load ldbw!");
+		goto quit;
+	}
+	if (!card->Prepare()) {
+		xnfo(1,1,"Prepare() failed.");
+		goto quit;
+	}
+	xnfo(0,1,"Prepared successfully");
+quit:
+	xnfo(0,1,"Finalizing...");
 	delete card;
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);

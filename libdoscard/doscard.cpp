@@ -25,11 +25,6 @@ using namespace llvm;
 
 namespace doscard {
 
-//http://stackoverflow.com/questions/2437914/llvm-jit-segfaults-what-am-i-doing-wrong
-//http://stackoverflow.com/questions/1838304/call-the-llvm-jit-from-c-program/1976378#1976378
-//http://llvm.org/docs/ProgrammersManual.html#entering-and-exiting-multithreaded-mode
-//http://llvm.org/docs/ProgrammersManual.html#jitthreading
-
 void LibDosCardInit()
 {
 	InitializeNativeTarget();
@@ -44,12 +39,20 @@ CDosCard::CDosCard(bool autoload)
 	phld = new DCPHolder;
 	phld->context = new LLVMContext();
 	phld->module = NULL;
+	phld->engbld = NULL;
+	phld->engine = NULL;
+	phld->funcs = NULL;
+	verstr = reinterpret_cast<char*> (malloc(1024));
 	if (autoload) TryLoad(NULL);
 }
 
 CDosCard::~CDosCard()
 {
+	if (verstr) free(verstr);
+	if (phld->funcs) delete phld->funcs;
+//	if (phld->engine) delete phld->engine;
 	if (phld->module) delete phld->module;
+	if (phld->engbld) delete phld->engbld;
 	delete phld->context;
 	delete phld;
 }
@@ -59,11 +62,47 @@ bool CDosCard::TryLoad(const char* filename)
 	if ((state != DOSCRD_NOT_READY) && (state != DOSCRD_LOADFAIL))
 		return false;
 	SMDiagnostic err;
-	std::string fn;
+	string fn;
+	string errstr;
+	state = DOSCRD_LOADFAIL;
+
+	//Load file
 	fn = (filename)? filename:DEFAULTLIBNAME;
 	phld->module = ParseIRFile(fn,err,(*(phld->context)));
-	state = (phld->module)? DOSCRD_LOADED:DOSCRD_LOADFAIL;
-	return (phld->module != NULL);
+	if (!phld->module) return false;
+	if (phld->module->MaterializeAllPermanently(&errstr)) {
+		fprintf(stderr,"TryLoad(): bitcode didn't read correctly (%s)\n",errstr.c_str());
+		return false;
+	}
+
+	//Create Engine
+	phld->engbld = new EngineBuilder(phld->module);
+	if (!phld->engbld) return false;
+	phld->engbld->setErrorStr(&errstr);
+	phld->engbld->setEngineKind(EngineKind::JIT);
+	phld->engbld->setOptLevel(CodeGenOpt::Default);
+	phld->engine = phld->engbld->create();
+	if (!phld->engine) {
+		fprintf(stderr,"TryLoad(): couldn't create EE (%s)\n",errstr.c_str());
+		return false;
+	}
+
+	//Load Functions
+	phld->funcs = new DCFuncs;
+//	phld->engine->getPointerToFunction()
+	for (Module::iterator I = phld->module->begin(), E = phld->module->end(); I != E; ++I) {
+		printf("-> %s\n",I->getName().str().c_str());
+//		Function *Fn = &*I;
+	}
+	phld->funcs->getVersionString = phld->module->getFunction("GetVersionString");
+	if (!phld->funcs->getVersionString) {
+		fprintf(stderr,"TryLoad(): GetVersionString not found!\n");
+		return false;
+	}
+
+	//OK
+	state = DOSCRD_LOADED;
+	return true;
 }
 
 EDOSCRDState CDosCard::GetCurrentState()
@@ -79,6 +118,7 @@ LDB_Settings* CDosCard::GetSettings()
 
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
+	if (!pset) return false;
 	return false;
 }
 

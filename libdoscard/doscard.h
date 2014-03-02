@@ -71,12 +71,23 @@ enum EDOSCRDState {
 };
 
 #ifdef DOSCARD_SOURCE
+
+typedef struct {
+	llvm::Function* getVersionString;
+} DCFuncs;
+
 typedef struct {
 	llvm::LLVMContext* context;
 	llvm::Module* module;
+	llvm::EngineBuilder* engbld;
+	llvm::ExecutionEngine* engine;
+	DCFuncs* funcs;
 } DCPHolder;
+
 #else
+
 typedef int DCPHolder;
+
 #endif
 
 class CDosCard {
@@ -86,12 +97,14 @@ public:
 	bool TryLoad(const char* filename);
 	EDOSCRDState GetCurrentState();
 	dosbox::LDB_Settings* GetSettings();
+	char* GetVersionStringSafe();
 	bool ApplySettings(dosbox::LDB_Settings* pset);
 	bool Prepare();
 	int Run();
 private:
 	EDOSCRDState state;
 	dosbox::LDB_Settings* settings;
+	char* verstr;
 	DCPHolder* phld;
 };
 

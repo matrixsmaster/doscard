@@ -62,6 +62,7 @@ extern int16_t* Sound;
 extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 
+extern "C" {
 int LDBWrapperInit(void);
 int CreateInstance(dosbox::LDB_Settings*);
 int TryDestroyInstance(void);
@@ -74,7 +75,7 @@ int GetInstanceSound(void*,uint64_t);
 int AddInstanceEvents(void*,uint64_t);
 int GetInstanceMessages(void*,uint64_t);
 int GetVersionString(void*,uint64_t);
-
+}
 
 } //namespace doscard
 
