@@ -19,6 +19,9 @@
 #ifndef DOSCARD_H_
 #define DOSCARD_H_
 
+#define VERSIONSTR "v.0.0.2"
+#define DEFAULTLIBNAME "libdbwrap.bc"
+
 #ifdef DOSCARD_SOURCE
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/ADT/Triple.h>
@@ -59,7 +62,6 @@
 #include <string>
 #include "dosbox.h"
 
-#define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1535
 
 namespace doscard {
@@ -75,23 +77,7 @@ enum EDOSCRDState {
 
 #ifdef DOSCARD_SOURCE
 
-//FIXME: list or hash needed
 typedef std::vector<llvm::Function*> DCFuncs;
-
-static const char fnames_table[LDBWRAP_FUNCS_Q][32] = {
-		"LDBWrapperInit\0",
-		"CreateInstance\0",
-		"TryDestroyInstance\0",
-		"RunInstance\0",
-		"GetInstanceSettings\0",
-		"SetInstanceSettings\0",
-		"GetInstanceRuntime\0",
-		"GetInstanceScreen\0",
-		"GetInstanceSound\0",
-		"AddInstanceEvents\0",
-		"GetInstanceMessages\0",
-		"GetVersionString\0"
-};
 
 typedef struct {
 	llvm::LLVMContext* context;

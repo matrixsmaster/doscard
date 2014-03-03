@@ -36,7 +36,7 @@
 
 namespace doscard {
 
-#define LDBWINTVER 1
+#define LDBWINTVER 2
 
 typedef struct {
 	bool on;
@@ -62,18 +62,18 @@ extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 
 extern "C" {
-int LDBWrapperInit(void);
-int CreateInstance(dosbox::LDB_Settings*);
-int TryDestroyInstance(void);
-int RunInstance(void);
-int GetInstanceSettings(dosbox::LDB_Settings*);
-int SetInstanceSettings(dosbox::LDB_Settings*);
-int GetInstanceRuntime(void*,uint64_t);
-int GetInstanceScreen(void*,uint64_t);
-int GetInstanceSound(void*,uint64_t);
-int AddInstanceEvents(void*,uint64_t);
-int GetInstanceMessages(void*,uint64_t);
-int GetVersionString(void*,uint64_t);
+int DCA_WrapperInit(void);
+int DCB_CreateInstance(dosbox::LDB_Settings*);
+int DCC_TryDestroyInstance(void);
+int DCD_RunInstance(void);
+int DCE_GetInstanceSettings(dosbox::LDB_Settings*);
+int DCF_SetInstanceSettings(dosbox::LDB_Settings*);
+int DCG_GetInstanceRuntime(void*,uint64_t);
+int DCH_GetInstanceScreen(void*,uint64_t);
+int DCI_GetInstanceSound(void*,uint64_t);
+int DCJ_AddInstanceEvents(void*,uint64_t);
+int DCK_GetInstanceMessages(void*,uint64_t);
+int DCL_GetVersionString(void*,uint64_t);
 }
 
 #define LDBWRAP_FUNCS_Q 12

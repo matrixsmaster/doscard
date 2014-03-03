@@ -39,7 +39,7 @@ int16_t* Sound;
 LDBI_EventVec* Events;
 LDBI_MesgVec* Messages;
 
-int LDBWrapperInit(void)
+int DCA_WrapperInit(void)
 {
 	DOS = NULL;
 	Runtime = NULL;
@@ -51,7 +51,7 @@ int LDBWrapperInit(void)
 	return LDBWINTVER;
 }
 
-int CreateInstance(LDB_Settings* set)
+int DCB_CreateInstance(dosbox::LDB_Settings* set)
 {
 	if (DOS) return -1;
 	DOS = new CDosBox();
@@ -61,7 +61,7 @@ int CreateInstance(LDB_Settings* set)
 	return 0;
 }
 
-int TryDestroyInstance(void)
+int DCC_TryDestroyInstance(void)
 {
 	if ((!DOS) && (!Runtime)) return 0;
 	if (Runtime->on) return -1;
@@ -74,7 +74,7 @@ int TryDestroyInstance(void)
 	return 0;
 }
 
-int RunInstance(void)
+int DCD_RunInstance(void)
 {
 	if ((!DOS) || (!Runtime)) return -1;
 	Runtime->on = true;
@@ -83,7 +83,7 @@ int RunInstance(void)
 	return 0;
 }
 
-int GetInstanceSettings(LDB_Settings* set)
+int DCE_GetInstanceSettings(dosbox::LDB_Settings* set)
 {
 	if ((!DOS) || (!set)) return -1;
 	LDB_Settings* tmp = DOS->GetConfig();
@@ -91,14 +91,14 @@ int GetInstanceSettings(LDB_Settings* set)
 	return 0;
 }
 
-int SetInstanceSettings(LDB_Settings* set)
+int DCF_SetInstanceSettings(dosbox::LDB_Settings* set)
 {
 	if ((!DOS) || (!Runtime) || (Runtime->on) || (!set)) return -1;
 	DOS->SetConfig(set);
 	return 0;
 }
 
-int GetInstanceRuntime(void* ptr, uint64_t len)
+int DCG_GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
 		return -1;
@@ -106,31 +106,31 @@ int GetInstanceRuntime(void* ptr, uint64_t len)
 	return 0;
 }
 
-int GetInstanceScreen(void* ptr, uint64_t len)
+int DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	return -1;
 }
 
-int GetInstanceSound(void* ptr, uint64_t len)
+int DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	return -1;
 }
 
-int AddInstanceEvents(void* ptr, uint64_t len)
+int DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	return -1;
 }
 
-int GetInstanceMessages(void* ptr, uint64_t len)
+int DCK_GetInstanceMessages(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	return -1;
 }
 
-int GetVersionString(void* ptr, uint64_t len)
+int DCL_GetVersionString(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	char* tmp = reinterpret_cast<char*> (malloc(1024));

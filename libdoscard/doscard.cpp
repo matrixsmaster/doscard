@@ -113,6 +113,10 @@ bool CDosCard::TryLoad(const char* filename)
 
 	//Load Functions
 	if (!LoadFunctions()) return false;
+	for (DCFuncs::iterator I = phld->funcs->begin(); I != phld->funcs->end(); I++)
+		printf("$%x\n",*I);
+	phld->engine->runFunction(phld->funcs->at(LDBWRAP_FUNCS_Q-1),GenArgs(verstr,1024));
+	printf("\n# %s\n",verstr);
 
 	//Check API
 //	if (phld->engine->runFunction())
@@ -124,18 +128,30 @@ bool CDosCard::TryLoad(const char* filename)
 
 bool CDosCard::LoadFunctions()
 {
-	if (phld->funcs) delete phld->funcs;
+	int i,n;
+	Module::iterator I;
+	DCFuncs::iterator j;
+	string cnm;
+	Function* Fn;
 	phld->funcs = new DCFuncs;
-	Function* fptr;
-	for (int i=0; i<LDBWRAP_FUNCS_Q; i++) {
-		fptr = phld->module->getFunction(StringRef(fnames_table[i]));
-		if (!fptr) {
-			verb("LoadFunctions(): Failed to load fn '%s'\n",fnames_table[i]);
-			return false;
+	for (i=0; i < LDBWRAP_FUNCS_Q; i++)
+		phld->funcs->push_back(NULL);
+	j = phld->funcs->begin();
+	i = 0;
+	for (I = phld->module->begin(); I != phld->module->end(); ++I) {
+		cnm = I->getName().str();
+		printf("-> %s\n",cnm.c_str());
+		if ((cnm[0] == 'D') && (cnm[1] == 'C') && (cnm[3] == '_')) {
+			Fn = &*I; //construction got from llvm's tools/lli
+			n = static_cast<int> (cnm[2] - 'A');
+			if ((n < 0) || (n >= LDBWRAP_FUNCS_Q)) continue;
+			j = phld->funcs->begin() + n;
+			phld->funcs->insert(j,Fn);
+			phld->funcs->erase(++j);
+			if (++i >= LDBWRAP_FUNCS_Q) return true;
 		}
-		phld->funcs->push_back(fptr);
 	}
-	return true;
+	return false;
 }
 
 DCArgs CDosCard::GenArgs(void)
