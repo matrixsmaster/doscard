@@ -19,9 +19,6 @@
 #ifndef DOSCARD_H_
 #define DOSCARD_H_
 
-#define VERSIONSTR "v.0.0.2"
-#define DEFAULTLIBNAME "libdbwrap.bc"
-
 #ifdef DOSCARD_SOURCE
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/ADT/Triple.h>
@@ -62,6 +59,8 @@
 #include <string>
 #include "dosbox.h"
 
+#define VERSIONSTR "v.0.0.2"
+#define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1535
 
 namespace doscard {
@@ -116,6 +115,7 @@ private:
 	char* verstr;
 	DCPHolder* phld;
 
+	void FreeModule();
 	bool LoadFunctions();
 	//(void)
 	DCArgs GenArgs(void);

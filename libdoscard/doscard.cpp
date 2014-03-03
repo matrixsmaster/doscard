@@ -31,6 +31,9 @@
 #define BUILDNUMBER "0"
 #endif
 
+//Get function by Letter Macro
+#define GFUNCL(x) phld->funcs->at(x - 'A')
+
 using namespace std;
 using namespace dosbox;
 using namespace llvm;
@@ -73,10 +76,7 @@ CDosCard::CDosCard(bool autoload)
 CDosCard::~CDosCard()
 {
 	if (verstr) free(verstr);
-	if (phld->funcs) delete phld->funcs;
-//	if (phld->engine) delete phld->engine;
-	if (phld->module) delete phld->module;
-	if (phld->engbld) delete phld->engbld;
+	FreeModule();
 	delete phld->context;
 	delete phld;
 }
@@ -88,7 +88,9 @@ bool CDosCard::TryLoad(const char* filename)
 	SMDiagnostic err;
 	string fn;
 	string errstr;
+	char* ostr;
 	state = DOSCRD_LOADFAIL;
+	FreeModule();
 
 	//Load file
 	fn = (filename)? filename:DEFAULTLIBNAME;
@@ -113,17 +115,43 @@ bool CDosCard::TryLoad(const char* filename)
 
 	//Load Functions
 	if (!LoadFunctions()) return false;
-	for (DCFuncs::iterator I = phld->funcs->begin(); I != phld->funcs->end(); I++)
-		printf("$%x\n",*I);
-	phld->engine->runFunction(phld->funcs->at(LDBWRAP_FUNCS_Q-1),GenArgs(verstr,1024));
-	printf("\n# %s\n",verstr);
+//	phld->engine->runFunction(phld->funcs->at(LDBWRAP_FUNCS_Q-1),GenArgs(verstr,1024));
 
 	//Check API
-//	if (phld->engine->runFunction())
+	GenericValue ret = phld->engine->runFunction(GFUNCL('A'),GenArgs());
+	if (ret.IntVal != static_cast<uint64_t> (LDBWINTVER)) {
+		verb("TryLoad(): Wrong API version\n");
+		return false;
+	}
+
+	//Get Version String
+	ostr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN/2));
+	ret = phld->engine->runFunction(GFUNCL('L'),GenArgs(ostr,VERSTRMAXLEN/2));
+	if (ret.IntVal != 0) {
+		verb("TryLoad(): Failed to get version information\n");
+		free(ostr);
+		return false;
+	}
+	snprintf(verstr,VERSTRMAXLEN-1,"libDosCard ver.%s build %s\nCompiled with %s on %s\nwrapper: %s",
+			VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,ostr);
+	free(ostr);
+	verstr[VERSTRMAXLEN-1] = 0;
+	printf("VERSION\n%s\n",verstr);
 
 	//OK
 	state = DOSCRD_LOADED;
 	return true;
+}
+
+void CDosCard::FreeModule()
+{
+	if (phld->funcs) delete phld->funcs;
+	phld->funcs = NULL;
+//	if (phld->engine) delete phld->engine;
+	if (phld->engbld) delete phld->engbld;
+	phld->engbld = NULL;
+	if (phld->module) delete phld->module;
+	phld->module = NULL;
 }
 
 bool CDosCard::LoadFunctions()
@@ -134,13 +162,11 @@ bool CDosCard::LoadFunctions()
 	string cnm;
 	Function* Fn;
 	phld->funcs = new DCFuncs;
-	for (i=0; i < LDBWRAP_FUNCS_Q; i++)
+	for (i=0; i<LDBWRAP_FUNCS_Q; i++)
 		phld->funcs->push_back(NULL);
-	j = phld->funcs->begin();
 	i = 0;
 	for (I = phld->module->begin(); I != phld->module->end(); ++I) {
 		cnm = I->getName().str();
-		printf("-> %s\n",cnm.c_str());
 		if ((cnm[0] == 'D') && (cnm[1] == 'C') && (cnm[3] == '_')) {
 			Fn = &*I; //construction got from llvm's tools/lli
 			n = static_cast<int> (cnm[2] - 'A');
@@ -163,6 +189,9 @@ DCArgs CDosCard::GenArgs(void)
 DCArgs CDosCard::GenArgs(dosbox::LDB_Settings* pset)
 {
 	DCArgs ret;
+	GenericValue p;
+	p.PointerVal = pset;
+	ret.push_back(p);
 	return ret;
 }
 
@@ -198,7 +227,11 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 bool CDosCard::Prepare()
 {
 	if (state != DOSCRD_LOADED) return false;
-	//
+	GenericValue r = phld->engine->runFunction(GFUNCL('B'),GenArgs(NULL));
+	if (r.IntVal != 0) {
+		verb("Prepare(): Error while creating new instance\n");
+		return false;
+	}
 	state = DOSCRD_INITED;
 	return true;
 }

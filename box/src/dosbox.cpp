@@ -260,6 +260,8 @@ void CDosBox::Clear()
 
 CDosBox::CDosBox()
 {
+	fprintf(stderr,"\nCONSTRUCTOR!!!!!\n");
+	/*
 	LDB_Settings myset;
 	memset(&myset,0,sizeof(myset));
 	init_ok = false;
@@ -307,6 +309,7 @@ CDosBox::CDosBox()
 	myset.secure = false;
 
 	config = new CLDBConf(&myset);
+	*/
 }
 
 CDosBox::~CDosBox()

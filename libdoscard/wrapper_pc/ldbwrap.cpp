@@ -136,7 +136,7 @@ int DCL_GetVersionString(void* ptr, uint64_t len)
 	char* tmp = reinterpret_cast<char*> (malloc(1024));
 	char* out = reinterpret_cast<char*> (ptr);
 	if (!tmp) return -10;
-	snprintf(tmp,1023,"libdoscard wrapper [API %d]\nCompiled with %s on %s\n",
+	snprintf(tmp,1023,"libdoscard wrapper [API %d]\nCompiled with %s on %s",
 			LDBWINTVER,COMPILERNAME,BUILDATE);
 	strncpy(out,tmp,len-1);
 	out[len-1] = 0;

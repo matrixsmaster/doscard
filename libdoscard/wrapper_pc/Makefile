@@ -18,7 +18,8 @@ SUPPORTS := pchost.o ldbwrap.o
 
 all:	$(SUPPORTS)
 	cd ../../box; make llvm
-	llvm-link -o $(LIBNAME).bc $(SUPPORTS) $(LD_LIBS)
+	llvm-link -o $(LIBNAME)-tmp.bc $(SUPPORTS) $(LD_LIBS)
+	$(CXX) $(CXXFLAGS) -o $(LIBNAME).bc $(LIBNAME)-tmp.bc
 
 %.o:	%.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
