@@ -18,18 +18,18 @@
 
 #include "xsupport.h"
 
-//FIXME: messages length
+
 void xnfo(int sev, int ctx, char const* format,...)
 {
-	char buf[256];
-	char buff[320];
+	char buf[XSUPP_MAX_MESSAGE];
+	char buff[XSUPP_MAX_PREFIX+XSUPP_MAX_MESSAGE];
 	va_list msg;
 	va_start(msg,format);
-	vsnprintf(buf,255,format,msg);
+	vsnprintf(buf,XSUPP_MAX_MESSAGE-1,format,msg);
 	va_end(msg);
 	ctx = ((ctx < 1) || (ctx >= XS_CONTEXT_COUNT))? 0:ctx;
 	sprintf(buff,"[%s]: ",xs_contexts[ctx]);
-	strcat(buff,buf);
+	strncat(buff,buf,sizeof(buff)-1);
 	switch (sev) {
 	case -1:
 		fprintf(stderr,"FATAL: %s\n",buff);

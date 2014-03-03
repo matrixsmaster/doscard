@@ -25,8 +25,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#define XSUPP_MAX_MESSAGE 2048
+#define XSUPP_MAX_PREFIX 64
+
 #define XS_CONTEXT_COUNT 2
-static const char xs_contexts[XS_CONTEXT_COUNT][320-256] = {
+static const char xs_contexts[XS_CONTEXT_COUNT][XSUPP_MAX_PREFIX] = {
 		"Undefined context","XSHELL2 MAIN"
 };
 

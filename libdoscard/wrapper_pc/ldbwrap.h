@@ -42,6 +42,13 @@ typedef struct {
 	bool on;
 	uint16_t lcdw,lcdh;
 	uint64_t sndsize;
+	struct timespec* clkres;
+	uint32_t* clkbeg;
+	uint8_t disp_fsm;
+	uint32_t frame_cnt;
+	bool frame_dirty;
+	uint8_t frameskip_cnt;
+	uint32_t crc;
 } LDBI_RuntimeData;
 
 typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;

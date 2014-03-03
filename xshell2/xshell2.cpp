@@ -206,11 +206,13 @@ int main(int argc, char* argv[])
 		xnfo(1,1,"Unable to load ldbw!");
 		goto quit;
 	}
+	xnfo(0,1,"Version info:\n%s\n",card->GetVersionStringSafe());
 	if (!card->Prepare()) {
 		xnfo(1,1,"Prepare() failed.");
 		goto quit;
 	}
 	xnfo(0,1,"Prepared successfully");
+	card->Run();
 quit:
 	xnfo(0,1,"Finalizing...");
 	delete card;

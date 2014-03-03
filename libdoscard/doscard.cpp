@@ -69,16 +69,28 @@ CDosCard::CDosCard(bool autoload)
 	phld->engine = NULL;
 	phld->funcs = NULL;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
-	memset(verstr,0,VERSTRMAXLEN);
+	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
 	if (autoload) TryLoad(NULL);
 }
 
 CDosCard::~CDosCard()
 {
-	if (verstr) free(verstr);
+	switch (state) {
+	case DOSCRD_RUNNING:
+		//TODO: stop thread
+		//no break
+	case DOSCRD_SHUTDOWN:
+	case DOSCRD_INITED:
+		phld->engine->runFunction(GFUNCL('C'),GenArgs());
+		break;
+	default:
+		//just to make compiler happy
+		break;
+	}
 	FreeModule();
 	delete phld->context;
 	delete phld;
+	if (verstr) free(verstr);
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -113,9 +125,7 @@ bool CDosCard::TryLoad(const char* filename)
 		return false;
 	}
 
-	//Load Functions
 	if (!LoadFunctions()) return false;
-//	phld->engine->runFunction(phld->funcs->at(LDBWRAP_FUNCS_Q-1),GenArgs(verstr,1024));
 
 	//Check API
 	GenericValue ret = phld->engine->runFunction(GFUNCL('A'),GenArgs());
@@ -132,11 +142,9 @@ bool CDosCard::TryLoad(const char* filename)
 		free(ostr);
 		return false;
 	}
-	snprintf(verstr,VERSTRMAXLEN-1,"libDosCard ver.%s build %s\nCompiled with %s on %s\nwrapper: %s",
-			VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,ostr);
+	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,ostr);
 	free(ostr);
 	verstr[VERSTRMAXLEN-1] = 0;
-	printf("VERSION\n%s\n",verstr);
 
 	//OK
 	state = DOSCRD_LOADED;
@@ -214,8 +222,18 @@ EDOSCRDState CDosCard::GetCurrentState()
 
 LDB_Settings* CDosCard::GetSettings()
 {
-	//TODO: get settings from machine
+	if ((state == DOSCRD_INITED) || (state == DOSCRD_RUNNING)) {
+		LDB_Settings set;
+		GenericValue r = phld->engine->runFunction(GFUNCL('E'),GenArgs(&set,sizeof(set)));
+		if (r.IntVal == 0)
+			memcpy(settings,&set,sizeof(set));
+	}
 	return settings;
+}
+
+char* CDosCard::GetVersionStringSafe()
+{
+	return verstr;
 }
 
 bool CDosCard::ApplySettings(LDB_Settings* pset)
@@ -240,7 +258,7 @@ int CDosCard::Run()
 {
 	if (state != DOSCRD_INITED) return -1;
 	state = DOSCRD_RUNNING;
-	//
+	GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
 	state = DOSCRD_SHUTDOWN;
 	return 0;
 }

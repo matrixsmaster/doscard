@@ -47,7 +47,7 @@ int DCA_WrapperInit(void)
 	Sound = NULL;
 	Events = NULL;
 	Messages = NULL;
-	//return magic value, which is simply an internal version
+	//return API version
 	return LDBWINTVER;
 }
 
@@ -58,6 +58,22 @@ int DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime = new LDBI_RuntimeData;
 	Events = new LDBI_EventVec;
 	Messages = new LDBI_MesgVec;
+	DOS->RegisterCallback(DBCB_GetTicks,&LDBCB_TCK);
+	DOS->RegisterCallback(DBCB_PushScreen,&LDBCB_LCD);
+	DOS->RegisterCallback(DBCB_PushSound,&LDBCB_SND);
+	DOS->RegisterCallback(DBCB_PullUIEvents,&LDBCB_UIE);
+	DOS->RegisterCallback(DBCB_PushMessage,&LDBCB_MSG);
+	DOS->RegisterCallback(DBCB_FileIOReq,&LDBCB_FIO);
+	Runtime->on = false;
+	Runtime->lcdw = 0;
+	Runtime->lcdh = 0;
+	Runtime->sndsize = 0;
+	Runtime->clkres = NULL;
+	Runtime->clkbeg = NULL;
+	Runtime->disp_fsm = 0;
+	Runtime->frame_cnt = 0;
+	Runtime->frame_dirty = true;
+	Runtime->frameskip_cnt = 0;
 	return 0;
 }
 
@@ -78,7 +94,7 @@ int DCD_RunInstance(void)
 {
 	if ((!DOS) || (!Runtime)) return -1;
 	Runtime->on = true;
-	//
+	DOS->Execute();
 	Runtime->on = false;
 	return 0;
 }

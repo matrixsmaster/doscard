@@ -59,9 +59,10 @@
 #include <string>
 #include "dosbox.h"
 
-#define VERSIONSTR "v.0.0.2"
 #define DEFAULTLIBNAME "libdbwrap.bc"
-#define VERSTRMAXLEN 1535
+#define VERSTRMAXLEN 1536
+#define VERSIONSTR "v.0.0.2"
+#define VERINFOTEMPL "libDosCard ver.%s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 namespace doscard {
 

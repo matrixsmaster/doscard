@@ -211,23 +211,38 @@ void CDosBox::Init()
 #if defined(PCI_FUNCTIONALITY_ENABLED)
 	PCI_Init(); //PCI bus
 #endif
+	LOG_MSG("mix()\n");
 	MIXER_Init(NULL);
 #if C_DEBUG
 	DEBUG_Init();
 #endif
+	LOG_MSG("sb\n");
 	SBLASTER_Init(NULL);
+	LOG_MSG("pcs()\n");
 	PCSPEAKER_Init(NULL);
+	LOG_MSG("bios()\n");
 	BIOS_Init(NULL);
+	LOG_MSG("int10()\n");
 	INT10_Init(NULL);
+	LOG_MSG("mouse()\n");
 	MOUSE_Init(NULL);
+	LOG_MSG("ser()\n");
 	SERIAL_Init(NULL);
+	LOG_MSG("dos()\n");
 	DOS_Init(NULL);
+	LOG_MSG("xms()\n");
 	XMS_Init(NULL);
+	LOG_MSG("ems()\n");
 	EMS_Init(NULL);
+	LOG_MSG("kbd()\n");
 	DOS_KeyboardLayout_Init(NULL);
+	LOG_MSG("mscdex()\n");
 	MSCDEX_Init(NULL);
+	LOG_MSG("drvs()\n");
 	DRIVES_Init(NULL);
+	LOG_MSG("cdimg()\n");
 	CDROM_Image_Init(NULL);
+	LOG_MSG("aexe()\n");
 	AUTOEXEC_Init(NULL);
 	init_ok = true;
 }
@@ -260,8 +275,6 @@ void CDosBox::Clear()
 
 CDosBox::CDosBox()
 {
-	fprintf(stderr,"\nCONSTRUCTOR!!!!!\n");
-	/*
 	LDB_Settings myset;
 	memset(&myset,0,sizeof(myset));
 	init_ok = false;
@@ -309,7 +322,6 @@ CDosBox::CDosBox()
 	myset.secure = false;
 
 	config = new CLDBConf(&myset);
-	*/
 }
 
 CDosBox::~CDosBox()
