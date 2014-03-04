@@ -134,6 +134,9 @@ bool CDosCard::TryLoad(const char* filename)
 		return false;
 	}
 
+	//Run static constructors
+	phld->engine->runStaticConstructorsDestructors(false);
+
 	//Get Version String
 	ostr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN/2));
 	ret = phld->engine->runFunction(GFUNCL('L'),GenArgs(ostr,VERSTRMAXLEN/2));
@@ -155,7 +158,10 @@ void CDosCard::FreeModule()
 {
 	if (phld->funcs) delete phld->funcs;
 	phld->funcs = NULL;
-//	if (phld->engine) delete phld->engine;
+	if (phld->engine) {
+		phld->engine->runStaticConstructorsDestructors(true);
+//		delete phld->engine;
+	}
 	if (phld->engbld) delete phld->engbld;
 	phld->engbld = NULL;
 	if (phld->module) delete phld->module;

@@ -24,7 +24,6 @@ namespace doscard {
 
 int LDBCB_LCD(void* buf, size_t len)
 {
-	printf("LCD\n");
 //	uint8_t* b;
 	uint32_t* dw;
 	if ((!buf) || (!len)) return -1;
@@ -92,19 +91,16 @@ int LDBCB_LCD(void* buf, size_t len)
 
 int LDBCB_SND(void* buf, size_t len)
 {
-	printf("SND\n");
 	return 0;
 }
 
 int LDBCB_UIE(void* buf, size_t len)
 {
-	printf("UIE\n");
 	return 0;
 }
 
 int LDBCB_TCK(void* buf, size_t len)
 {
-	printf("TCK\n");
 	if ((!buf) || (len < 4)) return -1;
 	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
 	struct timespec r;
