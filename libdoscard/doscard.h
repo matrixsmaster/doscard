@@ -127,6 +127,7 @@ private:
 };
 
 void LibDosCardInit(int verb);
+void LibDosCardExit(void);
 
 } //namespace doscard
 

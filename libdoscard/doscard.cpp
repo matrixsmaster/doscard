@@ -49,6 +49,11 @@ void LibDosCardInit(int verb)
 	verbose = verb;
 }
 
+void LibDosCardExit(void)
+{
+	llvm_shutdown();
+}
+
 static void verb(const char* fmt,...)
 {
 	va_list l;
@@ -158,13 +163,14 @@ void CDosCard::FreeModule()
 {
 	if (phld->funcs) delete phld->funcs;
 	phld->funcs = NULL;
-	if (phld->engine) {
-		phld->engine->runStaticConstructorsDestructors(true);
-//		delete phld->engine;
-	}
 	if (phld->engbld) delete phld->engbld;
 	phld->engbld = NULL;
-	if (phld->module) delete phld->module;
+	if (phld->engine) {
+//		phld->engine->runStaticConstructorsDestructors(true);
+		delete phld->engine;
+	}
+	phld->engine = NULL;
+//	if (phld->module) delete phld->module; //in lli they didn't delete module
 	phld->module = NULL;
 }
 

@@ -24,4 +24,15 @@
 #include <SDL2/SDL.h>
 #include "doscard.h"
 
+#define XSHELL_DEF_WND_W 800
+#define XSHELL_DEF_WND_H 600
+#define XSHELL_CAPTION "DosCard XSHELL II"
+
+typedef struct SxsSDL {
+	SDL_Texture* frame;
+	SDL_AudioDeviceID audio;
+	SDL_Window* wnd;
+	SDL_Renderer* ren;
+} XSSDL;
+
 #endif /* XSHELL2_H_ */
