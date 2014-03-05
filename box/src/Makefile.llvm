@@ -10,7 +10,8 @@ BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -DHOST_64BIT
-CC_FLAG := -g -O2 -Weverything -fno-strict-aliasing -fPIC
+CC_FLAG := -g -O2 -Wglobal-constructors -Wexit-time-destructors -fno-strict-aliasing -fPIC
+##-Weverything
 CC_INCL := -I$(MNDIR)/../include -I. -I../..
 CC_COMP := $(CXX) -emit-llvm $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
 

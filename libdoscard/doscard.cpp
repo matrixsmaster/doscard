@@ -166,11 +166,11 @@ void CDosCard::FreeModule()
 	if (phld->engbld) delete phld->engbld;
 	phld->engbld = NULL;
 	if (phld->engine) {
-//		phld->engine->runStaticConstructorsDestructors(true);
-		delete phld->engine;
+		phld->engine->runStaticConstructorsDestructors(phld->module,true);
+//		delete phld->engine;
 	}
 	phld->engine = NULL;
-//	if (phld->module) delete phld->module; //in lli they didn't delete module
+	if (phld->module) delete phld->module; //in lli they didn't delete module
 	phld->module = NULL;
 }
 
