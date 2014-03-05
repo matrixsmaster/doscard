@@ -109,12 +109,17 @@ public:
 	bool ApplySettings(dosbox::LDB_Settings* pset);
 	bool Prepare();
 	int Run();
+	void DoNotCallRunner();
+	uint32_t* GetFramebuffer(int* w, int* h);
 
 private:
 	EDOSCRDState state;
 	dosbox::LDB_Settings* settings;
 	char* verstr;
 	DCPHolder* phld;
+	uint32_t* framebuffer;
+	uint64_t framebufsz;
+	pthread_t dosthread;
 
 	void FreeModule();
 	bool LoadFunctions();

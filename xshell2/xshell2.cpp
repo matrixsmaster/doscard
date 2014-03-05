@@ -70,7 +70,7 @@ static void DrawUI()
 	int i,j;
 	unsigned int k;
 	SDL_Rect frm,cur,tmp;
-	XSDOSM mach;
+	XSDOSM* mach;
 	if (cc.empty()) {
 		ClearUI();
 		SDL_RenderPresent(sdl.ren);
@@ -98,8 +98,8 @@ static void DrawUI()
 			tmp.h--;
 			if (k < cc.size()) {
 				mach = cc[k];
-				if (mach.frame)
-					SDL_RenderCopy(sdl.ren,mach.frame,NULL,&tmp);
+				if (mach->frame)
+					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
 			} else {
 				SDL_RenderFillRect(sdl.ren,&tmp);
 			}
@@ -145,6 +145,8 @@ static void SDLoop()
 				break;
 			}
 		}
+		/* Machines */
+		UpdateMachine(0);
 		/* Update Window*/
 		DrawUI();
 		SDL_Delay(5);
@@ -154,36 +156,34 @@ static void SDLoop()
 bool PushMachine()
 {
 	int r;
-	XSDOSM mach;
-	memset(&mach,0,sizeof(mach));
+	XSDOSM* mach = new XSDOSM;
+	memset(mach,0,sizeof(mach));
 
-//	CDosCard* card = new CDosCard(true);
-//	xnfo(0,6,"Machine created");
-//
-//	r = 0;
-//	if (card->GetCurrentState() != DOSCRD_LOADED) {
-//		r = 1;
-//		xnfo(2,6,"Default loading failed. Trying with another path...");
-//		if (card->TryLoad(BITFILE_ALTPATH)) {
-//			xnfo(0,6,"Loaded successfully!");
-//			r = 0;
-//		}
-//	}
-//	if (r) {
-//		xnfo(1,6,"Unable to load ldbw!");
-//		return false;
-//	}
-//
-//	xnfo(0,6,"Version info:\n%s\n",card->GetVersionStringSafe());
-//	if (!card->Prepare()) {
-//		xnfo(1,1,"Prepare() failed.");
-//		return false;
-//	}
-//	xnfo(0,6,"Prepared successfully");
+	CDosCard* card = new CDosCard(true);
+	xnfo(0,6,"Machine created");
 
-//	mach.m = card;
-	mach.frame = SDL_CreateTexture(sdl.ren,SDL_PIXELFORMAT_ARGB8888,
-			SDL_TEXTUREACCESS_STREAMING,640,400);
+	r = 0;
+	if (card->GetCurrentState() != DOSCRD_LOADED) {
+		r = 1;
+		xnfo(2,6,"Default loading failed. Trying with another path...");
+		if (card->TryLoad(BITFILE_ALTPATH)) {
+			xnfo(0,6,"Loaded successfully!");
+			r = 0;
+		}
+	}
+	if (r) {
+		xnfo(1,6,"Unable to load ldbw!");
+		return false;
+	}
+
+	xnfo(0,6,"Version info:\n%s\n",card->GetVersionStringSafe());
+	if (!card->Prepare()) {
+		xnfo(1,1,"Prepare() failed.");
+		return false;
+	}
+	xnfo(0,6,"Prepared successfully");
+
+	mach->m = card;
 	cc.push_back(mach);
 	return true;
 }
@@ -191,10 +191,11 @@ bool PushMachine()
 void PopMachine()
 {
 	if (cc.empty()) return;
-	XSDOSM mach = cc.back();
+	XSDOSM* mach = cc.back();
 	cc.pop_back();
-	if (mach.frame) SDL_DestroyTexture(mach.frame);
-	if (mach.m) delete mach.m;
+	if (mach->frame) SDL_DestroyTexture(mach->frame);
+	if (mach->m) delete mach->m;
+	delete mach;
 	xnfo(0,7,"Machine destroyed");
 }
 
@@ -206,7 +207,25 @@ void ClearMachines()
 
 void UpdateMachine(int n)
 {
-	//
+	if ((n < 0) || (n >= cc.size())) return;
+	XSDOSM* mach = cc[n];
+	EDOSCRDState stat = mach->m->GetCurrentState();
+	if (stat == DOSCRD_INITED)
+		mach->m->Run();
+	else if (stat != DOSCRD_RUNNING)
+		return;
+	int w,h;
+	uint32_t* frmbuf = mach->m->GetFramebuffer(&w,&h);
+	if ((w != mach->rrect.w) || (h != mach->rrect.h)) {
+		mach->rrect.w = w;
+		mach->rrect.h = h;
+		if (mach->frame)
+			SDL_DestroyTexture(mach->frame);
+		mach->frame = SDL_CreateTexture(sdl.ren,SDL_PIXELFORMAT_ARGB8888,
+				SDL_TEXTUREACCESS_STREAMING,640,400);
+	}
+	if (mach->frame)
+		SDL_UpdateTexture(mach->frame,NULL,frmbuf,mach->rrect.w*sizeof(uint32_t));
 }
 
 void AddMachineEvents(int n, SDL_Event e)

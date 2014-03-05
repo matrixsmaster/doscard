@@ -63,6 +63,14 @@ static void verb(const char* fmt,...)
 	va_end(l);
 }
 
+void* DosCardThread(void* ptr)
+{
+	if (!ptr) return NULL;
+	CDosCard* parent = reinterpret_cast<CDosCard*> (ptr);
+	parent->DoNotCallRunner();
+	return NULL;
+}
+
 CDosCard::CDosCard(bool autoload)
 {
 	state = DOSCRD_NOT_READY;
@@ -82,7 +90,8 @@ CDosCard::~CDosCard()
 {
 	switch (state) {
 	case DOSCRD_RUNNING:
-		//TODO: stop thread
+		//FIXME: stop thread
+		pthread_join(dosthread,NULL);
 		//no break
 	case DOSCRD_SHUTDOWN:
 	case DOSCRD_INITED:
@@ -96,6 +105,7 @@ CDosCard::~CDosCard()
 	delete phld->context;
 	delete phld;
 	if (verstr) free(verstr);
+	if (framebuffer) free(framebuffer);
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -280,9 +290,38 @@ int CDosCard::Run()
 {
 	if (state != DOSCRD_INITED) return -1;
 	state = DOSCRD_RUNNING;
+	pthread_create(&dosthread,NULL,DosCardThread,this);
+	return 0;
+}
+
+void CDosCard::DoNotCallRunner()
+{
+	verb("Runner() executed!\n");
 	GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
 	state = DOSCRD_SHUTDOWN;
-	return 0;
+}
+
+uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
+{
+	LDBI_RuntimeData buf;
+	if ((state != DOSCRD_RUNNING) || (!w) || (!h)) return NULL;
+	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
+	if (r.IntVal != 0) {
+		verb("GetFramebuffer(): Unable to collect runtime data\n");
+		return NULL;
+	}
+	*w = buf.lcdw;
+	*h = buf.lcdh;
+	uint64_t sz = (*w) * (*h) * 4;
+	if ((!framebuffer) || (framebufsz != sz))
+		framebuffer = reinterpret_cast<uint32_t*> (realloc(framebuffer,sz));
+	if (!framebuffer) {
+		verb("GetFramebuffer: Unable to reallocate memory for new framebuffer size (%u)\n",sz);
+		return NULL;
+	}
+	r = phld->engine->runFunction(GFUNCL('H'),GenArgs(framebuffer,sz));
+	framebufsz = sz;
+	return framebuffer;
 }
 
 } //namespace doscard

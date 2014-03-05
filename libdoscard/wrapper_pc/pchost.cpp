@@ -45,17 +45,18 @@ int LDBCB_LCD(void* buf, size_t len)
 				Runtime->disp_fsm = 1;
 //				if (SDL_AtomicGet(&at_flag) >= 0)
 //					SDL_AtomicIncRef(&at_flag);
+				if (mutex) mutex = 0;
 			}
 			break;
 
 		default:
 			if (Runtime->disp_fsm == 1) {
-//				if (SDL_AtomicGet(&at_flag) > 0) {
-//					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
-//						while (SDL_AtomicGet(&at_flag) > 0) ;
-//					} else
-//						return DISPLAY_RET_BUSY;
-//				}
+				if (mutex > 0) {
+					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
+						while (mutex) ;
+					} else
+						return DISPLAY_RET_BUSY;
+				}
 				Runtime->frameskip_cnt = 0;
 
 				uint16_t old_w = Runtime->lcdw;
@@ -64,17 +65,18 @@ int LDBCB_LCD(void* buf, size_t len)
 				Runtime->lcdh = *dw & 0xffff;
 				Runtime->frame_cnt = 0;
 				Runtime->disp_fsm = 2;
-//				if ((!framebuf) || (old_w*old_h != Runtime->lcdw*Runtime->lcdh)) {
-//					framebuf = reinterpret_cast<uint32_t*>(realloc(framebuf,sizeof(uint32_t)*Runtime->lcdw*Runtime->lcdh));
-//					Runtime->frame_dirty = true;
-//				}
+				if ((!Runtime->framebuf) || (old_w*old_h != Runtime->lcdw*Runtime->lcdh)) {
+					Runtime->framebuf = reinterpret_cast<uint32_t*>
+					(realloc(Runtime->framebuf,sizeof(uint32_t)*Runtime->lcdw*Runtime->lcdh));
+					Runtime->frame_dirty = true;
+				}
 				printf("frm sz = %d x %d\n",Runtime->lcdw,Runtime->lcdh);
 				Runtime->crc = 0;
 			}
 			break;
 		}
 	} else if ((Runtime->disp_fsm == 2) && (len == Runtime->lcdw * 4)) {
-//		memcpy(framebuf+(Runtime->lcdw*Runtime->frame_cnt),buf,len);
+		memcpy(Runtime->framebuf+(Runtime->lcdw*Runtime->frame_cnt),buf,len);
 		for (uint64_t i=0; i<len/4; i++)
 			Runtime->crc += dw[i];
 		if (++Runtime->frame_cnt >= Runtime->lcdh) {
@@ -82,6 +84,7 @@ int LDBCB_LCD(void* buf, size_t len)
 //				SDL_AtomicIncRef(&at_flag);
 			Runtime->disp_fsm = 1;
 			printf("frm crc = %u\n",Runtime->crc);
+			if (mutex) mutex = 0;
 		}
 	} else {
 		return -1;

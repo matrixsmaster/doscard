@@ -37,6 +37,7 @@
 namespace doscard {
 
 #define LDBWINTVER 2
+#define FRAMESKIP_MAX 10
 
 typedef struct {
 	bool on;
@@ -48,6 +49,7 @@ typedef struct {
 	uint32_t frame_cnt;
 	bool frame_dirty;
 	uint8_t frameskip_cnt;
+	uint32_t* framebuf;
 	uint32_t crc;
 } LDBI_RuntimeData;
 
@@ -67,6 +69,7 @@ extern uint32_t* Screen;
 extern int16_t* Sound;
 extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
+extern volatile int mutex;
 
 extern "C" {
 int DCA_WrapperInit(void);

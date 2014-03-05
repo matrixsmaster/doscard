@@ -41,7 +41,7 @@ typedef struct SsxDOSM {
 	SDL_Rect rrect;
 } XSDOSM;
 
-typedef std::vector<XSDOSM> DOSMachines;
+typedef std::vector<XSDOSM*> DOSMachines;
 
 bool PushMachine();
 void PopMachine();

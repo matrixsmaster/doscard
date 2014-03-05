@@ -38,6 +38,7 @@ uint32_t* Screen;
 int16_t* Sound;
 LDBI_EventVec* Events;
 LDBI_MesgVec* Messages;
+volatile int mutex;
 
 int DCA_WrapperInit(void)
 {
@@ -47,6 +48,7 @@ int DCA_WrapperInit(void)
 	Sound = NULL;
 	Events = NULL;
 	Messages = NULL;
+	mutex = 0;
 	//return API version
 	return LDBWINTVER;
 }
@@ -74,6 +76,7 @@ int DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->frame_cnt = 0;
 	Runtime->frame_dirty = true;
 	Runtime->frameskip_cnt = 0;
+	Runtime->framebuf = NULL;
 	return 0;
 }
 
@@ -81,6 +84,7 @@ int DCC_TryDestroyInstance(void)
 {
 	if ((!DOS) && (!Runtime)) return 0;
 	if (Runtime->on) return -1;
+	if (Runtime->framebuf) free(Runtime->framebuf);
 	delete DOS;
 	delete Runtime;
 	if (Screen) free(Screen);
@@ -118,14 +122,21 @@ int DCG_GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
 		return -1;
+	while (mutex) ;
+	mutex = 1;
 	memcpy(ptr,Runtime,len);
+	mutex = 0;
 	return 0;
 }
 
 int DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	return -1;
+	while (mutex) ;
+	mutex = 1;
+	memcpy(ptr,Runtime->framebuf,len);
+	mutex = 0;
+	return 0;
 }
 
 int DCI_GetInstanceSound(void* ptr, uint64_t len)
