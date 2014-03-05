@@ -101,6 +101,13 @@ static void SDLoop()
 	} while (!quit);
 }
 
+void exit_override(void)
+{
+	printf("exit_override()\n");
+	LibDosCardExit();
+	_exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char* argv[])
 {
 	int r;
@@ -138,5 +145,6 @@ quit:
 	delete card;
 	LibDosCardExit();
 	xnfo(0,1,"QUIT");
-	return (EXIT_SUCCESS);
+	atexit(exit_override);
+	return 0; //to make compiler happy
 }

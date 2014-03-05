@@ -166,11 +166,20 @@ void CDosCard::FreeModule()
 	if (phld->engbld) delete phld->engbld;
 	phld->engbld = NULL;
 	if (phld->engine) {
-		phld->engine->runStaticConstructorsDestructors(phld->module,true);
+		//FIXME: this method won't do anything really!
+		//I tested it carefully, but nothing happens after call to this function
+		//with argument <true>. LLVM uses it's own code in atexit() instead
+		phld->engine->runStaticConstructorsDestructors(true);
 //		delete phld->engine;
 	}
 	phld->engine = NULL;
-	if (phld->module) delete phld->module; //in lli they didn't delete module
+	if (phld->module) {
+		//Just to make sure we really destroy all code
+		Module::iterator I;
+		for (I = phld->module->begin(); I != phld->module->end(); ++I)
+			I->Dematerialize();
+		delete phld->module; //in lli they didn't delete module, but the engine instead
+	}
 	phld->module = NULL;
 }
 
