@@ -23,14 +23,14 @@ using namespace std;
 using namespace dosbox;
 using namespace doscard;
 
-static CDosCard* card = NULL;
 static XSSDL sdl;
+static DOSMachines cc; //computing centre :)
+static int active;
 
 static int SDLInit()
 {
 	sdl.wnd = NULL;
 	sdl.ren = NULL;
-	sdl.frame = NULL;
 	sdl.audio = 0;
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
 		xnfo(1,2,"SDL2 Init Error");
@@ -56,41 +56,54 @@ static void SDLKill()
 	if (sdl.audio) SDL_CloseAudioDevice(sdl.audio);
 	if (sdl.ren) SDL_DestroyRenderer(sdl.ren);
 	if (sdl.wnd) SDL_DestroyWindow(sdl.wnd);
-	if (sdl.frame) SDL_DestroyTexture(sdl.frame);
 	SDL_Quit();
 }
 
 static void DrawUI()
 {
+	int i,j;
+	SDL_Rect frm,cur;
+	float nf = 17;//static_cast<float> (cc.size());
+	int h = static_cast<int> (floor(sqrt(nf)));
+	int w = static_cast<int> (ceil(nf / h));
+
+	int ww,wh;
+	SDL_GetWindowSize(sdl.wnd,&ww,&wh);
+	NSDLRECT(frm,0,0,(ww/w),(wh/h));
+
+	SDL_SetRenderDrawColor(sdl.ren,0,0,0,255);
 	SDL_RenderClear(sdl.ren);
-	//
+	SDL_SetRenderDrawColor(sdl.ren,255,0,0,255);
+	cur = frm;
+	for (i=0; i<w; i++) {
+		for (j=0; j<h; j++) {
+			SDL_RenderDrawRect(sdl.ren,&cur);
+			cur.y += frm.h;
+		}
+		cur.x += frm.w;
+		cur.y = frm.y;
+	}
 	SDL_RenderPresent(sdl.ren);
 }
 
 static void SDLoop()
 {
 	SDL_Event e;
-	LDB_UIEvent mye;
-	uint32_t i;
 	bool quit = false;
-	xnfo(0,9,"Loop begins");
+	xnfo(0,5,"Loop begins");
 	do {
 
 		/* Event Processing*/
 		while (SDL_PollEvent(&e)) {
-
-			memset(&mye,0,sizeof(mye));
 			switch (e.type) {
-
 			case SDL_QUIT:
-				mye.t = LDB_UIE_QUIT;
 				quit = true;
 				break;
 
-			default: continue;
+			default:
+				AddMachineEvents(active,e);
+				break;
 			}
-
-//			evt_fifo.insert(evt_fifo.begin(),mye);
 		}
 
 		/* Frame Processing*/
@@ -101,50 +114,81 @@ static void SDLoop()
 	} while (!quit);
 }
 
-void exit_override(void)
-{
-	printf("exit_override()\n");
-	LibDosCardExit();
-	_exit(EXIT_SUCCESS);
-}
-
-int main(int argc, char* argv[])
+bool PushMachine()
 {
 	int r;
-	LibDosCardInit(1);
-	xnfo(0,1,"ALIVE!");
-	card = new CDosCard(true);
-	xnfo(0,1,"CDosCard created");
+	XSDOSM mach;
+	memset(&mach,0,sizeof(mach));
+	CDosCard* card = new CDosCard(true);
+	xnfo(0,6,"Machine created");
 
 	r = 0;
 	if (card->GetCurrentState() != DOSCRD_LOADED) {
 		r = 1;
-		xnfo(2,1,"Default loading failed. Trying with another path...");
-		if (card->TryLoad("../libdoscard/libdbwrap.bc")) {
-			xnfo(0,1,"Loaded successfully!");
+		xnfo(2,6,"Default loading failed. Trying with another path...");
+		if (card->TryLoad(BITFILE_ALTPATH)) {
+			xnfo(0,6,"Loaded successfully!");
 			r = 0;
 		}
 	}
 	if (r) {
-		xnfo(1,1,"Unable to load ldbw!");
-		goto quit;
+		xnfo(1,6,"Unable to load ldbw!");
+		return false;
 	}
 
-	xnfo(0,1,"Version info:\n%s\n",card->GetVersionStringSafe());
-//	if (!card->Prepare()) {
-//		xnfo(1,1,"Prepare() failed.");
-//		goto quit;
-//	}
-	xnfo(0,1,"Prepared successfully");
+	xnfo(0,6,"Version info:\n%s\n",card->GetVersionStringSafe());
+	if (!card->Prepare()) {
+		xnfo(1,1,"Prepare() failed.");
+		return false;
+	}
+	xnfo(0,6,"Prepared successfully");
 
-//	SDLInit();
-//	SDLoop();
-//	SDLKill();
-quit:
+	mach.m = card;
+	cc.push_back(mach);
+	return true;
+}
+
+void PopMachine()
+{
+	if (cc.empty()) return;
+	XSDOSM mach = cc.back();
+	cc.pop_back();
+	if (mach.frame) SDL_DestroyTexture(mach.frame);
+	if (mach.m) delete mach.m;
+	xnfo(0,7,"Machine destroyed");
+}
+
+void ClearMachines()
+{
+	xnfo(0,8,"Cleaning machines (%d)...",cc.size());
+	while (!cc.empty()) PopMachine();
+}
+
+void UpdateMachine(int n)
+{
+	//
+}
+
+void AddMachineEvents(int n, SDL_Event e)
+{
+	//
+}
+
+int main(int /*argc*/, char** /*argv*/)
+{
+	LibDosCardInit(1);
+	xnfo(0,1,"ALIVE!");
+//	if (!PushMachine()) _exit(EXIT_FAILURE);
+	active = 0;
+
+	SDLInit();
+	SDLoop();
+	SDLKill();
+
 	xnfo(0,1,"Finalizing...");
-	delete card;
-	LibDosCardExit();
+	ClearMachines();
+
 	xnfo(0,1,"QUIT");
-	atexit(exit_override);
-	return 0; //to make compiler happy
+	LibDosCardExit();
+	_exit(EXIT_SUCCESS);
 }

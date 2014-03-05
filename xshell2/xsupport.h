@@ -24,14 +24,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <SDL2/SDL.h>
 
 #define XSUPP_MAX_MESSAGE 2048
 #define XSUPP_MAX_PREFIX 64
 
-#define XS_CONTEXT_COUNT 6
+#define XS_CONTEXT_COUNT 10
 static const char xs_contexts[XS_CONTEXT_COUNT][XSUPP_MAX_PREFIX] = {
 		"Undefined context","XSHELL2 MAIN","SDLInit","SDLKill","DrawUI",
-		"SDLoop"
+		"SDLoop","PushMachine","PopMachine","ClearMachines","UpdateMachine"
 };
 
 /*

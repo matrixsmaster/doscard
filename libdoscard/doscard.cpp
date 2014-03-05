@@ -169,6 +169,7 @@ void CDosCard::FreeModule()
 		//FIXME: this method won't do anything really!
 		//I tested it carefully, but nothing happens after call to this function
 		//with argument <true>. LLVM uses it's own code in atexit() instead
+		//http://lists.cs.uiuc.edu/pipermail/llvmdev/2011-September/043106.html
 		phld->engine->runStaticConstructorsDestructors(true);
 //		delete phld->engine;
 	}

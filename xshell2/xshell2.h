@@ -27,12 +27,28 @@
 #define XSHELL_DEF_WND_W 800
 #define XSHELL_DEF_WND_H 600
 #define XSHELL_CAPTION "DosCard XSHELL II"
+#define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
 
 typedef struct SxsSDL {
-	SDL_Texture* frame;
 	SDL_AudioDeviceID audio;
 	SDL_Window* wnd;
 	SDL_Renderer* ren;
 } XSSDL;
+
+typedef struct SsxDOSM {
+	SDL_Texture* frame;
+	doscard::CDosCard* m;
+	SDL_Rect rrect;
+} XSDOSM;
+
+typedef std::vector<XSDOSM> DOSMachines;
+
+bool PushMachine();
+void PopMachine();
+void ClearMachines();
+void UpdateMachine(int n);
+void AddMachineEvents(int n, SDL_Event e);
+
+#define NSDLRECT(R,A,B,C,D) {R.x = A; R.y = B; R.w = C; R.h = D;}
 
 #endif /* XSHELL2_H_ */
