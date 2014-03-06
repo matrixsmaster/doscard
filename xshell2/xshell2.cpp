@@ -109,7 +109,7 @@ static char* LinearMachineOutput(int n)
 	return res;
 }
 #else
-static char* LinearMachineOutput(int n) { return NULL; }
+static char* LinearMachineOutput(int) { return NULL; }
 #endif
 
 static void DrawUI()
@@ -311,7 +311,7 @@ void UpdateMachine(int n)
 		if (mach->frame)
 			SDL_DestroyTexture(mach->frame);
 		mach->frame = SDL_CreateTexture(sdl.ren,SDL_PIXELFORMAT_ARGB8888,
-				SDL_TEXTUREACCESS_STREAMING,640,400);
+				SDL_TEXTUREACCESS_STREAMING,w,h);
 	}
 	if (mach->frame)
 		SDL_UpdateTexture(mach->frame,NULL,frmbuf,mach->rrect.w*sizeof(uint32_t));
@@ -324,10 +324,6 @@ void AddMachineEvents(int n, SDL_Event e)
 	LDB_UIEvent mye;
 	memset(&mye,0,sizeof(mye));
 	switch (e.type) {
-//	case SDL_QUIT:
-//		mye.t = LDB_UIE_QUIT;
-//		break;
-
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
 		mye.t = LDB_UIE_KBD;
@@ -343,7 +339,7 @@ void AddMachineEvents(int n, SDL_Event e)
 	default:
 		return;
 	}
-	xnfo(0,10,"Adding event {%hx} to machine %d",mye.t,n);
+//	xnfo(0,10,"Adding event {%hx} to machine %d",mye.t,n);
 	cc[n]->m->PutEvent(mye);
 }
 
