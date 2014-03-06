@@ -334,4 +334,10 @@ void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
 }
 
+LDBI_MesgVec* CDosCard::GetMessages()
+{
+	GenericValue r = phld->engine->runFunction(GFUNCL('K'),GenArgs(&msgbuff,sizeof(void*)));
+	return &msgbuff;
+}
+
 } //namespace doscard

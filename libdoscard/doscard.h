@@ -52,11 +52,11 @@
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Transforms/Instrumentation.h>
-#include "ldbwrap.h"
 #endif
 
 #include <vector>
 #include <string>
+#include "ldbwrap.h"
 #include "dosbox.h"
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
@@ -112,6 +112,7 @@ public:
 	void DoNotCallRunner();
 	uint32_t* GetFramebuffer(int* w, int* h);
 	void PutEvent(dosbox::LDB_UIEvent e);
+	LDBI_MesgVec* GetMessages();
 
 private:
 	EDOSCRDState state;
@@ -121,6 +122,7 @@ private:
 	uint32_t* framebuffer;
 	uint64_t framebufsz;
 	pthread_t dosthread;
+	LDBI_MesgVec msgbuff;
 
 	void FreeModule();
 	bool LoadFunctions();

@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "doscard.h"
 #include "../xshell/xskbd.h"
 
@@ -29,11 +30,14 @@
 #define XSHELL_DEF_WND_H 600
 #define XSHELL_CAPTION "DosCard XSHELL II"
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
+#define XSHELL_FONTFILE "LiberationMono-Regular.ttf"
 
 typedef struct SxsSDL {
 	SDL_AudioDeviceID audio;
 	SDL_Window* wnd;
 	SDL_Renderer* ren;
+	TTF_Font* fnt;
+	SDL_Color txtcol;
 } XSSDL;
 
 typedef struct SsxDOSM {

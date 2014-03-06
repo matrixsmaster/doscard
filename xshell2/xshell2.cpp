@@ -33,18 +33,35 @@ static int SDLInit()
 	sdl.ren = NULL;
 	sdl.audio = 0;
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
-		xnfo(1,2,"SDL2 Init Error");
+		xnfo(-1,2,"SDL2 Init Error");
 		return 1;
 	}
+
+#ifdef XSHELL2_TTFOUT
+	if (TTF_Init()) {
+		xnfo(1,2,"SDL2 TTF Init Error");
+		return 2;
+	}
+#endif
+
 	if (SDL_CreateWindowAndRenderer(XSHELL_DEF_WND_W,XSHELL_DEF_WND_H,
 			SDL_WINDOW_RESIZABLE,&sdl.wnd,&sdl.ren)) {
 		xnfo(1,2,"CreateWindowAndRenderer() failed.");
-		return 2;
+		return 3;
 	}
-	if (SDL_SetRenderDrawColor(sdl.ren,0,0,0,255)) {
-		xnfo(1,2,"SetRenderDrawColor() failed.");
-		return 10;
-	}
+
+#ifdef XSHELL2_TTFOUT
+	sdl.fnt = TTF_OpenFont(XSHELL_FONTFILE,12);
+	if (!sdl.fnt)
+		xnfo(1,2,"Couldn't load font %s",XSHELL_FONTFILE);
+	sdl.txtcol.a = 0xff;
+	sdl.txtcol.r = 127;
+	sdl.txtcol.g = 127;
+	sdl.txtcol.b = 127;
+#else
+	sdl.fnt = NULL;
+#endif
+
 	SDL_SetWindowTitle(sdl.wnd,XSHELL_CAPTION);
 	SDL_RenderClear(sdl.ren);
 	SDL_RenderPresent(sdl.ren);
@@ -56,6 +73,10 @@ static void SDLKill()
 	if (sdl.audio) SDL_CloseAudioDevice(sdl.audio);
 	if (sdl.ren) SDL_DestroyRenderer(sdl.ren);
 	if (sdl.wnd) SDL_DestroyWindow(sdl.wnd);
+#ifdef XSHELL2_TTFOUT
+	if (sdl.fnt) TTF_CloseFont(sdl.fnt);
+	TTF_Quit();
+#endif
 	SDL_Quit();
 }
 
@@ -65,12 +86,40 @@ inline void ClearUI()
 	SDL_RenderClear(sdl.ren);
 }
 
+#ifdef XSHELL2_TTFOUT
+static char* LinearMachineOutput(int n)
+{
+	int i = 0;
+	int j;
+	LDBI_MesgVec::iterator I;
+	LDBI_MesgVec* msgs = cc[n]->m->GetMessages();
+	if (msgs->empty()) return NULL;
+	j = msgs->size() - 3;
+	if (j < 0) j = 0;
+	for (I=msgs->begin()+j; I != msgs->end(); ++I)
+		i += I->length() + 2;
+	if (i < 1) return NULL;
+	char* res = reinterpret_cast<char*> (malloc(++i));
+	memset(res,0,i);
+	for (I=msgs->begin()+j; I != msgs->end(); ++I) {
+		strncat(res,I->c_str(),i-1);
+		i -= I->length();
+		if (i > 0) strncat(res,"\r\n",i-1);
+	}
+	return res;
+}
+#else
+static char* LinearMachineOutput(int n) { return NULL; }
+#endif
+
 static void DrawUI()
 {
 	int i,j;
 	unsigned int k;
 	SDL_Rect frm,cur,tmp;
 	XSDOSM* mach;
+	SDL_Surface* surf;
+	SDL_Texture* txd;
 	if (cc.empty()) {
 		ClearUI();
 		SDL_RenderPresent(sdl.ren);
@@ -94,8 +143,13 @@ static void DrawUI()
 			tmp = cur;
 			tmp.x++;
 			tmp.y++;
+#ifdef XSHELL2_TTFOUT
+			tmp.w = (tmp.w - 2);
+			tmp.h = (tmp.h - 2) / 3 * 2;
+#else
 			tmp.w -= 2;
 			tmp.h -= 2;
+#endif
 			if (k < cc.size()) {
 				if (k == active) {
 					SDL_SetRenderDrawColor(sdl.ren,0,255,0,255);
@@ -104,6 +158,25 @@ static void DrawUI()
 				mach = cc[k];
 				if (mach->frame)
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
+				if (sdl.fnt) {
+					char* lin = LinearMachineOutput(k);
+					if (lin) {
+						printf("lin = '%s'\n",lin);
+						surf = TTF_RenderText_Solid(sdl.fnt,lin,sdl.txtcol);
+						free(lin);
+					}
+				} else
+					surf = NULL;
+				if (surf) {
+					tmp.y += tmp.h;
+					tmp.h /= 2;
+					txd = SDL_CreateTextureFromSurface(sdl.ren,surf);
+					if (txd) {
+						SDL_RenderCopy(sdl.ren,txd,NULL,&tmp);
+						SDL_DestroyTexture(txd);
+					}
+					SDL_FreeSurface(surf);
+				}
 			} else {
 				SDL_SetRenderDrawColor(sdl.ren,30,0,0,255);
 				SDL_RenderFillRect(sdl.ren,&cur);

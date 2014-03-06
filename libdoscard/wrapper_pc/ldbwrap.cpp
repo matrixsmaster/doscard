@@ -158,7 +158,15 @@ int DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 int DCK_GetInstanceMessages(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	return -1;
+	LDBI_MesgVec* dst = reinterpret_cast<LDBI_MesgVec*> (ptr);
+	MUTEX_LOCK;
+	while (!Messages->empty()) {
+		dst->push_back(*Messages->begin());
+		printf("DCK: %s\n",dst->back().c_str());
+		Messages->erase(Messages->begin());
+	}
+	MUTEX_UNLOCK;
+	return 0;
 }
 
 int DCL_GetVersionString(void* ptr, uint64_t len)

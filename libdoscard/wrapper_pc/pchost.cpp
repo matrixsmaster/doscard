@@ -44,7 +44,6 @@ int LDBCB_LCD(void* buf, size_t len)
 			if (Runtime->disp_fsm) {
 				Runtime->disp_fsm = 1;
 				MUTEX_UNLOCK;
-//				if (mutex) mutex = 0;
 			}
 			break;
 
@@ -52,8 +51,6 @@ int LDBCB_LCD(void* buf, size_t len)
 			if (Runtime->disp_fsm == 1) {
 				if (mutex > 0) {
 					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
-//						while (mutex) ;
-//						mutex = 1;
 						MUTEX_LOCK;
 					} else
 						return DISPLAY_RET_BUSY;
@@ -81,12 +78,9 @@ int LDBCB_LCD(void* buf, size_t len)
 		for (uint64_t i=0; i<len/4; i++)
 			Runtime->crc += dw[i];
 		if (++Runtime->frame_cnt >= Runtime->lcdh) {
-//			if (SDL_AtomicGet(&at_flag) >= 0)
-//				SDL_AtomicIncRef(&at_flag);
 			Runtime->disp_fsm = 1;
 //			printf("frm crc = %u\n",Runtime->crc);
 			MUTEX_UNLOCK;
-//			if (mutex) mutex = 0;
 		}
 	} else {
 		return -1;
@@ -140,7 +134,10 @@ int LDBCB_MSG(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* str = reinterpret_cast<char*> (buf);
-	printf("LDBCB_MSG: %s\n",str);
+	std::string nstr(str);
+	MUTEX_LOCK;
+	Messages->push_back(nstr);
+	MUTEX_UNLOCK;
 	return 0;
 }
 
