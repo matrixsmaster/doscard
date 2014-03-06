@@ -82,26 +82,31 @@ static void DrawUI()
 
 	int ww,wh;
 	SDL_GetWindowSize(sdl.wnd,&ww,&wh);
-	NSDLRECT(frm,0,0,(ww/w),(wh/h));
+	NSDLRECT(frm,0,0,(ww/w)-1,(wh/h)-1);
 
 	ClearUI();
-	SDL_SetRenderDrawColor(sdl.ren,255,0,0,255);
 	cur = frm;
 	k = 0;
 	for (i=0; i<w; i++) {
 		for (j=0; j<h; j++) {
+			SDL_SetRenderDrawColor(sdl.ren,255,0,0,255);
 			SDL_RenderDrawRect(sdl.ren,&cur);
 			tmp = cur;
 			tmp.x++;
 			tmp.y++;
-			tmp.w--;
-			tmp.h--;
+			tmp.w -= 2;
+			tmp.h -= 2;
 			if (k < cc.size()) {
+				if (k == active) {
+					SDL_SetRenderDrawColor(sdl.ren,0,255,0,255);
+					SDL_RenderFillRect(sdl.ren,&cur);
+				}
 				mach = cc[k];
 				if (mach->frame)
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
 			} else {
-				SDL_RenderFillRect(sdl.ren,&tmp);
+				SDL_SetRenderDrawColor(sdl.ren,30,0,0,255);
+				SDL_RenderFillRect(sdl.ren,&cur);
 			}
 			k++;
 			cur.y += frm.h + 1;
@@ -115,6 +120,7 @@ static void DrawUI()
 static void SDLoop()
 {
 	SDL_Event e;
+	unsigned int i;
 	bool quit = false;
 	xnfo(0,5,"Loop begins");
 	do {
@@ -137,6 +143,14 @@ static void SDLoop()
 					PopMachine();
 					break;
 
+				case SDL_SCANCODE_KP_4:
+					active--;
+					break;
+
+				case SDL_SCANCODE_KP_6:
+					active++;
+					break;
+
 				default: break;
 				}
 				break;
@@ -144,9 +158,11 @@ static void SDLoop()
 			default:
 				break;
 			}
+			if (active < 0) active = 0;
+			if (active >= cc.size()) active = cc.size();
 		}
 		/* Machines */
-		UpdateMachine(0);
+		for (i=0; i<cc.size(); i++) UpdateMachine(i);
 		/* Update Window*/
 		DrawUI();
 		SDL_Delay(5);

@@ -71,8 +71,8 @@ extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 extern volatile int mutex;
 
-#define MUTEX_LOCK {while (mutex) ; mutex = 1;}
-#define MUTEX_UNLOCK {if (mutex) mutex = 0;}
+#define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
+#define MUTEX_UNLOCK mutex = 0
 
 extern "C" {
 int DCA_WrapperInit(void);

@@ -43,9 +43,8 @@ int LDBCB_LCD(void* buf, size_t len)
 		case DISPLAY_ABOR_SIGNATURE:
 			if (Runtime->disp_fsm) {
 				Runtime->disp_fsm = 1;
-//				if (SDL_AtomicGet(&at_flag) >= 0)
-//					SDL_AtomicIncRef(&at_flag);
 				MUTEX_UNLOCK;
+//				if (mutex) mutex = 0;
 			}
 			break;
 
@@ -53,8 +52,9 @@ int LDBCB_LCD(void* buf, size_t len)
 			if (Runtime->disp_fsm == 1) {
 				if (mutex > 0) {
 					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
-//						MUTEX_LOCK;
-						while (mutex) ;
+//						while (mutex) ;
+//						mutex = 1;
+						MUTEX_LOCK;
 					} else
 						return DISPLAY_RET_BUSY;
 				}
@@ -86,6 +86,7 @@ int LDBCB_LCD(void* buf, size_t len)
 			Runtime->disp_fsm = 1;
 //			printf("frm crc = %u\n",Runtime->crc);
 			MUTEX_UNLOCK;
+//			if (mutex) mutex = 0;
 		}
 	} else {
 		return -1;
@@ -100,10 +101,11 @@ int LDBCB_SND(void* buf, size_t len)
 
 int LDBCB_UIE(void* buf, size_t len)
 {
-	int r;
+	int r = 0;
 	LDB_UIEvent e;
 	if ((!buf) || (len != sizeof(LDB_UIEvent))) return -1;
-	MUTEX_LOCK;
+	if (mutex) return 0;
+//	MUTEX_LOCK;
 	if (Events->empty()) return 0;
 	r = Events->size();
 	e = Events->back();
