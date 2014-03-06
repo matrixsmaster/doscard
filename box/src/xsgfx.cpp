@@ -75,7 +75,9 @@ void GFX_Events()
 			}
 			break;
 		case LDB_UIE_QUIT:
-			throw 1;
+//			throw 1;
+			myldbi->SetQuit();
+			break;
 		default:
 			LOG_MSG("Unknown event (type %d) received",static_cast<int>(evt.t));
 			break;

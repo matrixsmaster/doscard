@@ -53,6 +53,7 @@ private:
 	CLDBConf* config;
 	bool init_ok;
 	uint64_t loopcount;
+
 public:
 	CDosBox();
 	~CDosBox();
@@ -66,11 +67,13 @@ public:
 	void SetConfig(LDB_Settings* c);
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
 //	void E_Exit(const char * message,...);
+	void SetQuit();
 	//
 //	Config* control;
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;
 	bool ticksLocked;
+	bool quit;
 };
 
 //FIXME: local dosbox class instance pointer

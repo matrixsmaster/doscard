@@ -38,10 +38,10 @@
 #include "int10.h"
 #include "render.h"
 #include "pci_bus.h"
+#include "shell.h"
 #include "box_inits.h"
 #include "ldb.h"
 #include "ldbconf.h"
-//#include "xshell.h"
 
 namespace dosbox {
 
@@ -49,13 +49,13 @@ CDosBox* myldbi;
 
 void CDosBox::RunMachine()
 {
-	while (!NormalLoop());
+	while ((!NormalLoop()) && (!quit));
 }
 
 Bitu CDosBox::NormalLoop()
 {
 	Bits ret;
-	while (1) {
+	for(;;) {
 		loopcount++;
 		if (PIC_RunQueue()) {
 			ret = (*cpudecoder)();
@@ -264,6 +264,7 @@ CDosBox::CDosBox()
 	memset(&myset,0,sizeof(myset));
 	init_ok = false;
 	myldbi = this;
+	quit = false;
 
 #if C_DEBUG	
 	LOG_StartUp();
@@ -333,6 +334,16 @@ void CDosBox::SetConfig(LDB_Settings* c)
 	if ((!c) || init_ok) return;
 	if (config) delete config;
 	config = new CLDBConf(c);
+}
+
+void CDosBox::SetQuit()
+{
+	LOG_MSG("CDosBox::SetQuit(): Called");
+	quit = true;
+	if (first_shell) {
+		DOS_Shell* ptr = reinterpret_cast<DOS_Shell*> (first_shell);
+		ptr->exit = true;
+	}
 }
 
 void CDosBox::Execute()

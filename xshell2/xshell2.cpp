@@ -246,7 +246,7 @@ bool PushMachine()
 {
 	int r;
 	XSDOSM* mach = new XSDOSM;
-	memset(mach,0,sizeof(mach));
+	memset(mach,0,sizeof(XSDOSM));
 
 	CDosCard* card = new CDosCard(true);
 	xnfo(0,6,"Machine created");
@@ -282,8 +282,8 @@ void PopMachine()
 	if (cc.empty()) return;
 	XSDOSM* mach = cc.back();
 	cc.pop_back();
-	if (mach->frame) SDL_DestroyTexture(mach->frame);
 	if (mach->m) delete mach->m;
+	if (mach->frame) SDL_DestroyTexture(mach->frame);
 	delete mach;
 	xnfo(0,7,"Machine destroyed");
 }
@@ -324,9 +324,9 @@ void AddMachineEvents(int n, SDL_Event e)
 	LDB_UIEvent mye;
 	memset(&mye,0,sizeof(mye));
 	switch (e.type) {
-	case SDL_QUIT:
-		mye.t = LDB_UIE_QUIT;
-		break;
+//	case SDL_QUIT:
+//		mye.t = LDB_UIE_QUIT;
+//		break;
 
 	case SDL_KEYDOWN:
 	case SDL_KEYUP:
@@ -356,10 +356,10 @@ int main(int /*argc*/, char** /*argv*/)
 
 	SDLInit();
 	SDLoop();
-	SDLKill();
 
 	xnfo(0,1,"Finalizing...");
 	ClearMachines();
+	SDLKill();
 
 	xnfo(0,1,"QUIT");
 	LibDosCardExit();

@@ -146,7 +146,7 @@ int32_t dbdirdel(const char* n);
 
 /* ****************** Initial Date and Time ****************** */
 
-#define LDB_DEFTIME_HR 1
+#define LDB_DEFTIME_HR 16
 #define LDB_DEFTIME_MN 0
 #define LDB_DEFTIME_SC 1
 #define LDB_DEFDATE_YR 1999

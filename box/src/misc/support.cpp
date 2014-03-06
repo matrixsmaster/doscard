@@ -175,7 +175,9 @@ void E_Exit(const char * format,...) {
 	va_end(msg);
 	strcat(buf,"\n");
 
-	throw(buf);
+//	throw(buf);
+	LOG_MSG("E_Exit: %s",buf);
+	myldbi->SetQuit();
 }
 
 #if ((!C_DEBUG) && VERB_LOGGING)

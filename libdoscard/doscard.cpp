@@ -301,7 +301,11 @@ int CDosCard::Run()
 void CDosCard::DoNotCallRunner()
 {
 	verb("Runner() executed!\n");
-	GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
+	try {
+		GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
+	} catch (int) {
+		verb("CATCH 1\n");
+	}
 	verb("Runner() finished natively!\n");
 	state = DOSCRD_SHUTDOWN;
 }
@@ -331,11 +335,17 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 {
-	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
+	if (state != DOSCRD_RUNNING) return;
+	try {
+		GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
+	} catch (int) {
+		verb("CATCH 2\n");
+	}
 }
 
 LDBI_MesgVec* CDosCard::GetMessages()
 {
+	if (state != DOSCRD_RUNNING) return NULL;
 	GenericValue r = phld->engine->runFunction(GFUNCL('K'),GenArgs(&msgbuff,sizeof(void*)));
 	return &msgbuff;
 }

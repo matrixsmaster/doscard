@@ -111,12 +111,14 @@ static struct {
 	PF_Entry entries[PF_QUEUESIZE];
 } pf_queue;
 
-static Bits PageFaultCore(void) {
+static Bits PageFaultCore(void)
+{
+//	if (GCC_UNLIKELY(myldbi->quit)) return 0;
 	CPU_CycleLeft+=CPU_Cycles;
 	CPU_Cycles=1;
 	Bits ret=CPU_Core_Full_Run();
 	CPU_CycleLeft+=CPU_Cycles;
-	if (ret<0) E_Exit("Got a dosbox close machine in pagefault core?");
+	if (GCC_UNLIKELY(ret<0)) E_Exit("Got a dosbox close machine in pagefault core?");
 	if (ret) 
 		return ret;
 	if (!pf_queue.used) E_Exit("PF Core without PF");
@@ -135,7 +137,9 @@ Bitu DEBUG_EnableDebugger(void);
 
 bool first=false;
 
-void PAGING_PageFault(PhysPt lin_addr,Bitu page_addr,Bitu faultcode) {
+void PAGING_PageFault(PhysPt lin_addr,Bitu page_addr,Bitu faultcode)
+{
+//	if (GCC_UNLIKELY(myldbi->quit)) return;
 	/* Save the state of the cpu cores */
 	LazyFlags old_lflags;
 	memcpy(&old_lflags,&lflags,sizeof(LazyFlags));
@@ -176,7 +180,9 @@ static INLINE void InitPageUpdateLink(Bitu relink,PhysPt addr) {
 	if (relink>1) PAGING_LinkPage_ReadOnly(addr>>12,relink);
 }
 
-static INLINE void InitPageCheckPresence(PhysPt lin_addr,bool writing,X86PageEntry& table,X86PageEntry& entry) {
+static INLINE void InitPageCheckPresence(PhysPt lin_addr,bool writing,X86PageEntry& table,X86PageEntry& entry)
+{
+//	if (GCC_UNLIKELY(myldbi->quit)) return;
 	Bitu lin_page=lin_addr >> 12;
 	Bitu d_index=lin_page >> 10;
 	Bitu t_index=lin_page & 0x3ff;
@@ -202,7 +208,9 @@ static INLINE void InitPageCheckPresence(PhysPt lin_addr,bool writing,X86PageEnt
 	}
 }
 			
-static INLINE bool InitPageCheckPresence_CheckOnly(PhysPt lin_addr,bool writing,X86PageEntry& table,X86PageEntry& entry) {
+static INLINE bool InitPageCheckPresence_CheckOnly(PhysPt lin_addr,bool writing,X86PageEntry& table,X86PageEntry& entry)
+{
+//	if (GCC_UNLIKELY(myldbi->quit)) return false;
 	Bitu lin_page=lin_addr >> 12;
 	Bitu d_index=lin_page >> 10;
 	Bitu t_index=lin_page & 0x3ff;
