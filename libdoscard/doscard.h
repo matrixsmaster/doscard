@@ -111,6 +111,7 @@ public:
 	int Run();
 	void DoNotCallRunner();
 	uint32_t* GetFramebuffer(int* w, int* h);
+	void PutEvent(dosbox::LDB_UIEvent e);
 
 private:
 	EDOSCRDState state;

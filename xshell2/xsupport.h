@@ -29,10 +29,11 @@
 #define XSUPP_MAX_MESSAGE 2048
 #define XSUPP_MAX_PREFIX 64
 
-#define XS_CONTEXT_COUNT 10
+#define XS_CONTEXT_COUNT 11
 static const char xs_contexts[XS_CONTEXT_COUNT][XSUPP_MAX_PREFIX] = {
 		"Undefined context","XSHELL2 MAIN","SDLInit","SDLKill","DrawUI",
-		"SDLoop","PushMachine","PopMachine","ClearMachines","UpdateMachine"
+		"SDLoop","PushMachine","PopMachine","ClearMachines","UpdateMachine",
+		"AddMachineEvents"
 };
 
 /*

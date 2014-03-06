@@ -122,20 +122,18 @@ int DCG_GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
 		return -1;
-	while (mutex) ;
-	mutex = 1;
+	MUTEX_LOCK;
 	memcpy(ptr,Runtime,len);
-	mutex = 0;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
 int DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	while (mutex) ;
-	mutex = 1;
+	MUTEX_LOCK;
 	memcpy(ptr,Runtime->framebuf,len);
-	mutex = 0;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
@@ -147,8 +145,14 @@ int DCI_GetInstanceSound(void* ptr, uint64_t len)
 
 int DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 {
+	LDB_UIEvent* pe;
 	FA_TEST;
-	return -1;
+	if (len != sizeof(LDB_UIEvent)) return -1;
+	pe = reinterpret_cast<LDB_UIEvent*> (ptr);
+	MUTEX_LOCK;
+	Events->insert(Events->begin(),*pe);
+	MUTEX_UNLOCK;
+	return 0;
 }
 
 int DCK_GetInstanceMessages(void* ptr, uint64_t len)

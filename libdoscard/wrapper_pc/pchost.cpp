@@ -45,7 +45,7 @@ int LDBCB_LCD(void* buf, size_t len)
 				Runtime->disp_fsm = 1;
 //				if (SDL_AtomicGet(&at_flag) >= 0)
 //					SDL_AtomicIncRef(&at_flag);
-				if (mutex) mutex = 0;
+				MUTEX_UNLOCK;
 			}
 			break;
 
@@ -53,6 +53,7 @@ int LDBCB_LCD(void* buf, size_t len)
 			if (Runtime->disp_fsm == 1) {
 				if (mutex > 0) {
 					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
+//						MUTEX_LOCK;
 						while (mutex) ;
 					} else
 						return DISPLAY_RET_BUSY;
@@ -70,7 +71,7 @@ int LDBCB_LCD(void* buf, size_t len)
 					(realloc(Runtime->framebuf,sizeof(uint32_t)*Runtime->lcdw*Runtime->lcdh));
 					Runtime->frame_dirty = true;
 				}
-				printf("frm sz = %d x %d\n",Runtime->lcdw,Runtime->lcdh);
+//				printf("frm sz = %d x %d\n",Runtime->lcdw,Runtime->lcdh);
 				Runtime->crc = 0;
 			}
 			break;
@@ -83,8 +84,8 @@ int LDBCB_LCD(void* buf, size_t len)
 //			if (SDL_AtomicGet(&at_flag) >= 0)
 //				SDL_AtomicIncRef(&at_flag);
 			Runtime->disp_fsm = 1;
-			printf("frm crc = %u\n",Runtime->crc);
-			if (mutex) mutex = 0;
+//			printf("frm crc = %u\n",Runtime->crc);
+			MUTEX_UNLOCK;
 		}
 	} else {
 		return -1;
@@ -99,7 +100,17 @@ int LDBCB_SND(void* buf, size_t len)
 
 int LDBCB_UIE(void* buf, size_t len)
 {
-	return 0;
+	int r;
+	LDB_UIEvent e;
+	if ((!buf) || (len != sizeof(LDB_UIEvent))) return -1;
+	MUTEX_LOCK;
+	if (Events->empty()) return 0;
+	r = Events->size();
+	e = Events->back();
+	Events->pop_back();
+	MUTEX_UNLOCK;
+	memcpy(buf,&e,len);
+	return r;
 }
 
 int LDBCB_TCK(void* buf, size_t len)

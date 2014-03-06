@@ -88,9 +88,12 @@ CDosCard::CDosCard(bool autoload)
 
 CDosCard::~CDosCard()
 {
+	LDB_UIEvent etmp;
 	switch (state) {
 	case DOSCRD_RUNNING:
-		//FIXME: stop thread
+		memset(&etmp,0,sizeof(etmp));
+		etmp.t = LDB_UIE_QUIT;
+		PutEvent(etmp);
 		pthread_join(dosthread,NULL);
 		//no break
 	case DOSCRD_SHUTDOWN:
@@ -271,6 +274,7 @@ char* CDosCard::GetVersionStringSafe()
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
+	//TODO
 	return false;
 }
 
@@ -298,6 +302,7 @@ void CDosCard::DoNotCallRunner()
 {
 	verb("Runner() executed!\n");
 	GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
+	verb("Runner() finished natively!\n");
 	state = DOSCRD_SHUTDOWN;
 }
 
@@ -322,6 +327,11 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 	r = phld->engine->runFunction(GFUNCL('H'),GenArgs(framebuffer,sz));
 	framebufsz = sz;
 	return framebuffer;
+}
+
+void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
+{
+	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
 }
 
 } //namespace doscard

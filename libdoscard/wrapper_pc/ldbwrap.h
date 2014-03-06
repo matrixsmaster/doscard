@@ -71,6 +71,9 @@ extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 extern volatile int mutex;
 
+#define MUTEX_LOCK {while (mutex) ; mutex = 1;}
+#define MUTEX_UNLOCK {if (mutex) mutex = 0;}
+
 extern "C" {
 int DCA_WrapperInit(void);
 int DCB_CreateInstance(dosbox::LDB_Settings*);

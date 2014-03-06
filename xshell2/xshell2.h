@@ -23,6 +23,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include "doscard.h"
+#include "../xshell/xskbd.h"
 
 #define XSHELL_DEF_WND_W 800
 #define XSHELL_DEF_WND_H 600
@@ -50,5 +51,6 @@ void UpdateMachine(int n);
 void AddMachineEvents(int n, SDL_Event e);
 
 #define NSDLRECT(R,A,B,C,D) {R.x = A; R.y = B; R.w = C; R.h = D;}
+#define MACH_INBOUND(N) if ((N < 0) || (N >= (int)cc.size())) return
 
 #endif /* XSHELL2_H_ */

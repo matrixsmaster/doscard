@@ -24,7 +24,7 @@ using namespace dosbox;
 using namespace doscard;
 
 static XSSDL sdl;
-static DOSMachines cc; //computing centre :)
+static DOSMachines cc; //computing center :)
 static int active;
 
 static int SDLInit()
@@ -92,8 +92,8 @@ static void DrawUI()
 		for (j=0; j<h; j++) {
 			SDL_RenderDrawRect(sdl.ren,&cur);
 			tmp = cur;
-			tmp.x--;
-			tmp.y--;
+			tmp.x++;
+			tmp.y++;
 			tmp.w--;
 			tmp.h--;
 			if (k < cc.size()) {
@@ -207,7 +207,7 @@ void ClearMachines()
 
 void UpdateMachine(int n)
 {
-	if ((n < 0) || (n >= cc.size())) return;
+	MACH_INBOUND(n);
 	XSDOSM* mach = cc[n];
 	EDOSCRDState stat = mach->m->GetCurrentState();
 	if (stat == DOSCRD_INITED)
@@ -230,7 +230,32 @@ void UpdateMachine(int n)
 
 void AddMachineEvents(int n, SDL_Event e)
 {
-	//
+	MACH_INBOUND(n);
+	unsigned int i;
+	LDB_UIEvent mye;
+	memset(&mye,0,sizeof(mye));
+	switch (e.type) {
+	case SDL_QUIT:
+		mye.t = LDB_UIE_QUIT;
+		break;
+
+	case SDL_KEYDOWN:
+	case SDL_KEYUP:
+		mye.t = LDB_UIE_KBD;
+		mye.pressed = (e.type == SDL_KEYDOWN);
+		mye.key = KBD_NONE;
+		//FIXME: use key-list!
+		for (i=0; i<(sizeof(XShellKeyboardMap)/sizeof(XShellKeyboardPair)); i++)
+			if (XShellKeyboardMap[i].sdl == e.key.keysym.scancode) {
+				mye.key = XShellKeyboardMap[i].db;
+				break;
+			}
+		break;
+	default:
+		return;
+	}
+	xnfo(0,10,"Adding event {%hx} to machine %d",mye.t,n);
+	cc[n]->m->PutEvent(mye);
 }
 
 int main(int /*argc*/, char** /*argv*/)
