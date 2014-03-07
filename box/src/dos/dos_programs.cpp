@@ -389,9 +389,9 @@ static void MEM_ProgramStart(Program * * make) {
 extern Bit32u floppytype;
 
 void XMS_Clear();
-void XMS_Init(Section* /*sec*/);
+void XMS_Init();
 void EMS_Clear();
-void EMS_Init(Section* /*sec*/);
+void EMS_Init();
 
 class BOOT : public Program {
 private:
@@ -493,8 +493,8 @@ private:
 		myldbi->GetConfig()->mem.ems = ALDB_MEM::LDB_MEM_EMS_DISABLE;
 		myldbi->GetConfig()->mem.xms = false;
 		myldbi->GetConfig()->mem.umb = false;
-		XMS_Init(NULL);
-		EMS_Init(NULL);
+		XMS_Init();
+		EMS_Init();
 	}
 
 public:

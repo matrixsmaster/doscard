@@ -1238,7 +1238,7 @@ public:
 
 static DOS* test;
 
-void DOS_Init(Section* /*sec*/)
+void DOS_Init()
 {
 	test = new DOS(NULL);
 }

@@ -1499,22 +1499,19 @@ private:
 	OPL_Mode oplmode;
 
 public:
-	SBLASTER(void*) {
+	SBLASTER()
+	{
 		Bitu i;
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
 
-//		sb.hw.base=section->Get_hex("sbbase");
 		sb.hw.base = myldbi->GetConfig()->snd.sb_base;
-//		sb.hw.irq=section->Get_int("irq");
 		sb.hw.irq = myldbi->GetConfig()->snd.sb_irq;
-		Bitu dma8bit = myldbi->GetConfig()->snd.sb_dma; //section->Get_int("dma");
+		Bitu dma8bit = myldbi->GetConfig()->snd.sb_dma;
 		if (dma8bit>0xff) dma8bit=0xff;
 		sb.hw.dma8=(Bit8u)(dma8bit&0xff);
-		Bitu dma16bit = myldbi->GetConfig()->snd.sb_hdma; //section->Get_int("hdma");
+		Bitu dma16bit = myldbi->GetConfig()->snd.sb_hdma;
 		if (dma16bit>0xff) dma16bit=0xff;
 		sb.hw.dma16=(Bit8u)(dma16bit&0xff);
 
-//		sb.mixer.enabled=section->Get_bool("sbmixer");
 		sb.mixer.enabled = myldbi->GetConfig()->snd.sb_mix;
 		sb.mixer.stereo = false;
 
@@ -1564,12 +1561,11 @@ public:
 
 		/* Soundblaster midi interface */
 		sb.midi = false;
-//		if (!MIDI_Available()) sb.midi = false;
-//		else sb.midi = true;
 	}	
 	
-	~SBLASTER() {
-		OPL_ShutDown(NULL);
+	~SBLASTER()
+	{
+		OPL_ShutDown();
 		DSP_Reset(); // Stop everything	
 	}	
 }; //End of SBLASTER class
@@ -1577,9 +1573,9 @@ public:
 
 static SBLASTER* test;
 
-void SBLASTER_Init(Section* /*sec*/)
+void SBLASTER_Init()
 {
-	test = new SBLASTER(NULL);
+	test = new SBLASTER();
 }
 
 void SBLASTER_Clear()

@@ -1084,12 +1084,10 @@ const char* DOS_GetLoadedLayout(void) {
 
 class DOS_KeyboardLayout {
 public:
-	DOS_KeyboardLayout(void*) {
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
+	DOS_KeyboardLayout()
+	{
 		dos.loaded_codepage=437;	// US codepage already initialized
 		loaded_layout=new keyboard_layout();
-
-//		const char * layoutname=section->Get_string("keyboardlayout");
 		char* layoutname = "auto";
 
 		Bits wants_dos_codepage = -1;
@@ -1110,9 +1108,6 @@ public:
 			loaded_layout->read_codepage_file("auto", req_codepage);
 		}
 
-		/*		if (strncmp(layoutname,"auto",4) && strncmp(layoutname,"none",4)) {
-			LOG_MSG("Loading DOS keyboard layout %s ...",layoutname);
-		} */
 		if (loaded_layout->read_keyboard_file(layoutname, dos.loaded_codepage)) {
 			if (strncmp(layoutname,"auto",4)) {
 				LOG_MSG("Error loading keyboard layout %s",layoutname);
@@ -1139,9 +1134,9 @@ public:
 
 static DOS_KeyboardLayout* test;
 
-void DOS_KeyboardLayout_Init(Section* /*sec*/)
+void DOS_KeyboardLayout_Init()
 {
-	test = new DOS_KeyboardLayout(NULL);
+	test = new DOS_KeyboardLayout();
 }
 
 void DOS_KeyboardLayout_Clear()

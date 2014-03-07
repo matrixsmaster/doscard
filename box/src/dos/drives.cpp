@@ -212,7 +212,7 @@ int DriveManager::UnmountDrive(int drive) {
 	return result;
 }
 
-void DriveManager::Init(Section* /* sec */)
+void DriveManager::Init()
 {
 	// setup driveInfos structure
 	currentDrive = 0;
@@ -221,9 +221,9 @@ void DriveManager::Init(Section* /* sec */)
 	}
 }
 
-void DRIVES_Init(Section* /*sec*/)
+void DRIVES_Init()
 {
-	DriveManager::Init(NULL);
+	DriveManager::Init();
 }
 
 }

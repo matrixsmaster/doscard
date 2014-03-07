@@ -271,13 +271,19 @@ void dbdirclose(DBFILE* d)
 int32_t dbdirmake(const char* n)
 {
 	//return valid value if dir is already exists
+#ifdef LDB_SUPPORT_DIRS
 	//FIXME: impl
+	LOG_MSG("dbdirmake(): STUB");
+#endif
 	return -1;
 }
 
 int32_t dbdirdel(const char* n)
 {
+#ifdef LDB_SUPPORT_DIRS
 	//FIXME: impl
+	LOG_MSG("dbdirdel(): STUB");
+#endif
 	return -1;
 }
 

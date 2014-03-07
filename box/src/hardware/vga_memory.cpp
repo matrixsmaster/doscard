@@ -918,7 +918,7 @@ void VGA_StartUpdateLFB(void) {
 	MEM_SetLFB(vga.s3.la_window << 4 ,vga.vmemsize/4096, vga.lfb.handler, &vgaph.mmio);
 }
 
-void VGA_SetupMemory(/*Section* sec*/)
+void VGA_SetupMemory()
 {
 	vga.svga.bank_read = vga.svga.bank_write = 0;
 	vga.svga.bank_read_full = vga.svga.bank_write_full = 0;

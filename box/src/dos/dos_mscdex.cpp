@@ -1332,7 +1332,7 @@ void MSCDEX_SetCDInterface(int intNr, int numCD) {
 //	forceCD	= numCD;
 }
 
-void MSCDEX_Init(Section* /*sec*/)
+void MSCDEX_Init()
 {
 	/* Register the mscdex device */
 	DOS_Device * newdev = new device_MSCDEX();

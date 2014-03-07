@@ -541,12 +541,10 @@ private:
 	IO_ReadHandleObject ReadHandler;
 	IO_WriteHandleObject WriteHandler;
 public:	
-	MEMORY(void*) {
+	MEMORY() {
 		Bitu i;
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
 	
 		/* Setup the Physical Page Links */
-//		Bitu memsize=section->Get_int("memsize");
 		Bitu memsize = myldbi->GetConfig()->mem.total_ram;
 	
 		if (memsize < 1) memsize = 1;
@@ -580,12 +578,6 @@ public:
 		for (i=0xf0;i<0x100;i++) {
 			memory.phandlers[i] = &rom_page_handler;
 		}
-//		if (machine==MCH_PCJR) {
-//			/* Setup cartridge rom at 0xe0000-0xf0000 */
-//			for (i=0xe0;i<0xf0;i++) {
-//				memory.phandlers[i] = &rom_page_handler;
-//			}
-//		}
 		/* Reset some links */
 		memory.links.used = 0;
 		// A20 Line - PS/2 system control port A
@@ -604,9 +596,9 @@ public:
 static MEMORY* test;	
 
 
-void MEM_Init(Section * /*sec*/)
+void MEM_Init()
 {
-	test = new MEMORY(NULL);
+	test = new MEMORY();
 }
 
 void MEM_Clear()

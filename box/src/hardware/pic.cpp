@@ -615,7 +615,7 @@ public:
 
 static PIC_8259A* test;
 
-void PIC_Init(Section* /*sec*/)
+void PIC_Init()
 {
 	test = new PIC_8259A(NULL);
 }

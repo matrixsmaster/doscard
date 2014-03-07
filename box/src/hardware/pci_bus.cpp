@@ -430,12 +430,14 @@ bool PCI_IsInitialized() {
 }
 
 
-void PCI_ShutDown(Section* sec){
+void PCI_ShutDown()
+{
 	delete pci_interface;
 	pci_interface=NULL;
 }
 
-void PCI_Init(Section* sec) {
+void PCI_Init()
+{
 	pci_interface = new PCI(sec);
 	sec->AddDestroyFunction(&PCI_ShutDown,false);
 }

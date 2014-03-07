@@ -405,7 +405,7 @@ private:
 	IO_ReadHandleObject ReadHandler[4];
 	IO_WriteHandleObject WriteHandler[4];
 public:
-	TIMER(void*) {
+	TIMER() {
 		WriteHandler[0].Install(0x40,write_latch,IO_MB);
 	//	WriteHandler[1].Install(0x41,write_latch,IO_MB);
 		WriteHandler[2].Install(0x42,write_latch,IO_MB);
@@ -459,9 +459,9 @@ public:
 
 static TIMER* test;
 
-void TIMER_Init(Section* )
+void TIMER_Init()
 {
-	test = new TIMER(NULL);
+	test = new TIMER();
 }
 
 void TIMER_Clear()

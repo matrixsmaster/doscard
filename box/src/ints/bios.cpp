@@ -1287,7 +1287,7 @@ void BIOS_SetComPorts(Bit16u baseaddr[]) {
 
 static BIOS* test;
 
-void BIOS_Init(Section* /*sec*/)
+void BIOS_Init()
 {
 	test = new BIOS(NULL);
 }

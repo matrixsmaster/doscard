@@ -38,7 +38,7 @@ public:
 //	static void CycleDrive(bool pressed);
 //	static void CycleDisk(bool pressed);
 	static void CycleAllDisks(void);
-	static void Init(Section* sec);
+	static void Init();
 	
 private:
 	static struct DriveInfo {

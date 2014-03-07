@@ -1284,18 +1284,9 @@ static Bitu INT4B_Handler() {
 	return CBRET_NONE;
 }
 
-Bitu GetEMSType(/*Section_prop * section*/) {
+Bitu GetEMSType()
+{
 	Bitu rtype = 0;
-//	std::string emstypestr(section->Get_string("ems"));
-//	if (emstypestr=="true") {
-//		rtype = 1;	// mixed mode
-//	} else if (emstypestr=="emsboard") {
-//		rtype = 2;
-//	} else if (emstypestr=="emm386") {
-//		rtype = 3;
-//	} else {
-//		rtype = 0;
-//	}
 	switch (myldbi->GetConfig()->mem.ems) {
 	case ALDB_MEM::LDB_MEM_EMS_AUTO: rtype = 1; break;
 	case ALDB_MEM::LDB_MEM_EMS_EMSBRD: rtype = 2; break;
@@ -1317,7 +1308,8 @@ private:
 	Bitu call_int67;
 
 public:
-	EMS(void*) {
+	EMS()
+	{
 		emm_device=NULL;
 		ems_type=0;
 
@@ -1328,15 +1320,9 @@ public:
 		vcpi.enabled=false;
 		GEMMIS_seg=0;
 		
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
 		ems_type=GetEMSType();
 		if (ems_type<=0) return;
 
-//		if (machine==MCH_PCJR) {
-//			ems_type=0;
-//			LOG_MSG("EMS disabled for PCJr machine");
-//			return;
-//		}
 		BIOS_ZeroExtendedSize(true);
 
 		if (!ems_baseseg) ems_baseseg=DOS_GetMemory(2);	//We have 32 bytes
@@ -1463,9 +1449,9 @@ public:
 		
 static EMS* test;
 
-void EMS_Init(Section* /*sec*/)
+void EMS_Init()
 {
-	test = new EMS(NULL);
+	test = new EMS();
 }
 
 void EMS_Clear()

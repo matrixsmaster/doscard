@@ -31,8 +31,8 @@ enum OPL_Mode {
 	OPL_none,OPL_cms,OPL_opl2,OPL_dualopl2,OPL_opl3
 };
 
-void OPL_Init(/*Section* sec,*/OPL_Mode oplmode);
-void OPL_ShutDown(Section* sec);
+void OPL_Init(OPL_Mode oplmode);
+void OPL_ShutDown();
 
 namespace Adlib {
 
@@ -147,7 +147,7 @@ public:
 	Bitu PortRead( Bitu port, Bitu iolen );
 	inline void Init(Mode m) { mode = m; }
 
-	Module(void*);
+	Module();
 	~Module();
 };
 

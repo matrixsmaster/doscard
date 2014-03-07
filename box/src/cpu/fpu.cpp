@@ -622,7 +622,8 @@ void FPU_ESC7_Normal(Bitu rm) {
 }
 
 
-void FPU_Init(Section*) {
+void FPU_Init()
+{
 	FPU_FINIT();
 }
 

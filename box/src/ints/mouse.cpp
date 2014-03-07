@@ -1050,7 +1050,7 @@ Bitu MOUSE_UserInt_CB_Handler(void) {
 	return CBRET_NONE;
 }
 
-void MOUSE_Init(Section* /*sec*/) {
+void MOUSE_Init() {
 	// Callback for mouse interrupt 0x33
 	call_int33=CALLBACK_Allocate();
 //	RealPt i33loc=RealMake(CB_SEG+1,(call_int33*CB_SIZE)-0x10);

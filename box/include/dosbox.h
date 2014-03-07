@@ -28,27 +28,14 @@
 
 namespace dosbox {
 
-GCC_ATTRIBUTE(noreturn) void E_Exit(const char * message,...) GCC_ATTRIBUTE( __format__(__printf__, 1, 2));
-
-//void MSG_Add(const char*,const char*); //add messages to the internal languagefile
-//const char* MSG_Get(char const *);     //get messages from the internal languagefile
-
-class CommandLine;
-class Section;
-class Config;
-//extern Config * control;
-
 //FIXME: delete that after all
 #define IS_EGAVGA_ARCH 1
 #define IS_VGA_ARCH 1
 
-//typedef Bitu (LoopHandler)(void);
-
 class CDosBox {
 private:
-	//FIXME: move vars from public
+	//FIXME: move more vars from public
 	LDB_CallbackFunc ldb_callbacks[LDB_CALLBACKSQ];
-//	CommandLine* com_line;
 	bool callbacksReady;
 	CLDBConf* config;
 	bool init_ok;
@@ -66,15 +53,15 @@ public:
 	void Execute();
 	void SetConfig(LDB_Settings* c);
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
-//	void E_Exit(const char * message,...);
 	void SetQuit();
-	//
-//	Config* control;
+
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;
 	bool ticksLocked;
 	bool quit;
 };
+
+GCC_ATTRIBUTE(noreturn) void E_Exit(const char * message,...) GCC_ATTRIBUTE( __format__(__printf__, 1, 2));
 
 //FIXME: local dosbox class instance pointer
 extern CDosBox* myldbi;

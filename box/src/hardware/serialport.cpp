@@ -1209,9 +1209,9 @@ bool CSerial::Putchar(Bit8u data, bool wait_dsr, bool wait_cts, Bitu timeout) {
 
 class SERIALPORTS {
 public:
-	SERIALPORTS(void*) {
+	SERIALPORTS()
+	{
 		Bit16u biosParameter[4] = { 0, 0, 0, 0 };
-//		Section_prop *section = static_cast <Section_prop*>(configuration);
 
 //		char s_property[] = "serialx";
 		for(Bitu i = 0; i < 4; i++) {
@@ -1255,7 +1255,8 @@ public:
 		BIOS_SetComPorts (biosParameter);
 	}
 
-	~SERIALPORTS () {
+	~SERIALPORTS()
+	{
 		for (Bitu i = 0; i < 4; i++)
 			if (serialports[i]) {
 				delete serialports[i];
@@ -1266,11 +1267,11 @@ public:
 
 static SERIALPORTS *testSerialPortsBaseclass;
 
-void SERIAL_Init(Section* /*sec*/)
+void SERIAL_Init()
 {
 	// should never happen
 	if (testSerialPortsBaseclass) delete testSerialPortsBaseclass;
-	testSerialPortsBaseclass = new SERIALPORTS(NULL);
+	testSerialPortsBaseclass = new SERIALPORTS();
 }
 
 void SERIAL_Clear()

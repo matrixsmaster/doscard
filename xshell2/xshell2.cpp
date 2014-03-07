@@ -108,8 +108,6 @@ static char* LinearMachineOutput(int n)
 	}
 	return res;
 }
-#else
-static char* LinearMachineOutput(int) { return NULL; }
 #endif
 
 static void DrawUI()
@@ -159,12 +157,14 @@ static void DrawUI()
 				if (mach->frame)
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
 				if (sdl.fnt) {
+#ifdef XSHELL2_TTFOUT
 					char* lin = LinearMachineOutput(k);
 					if (lin) {
 						printf("lin = '%s'\n",lin);
 						surf = TTF_RenderText_Solid(sdl.fnt,lin,sdl.txtcol);
 						free(lin);
 					}
+#endif
 				} else
 					surf = NULL;
 				if (surf) {

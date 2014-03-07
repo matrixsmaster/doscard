@@ -894,7 +894,7 @@ public:
 
 static PAGING* test;
 
-void PAGING_Init(Section * /*sec*/)
+void PAGING_Init()
 {
 	test = new PAGING(NULL);
 }

@@ -212,47 +212,6 @@
 #define SHELL_CMD_VER_HELP	"View and set the reported DOS version.\n"
 #define SHELL_CMD_VER_VER	"DOSCARD version %s. Reported DOS version %d.%02d.\n"
 
-#define PROGRAM_CONFIG_NOCONFIGFILE	"No config file loaded!\n"
-#define PROGRAM_CONFIG_PRIMARY_CONF	"Primary config file: \n%s\n"
-#define PROGRAM_CONFIG_ADDITIONAL_CONF	"Additional config files:\n"
-#define PROGRAM_CONFIG_CONFDIR	"DOSCARD %s configuration directory: \n%s\n\n"
-
-#define PROGRAM_CONFIG_FILE_ERROR	"\nCan't open file %s\n"
-#define PROGRAM_CONFIG_FILE_WHICH	"Writing config file %s"
-
-#define PROGRAM_CONFIG_USAGE	"Config tool:\n"\
-		"-writeconf or -wc without parameter: write to primary loaded config file.\n"\
-		"-writeconf or -wc with filename: write file to config directory.\n"\
-		"Use -writelang or -wl filename to write the current language strings.\n"\
-		"-r [parameters]\n Restart DOSCARD, either using the previous parameters or any that are appended.\n"\
-		"-wcp [filename]\n Write config file to the program directory, DOSCARD.conf or the specified \n filename.\n"\
-		"-wcd\n Write to the default config file in the config directory.\n"\
-		"-l lists configuration parameters.\n"\
-		"-h, -help, -? sections / sectionname / propertyname\n"\
-		" Without parameters, displays this help screen. Add \"sections\" for a list of\n sections."\
-		" For info about a specific section or property add its name behind.\n"\
-		"-axclear clears the autoexec section.\n"\
-		"-axadd [line] adds a line to the autoexec section.\n"\
-		"-axtype prints the content of the autoexec section.\n"\
-		"-securemode switches to secure mode.\n"\
-		"-get \"section property\" returns the value of the property.\n"\
-		"-set \"section property=value\" sets the value."
-#define PROGRAM_CONFIG_HLP_PROPHLP	"Purpose of property \"%s\" (contained in section \"%s\"):\n%s\n\nPossible Values: %s\nDefault value: %s\nCurrent value: %s\n"
-#define PROGRAM_CONFIG_HLP_LINEHLP	"Purpose of section \"%s\":\n%s\nCurrent value:\n%s\n"
-#define PROGRAM_CONFIG_HLP_NOCHANGE	"This property cannot be changed at runtime.\n"
-#define PROGRAM_CONFIG_HLP_POSINT	"positive integer");
-#define PROGRAM_CONFIG_HLP_SECTHLP	"Section %s contains the following properties:\n");
-#define PROGRAM_CONFIG_HLP_SECTLIST	"DOSCARD configuration contains the following sections:\n\n"
-
-#define PROGRAM_CONFIG_SECURE_ON	"Switched to secure mode.\n"
-#define PROGRAM_CONFIG_SECURE_DISALLOW	"This operation is not permitted in secure mode.\n"
-#define PROGRAM_CONFIG_SECTION_ERROR	"Section %s doesn't exist.\n"
-#define PROGRAM_CONFIG_VALUE_ERROR	"\"%s\" is not a valid value for property %s.\n"
-#define PROGRAM_CONFIG_PROPERTY_ERROR	"No such section or property.\n"
-#define PROGRAM_CONFIG_NO_PROPERTY	"There is no property %s in section %s.\n"
-#define PROGRAM_CONFIG_SET_SYNTAX	"Correct syntax: config -set \"section property\".\n"
-#define PROGRAM_CONFIG_GET_SYNTAX	"Correct syntax: config -get \"section property\".\n"
-#define PROGRAM_CONFIG_PRINT_STARTUP	"\nDOSCARD was started with the following command line parameters:\n%s"
-#define PROGRAM_CONFIG_MISSINGPARAM	"Missing parameter."
+#define PROGRAM_CONFIG_SECURE_DISALLOW "This operation is not permitted in secure mode.\n"
 
 #endif /* MESSAGES_H_ */

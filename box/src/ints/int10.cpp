@@ -751,7 +751,7 @@ static void SetupTandyBios(void) {
 //	}
 }
 
-void INT10_Init(Section* /*sec*/) {
+void INT10_Init() {
 	INT10_InitVGA();
 //	if (IS_TANDY_ARCH) SetupTandyBios();
 	/* Setup the INT 10 vector */

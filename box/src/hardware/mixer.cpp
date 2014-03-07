@@ -590,7 +590,7 @@ MixerObject::~MixerObject(){
 }
 
 
-void MIXER_Init(Section* /*sec*/)
+void MIXER_Init()
 {
 	mixer.freq = myldbi->GetConfig()->snd.sample_freq;
 	mixer.nosound = !(myldbi->GetConfig()->snd.enabled);

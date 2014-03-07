@@ -49,7 +49,7 @@ CDosBox* myldbi;
 
 void CDosBox::RunMachine()
 {
-	while ((!NormalLoop()) && (!quit));
+	while ((!quit) && (!NormalLoop()));
 }
 
 Bitu CDosBox::NormalLoop()
@@ -192,43 +192,43 @@ void CDosBox::Init()
 	myldbi->ticksLocked = false;
 	int10.vesa_nolfb = false;
 	int10.vesa_oldvbe = false;
-	IO_Init(NULL);
-	PAGING_Init(NULL);
-	MEM_Init(NULL);
-	CALLBACK_Init(NULL);
-	PIC_Init(NULL);
-	PROGRAMS_Init(NULL);
-	TIMER_Init(NULL);
-	CMOS_Init(NULL);
-	RENDER_Init(NULL);
-	CPU_Init(NULL);
+	IO_Init();
+	PAGING_Init();
+	MEM_Init();
+	CALLBACK_Init();
+	PIC_Init();
+	PROGRAMS_Init();
+	TIMER_Init();
+	CMOS_Init();
+	RENDER_Init();
+	CPU_Init();
 #if C_FPU
-	FPU_Init(NULL);
+	FPU_Init();
 #endif
-	DMA_Init(NULL);
-	VGA_Init(NULL);
-	KEYBOARD_Init(NULL);
+	DMA_Init();
+	VGA_Init();
+	KEYBOARD_Init();
 #if defined(PCI_FUNCTIONALITY_ENABLED)
 	PCI_Init(); //PCI bus
 #endif
-	MIXER_Init(NULL);
+	MIXER_Init();
 #if C_DEBUG
 	DEBUG_Init();
 #endif
-	SBLASTER_Init(NULL);
-	PCSPEAKER_Init(NULL);
-	BIOS_Init(NULL);
-	INT10_Init(NULL);
-	MOUSE_Init(NULL);
-	SERIAL_Init(NULL);
-	DOS_Init(NULL);
-	XMS_Init(NULL);
-	EMS_Init(NULL);
-	DOS_KeyboardLayout_Init(NULL);
-	MSCDEX_Init(NULL);
-	DRIVES_Init(NULL);
-	CDROM_Image_Init(NULL);
-	AUTOEXEC_Init(NULL);
+	SBLASTER_Init();
+	PCSPEAKER_Init();
+	BIOS_Init();
+	INT10_Init();
+	MOUSE_Init();
+	SERIAL_Init();
+	DOS_Init();
+	XMS_Init();
+	EMS_Init();
+	DOS_KeyboardLayout_Init();
+	MSCDEX_Init();
+	DRIVES_Init();
+	CDROM_Image_Init();
+	AUTOEXEC_Init();
 	init_ok = true;
 }
 
@@ -358,20 +358,10 @@ void CDosBox::Execute()
 	Init();
 	loopcount = 0;
 	LOG_MSG("CDosBox::Execute(): Run!");
-
-	/*that's really ugly way to control the quit state of VM
-	 * but original Box was written in that way in mind, so...*/
-	try {
-		SHELL_Init();
-	}
-	catch (int) {
-		LOG_MSG("CDosBox::Execute(): killer exception catch");
-	}
-
+	SHELL_Init();
 	LOG_MSG("CDosBox::Execute(): loopcount = %lu",loopcount);
 	Clear();
 	LOG_MSG("CDosBox::Execute(): Exit");
-	return;
 }
 
 } //namespace dosbox

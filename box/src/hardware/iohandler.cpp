@@ -514,7 +514,7 @@ public:
 
 static IO* test;
 
-void IO_Init(Section * /*sect*/)
+void IO_Init()
 {
 	test = new IO(NULL);
 }

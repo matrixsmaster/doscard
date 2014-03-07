@@ -344,7 +344,7 @@ public:
 
 static AUTOEXEC* test;
 
-void AUTOEXEC_Init(Section * /*sec*/)
+void AUTOEXEC_Init()
 {
 	test = new AUTOEXEC(NULL);
 }

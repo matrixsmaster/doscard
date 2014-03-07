@@ -391,7 +391,7 @@ void DMA_SetWrapping(Bitu wrap) {
 
 static DMA* test;
 
-void DMA_Init(Section* /*sec*/)
+void DMA_Init()
 {
 	DMA_SetWrapping(0xffff);
 	test = new DMA(NULL);

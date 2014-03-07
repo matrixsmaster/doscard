@@ -538,7 +538,7 @@ void CALLBACK_HandlerObject::Set_RealVec(Bit8u vec){
 	} else E_Exit ("double usage of vector handler");
 }
 
-void CALLBACK_Init(Section* /*sec*/) {
+void CALLBACK_Init() {
 	Bitu i;
 	for (i=0;i<CB_MAX;i++) {
 		CallBack_Handlers[i]=&illegal_handler;

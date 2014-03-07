@@ -324,15 +324,13 @@ class PCSPEAKER {
 private:
 	MixerObject MixerChan;
 public:
-	PCSPEAKER(void*) {
+	PCSPEAKER()
+	{
 		spkr.chan=0;
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
-//		if(!section->Get_bool("pcspeaker")) return;
 		if (!myldbi->GetConfig()->snd.pcsp_en) return;
 		spkr.mode=SPKR_OFF;
 		spkr.last_ticks=0;
 		spkr.last_index=0;
-//		spkr.rate=section->Get_int("pcrate");
 		spkr.rate = myldbi->GetConfig()->snd.pcsp_freq;
 		spkr.pit_max=(1000.0f/PIT_TICK_RATE)*65535;
 		spkr.pit_half=spkr.pit_max/2;
@@ -344,16 +342,17 @@ public:
 		/* Register the sound channel */
 		spkr.chan=MixerChan.Install(&PCSPEAKER_CallBack,spkr.rate,"SPKR");
 	}
-	~PCSPEAKER(){
-//		Section_prop * section=static_cast<Section_prop *>(m_configuration);
-//		if(!section->Get_bool("pcspeaker")) return;
+
+	~PCSPEAKER()
+	{
+		//TODO
 	}
 };
 static PCSPEAKER* test;
 
-void PCSPEAKER_Init(Section* sec)
+void PCSPEAKER_Init()
 {
-	test = new PCSPEAKER(sec);
+	test = new PCSPEAKER();
 }
 
 void PCSPEAKER_Clear()

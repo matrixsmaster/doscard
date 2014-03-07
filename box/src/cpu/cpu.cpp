@@ -2119,13 +2119,12 @@ class CPU {
 private:
 	static bool inited;
 public:
-	CPU(void*)
+	CPU()
 	{
 		if(inited) {
 			Change_Config();
 			return;
 		}
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
 		inited=true;
 		reg_eax=0;
 		reg_ebx=0;
@@ -2174,17 +2173,12 @@ public:
 	}
 	bool Change_Config()
 	{
-//		Section_prop * section=static_cast<Section_prop *>(newconfig);
 		CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
 		//CPU_CycleLeft=0;//needed ?
 		CPU_Cycles=0;
 		CPU_SkipCycleAutoAdjust=false;
 		int val=0;
 
-//		Prop_multival* p = section->Get_multival("cycles");
-//		std::string type = p->GetSection()->Get_string("type");
-//		std::string str ;
-//		CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
 		switch (myldbi->GetConfig()->cpu.cycles_change) {
 		case ALDB_CPU::LDB_CPU_CYCLE_MAX:
 			CPU_CycleMax=0;
@@ -2247,9 +2241,9 @@ public:
 	
 static CPU * test;
 
-void CPU_Init(Section* /*sec*/)
+void CPU_Init()
 {
-	test = new CPU(NULL);
+	test = new CPU();
 }
 
 void CPU_Clear()

@@ -178,7 +178,7 @@ void DOS_SetupTables(void);
 void DOS_SetupPrograms(void);
 
 /* Initialize Keyboard Layout */
-void DOS_KeyboardLayout_Init(Section* sec);
+void DOS_KeyboardLayout_Init();
 
 bool DOS_LayoutKey(Bitu key, Bit8u flags1, Bit8u flags2, Bit8u flags3);
 

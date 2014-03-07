@@ -162,7 +162,6 @@ int DCK_GetInstanceMessages(void* ptr, uint64_t len)
 	MUTEX_LOCK;
 	while (!Messages->empty()) {
 		dst->push_back(*Messages->begin());
-		printf("DCK: %s\n",dst->back().c_str());
 		Messages->erase(Messages->begin());
 	}
 	MUTEX_UNLOCK;

@@ -486,7 +486,7 @@ void CommandLine::Shift(unsigned int amount) {
 	}
 }
 
-void PROGRAMS_Init(Section* /*sec*/) {
+void PROGRAMS_Init() {
 	/* Setup a special callback to start virtual programs */
 	call_program=CALLBACK_Allocate();
 	CALLBACK_Setup(call_program,&PROGRAMS_Handler,CB_RETF,"internal program");

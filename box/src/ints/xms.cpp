@@ -413,16 +413,15 @@ Bitu XMS_Handler(void) {
 	return CBRET_NONE;
 }
 
-Bitu GetEMSType(/*Section_prop * section*/);
+Bitu GetEMSType();
 
 class XMS {
 private:
 	CALLBACK_HandlerObject callbackhandler;
 public:
-	XMS(void*) {
-//		Section_prop * section=static_cast<Section_prop *>(configuration);
+	XMS()
+	{
 		umb_available=false;
-//		if (!section->Get_bool("xms")) return;
 		if (!myldbi->GetConfig()->mem.xms) return;
 		Bitu i;
 		BIOS_ZeroExtendedSize(true);
@@ -453,8 +452,8 @@ public:
 		DOS_BuildUMBChain(umb_available,ems_available);
 	}
 
-	~XMS(){
-//		Section_prop * section = static_cast<Section_prop *>(m_configuration);
+	~XMS()
+	{
 		/* Remove upper memory information */
 		dos_infoblock.SetStartOfUMBChain(0xffff);
 		if (umb_available) {
@@ -462,7 +461,6 @@ public:
 			umb_available=false;
 		}
 
-//		if (!section->Get_bool("xms")) return;
 		if (!myldbi->GetConfig()->mem.xms) return;
 		/* Undo biosclearing */
 		BIOS_ZeroExtendedSize(false);
@@ -478,9 +476,9 @@ public:
 };
 static XMS* test;
 
-void XMS_Init(Section* /*sec*/)
+void XMS_Init()
 {
-	test = new XMS(NULL);
+	test = new XMS();
 }
 
 void XMS_Clear()
