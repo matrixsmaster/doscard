@@ -21,8 +21,12 @@
 #define DOSBOX_DOSBOX_H
 
 #include "config.h"
+
+#ifndef DOSBOX_EXTERNAL_INCLUDE
 #include "version.h"
 #include "logging.h"
+#endif
+
 #include "ldb.h"
 #include "ldbconf.h"
 

@@ -30,9 +30,9 @@
 #include <dirent.h>
 #include <vector>
 #include <string>
-#include "dosbox.h"
-#include "ldbconf.h"
-#include "ldb.h"
+
+#define DOSBOX_EXTERNAL_INCLUDE
+#include "../../box/include/dosbox.h"
 
 namespace doscard {
 

@@ -3,7 +3,7 @@
 
 APP	:= xshell2
 CXX	:= g++-4.8.2
-INCLUDES := -I. -I../box/include -I../libdoscard -I../libdoscard/wrapper_pc
+INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := 
 CXXFLAGS := -g -O2 -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := 

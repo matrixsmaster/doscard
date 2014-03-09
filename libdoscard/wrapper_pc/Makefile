@@ -3,8 +3,8 @@
 
 LIBNAME	 := libdbwrap
 CXX		 := clang++
-INCLUDES := -I. -I.. -I../../box/include
-DEFINES  := 
+INCLUDES := -I../include
+DEFINES  :=
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 DEFINES += $(BLDINFO)

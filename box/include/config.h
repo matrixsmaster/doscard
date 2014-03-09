@@ -1,3 +1,6 @@
+#ifndef DOSBOX_CONFIG_H
+#define DOSBOX_CONFIG_H
+
 #include <inttypes.h>
 
 //#define PROFILE_SIMPLE_FILE_CALL_TRACE 1
@@ -93,3 +96,5 @@ typedef Bit64s Bits;
 typedef Bit32u Bitu;
 typedef Bit32s Bits;
 #endif
+
+#endif //DOSBOX_CONFIG_H

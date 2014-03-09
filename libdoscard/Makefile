@@ -5,7 +5,7 @@ LIB := libdoscard
 CXX	:= g++-4.8.2
 WRAPSRC  := wrapper_pc
 WRAPLIB  := libdbwrap.bc
-INCLUDES := -I. -I.. -I../box/include -I$(WRAPSRC)
+INCLUDES := -Iinclude -I$(WRAPSRC)
 DEFINES := -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
