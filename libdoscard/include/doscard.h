@@ -56,8 +56,8 @@
 
 #include <vector>
 #include <string>
-#include "ldbwrap.h"
-#include "dosbox.h"
+#include "include/ldbwrap.h"
+#include "include/dosbox.h"
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1536
