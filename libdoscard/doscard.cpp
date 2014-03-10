@@ -306,6 +306,11 @@ void CDosCard::DoNotCallRunner()
 	state = DOSCRD_SHUTDOWN;
 }
 
+int SetCapabilities(uint8_t flags)
+{
+	//TODO
+}
+
 uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 {
 	LDBI_RuntimeData buf;
@@ -340,6 +345,11 @@ LDBI_MesgVec* CDosCard::GetMessages()
 	if (state != DOSCRD_RUNNING) return NULL;
 	GenericValue r = phld->engine->runFunction(GFUNCL('K'),GenArgs(&msgbuff,sizeof(void*)));
 	return &msgbuff;
+}
+
+uint32_t FillSound(uint16_t* buf, uint32_t maxlen)
+{
+	//TODO
 }
 
 } //namespace doscard

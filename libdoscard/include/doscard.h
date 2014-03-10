@@ -74,6 +74,16 @@ enum EDOSCRDState {
 	DOSCRD_LOADFAIL
 };
 
+#define DOSCRD_CAP_VIDEO 0x1
+#define DOSCRD_CAP_AUDIO 0x2
+#define DOSCRD_CAP_EVENT 0x4
+#define DOSCRD_CAP_MESSG 0x8
+#define DOSCRD_CAP_SERIL 0x10
+#define DOSCRD_CAP_EHOUT 0x20
+#define DOSCRD_CAP_TTYIN 0x40
+
+#define DOSCRD_CAPS_STANDARD (DOSCRD_CAP_VIDEO|DOSCRD_CAP_AUDIO|DOSCRD_CAP_EVENT|DOSCRD_CAP_MESSG)
+
 #ifdef DOSCARD_SOURCE
 
 typedef std::vector<llvm::Function*> DCFuncs;
@@ -109,9 +119,11 @@ public:
 	bool Prepare();
 	int Run();
 	void DoNotCallRunner();
+	int SetCapabilities(uint8_t flags);
 	uint32_t* GetFramebuffer(int* w, int* h);
 	void PutEvent(dosbox::LDB_UIEvent e);
 	LDBI_MesgVec* GetMessages();
+	uint32_t FillSound(uint16_t* buf, uint32_t maxlen);
 
 private:
 	EDOSCRDState state;

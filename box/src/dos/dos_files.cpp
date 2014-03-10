@@ -365,9 +365,13 @@ bool DOS_FindNext(void) {
 }
 
 
-bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount) {
-	Bit32u handle=RealHandle(entry);
-	if (handle>=DOS_FILES) {
+bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount)
+{
+	Bit32u handle = RealHandle(entry);
+	if (GCC_UNLIKELY(entry == STDIN)) {
+		myldbi->Callback(DBCB_PullTTYInput,data,*amount); //FIXME
+	}
+	if (handle >= DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
 	}
@@ -381,16 +385,16 @@ bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount) {
 		return false;
 	}
 */
-	Bit16u toread=*amount;
-	bool ret=Files[handle]->Read(data,&toread);
-	*amount=toread;
+	Bit16u toread = *amount;
+	bool ret = Files[handle]->Read(data,&toread);
+	*amount = toread;
 	return ret;
 }
 
 bool DOS_WriteFile(Bit16u entry,Bit8u * data,Bit16u * amount)
 {
 	Bit32u handle = RealHandle(entry);
-	if (entry == STDOUT)
+	if (GCC_UNLIKELY((entry == STDOUT) || (entry == STDERR)))
 		myldbi->Callback(DBCB_LogSTDOUT,data,*amount);
 	if (handle >= DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
@@ -406,9 +410,9 @@ bool DOS_WriteFile(Bit16u entry,Bit8u * data,Bit16u * amount)
 		return false;
 	}
 */
-	Bit16u towrite=*amount;
-	bool ret=Files[handle]->Write(data,&towrite);
-	*amount=towrite;
+	Bit16u towrite = *amount;
+	bool ret = Files[handle]->Write(data,&towrite);
+	*amount = towrite;
 	return ret;
 }
 
