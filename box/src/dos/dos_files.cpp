@@ -370,11 +370,11 @@ bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount) {
 	if (handle>=DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
-	};
-	if (!Files[handle] || !Files[handle]->IsOpen()) {
+	}
+	if ((!Files[handle]) || (!Files[handle]->IsOpen())) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
-	};
+	}
 /*
 	if ((Files[handle]->flags & 0x0f) == OPEN_WRITE)) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
@@ -387,16 +387,19 @@ bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount) {
 	return ret;
 }
 
-bool DOS_WriteFile(Bit16u entry,Bit8u * data,Bit16u * amount) {
-	Bit32u handle=RealHandle(entry);
-	if (handle>=DOS_FILES) {
+bool DOS_WriteFile(Bit16u entry,Bit8u * data,Bit16u * amount)
+{
+	Bit32u handle = RealHandle(entry);
+	if (entry == STDOUT)
+		myldbi->Callback(DBCB_LogSTDOUT,data,*amount);
+	if (handle >= DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
-	};
-	if (!Files[handle] || !Files[handle]->IsOpen()) {
+	}
+	if ((!Files[handle]) || (!Files[handle]->IsOpen())) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
-	};
+	}
 /*
 	if ((Files[handle]->flags & 0x0f) == OPEN_READ)) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);

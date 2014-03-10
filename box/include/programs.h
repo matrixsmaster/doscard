@@ -70,8 +70,8 @@ public:
 	bool GetEnvNum(Bitu num,std::string & result);
 	Bitu GetEnvCount(void);
 	bool SetEnv(const char * entry,const char * new_string);
-	void WriteOut(const char * format,...);				/* Write to standard output */
-	void WriteOut_NoParsing(const char * format);				/* Write to standard output, no parsing */
+	void WriteOut(const char * format,...);					/* Write to standard output */
+	void WriteOut_NoParsing(const char * format);	/* Write to standard output, no parsing */
 	void ChangeToLongCmd();
 
 };

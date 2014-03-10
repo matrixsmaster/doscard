@@ -54,11 +54,14 @@ enum LDB_CallbackType {
 	DBCB_PushSound = 2,
 	DBCB_PullUIEvents = 3,
 	DBCB_PushMessage = 4,
-	DBCB_FileIOReq = 5
+	DBCB_FileIOReq = 5,
+	DBCB_LogSTDOUT = 6
 };
-#define LDB_CALLBACKSQ 6
+#define LDB_CALLBACKSQ 7
 
 typedef int (*LDB_CallbackFunc)(void*,size_t);
+
+#define LDB_CALLBACK_RET_NOT_FOUND -21
 
 /* ****************** LDB Basic Functions Prototypes ****************** */
 

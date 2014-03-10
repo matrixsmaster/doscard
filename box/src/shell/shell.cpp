@@ -164,10 +164,10 @@ Bitu DOS_Shell::GetRedirection(char *s, char **ifn, char **ofn,bool * append) {
 			while (*lr && *lr!=' ' && *lr!='<' && *lr!='|') lr++;
 			//if it ends on a : => remove it.
 			if((*ofn != lr) && (lr[-1] == ':')) lr[-1] = 0;
-//			if(*lr && *(lr+1)) 
-//				*lr++=0; 
-//			else 
-//				*lr=0;
+			//			if(*lr && *(lr+1))
+			//				*lr++=0;
+			//			else
+			//				*lr=0;
 			t = (char*)malloc(lr-*ofn+1);
 			safe_strncpy(t,*ofn,lr-*ofn+1);
 			*ofn=t;
@@ -178,10 +178,10 @@ Bitu DOS_Shell::GetRedirection(char *s, char **ifn, char **ofn,bool * append) {
 			*ifn=lr;
 			while (*lr && *lr!=' ' && *lr!='>' && *lr != '|') lr++;
 			if((*ifn != lr) && (lr[-1] == ':')) lr[-1] = 0;
-//			if(*lr && *(lr+1)) 
-//				*lr++=0; 
-//			else 
-//				*lr=0;
+			//			if(*lr && *(lr+1))
+			//				*lr++=0;
+			//			else
+			//				*lr=0;
 			t = (char*)malloc(lr-*ifn+1);
 			safe_strncpy(t,*ifn,lr-*ifn+1);
 			*ifn=t;
@@ -199,11 +199,11 @@ Bitu DOS_Shell::GetRedirection(char *s, char **ifn, char **ofn,bool * append) {
 void DOS_Shell::ParseLine(char * line) {
 	LOG(LOG_EXEC,LOG_ERROR)("Parsing command line: %s",line);
 	/* Check for a leading @ */
- 	if (line[0] == '@') line[0] = ' ';
+	if (line[0] == '@') line[0] = ' ';
 	line = trim(line);
 
 	/* Do redirection and pipe checks */
-	
+
 	char * in  = 0;
 	char * out = 0;
 
@@ -213,7 +213,7 @@ void DOS_Shell::ParseLine(char * line) {
 	bool append;
 	bool normalstdin  = false;	/* wether stdin/out are open on start. */
 	bool normalstdout = false;	/* Bug: Assumed is they are "con"      */
-	
+
 	num = GetRedirection(line,&in, &out,&append);
 	if (num>1) LOG_MSG("SHELL:Multiple command on 1 line not supported");
 	if (in || out) {
@@ -236,14 +236,14 @@ void DOS_Shell::ParseLine(char * line) {
 		/* Create if not exist. Open if exist. Both in read/write mode */
 		if(append) {
 			if( (status = DOS_OpenFile(out,OPEN_READWRITE,&dummy)) ) {
-				 DOS_SeekFile(1,&bigdummy,DOS_SEEK_END);
+				DOS_SeekFile(1,&bigdummy,DOS_SEEK_END);
 			} else {
 				status = DOS_CreateFile(out,DOS_ATTR_ARCHIVE,&dummy);	//Create if not exists.
 			}
 		} else {
 			status = DOS_OpenFileExtended(out,OPEN_READWRITE,DOS_ATTR_ARCHIVE,0x12,&dummy,&dummy2);
 		}
-		
+
 		if(!status && normalstdout) DOS_OpenFile("con",OPEN_READWRITE,&dummy); //Read only file, open con again
 		if(!normalstdin && !in) DOS_CloseFile(0);
 	}
@@ -272,12 +272,12 @@ void DOS_Shell::RunInternal(void)
 	while(bf && bf->ReadLine(input_line)) 
 	{
 		if (echo) {
-				if (input_line[0] != '@') {
-					ShowPrompt();
-					WriteOut_NoParsing(input_line);
-					WriteOut_NoParsing("\n");
-				};
+			if (input_line[0] != '@') {
+				ShowPrompt();
+				WriteOut_NoParsing(input_line);
+				WriteOut_NoParsing("\n");
 			};
+		};
 		ParseLine(input_line);
 	}
 	return;
@@ -389,7 +389,7 @@ void SHELL_Init()
 	envmcb.SetPSPSeg(psp_seg);	// MCB of the command shell environment
 	envmcb.SetSize(DOS_MEM_START-env_seg);
 	envmcb.SetType(0x4d);
-	
+
 	/* Setup environment */
 	PhysPt env_write=PhysMake(env_seg,0);
 	MEM_BlockWrite(env_write,path_string,(Bitu)(strlen(path_string)+1));
@@ -404,7 +404,7 @@ void SHELL_Init()
 	DOS_PSP psp(psp_seg);
 	psp.MakeNew(0);
 	dos.psp(psp_seg);
-   
+
 	/* The start of the filetable in the psp must look like this:
 	 * 01 01 01 00 02
 	 * In order to achieve this: First open 2 files. Close the first and
@@ -426,12 +426,12 @@ void SHELL_Init()
 	tail.count=(Bit8u)strlen(init_line);
 	strcpy(tail.buffer,init_line);
 	MEM_BlockWrite(PhysMake(psp_seg,128),&tail,128);
-	
+
 	/* Setup internal DOS Variables */
 	dos.dta(RealMake(psp_seg,0x80));
 	dos.psp(psp_seg);
 
-	
+
 	SHELL_ProgramStart(&first_shell);
 	first_shell->Run();
 	delete first_shell;

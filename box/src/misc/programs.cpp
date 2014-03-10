@@ -129,43 +129,40 @@ void Program::ChangeToLongCmd() {
 	full_arguments.assign(""); //Clear so it gets even more save
 }
 
-static char last_written_character = 0;//For 0xA to OxD 0xA expansion
-void Program::WriteOut(const char * format,...) {
+static char last_written_character = 0; //For 0xA to OxD 0xA expansion
+//The next function didn't break DosBox's original "coding style" at all :)
+//FIXME: this way of CR/LF substitution is ugly
+static void DOS_CON_Write(const char* buf)
+{
+	Bit16u i,s = 1;
+	Bit8u out;
+	Bit16u size = (Bit16u)strlen(buf);
+	for (i = 0; i < size; i++) {
+		if (buf[i] == 0xA && last_written_character != 0xD) {
+			out = 0xD;
+			DOS_WriteFile(STDOUT,&out,&s);
+		}
+		last_written_character = out = buf[i];
+		DOS_WriteFile(STDOUT,&out,&s);
+	}
+}
+
+void Program::WriteOut(const char * format,...)
+{
 	char buf[2048];
 	va_list msg;
-	
+
 	va_start(msg,format);
 	vsnprintf(buf,2047,format,msg);
 	va_end(msg);
 
-	Bit16u size = (Bit16u)strlen(buf);
-	for(Bit16u i = 0; i < size;i++) {
-		Bit8u out;Bit16u s=1;
-		if (buf[i] == 0xA && last_written_character != 0xD) {
-			out = 0xD;DOS_WriteFile(STDOUT,&out,&s);
-		}
-		last_written_character = out = buf[i];
-		DOS_WriteFile(STDOUT,&out,&s);
-	}
-	
-//	DOS_WriteFile(STDOUT,(Bit8u *)buf,&size);
+	DOS_CON_Write(buf);
 }
 
-void Program::WriteOut_NoParsing(const char * format) {
-	Bit16u size = (Bit16u)strlen(format);
-	char const* buf = format;
-	for(Bit16u i = 0; i < size;i++) {
-		Bit8u out;Bit16u s=1;
-		if (buf[i] == 0xA && last_written_character != 0xD) {
-			out = 0xD;DOS_WriteFile(STDOUT,&out,&s);
-		}
-		last_written_character = out = buf[i];
-		DOS_WriteFile(STDOUT,&out,&s);
-	}
-
-//	DOS_WriteFile(STDOUT,(Bit8u *)format,&size);
+void Program::WriteOut_NoParsing(const char * format)
+{
+	DOS_CON_Write(format);
 }
-
 
 bool Program::GetEnvStr(const char * entry,std::string & result) {
 	/* Walk through the internal environment and see for a match */

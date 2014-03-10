@@ -308,6 +308,7 @@ CDosBox::CDosBox()
 	myset.secure = false;
 
 	config = new CLDBConf(&myset);
+	UnregisterCallback(DBCB_GetTicks,true);
 }
 
 CDosBox::~CDosBox()
@@ -318,14 +319,27 @@ CDosBox::~CDosBox()
 
 int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 {
-	//TODO: checks
+	if ((t < 0) || (t >= LDB_CALLBACKSQ)) return -1;
 	ldb_callbacks[t] = f;
+	return 0;
+}
+
+int CDosBox::UnregisterCallback(LDB_CallbackType t, bool unreg_all)
+{
+	int i;
+	if ((t < 0) || (t >= LDB_CALLBACKSQ)) return -1;
+	if (unreg_all) {
+		for (i=0; i<LDB_CALLBACKSQ; i++)
+			ldb_callbacks[i] = NULL;
+	} else
+		ldb_callbacks[t] = NULL;
 	return 0;
 }
 
 int CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
 {
-	//TODO: checks
+	if (GCC_UNLIKELY(!ldb_callbacks[t]))
+		return LDB_CALLBACK_RET_NOT_FOUND;
 	return ((*ldb_callbacks[t])(p,l));
 }
 
