@@ -56,9 +56,12 @@ enum LDB_CallbackType {
 	DBCB_PushMessage = 4,
 	DBCB_FileIOReq = 5,
 	DBCB_LogSTDOUT = 6,
-	DBCB_PullTTYInput = 7
+	DBCB_PullTTYInput = 7,
+	DBCB_RS232IO = 8,
+	DBCB_LPTIO = 9
 };
-#define LDB_CALLBACKSQ 8
+
+#define LDB_CALLBACKSQ 10
 
 typedef int (*LDB_CallbackFunc)(void*,size_t);
 

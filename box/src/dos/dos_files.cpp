@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
+ *  Copyright (C) 2013-2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +16,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 
 #include <string.h>
 #include <stdlib.h>
@@ -368,9 +368,6 @@ bool DOS_FindNext(void) {
 bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount)
 {
 	Bit32u handle = RealHandle(entry);
-	if (GCC_UNLIKELY(entry == STDIN)) {
-		myldbi->Callback(DBCB_PullTTYInput,data,*amount); //FIXME
-	}
 	if (handle >= DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;
@@ -394,8 +391,6 @@ bool DOS_ReadFile(Bit16u entry,Bit8u * data,Bit16u * amount)
 bool DOS_WriteFile(Bit16u entry,Bit8u * data,Bit16u * amount)
 {
 	Bit32u handle = RealHandle(entry);
-	if (GCC_UNLIKELY((entry == STDOUT) || (entry == STDERR)))
-		myldbi->Callback(DBCB_LogSTDOUT,data,*amount);
 	if (handle >= DOS_FILES) {
 		DOS_SetError(DOSERR_INVALID_HANDLE);
 		return false;

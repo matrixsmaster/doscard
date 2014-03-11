@@ -39,6 +39,27 @@ namespace doscard {
 #define LDBWINTVER 2
 #define FRAMESKIP_MAX 10
 
+#define DOSCRD_CAP_VIDEO 0x01
+#define DOSCRD_CAP_AUDIO 0x02
+#define DOSCRD_CAP_EVENT 0x04
+#define DOSCRD_CAP_MESSG 0x08
+#define DOSCRD_CAP_SERIO 0x10
+#define DOSCRD_CAP_PARIO 0x20
+#define DOSCRD_CAP_EHOUT 0x40
+#define DOSCRD_CAP_TTYIN 0x80
+
+#define DOSCRD_CAPS_STANDARD (	DOSCRD_CAP_VIDEO | \
+								DOSCRD_CAP_AUDIO | \
+								DOSCRD_CAP_EVENT | \
+								DOSCRD_CAP_MESSG )
+
+#define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAP_MESSG | \
+								DOSCRD_CAP_TTYIN | \
+								DOSCRD_CAP_EHOUT )
+
+#define DOSCRD_CAPS_EVERYTHN 0xff
+
+
 typedef struct {
 	bool on;
 	uint16_t lcdw,lcdh;
