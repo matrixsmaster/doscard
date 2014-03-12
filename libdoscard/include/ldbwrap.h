@@ -36,31 +36,87 @@
 
 namespace doscard {
 
-#define LDBWINTVER 2
-#define FRAMESKIP_MAX 10
+/* ****************** DosCard Generic Constants ****************** */
+/// API Version.
+#define LDBWINTVER 3
+/// Number of wrapper functions accessible.
+#define LDBWRAP_FUNCS_Q ((int)('P'-'A'))
+/// Frameskip absolute maximum.
+#define LDBW_FRAMESKIP_MAX 10
+/// Input string buffer size
+#define LDBW_STRINGBUF_SIZE 8196
 
-#define DOSCRD_CAP_VIDEO 0x01
-#define DOSCRD_CAP_AUDIO 0x02
-#define DOSCRD_CAP_EVENT 0x04
-#define DOSCRD_CAP_MESSG 0x08
-#define DOSCRD_CAP_SERIO 0x10
-#define DOSCRD_CAP_PARIO 0x20
-#define DOSCRD_CAP_EHOUT 0x40
-#define DOSCRD_CAP_TTYIN 0x80
+/* ****************** Capabilities Data Constants ****************** */
+/// Video output.
+#define DOSCRD_CAP_VIDEO 0x001
 
-#define DOSCRD_CAPS_STANDARD (	DOSCRD_CAP_VIDEO | \
+/// Audio Output.
+#define DOSCRD_CAP_AUDIO 0x002
+
+/// Events input.
+#define DOSCRD_CAP_EVENT 0x004
+
+/// Internal messages output.
+#define DOSCRD_CAP_MESSG 0x008
+
+/// File I/O and control.
+/** Wrapper-embedded functionality. */
+#define DOSCRD_CAP_FILIO 0x010
+
+/// Directory I/O and control.
+/** Wrapper-embedded functionality. */
+#define DOSCRD_CAP_DIRIO 0x020
+
+/// Serial (RS232) I/O and control.
+/** Maps through extended IO. */
+#define DOSCRD_CAP_SERIO 0x040
+
+/// Parallel (LPT) I/O and control.
+/** Maps through extended IO. */
+#define DOSCRD_CAP_PARIO 0x080
+
+/// STDOUT echo output.
+/** Maps through message system IO. */
+#define DOSCRD_CAP_EHOUT 0x100
+/// STDOUT echo output prefix (marker).
+#define DOSCRD_EHOUT_MARKER "[{DCEHOUT}]"
+
+/// STDIN input.
+#define DOSCRD_CAP_TTYIN 0x200
+
+/// Basic functionality macro.
+#define DOSCRD_CAPS_BASIC	 (	DOSCRD_CAP_MESSG | \
+								DOSCRD_CAP_FILIO | \
+								DOSCRD_CAP_DIRIO )
+
+/// Standard functionality macro.
+#define DOSCRD_CAPS_STANDARD (	DOSCRD_CAPS_BASIC | \
+								DOSCRD_CAP_VIDEO | \
 								DOSCRD_CAP_AUDIO | \
-								DOSCRD_CAP_EVENT | \
-								DOSCRD_CAP_MESSG )
+								DOSCRD_CAP_EVENT )
 
-#define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAP_MESSG | \
+/// Macro for headless mode.
+#define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAPS_BASIC | \
+								DOSCRD_CAP_MESSG | \
 								DOSCRD_CAP_TTYIN | \
 								DOSCRD_CAP_EHOUT )
 
-#define DOSCRD_CAPS_EVERYTHN 0xff
+/// Everything is ON.
+#define DOSCRD_CAPS_EVERYTHN 0x0fff
 
+/// This macro is for internal use only.
+#define DC_REG_CAP_MACRO(X,Y,Z) if (Caps & X) { \
+									if (DOS->RegisterCallback(Y,Z)) \
+										return -1; \
+								} else { \
+									DOS->UnregisterCallback(Y,false); \
+								}
 
-typedef struct {
+/* ****************** DosCard data types ****************** */
+
+typedef uint32_t LDBI_caps;
+
+typedef struct SRuntimeData {
 	bool on;
 	uint16_t lcdw,lcdh;
 	uint64_t sndsize;
@@ -74,8 +130,15 @@ typedef struct {
 	uint32_t crc;
 } LDBI_RuntimeData;
 
+typedef struct SExtendedData {
+	//TODO
+} LDBI_ExtData;
+
 typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
 typedef std::vector<std::string> LDBI_MesgVec;
+typedef std::vector<LDBI_ExtData> LDBI_EDFIFO;
+
+/* ****************** Callbacks prototypes ****************** */
 
 int LDBCB_LCD(void* buf, size_t len);
 int LDBCB_SND(void* buf, size_t len);
@@ -83,6 +146,12 @@ int LDBCB_UIE(void* buf, size_t len);
 int LDBCB_TCK(void* buf, size_t len);
 int LDBCB_MSG(void* buf, size_t len);
 int LDBCB_FIO(void* buf, size_t len);
+int LDBCB_CIO(void* buf, size_t len);
+int LDBCB_LIO(void* buf, size_t len);
+int LDBCB_STO(void* buf, size_t len);
+int LDBCB_STI(void* buf, size_t len);
+
+/* ****************** DosCard Wrap Internal Globals ****************** */
 
 extern dosbox::CDosBox* DOS;
 extern LDBI_RuntimeData* Runtime;
@@ -90,10 +159,17 @@ extern uint32_t* Screen;
 extern int16_t* Sound;
 extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
+extern char* StringInput;
+extern LDBI_EDFIFO* ExtendedData;
+extern LDBI_caps Caps;
 extern volatile int mutex;
+
+/* ****************** Weak Sync Macros ****************** */
 
 #define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
 #define MUTEX_UNLOCK mutex = 0
+
+/* ****************** DosCard Wrap Export Functions ****************** */
 
 extern "C" {
 int DCA_WrapperInit(void);
@@ -108,9 +184,11 @@ int DCI_GetInstanceSound(void*,uint64_t);
 int DCJ_AddInstanceEvents(void*,uint64_t);
 int DCK_GetInstanceMessages(void*,uint64_t);
 int DCL_GetVersionString(void*,uint64_t);
+int DCM_SetInstanceCaps(void*,uint64_t);
+int DCN_GetInstanceExtData(void*,uint64_t);
+int DCO_AddInstanceExtData(void*,uint64_t);
+int DCP_AddInstanceString(void*,uint64_t);
 }
-
-#define LDBWRAP_FUNCS_Q 12
 
 } //namespace doscard
 

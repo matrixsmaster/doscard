@@ -131,7 +131,6 @@ void Program::ChangeToLongCmd() {
 
 static char last_written_character = 0; //For 0xA to OxD 0xA expansion
 //The next function didn't break DosBox's original "coding style" at all :)
-//FIXME: this way of CR/LF substitution is ugly
 static void DOS_CON_Write(const char* buf)
 {
 	Bit16u i,s = 1;

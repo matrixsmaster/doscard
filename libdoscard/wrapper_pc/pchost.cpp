@@ -24,7 +24,6 @@ namespace doscard {
 
 int LDBCB_LCD(void* buf, size_t len)
 {
-//	uint8_t* b;
 	uint32_t* dw;
 	if ((!buf) || (!len)) return -1;
 
@@ -50,7 +49,7 @@ int LDBCB_LCD(void* buf, size_t len)
 		default:
 			if (Runtime->disp_fsm == 1) {
 				if (mutex > 0) {
-					if (Runtime->frameskip_cnt++ >= FRAMESKIP_MAX) {
+					if (Runtime->frameskip_cnt++ >= LDBW_FRAMESKIP_MAX) {
 						MUTEX_LOCK;
 					} else
 						return DISPLAY_RET_BUSY;
@@ -90,6 +89,7 @@ int LDBCB_LCD(void* buf, size_t len)
 
 int LDBCB_SND(void* buf, size_t len)
 {
+	//TODO
 	return 0;
 }
 
@@ -153,6 +153,7 @@ int LDBCB_FIO(void* buf, size_t len)
 
 	if ((f->todo > 0) && (f->todo < 10) && (!f->rf)) return -1;
 	if ((f->todo > 20) && (!f->df)) return -1;
+	if ((f->todo >= 20) && (!(Caps & DOSCRD_CAP_DIRIO))) return -1;
 
 	switch (f->todo) {
 	case 0:
@@ -235,6 +236,57 @@ int LDBCB_FIO(void* buf, size_t len)
 	default:
 		return -1;
 	}
+	return 0;
+}
+
+int LDBCB_CIO(void* buf, size_t len)
+{
+	//TODO COM port IO
+	return 0;
+}
+
+int LDBCB_LIO(void* buf, size_t len)
+{
+	//TODO LPT port IO
+	return 0;
+}
+
+int LDBCB_STO(void* buf, size_t len)
+{
+	if ((!buf) || (!len)) return -1;
+	char* ins = reinterpret_cast<char*> (buf);
+	unsigned int sl = strlen(ins) + strlen(DOSCRD_EHOUT_MARKER) + 1;
+	char* str = reinterpret_cast<char*> (malloc(sl));
+	if (!str) return -1;
+	strcpy(str,DOSCRD_EHOUT_MARKER);
+	strncat(str,ins,sl-1);
+	str[sl-1] = 0;
+	LDBCB_MSG(str,sl);
+	return 0;
+}
+
+int LDBCB_STI(void* buf, size_t len)
+{
+	if ((!buf) || (!len)) return -1;
+	char* out = reinterpret_cast<char*> (buf);
+	uint32_t i,j = 1;
+	MUTEX_LOCK;
+	for (i=0; ((i<len) && j); i++) {
+		out[i] = StringInput[i];
+		switch (StringInput[i]) {
+		case 0:
+		case 0x0D:
+//		case 0x0A:
+			out[i] = 0x0D;
+			if (++i < len) out[i] = 0x0A;
+			j = 0;
+			break;
+		default:
+			break;
+		}
+	}
+	memmove(StringInput,StringInput+i,strlen(StringInput)-i+1);
+	MUTEX_UNLOCK;
 	return 0;
 }
 

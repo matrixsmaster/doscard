@@ -57,7 +57,7 @@ enum LDB_CallbackType {
 	DBCB_FileIOReq = 5,
 	DBCB_LogSTDOUT = 6,
 	DBCB_PullTTYInput = 7,
-	DBCB_RS232IO = 8,
+	DBCB_COMIO = 8,
 	DBCB_LPTIO = 9
 };
 
@@ -129,6 +129,7 @@ typedef struct {
 
 /* ****************** FIO Wrapper Functions Prototypes ****************** */
 
+// File I/O
 DBFILE* dbfopen(const char* p, const char* m);
 void dbfclose(DBFILE* f);
 uint32_t dbfread(void* p, uint32_t sz, uint32_t q, DBFILE* f);
@@ -145,6 +146,7 @@ bool dbisitexist(const char* path);
 int32_t dbgetfilesize(const char* path);
 int32_t dbrename(const char* oldn, const char* newn);
 
+// Directory I/O
 DBFILE* dbdiropen(const char* p);
 bool dbdirread(DBFILE* d, char* entry, bool& is_dir);
 void dbdirclose(DBFILE* d);

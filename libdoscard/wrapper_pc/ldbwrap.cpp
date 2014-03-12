@@ -38,6 +38,9 @@ uint32_t* Screen;
 int16_t* Sound;
 LDBI_EventVec* Events;
 LDBI_MesgVec* Messages;
+char* StringInput;
+LDBI_EDFIFO* ExtendedData;
+LDBI_caps Caps;
 volatile int mutex;
 
 int DCA_WrapperInit(void)
@@ -48,6 +51,9 @@ int DCA_WrapperInit(void)
 	Sound = NULL;
 	Events = NULL;
 	Messages = NULL;
+	StringInput = NULL;
+	ExtendedData = NULL;
+	Caps = 0;
 	mutex = 0;
 	//return API version
 	return LDBWINTVER;
@@ -60,12 +66,9 @@ int DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime = new LDBI_RuntimeData;
 	Events = new LDBI_EventVec;
 	Messages = new LDBI_MesgVec;
-	DOS->RegisterCallback(DBCB_GetTicks,&LDBCB_TCK);
-	DOS->RegisterCallback(DBCB_PushScreen,&LDBCB_LCD);
-	DOS->RegisterCallback(DBCB_PushSound,&LDBCB_SND);
-	DOS->RegisterCallback(DBCB_PullUIEvents,&LDBCB_UIE);
-	DOS->RegisterCallback(DBCB_PushMessage,&LDBCB_MSG);
-	DOS->RegisterCallback(DBCB_FileIOReq,&LDBCB_FIO);
+	StringInput = reinterpret_cast<char*> (malloc(LDBW_STRINGBUF_SIZE));
+	memset(StringInput,0,LDBW_STRINGBUF_SIZE);
+	ExtendedData = new LDBI_EDFIFO;
 	Runtime->on = false;
 	Runtime->lcdw = 0;
 	Runtime->lcdh = 0;
@@ -77,7 +80,7 @@ int DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->frame_dirty = true;
 	Runtime->frameskip_cnt = 0;
 	Runtime->framebuf = NULL;
-	return 0;
+	return DCM_SetInstanceCaps(NULL,DOSCRD_CAPS_STANDARD);
 }
 
 int DCC_TryDestroyInstance(void)
@@ -91,6 +94,8 @@ int DCC_TryDestroyInstance(void)
 	if (Sound) free(Sound);
 	if (Events) delete Events;
 	if (Messages) delete Messages;
+	if (StringInput) free(StringInput);
+	if (ExtendedData) delete ExtendedData;
 	return 0;
 }
 
@@ -140,6 +145,7 @@ int DCH_GetInstanceScreen(void* ptr, uint64_t len)
 int DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
 	FA_TEST;
+	//TODO
 	return -1;
 }
 
@@ -178,6 +184,51 @@ int DCL_GetVersionString(void* ptr, uint64_t len)
 			LDBWINTVER,COMPILERNAME,BUILDATE);
 	strncpy(out,tmp,len-1);
 	out[len-1] = 0;
+	return 0;
+}
+
+int DCM_SetInstanceCaps(void* ptr, uint64_t len)
+{
+	if ((len > DOSCRD_CAPS_EVERYTHN) || (ptr)) return -1;
+	Caps = static_cast<LDBI_caps> (len);
+	DOS->RegisterCallback(DBCB_GetTicks,LDBCB_TCK);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_VIDEO, DBCB_PushScreen,		LDBCB_LCD);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_AUDIO, DBCB_PushSound,		LDBCB_SND);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_EVENT, DBCB_PullUIEvents,	LDBCB_UIE);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_MESSG, DBCB_PushMessage,	LDBCB_MSG);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_FILIO, DBCB_FileIOReq,		LDBCB_FIO);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_SERIO, DBCB_COMIO,			LDBCB_CIO);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_PARIO, DBCB_LPTIO,			LDBCB_LIO);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_EHOUT, DBCB_LogSTDOUT,		LDBCB_STO);
+	DC_REG_CAP_MACRO(DOSCRD_CAP_TTYIN, DBCB_PullTTYInput,	LDBCB_STI);
+	return 0;
+}
+
+int DCN_GetInstanceExtData(void* ptr, uint64_t len)
+{
+	FA_TEST;
+	//TODO
+	return -1;
+}
+
+int DCO_AddInstanceExtData(void* ptr, uint64_t len)
+{
+	FA_TEST;
+	//TODO
+	return -1;
+}
+
+int DCP_AddInstanceString(void* ptr, uint64_t len)
+{
+	FA_TEST;
+	MUTEX_LOCK;
+	char* inp = reinterpret_cast<char*> (ptr);
+	uint32_t l = strlen(StringInput);
+	if ((len+l) >= LDBW_STRINGBUF_SIZE)
+		len = LDBW_STRINGBUF_SIZE - l - 1;
+	strncpy(StringInput+l,inp,len);
+	StringInput[len+l] = 0;
+	MUTEX_UNLOCK;
 	return 0;
 }
 

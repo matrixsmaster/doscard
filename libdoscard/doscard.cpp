@@ -306,7 +306,7 @@ void CDosCard::DoNotCallRunner()
 	state = DOSCRD_SHUTDOWN;
 }
 
-int SetCapabilities(uint8_t flags)
+int SetCapabilities(LDBI_caps flags)
 {
 	//TODO
 }
