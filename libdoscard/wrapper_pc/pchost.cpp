@@ -89,6 +89,7 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 
 int32_t LDBCB_SND(void* buf, size_t len)
 {
+	if ((!buf) || (!len)) return -1;
 	//TODO
 	return 0;
 }
@@ -255,7 +256,7 @@ int32_t LDBCB_STO(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* ins = reinterpret_cast<char*> (buf);
-	unsigned int sl = strlen(ins) + strlen(DOSCRD_EHOUT_MARKER) + 1;
+	unsigned int sl = len + strlen(DOSCRD_EHOUT_MARKER) + 1;
 	char* str = reinterpret_cast<char*> (malloc(sl));
 	if (!str) return -1;
 	strcpy(str,DOSCRD_EHOUT_MARKER);
@@ -270,11 +271,12 @@ int32_t LDBCB_STI(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* out = reinterpret_cast<char*> (buf);
-	uint32_t i,j = 1;
+	uint32_t i,l,j = 1;
 	MUTEX_LOCK;
-	for (i=0; ((i<len) && j); i++) {
+	l = strlen(StringInput);
+	for (i=0; ((i<len) && j && l); i++) {
 		out[i] = StringInput[i];
-		switch (StringInput[i]) {
+		switch (out[i]) {
 		case 0:
 		case 0x0D:
 		case 0x0A:
@@ -286,7 +288,7 @@ int32_t LDBCB_STI(void* buf, size_t len)
 			break;
 		}
 	}
-	memmove(StringInput,StringInput+i,strlen(StringInput)-i+1);
+	if (l) memmove(StringInput,StringInput+i,l-i+1);
 	MUTEX_UNLOCK;
 	return static_cast<int32_t> (i);
 }

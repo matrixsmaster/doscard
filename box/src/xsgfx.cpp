@@ -57,6 +57,8 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused)
 void GFX_Events()
 {
 	LDB_UIEvent evt;
+	if (myldbi->Callback(DBCB_PullUIEvents,NULL,0) == LDB_CALLBACK_RET_NOT_FOUND)
+		return;
 	while (myldbi->Callback(DBCB_PullUIEvents,&evt,sizeof(LDB_UIEvent))) {
 		switch (evt.t) {
 		case LDB_UIE_KBD:
@@ -87,7 +89,7 @@ void GFX_Events()
 
 void GFX_ShowMsg(char const* format,...)
 {
-	char buf[512];
+	char buf[DOSBOX_MESSAGE_LEN];
 	va_list msg;
 	va_start(msg,format);
 	vsnprintf(buf,511,format,msg);

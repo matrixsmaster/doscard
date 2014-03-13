@@ -37,17 +37,30 @@ int main(int, char**)
 	if (!vm->Prepare()) abort();
 	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS);
 	vm->Run();
+	int ml = strlen(DOSCRD_EHOUT_MARKER);
 	printf("Loop started\n");
 	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
 		LDBI_MesgVec* msg = vm->GetMessages();
 		if ((!msg) || (msg->empty())) continue;
 		LDBI_MesgVec::iterator i;
+		bool cr = false;
 		for (i = msg->begin(); i != msg->end(); i++) {
-			if (i->find(DOSCRD_EHOUT_MARKER) == -1) {
+			if (i->find(DOSCRD_EHOUT_MARKER)) {
 				printf("[MSG]: %s\n",i->c_str());
 				continue;
 			}
-			printf("%s",i->c_str());
+//			printf("%s",i->c_str()+strlen(DOSCRD_EHOUT_MARKER));
+			for (int j=ml; j<i->length(); j++) {
+				char xc = i->c_str()[j];
+				if (xc == '\r') cr = true;
+				else {
+					if ((isprint(xc)) || ((xc == '\n') && (cr)))
+						putchar('\n');
+					else
+						printf("[0x%02X]",xc);
+					cr = false;
+				}
+			}
 		}
 		msg->clear();
 	}

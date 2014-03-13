@@ -613,6 +613,11 @@ void MIXER_Init()
 
 	mixer.tick_remain=0;
 	mixer.tick_add=(mixer.freq << MIXER_SHIFT)/1000;
+
+	if (!mixer.nosound)
+		mixer.nosound =
+				(myldbi->Callback(DBCB_PushSound,NULL,0) == LDB_CALLBACK_RET_NOT_FOUND);
+
 	if (mixer.nosound) {
 		LOG_MSG("MIXER: Silent mode");
 		TIMER_AddTickHandler(MIXER_Mix_NoSound);

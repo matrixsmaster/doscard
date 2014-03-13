@@ -79,7 +79,7 @@ namespace doscard {
 /** Maps through message system IO. */
 #define DOSCRD_CAP_EHOUT 0x100
 /// STDOUT echo output prefix (marker).
-#define DOSCRD_EHOUT_MARKER "[{DCEHOUT}]"
+#define DOSCRD_EHOUT_MARKER "{!}"
 
 /// STDIN input.
 #define DOSCRD_CAP_TTYIN 0x200

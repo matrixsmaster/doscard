@@ -30,14 +30,14 @@ namespace dosbox {
 
 Render_t render;
 RenderLineHandler_t RENDER_DrawLine;
-static bool init_ok;
+static bool init_ok,render_dummy;
 static uint32_t frmsk_cnt;
 
 #ifndef LDB_EMBEDDED
 static uint32_t hungry_buf[VGA_MAXWIDTH];
 #endif
 
-static INLINE int LDB_SendDWord(Bit32u x)
+static INLINE int32_t LDB_SendDWord(Bit32u x)
 {
 	return myldbi->Callback(DBCB_PushScreen,&x,4);
 }
@@ -47,7 +47,7 @@ static inline void LDB_SendWord(Bit16u x)
 	(*libdosbox_callbacks[DBCB_PushScreen])(&x,2);
 }
 */
-static INLINE int LDB_SendByte(Bit8u x)
+static INLINE int32_t LDB_SendByte(Bit8u x)
 {
 	return myldbi->Callback(DBCB_PushScreen,&x,1);
 }
@@ -137,6 +137,10 @@ bool RENDER_StartUpdate(void)
 		frmsk_cnt = 0;
 		return false;
 	}
+	if (render_dummy) {
+		RENDER_DrawLine = RENDER_EmptyLine;
+		return true;
+	}
 	RENDER_DrawLine = (frmsk_cnt < RENDER_FRMSK)? RENDER_EmptyLine:RENDER_FullLine;
 	LDB_SendDWord(DISPLAY_NFRM_SIGNATURE);
 	Bit32u hdr = ((Bit16u)render.src.width) << 16;
@@ -175,7 +179,9 @@ void RENDER_SetSize(Bitu width,Bitu height,Bitu bpp,float fps,double ratio,bool 
 
 void RENDER_Init()
 {
-	LDB_SendDWord(DISPLAY_INIT_SIGNATURE);
+	render_dummy = (LDB_SendDWord(DISPLAY_INIT_SIGNATURE) == LDB_CALLBACK_RET_NOT_FOUND);
+	if (render_dummy)
+		LOG_MSG("RENDER: Dummy mode");
 	init_ok = false;
 }
 

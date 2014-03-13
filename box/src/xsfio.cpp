@@ -39,7 +39,7 @@ DBFILE* dbfopen(const char* p, const char* m)
 	r->name = reinterpret_cast<char*>(malloc(strlen(p) + 1));
 	if (!r->name) return NULL;
 	strcpy(r->name,p);
-	/* The following code is for embeddable design, there's no reason
+	/* The following code is for embedded design, there's no reason
 	 * to use it under real OS */
 #ifdef LDB_EMBEDDED
 	r->op = LDB_FOP_NEW | LDB_FOP_BEGIN;

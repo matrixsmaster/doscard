@@ -32,6 +32,8 @@
 
 namespace dosbox {
 
+#define DOSBOX_MESSAGE_LEN 512
+
 //FIXME: delete that after all
 #define IS_EGAVGA_ARCH 1
 #define IS_VGA_ARCH 1
