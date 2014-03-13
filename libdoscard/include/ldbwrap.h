@@ -40,7 +40,7 @@ namespace doscard {
 /// API Version.
 #define LDBWINTVER 3
 /// Number of wrapper functions accessible.
-#define LDBWRAP_FUNCS_Q ((int)('P'-'A'))
+#define LDBWRAP_FUNCS_Q ((int)('P'-'A'+1))
 /// Frameskip absolute maximum.
 #define LDBW_FRAMESKIP_MAX 10
 /// Input string buffer size

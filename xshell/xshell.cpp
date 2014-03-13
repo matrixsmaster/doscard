@@ -65,7 +65,7 @@ static uint8_t frameskip_cnt;
 using namespace std;
 using namespace dosbox;
 
-int XS_UpdateScreenBuffer(void* buf, size_t len)
+int32_t XS_UpdateScreenBuffer(void* buf, size_t len)
 {
 #if XSHELL_VERBOSE > 2
 	xnfo(0,2,"len=%d",len);
@@ -146,7 +146,7 @@ int XS_UpdateScreenBuffer(void* buf, size_t len)
 	return 0;
 }
 
-int XS_UpdateSoundBuffer(void* buf, size_t len)
+int32_t XS_UpdateSoundBuffer(void* buf, size_t len)
 {
 	int i;
 	if (!buf) return -1;
@@ -199,7 +199,7 @@ int XS_UpdateSoundBuffer(void* buf, size_t len)
 	return 0;
 }
 
-int XS_QueryUIEvents(void* buf, size_t len)
+int32_t XS_QueryUIEvents(void* buf, size_t len)
 {
 #if XSHELL_VERBOSE > 1
 	xnfo(0,4,"len=%d",len);
@@ -217,7 +217,7 @@ int XS_QueryUIEvents(void* buf, size_t len)
 	return r;
 }
 
-int XS_GetTicks(void* buf, size_t len)
+int32_t XS_GetTicks(void* buf, size_t len)
 {
 #if XSHELL_VERBOSE > 1
 	xnfo(0,5,"len=%d",len);
@@ -259,6 +259,7 @@ static void XS_ldb_register()
 	doscard->RegisterCallback(DBCB_PullUIEvents,&XS_QueryUIEvents);
 	doscard->RegisterCallback(DBCB_PushMessage,&XS_Message);
 	doscard->RegisterCallback(DBCB_FileIOReq,&XS_FIO);
+	doscard->RegisterCallback(DBCB_LogSTDOUT,&XS_Message); //to test it out :)
 #if XSHELL_VERBOSE
 	xnfo(0,6,"finished");
 #endif
@@ -396,7 +397,7 @@ static void XS_SDLoop()
 	SDL_AtomicSet(&at_flag,-10);
 }
 
-int XS_Message(void* buf, size_t len)
+int32_t XS_Message(void* buf, size_t len)
 {
 #if XSHELL_VERBOSE > 1
 	xnfo(0,10,"len=%d",len);
@@ -405,7 +406,7 @@ int XS_Message(void* buf, size_t len)
 	return 0;
 }
 
-int XS_FIO(void* buf, size_t len)
+int32_t XS_FIO(void* buf, size_t len)
 {
 	uint64_t* x;
 	int64_t* sx;

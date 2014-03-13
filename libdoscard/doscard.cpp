@@ -306,9 +306,12 @@ void CDosCard::DoNotCallRunner()
 	state = DOSCRD_SHUTDOWN;
 }
 
-int SetCapabilities(LDBI_caps flags)
+int CDosCard::SetCapabilities(LDBI_caps flags)
 {
-	//TODO
+	uint64_t caps = static_cast<uint64_t> (flags);
+	GenericValue r = phld->engine->runFunction(GFUNCL('M'),GenArgs(NULL,caps));
+	if (r.IntVal != 0) return -1;
+	return 0;
 }
 
 uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
@@ -340,6 +343,13 @@ void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
 }
 
+void CDosCard::PutString(char* str)
+{
+	uint64_t l = 0;
+	if (str) l = static_cast<uint64_t> (strlen(str));
+	GenericValue r = phld->engine->runFunction(GFUNCL('P'),GenArgs(str,l));
+}
+
 LDBI_MesgVec* CDosCard::GetMessages()
 {
 	if (state != DOSCRD_RUNNING) return NULL;
@@ -347,9 +357,10 @@ LDBI_MesgVec* CDosCard::GetMessages()
 	return &msgbuff;
 }
 
-uint32_t FillSound(uint16_t* buf, uint32_t maxlen)
+uint32_t CDosCard::FillSound(uint16_t* buf, uint32_t maxlen)
 {
 	//TODO
+	return 0;
 }
 
 } //namespace doscard

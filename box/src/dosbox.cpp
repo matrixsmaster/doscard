@@ -317,14 +317,14 @@ CDosBox::~CDosBox()
 	if (init_ok) Clear();
 }
 
-int CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
+int32_t CDosBox::RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f)
 {
 	if ((t < 0) || (t >= LDB_CALLBACKSQ)) return -1;
 	ldb_callbacks[t] = f;
 	return 0;
 }
 
-int CDosBox::UnregisterCallback(LDB_CallbackType t, bool unreg_all)
+int32_t CDosBox::UnregisterCallback(LDB_CallbackType t, bool unreg_all)
 {
 	int i;
 	if ((t < 0) || (t >= LDB_CALLBACKSQ)) return -1;
@@ -336,7 +336,7 @@ int CDosBox::UnregisterCallback(LDB_CallbackType t, bool unreg_all)
 	return 0;
 }
 
-int CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
+int32_t CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
 {
 	if (GCC_UNLIKELY(!ldb_callbacks[t]))
 		return LDB_CALLBACK_RET_NOT_FOUND;

@@ -22,7 +22,7 @@ using namespace dosbox;
 
 namespace doscard {
 
-int LDBCB_LCD(void* buf, size_t len)
+int32_t LDBCB_LCD(void* buf, size_t len)
 {
 	uint32_t* dw;
 	if ((!buf) || (!len)) return -1;
@@ -87,15 +87,15 @@ int LDBCB_LCD(void* buf, size_t len)
 	return 0;
 }
 
-int LDBCB_SND(void* buf, size_t len)
+int32_t LDBCB_SND(void* buf, size_t len)
 {
 	//TODO
 	return 0;
 }
 
-int LDBCB_UIE(void* buf, size_t len)
+int32_t LDBCB_UIE(void* buf, size_t len)
 {
-	int r = 0;
+	int32_t r = 0;
 	LDB_UIEvent e;
 	if ((!buf) || (len != sizeof(LDB_UIEvent))) return -1;
 	if (mutex) return 0;
@@ -109,7 +109,7 @@ int LDBCB_UIE(void* buf, size_t len)
 	return r;
 }
 
-int LDBCB_TCK(void* buf, size_t len)
+int32_t LDBCB_TCK(void* buf, size_t len)
 {
 	if ((!buf) || (len < 4)) return -1;
 	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
@@ -130,7 +130,7 @@ int LDBCB_TCK(void* buf, size_t len)
 	return 0;
 }
 
-int LDBCB_MSG(void* buf, size_t len)
+int32_t LDBCB_MSG(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* str = reinterpret_cast<char*> (buf);
@@ -141,7 +141,7 @@ int LDBCB_MSG(void* buf, size_t len)
 	return 0;
 }
 
-int LDBCB_FIO(void* buf, size_t len)
+int32_t LDBCB_FIO(void* buf, size_t len)
 {
 	uint64_t* x;
 	int64_t* sx;
@@ -239,19 +239,19 @@ int LDBCB_FIO(void* buf, size_t len)
 	return 0;
 }
 
-int LDBCB_CIO(void* buf, size_t len)
+int32_t LDBCB_CIO(void* buf, size_t len)
 {
 	//TODO COM port IO
 	return 0;
 }
 
-int LDBCB_LIO(void* buf, size_t len)
+int32_t LDBCB_LIO(void* buf, size_t len)
 {
 	//TODO LPT port IO
 	return 0;
 }
 
-int LDBCB_STO(void* buf, size_t len)
+int32_t LDBCB_STO(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* ins = reinterpret_cast<char*> (buf);
@@ -262,10 +262,11 @@ int LDBCB_STO(void* buf, size_t len)
 	strncat(str,ins,sl-1);
 	str[sl-1] = 0;
 	LDBCB_MSG(str,sl);
+	free(str);
 	return 0;
 }
 
-int LDBCB_STI(void* buf, size_t len)
+int32_t LDBCB_STI(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* out = reinterpret_cast<char*> (buf);
@@ -276,7 +277,7 @@ int LDBCB_STI(void* buf, size_t len)
 		switch (StringInput[i]) {
 		case 0:
 		case 0x0D:
-//		case 0x0A:
+		case 0x0A:
 			out[i] = 0x0D;
 			if (++i < len) out[i] = 0x0A;
 			j = 0;
@@ -287,7 +288,7 @@ int LDBCB_STI(void* buf, size_t len)
 	}
 	memmove(StringInput,StringInput+i,strlen(StringInput)-i+1);
 	MUTEX_UNLOCK;
-	return 0;
+	return static_cast<int32_t> (i);
 }
 
 } //namespace doscard

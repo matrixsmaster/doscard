@@ -63,7 +63,7 @@ enum LDB_CallbackType {
 
 #define LDB_CALLBACKSQ 10
 
-typedef int (*LDB_CallbackFunc)(void*,size_t);
+typedef int32_t (*LDB_CallbackFunc)(void*,size_t);
 
 #define LDB_CALLBACK_RET_NOT_FOUND -21
 

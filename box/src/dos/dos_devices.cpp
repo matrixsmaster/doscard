@@ -89,7 +89,8 @@ bool DOS_Device::WriteToControlChannel(PhysPt bufptr,Bit16u size,Bit16u * retcod
 	return Devices[devnum]->WriteToControlChannel(bufptr,size,retcode);
 }
 
-DOS_File::DOS_File(const DOS_File& orig) {
+DOS_File::DOS_File(const DOS_File& orig)
+{
 	flags=orig.flags;
 	time=orig.time;
 	date=orig.date;
@@ -103,7 +104,8 @@ DOS_File::DOS_File(const DOS_File& orig) {
 	}
 }
 
-DOS_File & DOS_File::operator= (const DOS_File & orig) {
+DOS_File & DOS_File::operator= (const DOS_File & orig)
+{
 	flags=orig.flags;
 	time=orig.time;
 	date=orig.date;
@@ -120,9 +122,15 @@ DOS_File & DOS_File::operator= (const DOS_File & orig) {
 	return *this;
 }
 
-bool device_CON::Read(Bit8u * data,Bit16u * size) {
-	Bit16u oldax=reg_ax;
-	Bit16u count=0;
+bool device_CON::Read(Bit8u * data,Bit16u * size)
+{
+	Bit16u oldax = reg_ax;
+	Bit16u count = 0;
+	int32_t ret = myldbi->Callback(DBCB_PullTTYInput,data,*size);
+	if (ret > 0) {
+		*size = static_cast<Bit16u> (ret);
+		return true;
+	}
 	if ((readcache) && (*size)) {
 		data[count++]=readcache;
 		if(dos.echo) INT10_TeletypeOutput(readcache,7);
@@ -181,11 +189,13 @@ bool device_CON::Read(Bit8u * data,Bit16u * size) {
 }
 
 
-bool device_CON::Write(Bit8u * data,Bit16u * size) {
-	Bit16u count=0;
+bool device_CON::Write(Bit8u * data,Bit16u * size)
+{
 	Bitu i;
+	Bit16u count = 0;
 	Bit8u col,row;
 	Bit8u tempdata;
+	myldbi->Callback(DBCB_LogSTDOUT,data,*size);
 	while (*size>count) {
 		if (!ansi.esc){
 			if(data[count]=='\033') {

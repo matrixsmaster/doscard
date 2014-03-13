@@ -142,6 +142,9 @@ public:
 	/// Puts event to a FIFO buffer of VM.
 	void PutEvent(dosbox::LDB_UIEvent e);
 
+	/// Puts a string to VM's TTY interface.
+	void PutString(char* str);
+
 	/// Returns a pointer to a vector filled with VM's messages.
 	LDBI_MesgVec* GetMessages();
 

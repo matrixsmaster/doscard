@@ -48,9 +48,9 @@ private:
 public:
 	CDosBox();
 	~CDosBox();
-	int RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
-	int UnregisterCallback(LDB_CallbackType t, bool unreg_all);
-	int Callback(LDB_CallbackType t, void* p, size_t l);
+	int32_t RegisterCallback(LDB_CallbackType t, LDB_CallbackFunc f);
+	int32_t UnregisterCallback(LDB_CallbackType t, bool unreg_all);
+	int32_t Callback(LDB_CallbackType t, void* p, size_t l);
 	Bitu NormalLoop();
 	void RunMachine();
 	void Init();

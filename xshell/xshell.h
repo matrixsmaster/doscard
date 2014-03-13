@@ -39,12 +39,12 @@
 #define XSHELL_DEF_WND_W 640
 #define XSHELL_DEF_WND_H 480
 
-int XS_UpdateScreenBuffer(void* buf, size_t len);
-int XS_UpdateSoundBuffer(void* buf, size_t len);
-int XS_QueryUIEvents(void* buf, size_t len);
-int XS_GetTicks(void* buf, size_t len);
-int XS_Message(void* buf, size_t len);
-int XS_FIO(void* buf, size_t len);
+int32_t XS_UpdateScreenBuffer(void* buf, size_t len);
+int32_t XS_UpdateSoundBuffer(void* buf, size_t len);
+int32_t XS_QueryUIEvents(void* buf, size_t len);
+int32_t XS_GetTicks(void* buf, size_t len);
+int32_t XS_Message(void* buf, size_t len);
+int32_t XS_FIO(void* buf, size_t len);
 
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len);
 
