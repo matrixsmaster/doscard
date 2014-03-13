@@ -1,7 +1,7 @@
 ## DosCard Project XS Headless Test MAKEFILE
 ## Copyright (C) 2013-2014 Soloviov Dmitry
 
-APP	:= xheadless
+APP	:= headless
 CXX	:= g++-4.8.2
 INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := 

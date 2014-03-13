@@ -203,14 +203,13 @@ void CDosCard::FreeModule()
 
 bool CDosCard::LoadFunctions()
 {
-	int i,n;
+	int n,i = 0;
 	Module::iterator I;
 	DCFuncs::iterator j;
 	string cnm;
 	Function* Fn;
 	phld->funcs = new DCFuncs;
 	phld->funcs->resize(LDBWRAP_FUNCS_Q,NULL);
-	i = 0;
 	for (I = phld->module->begin(); I != phld->module->end(); ++I) {
 		cnm = I->getName().str();
 		if (cnm.length() < 5) continue;
@@ -282,6 +281,7 @@ char* CDosCard::GetVersionStringSafe()
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
+	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return false;
 	//TODO
 	return false;
 }
@@ -316,6 +316,7 @@ void CDosCard::DoNotCallRunner()
 
 int CDosCard::SetCapabilities(LDBI_caps flags)
 {
+	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return -1;
 	uint64_t caps = static_cast<uint64_t> (flags);
 	GenericValue r = phld->engine->runFunction(GFUNCL('M'),GenArgs(NULL,caps));
 	if (r.IntVal != 0) return -1;
@@ -353,6 +354,7 @@ void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 
 void CDosCard::PutString(char* str)
 {
+	if (state != DOSCRD_RUNNING) return;
 	uint64_t l = 0;
 	if (str) l = static_cast<uint64_t> (strlen(str));
 	GenericValue r = phld->engine->runFunction(GFUNCL('P'),GenArgs(str,l));
@@ -367,6 +369,7 @@ LDBI_MesgVec* CDosCard::GetMessages()
 
 uint32_t CDosCard::FillSound(uint16_t* buf, uint32_t maxlen)
 {
+	if (state != DOSCRD_RUNNING) return 0;
 	//TODO
 	return 0;
 }

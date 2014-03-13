@@ -16,7 +16,45 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <string>
+#include <vector>
+#include "doscard.h"
+#include "../xshell/xskbd.h"
+
+#define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
+
+using namespace doscard;
+
 int main(int, char**)
 {
-	return 0;
+	printf("Alive\n");
+	LibDosCardInit(1);
+	CDosCard* vm = new CDosCard(false);
+	if (!vm->TryLoad(BITFILE_ALTPATH)) {
+		printf("Couldn't load VM!\n");
+		abort();
+	}
+	if (!vm->Prepare()) abort();
+	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS);
+	vm->Run();
+	printf("Loop started\n");
+	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
+		LDBI_MesgVec* msg = vm->GetMessages();
+		if ((!msg) || (msg->empty())) continue;
+		LDBI_MesgVec::iterator i;
+		for (i = msg->begin(); i != msg->end(); i++) {
+			if (i->find(DOSCRD_EHOUT_MARKER) == -1) {
+				printf("[MSG]: %s\n",i->c_str());
+				continue;
+			}
+			printf("%s",i->c_str());
+		}
+		msg->clear();
+	}
+	printf("Loop ended\n");
+	printf("Deleting machine...\n");
+	delete vm;
+	LibDosCardExit();
+	printf("Quit\n");
+	_exit(EXIT_SUCCESS);
 }

@@ -97,7 +97,6 @@ namespace doscard {
 
 /// Macro for headless mode.
 #define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAPS_BASIC | \
-								DOSCRD_CAP_MESSG | \
 								DOSCRD_CAP_TTYIN | \
 								DOSCRD_CAP_EHOUT )
 
