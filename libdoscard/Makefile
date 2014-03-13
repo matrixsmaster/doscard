@@ -31,4 +31,4 @@ $(WRAPLIB):
 
 clean:
 	cd $(WRAPSRC); make clean
-	rm -f *.o *.bc
+	rm -f *.o *.bc *.so
