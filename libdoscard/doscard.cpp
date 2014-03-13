@@ -209,33 +209,21 @@ bool CDosCard::LoadFunctions()
 	string cnm;
 	Function* Fn;
 	phld->funcs = new DCFuncs;
-//	for (i=0; i<LDBWRAP_FUNCS_Q; i++)
-//		phld->funcs->push_back(NULL);
 	phld->funcs->resize(LDBWRAP_FUNCS_Q,NULL);
-	for (j = phld->funcs->begin(); j != phld->funcs->end(); ++j)
-		verb(">$0x%x\n",*j);
 	i = 0;
 	for (I = phld->module->begin(); I != phld->module->end(); ++I) {
 		cnm = I->getName().str();
-		printf(">%s\n",cnm.c_str());
 		if (cnm.length() < 5) continue;
 		if ((cnm[0] == 'D') && (cnm[1] == 'C') && (cnm[3] == '_')) {
 			Fn = &*I; //construction got from llvm's tools/lli
 			n = static_cast<int> (cnm[2] - 'A');
 			if ((n < 0) || (n >= LDBWRAP_FUNCS_Q)) continue;
-			printf("->\t#%d\t0x%x\t(from %d)\n",n,Fn,LDBWRAP_FUNCS_Q);
-//			j = phld->funcs->begin() + n;
-//			phld->funcs->insert(j,Fn);
-//			phld->funcs->erase(++j);
-//			DCFuncs tmp = *phld->funcs;
-//			tmp[n] = Fn;
 			(*phld->funcs)[n] = Fn;
 			if (++i >= LDBWRAP_FUNCS_Q) {
 				for (j = phld->funcs->begin(); j != phld->funcs->end(); ++j)
-					verb(">$0x%x\n",*j);
+					verb("LoadFunctions(): $0x%x\n",*j);
 				verb("LoadFunctions(): Done!\n");
-//				return true;
-				return false;
+				return true;
 			}
 		}
 	}
