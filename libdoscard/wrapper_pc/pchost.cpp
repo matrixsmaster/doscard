@@ -271,7 +271,9 @@ int32_t LDBCB_STI(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* out = reinterpret_cast<char*> (buf);
-	uint32_t i,l,j = 1;
+	uint32_t i,l,j;
+	i = 0;
+	j = 1;
 	MUTEX_LOCK;
 	l = strlen(StringInput);
 	for (i=0; ((i<len) && j && l); i++) {

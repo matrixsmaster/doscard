@@ -18,6 +18,8 @@
 
 #include <string>
 #include <vector>
+#include <unistd.h>
+#include <fcntl.h>
 #include "doscard.h"
 #include "../xshell/xskbd.h"
 
@@ -38,32 +40,49 @@ int main(int, char**)
 	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS);
 	vm->Run();
 	int ml = strlen(DOSCRD_EHOUT_MARKER);
+	char* istr = reinterpret_cast<char*> (malloc(1024));
+	char xc;
 	printf("Loop started\n");
+	fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK);
 	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
 		LDBI_MesgVec* msg = vm->GetMessages();
-		if ((!msg) || (msg->empty())) continue;
-		LDBI_MesgVec::iterator i;
-		bool cr = false;
-		for (i = msg->begin(); i != msg->end(); i++) {
-			if (i->find(DOSCRD_EHOUT_MARKER)) {
-				printf("[MSG]: %s\n",i->c_str());
-				continue;
-			}
-//			printf("%s",i->c_str()+strlen(DOSCRD_EHOUT_MARKER));
-			for (int j=ml; j<i->length(); j++) {
-				char xc = i->c_str()[j];
-				if (xc == '\r') cr = true;
-				else {
-					if ((isprint(xc)) || ((xc == '\n') && (cr)))
-						putchar('\n');
-					else
-						printf("[0x%02X]",xc);
-					cr = false;
+		if ((msg) && (!msg->empty())) {
+			LDBI_MesgVec::iterator i;
+			bool cr = false;
+			bool nl = true;
+
+			//process output
+			for (i = msg->begin(); i != msg->end(); i++) {
+				if (i->find(DOSCRD_EHOUT_MARKER)) {
+					if (!nl) putchar('\n');
+					printf("[MSG]: %s\n",i->c_str());
+					nl = true;
+					continue;
+				}
+				for (int j=ml; j<i->length(); j++) {
+					xc = i->c_str()[j];
+					if (xc == '\r') cr = true;
+					else {
+						nl = (xc == '\n');
+						if ((isprint(xc)) || (nl && cr)) {
+							putchar(xc);
+						} else
+							printf("[0x%02X]",xc);
+						cr = false;
+					}
 				}
 			}
+			msg->clear();
 		}
-		msg->clear();
+
+		//process input
+		memset(istr,0,1024); //FIXME
+		if (read(0,istr,1023) > 0) {
+			printf("Entered: %s\n",istr);
+			vm->PutString(istr);
+		}
 	}
+	free(istr);
 	printf("Loop ended\n");
 	printf("Deleting machine...\n");
 	delete vm;
