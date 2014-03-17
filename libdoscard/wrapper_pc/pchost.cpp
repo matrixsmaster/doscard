@@ -271,10 +271,13 @@ int32_t LDBCB_STI(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* out = reinterpret_cast<char*> (buf);
-	uint32_t i,l,j;
-	i = 0;
-	j = 1;
-	MUTEX_LOCK;
+	uint32_t i,l,j = 1;
+	printf("STI: len=%lu\n",len);
+	if (Caps & DOSCRD_TTYIN_BLK) {
+		MUTEX_WAIT_FOR_EVENT((strlen(StringInput)));
+	} else {
+		MUTEX_LOCK;
+	}
 	l = strlen(StringInput);
 	for (i=0; ((i<len) && j && l); i++) {
 		out[i] = StringInput[i];
@@ -283,14 +286,18 @@ int32_t LDBCB_STI(void* buf, size_t len)
 		case 0x0D:
 		case 0x0A:
 			out[i] = 0x0D;
-			if (++i < len) out[i] = 0x0A;
+			if (i+2 < len) out[++i] = 0x0A;
 			j = 0;
 			break;
 		default:
 			break;
 		}
 	}
-	if (l) memmove(StringInput,StringInput+i,l-i+1);
+	if (l) {
+		memmove(StringInput,StringInput+i,l-i);
+		StringInput[l-i] = 0;
+	}
+	printf("STI: StringInput now: '%s'\n",StringInput);
 	MUTEX_UNLOCK;
 	return static_cast<int32_t> (i);
 }

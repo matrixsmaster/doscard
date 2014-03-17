@@ -83,6 +83,8 @@ namespace doscard {
 
 /// STDIN input.
 #define DOSCRD_CAP_TTYIN 0x200
+/// STDIN blocking input.
+#define DOSCRD_TTYIN_BLK 0x400
 
 /// Basic functionality macro.
 #define DOSCRD_CAPS_BASIC	 (	DOSCRD_CAP_MESSG | \
@@ -91,14 +93,15 @@ namespace doscard {
 
 /// Standard functionality macro.
 #define DOSCRD_CAPS_STANDARD (	DOSCRD_CAPS_BASIC | \
-								DOSCRD_CAP_VIDEO | \
-								DOSCRD_CAP_AUDIO | \
-								DOSCRD_CAP_EVENT )
+								DOSCRD_CAP_VIDEO  | \
+								DOSCRD_CAP_AUDIO  | \
+								DOSCRD_CAP_EVENT  )
 
 /// Macro for headless mode.
 #define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAPS_BASIC | \
-								DOSCRD_CAP_TTYIN | \
-								DOSCRD_CAP_EHOUT )
+								DOSCRD_CAP_TTYIN  | \
+								DOSCRD_TTYIN_BLK  | \
+								DOSCRD_CAP_EHOUT  )
 
 /// Everything is ON.
 #define DOSCRD_CAPS_EVERYTHN 0x0fff
@@ -167,6 +170,7 @@ extern volatile int32_t mutex;
 
 #define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
 #define MUTEX_UNLOCK mutex = 0
+#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
 
 /* ****************** DosCard Wrap Export Functions ****************** */
 

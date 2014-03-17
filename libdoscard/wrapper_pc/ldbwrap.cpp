@@ -224,10 +224,11 @@ int DCP_AddInstanceString(void* ptr, uint64_t len)
 	MUTEX_LOCK;
 	char* inp = reinterpret_cast<char*> (ptr);
 	uint32_t l = strlen(StringInput);
-	if ((len+l) >= LDBW_STRINGBUF_SIZE)
+	if ((len+l) >= (LDBW_STRINGBUF_SIZE-1))
 		len = LDBW_STRINGBUF_SIZE - l - 1;
 	strncpy(StringInput+l,inp,len);
 	StringInput[len+l] = 0;
+	printf("DCP: StringInput now: '%s'\n",StringInput);
 	MUTEX_UNLOCK;
 	return 0;
 }
