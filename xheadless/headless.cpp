@@ -77,10 +77,8 @@ int main(int, char**)
 
 		//process input
 		memset(istr,0,1024); //FIXME
-		if (read(0,istr,1023) > 0) {
-			printf("Entered: %s\n",istr);
+		if (read(0,istr,1023) > 0)
 			vm->PutString(istr);
-		}
 	}
 	free(istr);
 	printf("Loop ended\n");

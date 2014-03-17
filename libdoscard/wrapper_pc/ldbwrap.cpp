@@ -228,7 +228,6 @@ int DCP_AddInstanceString(void* ptr, uint64_t len)
 		len = LDBW_STRINGBUF_SIZE - l - 1;
 	strncpy(StringInput+l,inp,len);
 	StringInput[len+l] = 0;
-	printf("DCP: StringInput now: '%s'\n",StringInput);
 	MUTEX_UNLOCK;
 	return 0;
 }

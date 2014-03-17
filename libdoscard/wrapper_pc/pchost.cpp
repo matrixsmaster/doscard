@@ -272,7 +272,6 @@ int32_t LDBCB_STI(void* buf, size_t len)
 	if ((!buf) || (!len)) return -1;
 	char* out = reinterpret_cast<char*> (buf);
 	uint32_t i,l,j = 1;
-	printf("STI: len=%lu\n",len);
 	if (Caps & DOSCRD_TTYIN_BLK) {
 		MUTEX_WAIT_FOR_EVENT((strlen(StringInput)));
 	} else {
@@ -297,7 +296,6 @@ int32_t LDBCB_STI(void* buf, size_t len)
 		memmove(StringInput,StringInput+i,l-i);
 		StringInput[l-i] = 0;
 	}
-	printf("STI: StringInput now: '%s'\n",StringInput);
 	MUTEX_UNLOCK;
 	return static_cast<int32_t> (i);
 }
