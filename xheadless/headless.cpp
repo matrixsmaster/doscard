@@ -24,51 +24,89 @@
 #include "../xshell/xskbd.h"
 
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
+#define INSTR_BUFLEN 64
 
 using namespace doscard;
 
-int main(int, char**)
+int main(int argc, char* argv[])
 {
-	printf("Alive\n");
-	LibDosCardInit(1);
-	CDosCard* vm = new CDosCard(false);
+	CDosCard* vm;				//virtual machine
+	char istr[INSTR_BUFLEN];	//input string
+	int ml;						//marker prefix length (const)
+	char xc;					//current character (x)
+	bool cr,nl;					//carriage return / line feed presence flags
+	LDBI_MesgVec::iterator i;	//vector iterator
+	unsigned int j;				//simple iterator :)
+	LDBI_MesgVec* msg;			//external (VM's) messages vector ptr
+	bool nomsg;					//do not show messages flag
+
+	printf("\n---------------------------------------------------\n");
+	printf("|              DosCard Headless Mode              |\n");
+	printf("| (C) Dmitry 'MatrixS_Master' Soloviov, 2013-2014 |\n");
+	printf("---------------------------------------------------\n\n");
+
+	nomsg = false;
+	if (argc > 1) {
+		if (!strcmp(argv[1],"-help")) {
+			printf("Usage: %s [option]\n",argv[0]);
+			printf("Possible options are:\n-help\n-nomsg\n");
+			return 0;
+		} else if (!strcmp(argv[1],"-nomsg"))
+			nomsg = true;
+	}
+
+	//prepare everything
+	ml = strlen(DOSCRD_EHOUT_MARKER);
+	memset(istr,0,sizeof(istr));
+	fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK); //for nonblocking input
+	//init libdoscard
+	if (nomsg) LibDosCardInit(0); //no debugging
+	else LibDosCardInit(1); //with some debug output
+
+	//to create a shiny new VM
+	vm = new CDosCard(false);
 	if (!vm->TryLoad(BITFILE_ALTPATH)) {
 		printf("Couldn't load VM!\n");
 		abort();
 	}
+
+	//and Run it!
 	if (!vm->Prepare()) abort();
 	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS);
 	vm->Run();
-	int ml = strlen(DOSCRD_EHOUT_MARKER);
-	char* istr = reinterpret_cast<char*> (malloc(1024));
-	char xc;
-	printf("Loop started\n");
-	fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK);
-	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
-		LDBI_MesgVec* msg = vm->GetMessages();
-		if ((msg) && (!msg->empty())) {
-			LDBI_MesgVec::iterator i;
-			bool cr = false;
-			bool nl = true;
 
-			//process output
+	printf("Loop started\n");
+	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
+
+		//process output
+		msg = vm->GetMessages();
+		if ((msg) && (!msg->empty())) {
+
+			cr = false;
+			nl = true;
 			for (i = msg->begin(); i != msg->end(); i++) {
 				if (i->find(DOSCRD_EHOUT_MARKER)) {
-					if (!nl) putchar('\n');
-					printf("[MSG]: %s\n",i->c_str());
-					nl = true;
+					//marker not found at the beginning of string
+					if (!nomsg) {
+						//well, we can show the message for ya
+						if (!nl) putchar('\n'); //we want it at new line
+						printf("[MSG]: %s\n",i->c_str());
+						nl = true;
+					}
 					continue;
 				}
-				for (int j=ml; j<i->length(); j++) {
+
+				//marker found, process VM's STDIN
+				for (j = ml; j < i->length(); j++) {
 					xc = i->c_str()[j];
-					if (xc == '\r') cr = true;
+					if (xc == '\r') cr = true;	//shall remember CR
 					else {
 						nl = (xc == '\n');
-						if ((isprint(xc)) || (nl && cr)) {
-							putchar(xc);
+						if ((isprint(xc)) || nl || cr) {
+							putchar(xc);		//if xc==\n we're happy too :)
 						} else
-							printf("[0x%02X]",xc);
-						cr = false;
+							printf("[0x%02X]",xc); //just print out a hex code
+						cr = false; //doesn't matter if there was LF
 					}
 				}
 			}
@@ -76,15 +114,17 @@ int main(int, char**)
 		}
 
 		//process input
-		memset(istr,0,1024); //FIXME
-		if (read(0,istr,1023) > 0)
+		if (read(0,istr,sizeof(istr)-1) > 0) {
 			vm->PutString(istr);
+			memset(istr,0,sizeof(istr)); //cleanup
+		}
 	}
-	free(istr);
 	printf("Loop ended\n");
+
 	printf("Deleting machine...\n");
 	delete vm;
 	LibDosCardExit();
+
 	printf("Quit\n");
 	_exit(EXIT_SUCCESS);
 }
