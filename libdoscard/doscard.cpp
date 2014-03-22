@@ -137,7 +137,7 @@ bool CDosCard::TryLoad(const char* filename)
 	if (!phld->engbld) return false;
 	phld->engbld->setErrorStr(&errstr);
 	phld->engbld->setEngineKind(EngineKind::JIT);
-	phld->engbld->setOptLevel(CodeGenOpt::Default);
+	phld->engbld->setOptLevel(CodeGenOpt::Default); //Less is very good too
 	phld->engine = phld->engbld->create();
 	if (!phld->engine) {
 		verb("TryLoad(): couldn't create EE (%s)\n",errstr.c_str());

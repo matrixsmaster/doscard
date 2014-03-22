@@ -21,7 +21,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "doscard.h"
-#include "../xshell/xskbd.h"
 
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
 #define INSTR_BUFLEN 64

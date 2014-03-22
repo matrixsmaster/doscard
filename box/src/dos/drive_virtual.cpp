@@ -45,8 +45,8 @@ void VFILE_Register(const char * name,Bit8u * data,Bit32u size) {
 	new_file->name=name;
 	new_file->data=data;
 	new_file->size=size;
-	new_file->date=DOS_PackDate(2002,10,1);
-	new_file->time=DOS_PackTime(12,34,56);
+	new_file->date=DOS_DEFAULTDATE;
+	new_file->time=DOS_DEFAULTTIME;
 	new_file->next=first_file;
 	first_file=new_file;
 }
@@ -85,8 +85,8 @@ Virtual_File::Virtual_File(Bit8u * in_data,Bit32u in_size) {
 	file_size=in_size;
 	file_data=in_data;
 	file_pos=0;
-	date=DOS_PackDate(2002,10,1);
-	time=DOS_PackTime(12,34,56);
+	date=DOS_DEFAULTDATE;
+	time=DOS_DEFAULTTIME;
 	open=true;
 }
 
@@ -184,8 +184,8 @@ bool Virtual_Drive::FileStat(const char* name, FileStat_Block * const stat_block
 		if (strcasecmp(name,cur_file->name)==0) {
 			stat_block->attr=DOS_ATTR_ARCHIVE;
 			stat_block->size=cur_file->size;
-			stat_block->date=DOS_PackDate(2002,10,1);
-			stat_block->time=DOS_PackTime(12,34,56);
+			stat_block->date=DOS_DEFAULTDATE;
+			stat_block->time=DOS_DEFAULTTIME;
 			return true;
 		}
 		cur_file=cur_file->next;

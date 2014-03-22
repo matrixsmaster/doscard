@@ -47,7 +47,7 @@ _________________________________TODO________________________________________
 	debugging on a Core-i7 based gametop PC to running on a STM32 cardboard :)
 	Moreover, the new SDL 2.0 brings the new capability of running scaling code
 	directly on your nVidia TITAN GPU !!! So the render_scalers can be wiped out
-	next to old SDL, eehaw!
+	next to old SDL, heehaw!
 -> DONE!
 
 	
@@ -61,12 +61,13 @@ style I've ever seen. Classes scattering around without any real purpose. Huge
 amount of globals everywhere. Almost none of the core classes can be instantiated
 more than once. Really obfuscated function calls, amount of function pointers 
 magic in trivial places, etc, etc.
-->IN PROGRESS
+Update: dynamic library created by wrapping all (really unrefactorable) old dosbox
+code into LLVM bitcode file. Now we use LLVM to start separated instances of box
+and that's working so far (without the ability of running W95, though).
+-> DONE!
 
 
-4. Select a chip to port this thing into and draw the schematics (and PCB
-layers of course)
-
+4. Select a chip to port this thing into and draw the schematics
 5. Write the ld script for a chip selected (arm/chip/load.ld)
 6. Write our own crt0 replace for this chip (arm/chip/start.S)
 

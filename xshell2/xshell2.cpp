@@ -231,8 +231,8 @@ static void SDLoop()
 			default:
 				break;
 			}
+			if (active >= cc.size()) active = cc.size() - 1;
 			if (active < 0) active = 0;
-			if (active >= cc.size()) active = cc.size();
 		}
 		/* Machines */
 		for (i=0; i<cc.size(); i++) UpdateMachine(i);

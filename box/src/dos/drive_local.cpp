@@ -305,14 +305,8 @@ bool localDrive::FindNext(DOS_DTA & dta) {
 //	find_size=(Bit32u) stat_block.st_size;
 	find_size=(Bit32u) dbgetfilesize(temp_fname);
 
-	struct tm *time;
-//	if((time=localtime(&stat_block.st_mtime))!=0){
-//		find_date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
-//		find_time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
-//	} else {
-		find_time = DOS_DEFAULTTIME;
-		find_date = DOS_DEFAULTDATE;
-//	}
+	find_time = DOS_DEFAULTTIME;
+	find_date = DOS_DEFAULTDATE;
 	dta.SetResult(find_name,find_size,find_date,find_time,find_attr);
 	return true;
 }
@@ -421,15 +415,8 @@ bool localDrive::FileStat(const char* name, FileStat_Block * const stat_block) {
 //	struct stat temp_stat;
 //	if(stat(newname,&temp_stat)!=0) return false;
 	if (!dbisitexist(newname)) return false;
-	/* Convert the stat to a FileStat */
-//	struct tm *time;
-//	if((time=localtime(&temp_stat.st_mtime))!=0) {
-//		stat_block->time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
-//		stat_block->date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
-//	} else {
-		stat_block->time = DOS_DEFAULTTIME;
-		stat_block->date = DOS_DEFAULTDATE;
-//	}
+	stat_block->time = DOS_DEFAULTTIME;
+	stat_block->date = DOS_DEFAULTDATE;
 //	stat_block->size=(Bit32u)temp_stat.st_size;
 	stat_block->size = (Bit32u)dbgetfilesize(newname);
 	return true;
@@ -562,18 +549,9 @@ void localFile::FlagReadOnlyMedium(void)
 bool localFile::UpdateDateTimeFromHost(void)
 {
 	if (!open) return false;
-//	struct stat temp_stat;
-//	fstat(fileno(fhandle->rf),&temp_stat);
-//	memset(&temp_stat,0,sizeof(temp_stat));
-	LOG_MSG("FIXME: localFile::UpdateDateTimeFromHost()");
-//	struct tm * ltime;
-//	if((ltime=localtime(&temp_stat.st_mtime))!=0) {
-//		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);
-//		date=DOS_PackDate((Bit16u)(ltime->tm_year+1900),(Bit16u)(ltime->tm_mon+1),(Bit16u)ltime->tm_mday);
-//	} else {
-		time = DOS_DEFAULTTIME;
-		date = DOS_DEFAULTDATE;
-//	}
+	/* Do not do anything! */
+	time = DOS_DEFAULTTIME;
+	date = DOS_DEFAULTDATE;
 	return true;
 }
 

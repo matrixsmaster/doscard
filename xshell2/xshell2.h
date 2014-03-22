@@ -40,7 +40,7 @@ typedef struct SxsSDL {
 	SDL_Color txtcol;
 } XSSDL;
 
-typedef struct SsxDOSM {
+typedef struct SxsDOSM {
 	SDL_Texture* frame;
 	doscard::CDosCard* m;
 	SDL_Rect rrect;
