@@ -131,7 +131,9 @@ typedef struct SRuntimeData {
 	bool frame_dirty;
 	uint8_t frameskip_cnt;
 	uint32_t* framebuf;
-	uint32_t crc;
+//	uint32_t crc;
+	dosbox::LDB_SoundInfo sound_req;
+	uint32_t sound_avail,sound_pos;
 } LDBI_RuntimeData;
 
 typedef struct SExtendedData {
@@ -141,7 +143,7 @@ typedef struct SExtendedData {
 typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
 typedef std::vector<std::string> LDBI_MesgVec;
 typedef std::vector<LDBI_ExtData> LDBI_EDFIFO;
-typedef int16_t LDB_SndSample;
+typedef int16_t LDBI_SndSample;
 
 /* ****************** Callbacks prototypes ****************** */
 
@@ -162,7 +164,7 @@ int32_t LDBCB_NOP(void* buf, size_t len);
 extern dosbox::CDosBox* DOS;
 extern LDBI_RuntimeData* Runtime;
 extern uint32_t* Screen;
-extern LDB_SndSample* Sound;
+extern LDBI_SndSample* Sound;
 extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 extern char* StringInput;

@@ -31,6 +31,7 @@
 #define XSHELL_CAPTION "DosCard XSHELL II"
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
 #define XSHELL_FONTFILE "LiberationMono-Regular.ttf"
+#define SNDRING_BUFLEN (44100*2)
 
 typedef struct SxsSDL {
 	SDL_AudioDeviceID audio;
@@ -40,10 +41,16 @@ typedef struct SxsSDL {
 	SDL_Color txtcol;
 } XSSDL;
 
+typedef struct SxsSndRing {
+	doscard::LDBI_SndSample buf[SNDRING_BUFLEN];
+	uint32_t rd,wr;
+} XSSndRing;
+
 typedef struct SxsDOSM {
 	SDL_Texture* frame;
 	doscard::CDosCard* m;
 	SDL_Rect rrect;
+	XSSndRing sound;
 } XSDOSM;
 
 typedef std::vector<XSDOSM*> DOSMachines;

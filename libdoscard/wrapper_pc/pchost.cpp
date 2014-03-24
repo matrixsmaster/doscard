@@ -68,14 +68,14 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 					Runtime->frame_dirty = true;
 				}
 //				printf("frm sz = %d x %d\n",Runtime->lcdw,Runtime->lcdh);
-				Runtime->crc = 0;
+//				Runtime->crc = 0;
 			}
 			break;
 		}
 	} else if ((Runtime->disp_fsm == 2) && (len == Runtime->lcdw * 4)) {
 		memcpy(Runtime->framebuf+(Runtime->lcdw*Runtime->frame_cnt),buf,len);
-		for (uint64_t i=0; i<len/4; i++)
-			Runtime->crc += dw[i];
+//		for (uint64_t i=0; i<len/4; i++)
+//			Runtime->crc += dw[i];
 		if (++Runtime->frame_cnt >= Runtime->lcdh) {
 			Runtime->disp_fsm = 1;
 //			printf("frm crc = %u\n",Runtime->crc);
@@ -90,16 +90,18 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 int32_t LDBCB_SND(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
-	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDB_SndSample);
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDBI_SndSample);
 	MUTEX_LOCK;
 	if (len == sizeof(LDB_SoundInfo)) {
 		//TODO
 	} else {
 		if (!Sound) {
-			Sound = reinterpret_cast<LDB_SndSample*> (malloc(sz));
+			Sound = reinterpret_cast<LDBI_SndSample*> (malloc(sz));
 			memset(Sound,0,sz);
 		}
 		if (len > sz) len = sz;
+		Runtime->sound_avail = len;
+		Runtime->sound_pos = 0;
 		if (Sound) memcpy(Sound,buf,len);
 	}
 	MUTEX_UNLOCK;

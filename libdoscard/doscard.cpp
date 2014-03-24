@@ -385,11 +385,27 @@ LDBI_MesgVec* CDosCard::GetMessages()
 	return &msgbuff;
 }
 
-uint32_t CDosCard::FillSound(uint16_t* buf, uint32_t maxlen)
+ bool CDosCard::GetSoundFormat(dosbox::LDB_SoundInfo* format)
 {
-	if ((!buf) || (maxlen < 4) || (state != DOSCRD_RUNNING)) return 0;
-	GenericValue r = phld->engine->runFunction(GFUNCL('I'),GenArgs(buf,maxlen));
-	return static_cast<uint32_t> (r.IntVal.VAL);
+	LDBI_RuntimeData buf;
+	if (!format) return false;
+	if ((state != DOSCRD_RUNNING) && (state != DOSCRD_PAUSED)) return false;
+	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
+	if (r.IntVal != 0) {
+		verb("GetSoundFormat(): Unable to collect runtime data\n");
+		return false;
+	}
+	memcpy(format,&buf.sound_req,sizeof(dosbox::LDB_SoundInfo));
+	return true;
+}
+
+uint32_t CDosCard::FillSound(LDBI_SndSample* buf, uint32_t samples)
+{
+	if ((!buf) || (samples < 2) || (state != DOSCRD_RUNNING)) return 0;
+	GenericValue r = phld->engine->runFunction(GFUNCL('I'),GenArgs(buf,samples*sizeof(LDBI_SndSample)));
+	uint32_t ret = static_cast<uint32_t> (*r.IntVal.getRawData() / sizeof(LDBI_SndSample));
+	verb("FillSound(): ret=%u\n",ret);
+	return ret;
 }
 
 } //namespace doscard

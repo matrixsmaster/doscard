@@ -35,7 +35,7 @@ namespace doscard {
 CDosBox* DOS;
 LDBI_RuntimeData* Runtime;
 uint32_t* Screen;
-int16_t* Sound;
+LDBI_SndSample* Sound;
 LDBI_EventVec* Events;
 LDBI_MesgVec* Messages;
 char* StringInput;
@@ -80,6 +80,9 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->frame_dirty = true;
 	Runtime->frameskip_cnt = 0;
 	Runtime->framebuf = NULL;
+	Runtime->sound_avail = 0;
+	Runtime->sound_pos = 0;
+	memset(&Runtime->sound_req,0,sizeof(LDB_SoundInfo));
 	return DCM_SetInstanceCaps(NULL,DOSCRD_CAPS_STANDARD);
 }
 
@@ -147,11 +150,17 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
+	void* iptr;
 	FA_TEST;
-	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDB_SndSample);
-	if (len > sz) len = sz;
 	MUTEX_LOCK;
-	memcpy(ptr,Sound,len);
+	if ((len + Runtime->sound_pos) > Runtime->sound_avail)
+		len = Runtime->sound_avail - Runtime->sound_pos;
+	if (len) {
+		iptr = reinterpret_cast<void*> (Sound);
+		memcpy(ptr,iptr+Runtime->sound_pos,len);
+//		Runtime->sound_avail -= len;
+		Runtime->sound_pos += len;
+	}
 	MUTEX_UNLOCK;
 	return static_cast<int32_t> (len);
 }

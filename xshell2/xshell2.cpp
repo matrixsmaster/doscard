@@ -68,6 +68,15 @@ static int SDLInit()
 	return 0;
 }
 
+/*This function shouldn't be used until at least one machine have
+ * valid sound data. Otherwise, we are silent, and won't init
+ * audio subsystem.
+ */
+static void SDLInitAudio(LDB_SoundInfo* req)
+{
+	//
+}
+
 static void SDLKill()
 {
 	if (sdl.audio) SDL_CloseAudioDevice(sdl.audio);
@@ -289,6 +298,11 @@ bool PushMachine()
 	xnfo(0,6,"Prepared successfully");
 
 	mach->m = card;
+
+	memset(mach->sound.buf,0,SNDRING_BUFLEN*sizeof(LDBI_SndSample));
+	mach->sound.rd = 0;
+	mach->sound.wr = 0;
+
 	cc.push_back(mach);
 	return true;
 }
@@ -338,10 +352,23 @@ void UpdateMachine(int n)
 	//Message Processing
 	char* outstr = LinearMachineOutput(n,true);
 	if (outstr) {
-		printf("[MACHINE #%d] %s\n",n,outstr);
+		xnfo(0,9,"[MACHINE %d MSG]: %s",n,outstr);
 		free(outstr);
 	}
 #endif
+
+	//FIXME
+	uint32_t r = mach->m->FillSound(mach->sound.buf+mach->sound.wr,SNDRING_BUFLEN);
+	if (r > 0) {
+		 if (!sdl.audio) {
+			 LDB_SoundInfo fmt;
+			 mach->m->GetSoundFormat(&fmt);
+			 xnfo(0,9,"Setting audio. F=%d",fmt.freq);
+			 SDLInitAudio(&fmt);
+		 }
+		 mach->sound.wr += r;
+		 //TODO
+	}
 }
 
 void AddMachineEvents(int n, SDL_Event e)
