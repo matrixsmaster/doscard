@@ -40,11 +40,13 @@ namespace doscard {
 /// API Version.
 #define LDBWINTVER 3
 /// Number of wrapper functions accessible.
-#define LDBWRAP_FUNCS_Q ((int)('P'-'A'+1))
+#define LDBWRAP_FUNCS_Q ((int)('Q'-'A'+1))
 /// Frameskip absolute maximum.
 #define LDBW_FRAMESKIP_MAX 10
 /// Input string buffer size
 #define LDBW_STRINGBUF_SIZE 8196
+/// Buffer holds at most this number of samples.
+#define LDBW_SNDBUF_SAMPLES 1024
 
 /* ****************** Capabilities Data Constants ****************** */
 /// Video output.
@@ -139,6 +141,7 @@ typedef struct SExtendedData {
 typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
 typedef std::vector<std::string> LDBI_MesgVec;
 typedef std::vector<LDBI_ExtData> LDBI_EDFIFO;
+typedef int16_t LDB_SndSample;
 
 /* ****************** Callbacks prototypes ****************** */
 
@@ -152,13 +155,14 @@ int32_t LDBCB_CIO(void* buf, size_t len);
 int32_t LDBCB_LIO(void* buf, size_t len);
 int32_t LDBCB_STO(void* buf, size_t len);
 int32_t LDBCB_STI(void* buf, size_t len);
+int32_t LDBCB_NOP(void* buf, size_t len);
 
 /* ****************** DosCard Wrap Internal Globals ****************** */
 
 extern dosbox::CDosBox* DOS;
 extern LDBI_RuntimeData* Runtime;
 extern uint32_t* Screen;
-extern int16_t* Sound;
+extern LDB_SndSample* Sound;
 extern LDBI_EventVec* Events;
 extern LDBI_MesgVec* Messages;
 extern char* StringInput;
@@ -191,6 +195,7 @@ int32_t DCM_SetInstanceCaps(void*,uint64_t);
 int32_t DCN_GetInstanceExtData(void*,uint64_t);
 int32_t DCO_AddInstanceExtData(void*,uint64_t);
 int32_t DCP_AddInstanceString(void*,uint64_t);
+int32_t DCQ_SetInstancePause(void*,uint64_t);
 }
 
 } //namespace doscard

@@ -56,6 +56,7 @@ Bitu CDosBox::NormalLoop()
 {
 	Bits ret;
 	for(;;) {
+		while (pause_mode) Callback(DBCB_NOPIdle,NULL,DOSBOX_IDLE_LEN);
 		loopcount++;
 		if (PIC_RunQueue()) {
 			ret = (*cpudecoder)();
@@ -265,6 +266,7 @@ CDosBox::CDosBox()
 	init_ok = false;
 	myldbi = this;
 	quit = false;
+	pause_mode = false;
 
 #if C_DEBUG	
 	LOG_StartUp();
@@ -353,11 +355,18 @@ void CDosBox::SetConfig(LDB_Settings* c)
 void CDosBox::SetQuit()
 {
 	LOG_MSG("CDosBox::SetQuit(): Called");
+	pause_mode = false;
 	quit = true;
 	if (first_shell) {
 		DOS_Shell* ptr = reinterpret_cast<DOS_Shell*> (first_shell);
 		ptr->exit = true;
 	}
+}
+
+void CDosBox::SetPause(bool paused)
+{
+	//pretend to be an atomic operation :)
+	pause_mode = paused;
 }
 
 void CDosBox::Execute()

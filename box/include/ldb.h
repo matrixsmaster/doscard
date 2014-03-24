@@ -58,10 +58,11 @@ enum LDB_CallbackType {
 	DBCB_LogSTDOUT = 6,
 	DBCB_PullTTYInput = 7,
 	DBCB_COMIO = 8,
-	DBCB_LPTIO = 9
+	DBCB_LPTIO = 9,
+	DBCB_NOPIdle = 10
 };
 
-#define LDB_CALLBACKSQ 10
+#define LDB_CALLBACKSQ 11
 
 typedef int32_t (*LDB_CallbackFunc)(void*,size_t);
 

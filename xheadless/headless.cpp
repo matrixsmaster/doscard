@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 	unsigned int j;				//simple iterator :)
 	LDBI_MesgVec* msg;			//external (VM's) messages vector ptr
 	bool nomsg;					//do not show messages flag
+	dosbox::LDB_Settings* vmset;//VM settings
 
 	printf("\n---------------------------------------------------\n");
 	printf("|              DosCard Headless Mode              |\n");
@@ -69,14 +70,26 @@ int main(int argc, char* argv[])
 		abort();
 	}
 
+	//and prepare it
+	if (!vm->Prepare()) {
+		printf("Couldn't prepare VM for execution!\n");
+		abort();
+	}
+	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS); //headless mode set
+	vmset = vm->GetSettings();
+	if (!vmset) {
+		printf("Unable to get VM settings!\n");
+		abort();
+	}
+	vmset->mem.total_ram = 4; //set to 4MB of phys RAM
+	vm->ApplySettings(vmset);
+
 	//and Run it!
-	if (!vm->Prepare()) abort();
-	vm->SetCapabilities(DOSCRD_CAPS_HEADLESS);
 	vm->Run();
 
+	//Main Loop
 	printf("Loop started\n");
 	while (vm->GetCurrentState() == DOSCRD_RUNNING) {
-
 		//process output
 		msg = vm->GetMessages();
 		if ((msg) && (!msg->empty())) {
@@ -120,10 +133,12 @@ int main(int argc, char* argv[])
 	}
 	printf("Loop ended\n");
 
+	//Free mem
 	printf("Deleting machine...\n");
 	delete vm;
 	LibDosCardExit();
 
+	//and quit without executing all atexit() registered functions
 	printf("Quit\n");
 	_exit(EXIT_SUCCESS);
 }

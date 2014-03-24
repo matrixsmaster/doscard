@@ -224,6 +224,14 @@ static void SDLoop()
 					active++;
 					break;
 
+				case SDL_SCANCODE_KP_7:
+					PauseActive(true);
+					break;
+
+				case SDL_SCANCODE_KP_9:
+					PauseActive(false);
+					break;
+
 				default: break;
 				}
 				break;
@@ -320,6 +328,7 @@ void UpdateMachine(int n)
 void AddMachineEvents(int n, SDL_Event e)
 {
 	MACH_INBOUND(n);
+	if (cc[n]->m->GetCurrentState() != DOSCRD_RUNNING) return;
 	unsigned int i;
 	LDB_UIEvent mye;
 	memset(&mye,0,sizeof(mye));
@@ -341,6 +350,13 @@ void AddMachineEvents(int n, SDL_Event e)
 	}
 //	xnfo(0,10,"Adding event {%hx} to machine %d",mye.t,n);
 	cc[n]->m->PutEvent(mye);
+}
+
+void PauseActive(bool p)
+{
+	MACH_INBOUND(active);
+	xnfo(0,11,"active = %d, pause req = %hd",active,p);
+	cc[active]->m->SetPause(p);
 }
 
 int main(int /*argc*/, char** /*argv*/)

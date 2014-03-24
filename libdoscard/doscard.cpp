@@ -90,6 +90,9 @@ CDosCard::~CDosCard()
 {
 	LDB_UIEvent etmp;
 	switch (state) {
+	case DOSCRD_PAUSED:
+		SetPause(false);
+		//no break
 	case DOSCRD_RUNNING:
 		memset(&etmp,0,sizeof(etmp));
 		etmp.t = LDB_UIE_QUIT;
@@ -266,9 +269,14 @@ LDB_Settings* CDosCard::GetSettings()
 {
 	if ((state == DOSCRD_INITED) || (state == DOSCRD_RUNNING)) {
 		LDB_Settings set;
-		GenericValue r = phld->engine->runFunction(GFUNCL('E'),GenArgs(&set,sizeof(set)));
-		if (r.IntVal == 0)
-			memcpy(settings,&set,sizeof(set));
+		GenericValue r = phld->engine->runFunction(GFUNCL('E'),GenArgs(&set));
+		if (r.IntVal == 0) {
+			if (!settings) {
+				settings = reinterpret_cast<LDB_Settings*> (malloc(sizeof(LDB_Settings)));
+				memset(settings,0,sizeof(LDB_Settings)); //just to make sure there's no random data
+			}
+			if (settings) memcpy(settings,&set,sizeof(set));
+		}
 	}
 	return settings;
 }
@@ -282,8 +290,9 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
 	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return false;
-	//TODO
-	return false;
+	GenericValue r = phld->engine->runFunction(GFUNCL('F'),GenArgs(pset));
+	if (r.IntVal != 0) return false;
+	return true;
 }
 
 bool CDosCard::Prepare()
@@ -304,6 +313,15 @@ int CDosCard::Run()
 	state = DOSCRD_RUNNING;
 	pthread_create(&dosthread,NULL,DosCardThread,this);
 	return 0;
+}
+
+void CDosCard::SetPause(bool paused)
+{
+	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
+		GenericValue r = phld->engine->runFunction(GFUNCL('Q'),GenArgs(NULL,(paused?1:0)));
+		if (r.IntVal == 0)
+			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
+	}
 }
 
 void CDosCard::DoNotCallRunner()

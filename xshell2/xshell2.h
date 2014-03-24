@@ -53,6 +53,7 @@ void PopMachine();
 void ClearMachines();
 void UpdateMachine(int n);
 void AddMachineEvents(int n, SDL_Event e);
+void PauseActive(bool p);
 
 #define NSDLRECT(R,A,B,C,D) {R.x = A; R.y = B; R.w = C; R.h = D;}
 #define MACH_INBOUND(N) if ((N < 0) || (N >= (int)cc.size())) return

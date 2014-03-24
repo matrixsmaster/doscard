@@ -41,6 +41,7 @@ enum MixerModes {
 
 #define MIXER_BUFSIZE (16*1024)
 #define MIXER_BUFMASK (MIXER_BUFSIZE-1)
+#define MIXER_OUTBUF_SAMPLES 1024
 extern Bit8u MixTemp[MIXER_BUFSIZE];
 
 #define MAX_AUDIO ((1<<(16-1))-1)

@@ -33,6 +33,7 @@
 namespace dosbox {
 
 #define DOSBOX_MESSAGE_LEN 512
+#define DOSBOX_IDLE_LEN 100
 
 //FIXME: delete that after all
 #define IS_EGAVGA_ARCH 1
@@ -46,6 +47,7 @@ private:
 	CLDBConf* config;
 	bool init_ok;
 	uint64_t loopcount;
+	bool pause_mode;
 
 public:
 	CDosBox();
@@ -61,6 +63,7 @@ public:
 	void SetConfig(LDB_Settings* c);
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
 	void SetQuit();
+	void SetPause(bool paused);
 
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;

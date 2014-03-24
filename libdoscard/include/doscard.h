@@ -64,7 +64,7 @@
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.4"
+#define VERSIONSTR "0.0.5"
 #define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 namespace doscard {
@@ -77,7 +77,8 @@ enum EDOSCRDState {
 	DOSCRD_INITED,
 	DOSCRD_RUNNING,
 	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL
+	DOSCRD_LOADFAIL,
+	DOSCRD_PAUSED
 };
 
 #ifdef DOSCARD_SOURCE
@@ -129,6 +130,9 @@ public:
 
 	/// Run instance (which eventually will create a thread).
 	int Run();
+
+	/// Pause/Resume VM.
+	void SetPause(bool paused);
 
 	/// Do NOT use this function.
 	void DoNotCallRunner();

@@ -333,23 +333,25 @@ void MixerChannel::FillUp(void) {
 }
 
 extern bool ticksLocked;
-static inline bool Mixer_irq_important(void) {
+static inline bool Mixer_irq_important(void)
+{
 	/* In some states correct timing of the irqs is more important then 
 	 * non stuttering audo */
 	return (myldbi->ticksLocked);// || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
 }
 
 /* Mix a certain amount of new samples */
-static void MIXER_MixData(Bitu needed) {
+static void MIXER_MixData(Bitu needed)
+{
 	MixerChannel * chan=mixer.channels;
 	while (chan) {
 		chan->Mix(needed);
 		chan=chan->next;
 	}
 
-	Bit16s convert[1024][2];
+	Bit16s convert[MIXER_OUTBUF_SAMPLES][2];
 	Bitu added=needed-mixer.done;
-	if (added>1024) added=1024;
+	if (added>MIXER_OUTBUF_SAMPLES) added=MIXER_OUTBUF_SAMPLES;
 	Bitu readpos=(mixer.pos+mixer.done)&MIXER_BUFMASK;
 	for (Bitu i=0;i<added;i++) {
 		Bits sample=mixer.work[readpos][0] >> MIXER_VOLSHIFT;
@@ -360,9 +362,7 @@ static void MIXER_MixData(Bitu needed) {
 		convert[i][1]=MIXER_CLIP(sample);
 		readpos=(readpos+1)&MIXER_BUFMASK;
 	}
-//	(*libdosbox_callbacks[DBCB_PushSound])(convert,added*4);
-	myldbi->Callback(DBCB_PushSound,convert,added*4);
-//	CAPTURE_AddWave( mixer.freq, added, (Bit16s*)convert );
+	myldbi->Callback(DBCB_PushSound,convert,added*2*sizeof(Bit16s));
 
 	//Reset the the tick_add for constant speed
 	if( Mixer_irq_important() )
@@ -370,16 +370,16 @@ static void MIXER_MixData(Bitu needed) {
 	mixer.done = needed;
 }
 
-static void MIXER_Mix(void) {
-//	SDL_LockAudio();
+static void MIXER_Mix(void)
+{
 	MIXER_MixData(mixer.needed);
 	mixer.tick_remain+=mixer.tick_add;
 	mixer.needed+=(mixer.tick_remain>>MIXER_SHIFT);
 	mixer.tick_remain&=MIXER_REMAIN;
-//	SDL_UnlockAudio();
 }
 
-static void MIXER_Mix_NoSound(void) {
+static void MIXER_Mix_NoSound(void)
+{
 	MIXER_MixData(mixer.needed);
 	/* Clear piece we've just generated */
 	for (Bitu i=0;i<mixer.needed;i++) {
@@ -399,7 +399,9 @@ static void MIXER_Mix_NoSound(void) {
 	mixer.done=0;
 }
 
-static void MIXER_CallBack(void * userdata, uint8_t *stream, int len) {
+#if 0
+static void MIXER_CallBack(void * userdata, uint8_t *stream, int len)
+{
 	Bitu need=(Bitu)len/MIXER_SSIZE;
 	Bit16s * output=(Bit16s *)stream;
 	Bitu reduce;
@@ -503,6 +505,7 @@ static void MIXER_CallBack(void * userdata, uint8_t *stream, int len) {
 		}
 	}
 }
+#endif
 
 class MIXER : public Program {
 public:

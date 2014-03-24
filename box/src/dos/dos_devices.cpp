@@ -128,6 +128,8 @@ bool device_CON::Read(Bit8u * data,Bit16u * size)
 	Bit16u count = 0;
 	int32_t ret = myldbi->Callback(DBCB_PullTTYInput,data,*size);
 	if (ret > 0) {
+//		myldbi->RunMachine();
+//		PIC_RunQueue();
 		*size = static_cast<Bit16u> (ret);
 		return true;
 	}

@@ -90,7 +90,15 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 int32_t LDBCB_SND(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
-	//TODO
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDB_SndSample);
+	MUTEX_LOCK;
+	if (!Sound) {
+		Sound = reinterpret_cast<LDB_SndSample*> (malloc(sz));
+		memset(Sound,0,sz);
+	}
+	if (len > sz) len = sz;
+	if (Sound) memcpy(Sound,buf,len);
+	MUTEX_UNLOCK;
 	return 0;
 }
 
@@ -298,6 +306,12 @@ int32_t LDBCB_STI(void* buf, size_t len)
 	}
 	MUTEX_UNLOCK;
 	return static_cast<int32_t> (i);
+}
+
+int32_t LDBCB_NOP(void* buf, size_t len)
+{
+	if (len) usleep(len*1000);
+	return 0;
 }
 
 } //namespace doscard
