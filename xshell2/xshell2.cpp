@@ -86,29 +86,30 @@ inline void ClearUI()
 	SDL_RenderClear(sdl.ren);
 }
 
-#ifdef XSHELL2_TTFOUT
-static char* LinearMachineOutput(int n)
+static char* LinearMachineOutput(int n, bool clear)
 {
 	int i = 0;
-	int j;
 	LDBI_MesgVec::iterator I;
 	LDBI_MesgVec* msgs = cc[n]->m->GetMessages();
-	if (msgs->empty()) return NULL;
-	j = msgs->size() - 3;
-	if (j < 0) j = 0;
-	for (I=msgs->begin()+j; I != msgs->end(); ++I)
-		i += I->length() + 2;
+	if ((!msgs) || (msgs->empty())) return NULL;
+
+	for (I=msgs->begin(); I != msgs->end(); ++I)
+		i += I->length() + 1;
+
 	if (i < 1) return NULL;
+
 	char* res = reinterpret_cast<char*> (malloc(++i));
 	memset(res,0,i);
-	for (I=msgs->begin()+j; I != msgs->end(); ++I) {
+
+	for (I=msgs->begin(); I != msgs->end(); ++I) {
 		strncat(res,I->c_str(),i-1);
 		i -= I->length();
-		if (i > 0) strncat(res,"\r\n",i-1);
+		if (i > 0) strncat(res,"\n",i-1);
 	}
+
+	if (clear) msgs->clear();
 	return res;
 }
-#endif
 
 static void DrawUI()
 {
@@ -158,7 +159,7 @@ static void DrawUI()
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
 				if (sdl.fnt) {
 #ifdef XSHELL2_TTFOUT
-					char* lin = LinearMachineOutput(k);
+					char* lin = LinearMachineOutput(k,false);
 					if (lin) {
 						printf("lin = '%s'\n",lin);
 						surf = TTF_RenderText_Solid(sdl.fnt,lin,sdl.txtcol);
@@ -199,7 +200,9 @@ static void SDLoop()
 	do {
 		/* Event Processing*/
 		while (SDL_PollEvent(&e)) {
+
 			AddMachineEvents(active,e);
+
 			switch (e.type) {
 			case SDL_QUIT:
 				quit = true;
@@ -239,14 +242,19 @@ static void SDLoop()
 			default:
 				break;
 			}
-			if (active >= cc.size()) active = cc.size() - 1;
+
+			if (static_cast<unsigned> (active) >= cc.size())
+				active = cc.size() - 1;
 			if (active < 0) active = 0;
 		}
+
 		/* Machines */
 		for (i=0; i<cc.size(); i++) UpdateMachine(i);
+
 		/* Update Window*/
 		DrawUI();
 		SDL_Delay(5);
+
 	} while (!quit);
 }
 
@@ -311,6 +319,8 @@ void UpdateMachine(int n)
 		mach->m->Run();
 	else if (stat != DOSCRD_RUNNING)
 		return;
+
+	//Video Update
 	int w,h;
 	uint32_t* frmbuf = mach->m->GetFramebuffer(&w,&h);
 	if ((w != mach->rrect.w) || (h != mach->rrect.h)) {
@@ -323,6 +333,15 @@ void UpdateMachine(int n)
 	}
 	if (mach->frame)
 		SDL_UpdateTexture(mach->frame,NULL,frmbuf,mach->rrect.w*sizeof(uint32_t));
+
+#ifndef XSHELL2_TTFOUT
+	//Message Processing
+	char* outstr = LinearMachineOutput(n,true);
+	if (outstr) {
+		printf("[MACHINE #%d] %s\n",n,outstr);
+		free(outstr);
+	}
+#endif
 }
 
 void AddMachineEvents(int n, SDL_Event e)

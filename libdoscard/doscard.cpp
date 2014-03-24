@@ -319,7 +319,7 @@ void CDosCard::SetPause(bool paused)
 {
 	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
 		GenericValue r = phld->engine->runFunction(GFUNCL('Q'),GenArgs(NULL,(paused?1:0)));
-		if (r.IntVal == 0)
+		if ((r.IntVal == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
 	}
 }
@@ -387,9 +387,9 @@ LDBI_MesgVec* CDosCard::GetMessages()
 
 uint32_t CDosCard::FillSound(uint16_t* buf, uint32_t maxlen)
 {
-	if (state != DOSCRD_RUNNING) return 0;
-	//TODO
-	return 0;
+	if ((!buf) || (maxlen < 4) || (state != DOSCRD_RUNNING)) return 0;
+	GenericValue r = phld->engine->runFunction(GFUNCL('I'),GenArgs(buf,maxlen));
+	return static_cast<uint32_t> (r.IntVal.VAL);
 }
 
 } //namespace doscard

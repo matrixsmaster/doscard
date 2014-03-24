@@ -148,8 +148,12 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	//TODO
-	return -1;
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDB_SndSample);
+	if (len > sz) len = sz;
+	MUTEX_LOCK;
+	memcpy(ptr,Sound,len);
+	MUTEX_UNLOCK;
+	return static_cast<int32_t> (len);
 }
 
 int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
