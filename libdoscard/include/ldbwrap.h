@@ -133,6 +133,7 @@ typedef struct SRuntimeData {
 	uint32_t* framebuf;
 //	uint32_t crc;
 	dosbox::LDB_SoundInfo sound_req;
+	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos;
 } LDBI_RuntimeData;
 

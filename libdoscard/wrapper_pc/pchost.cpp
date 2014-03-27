@@ -93,7 +93,8 @@ int32_t LDBCB_SND(void* buf, size_t len)
 	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDBI_SndSample);
 	MUTEX_LOCK;
 	if (len == sizeof(LDB_SoundInfo)) {
-		//TODO
+		memcpy(&Runtime->sound_req,buf,len);
+		Runtime->sound_fmt_ok = true;
 	} else {
 		if (!Sound) {
 			Sound = reinterpret_cast<LDBI_SndSample*> (malloc(sz));

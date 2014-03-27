@@ -32,6 +32,7 @@
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
 #define XSHELL_FONTFILE "LiberationMono-Regular.ttf"
 #define SNDRING_BUFLEN (44100*2)
+#define SNDRING_ONESHOT 1024
 
 typedef struct SxsSDL {
 	SDL_AudioDeviceID audio;
@@ -61,6 +62,7 @@ void ClearMachines();
 void UpdateMachine(int n);
 void AddMachineEvents(int n, SDL_Event e);
 void PauseActive(bool p);
+void XS_AudioCallback(void* userdata, uint8_t* stream, int len);
 
 #define NSDLRECT(R,A,B,C,D) {R.x = A; R.y = B; R.w = C; R.h = D;}
 #define MACH_INBOUND(N) if ((N < 0) || (N >= (int)cc.size())) return

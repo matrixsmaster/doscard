@@ -74,7 +74,28 @@ static int SDLInit()
  */
 static void SDLInitAudio(LDB_SoundInfo* req)
 {
-	//
+	SDL_AudioSpec want,have;
+	SDL_zero(want);
+	if (req->silent) return;
+	want.freq = req->freq;
+	if (req->sign && (req->width == 16))
+		want.format = AUDIO_S16SYS;
+	else
+		xnfo(-1,12,"Unsupported audio format");
+	want.channels = req->channels;
+	want.samples = req->blocksize;
+	want.callback = XS_AudioCallback;
+	sdl.audio = SDL_OpenAudioDevice(NULL,0,&want,&have,SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+	if (!sdl.audio) {
+		xnfo(1,12,"Audio device couldn't be opened!\nSilent mode.");
+		return;
+	}
+	xnfo(0,12,"Audio opened successfully");
+//	memset(sndring.data,0,sizeof(sndring.data));
+//	sndring.read = 0;
+//	sndring.write = 0;
+//	sndring.paused = true;
+	SDL_PauseAudioDevice(sdl.audio,0);
 }
 
 static void SDLKill()
@@ -356,19 +377,42 @@ void UpdateMachine(int n)
 		free(outstr);
 	}
 #endif
-
+/*
 	//FIXME
-	uint32_t r = mach->m->FillSound(mach->sound.buf+mach->sound.wr,SNDRING_BUFLEN);
+	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT >= SNDRING_BUFLEN)?
+						(SNDRING_BUFLEN - mach->sound.wr):SNDRING_ONESHOT;
+	uint32_t r = mach->m->FillSound(mach->sound.buf+mach->sound.wr,wrlen);
 	if (r > 0) {
 		 if (!sdl.audio) {
 			 LDB_SoundInfo fmt;
-			 mach->m->GetSoundFormat(&fmt);
-			 xnfo(0,9,"Setting audio. F=%d",fmt.freq);
-			 SDLInitAudio(&fmt);
+			 if (mach->m->GetSoundFormat(&fmt)) {
+				 xnfo(0,9,"Setting audio. F=%d",fmt.freq);
+				 SDLInitAudio(&fmt);
+			 } else {
+				 xnfo(1,9,"Unable to get sound format");
+				 return;
+			 }
 		 }
 		 mach->sound.wr += r;
 		 //TODO
 	}
+	*/
+	if (!sdl.audio) {
+		LDB_SoundInfo fmt;
+		if (mach->m->GetSoundFormat(&fmt)) {
+			xnfo(0,9,"Setting audio. F=%d",fmt.freq);
+			SDLInitAudio(&fmt);
+		}
+	}
+}
+
+void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
+{
+//	xnfo(0,13,"acal: %d",len);
+	MACH_INBOUND(active);
+	memset(stream,0,len);
+	LDBI_SndSample* buf = reinterpret_cast<LDBI_SndSample*> (stream);
+	cc[active]->m->FillSound(buf,len/sizeof(LDBI_SndSample));
 }
 
 void AddMachineEvents(int n, SDL_Event e)

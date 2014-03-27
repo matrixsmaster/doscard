@@ -82,6 +82,7 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->framebuf = NULL;
 	Runtime->sound_avail = 0;
 	Runtime->sound_pos = 0;
+	Runtime->sound_fmt_ok = false;
 	memset(&Runtime->sound_req,0,sizeof(LDB_SoundInfo));
 	return DCM_SetInstanceCaps(NULL,DOSCRD_CAPS_STANDARD);
 }
@@ -150,13 +151,13 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
-	void* iptr;
+	uint8_t* iptr;
 	FA_TEST;
 	MUTEX_LOCK;
 	if ((len + Runtime->sound_pos) > Runtime->sound_avail)
 		len = Runtime->sound_avail - Runtime->sound_pos;
 	if (len) {
-		iptr = reinterpret_cast<void*> (Sound);
+		iptr = reinterpret_cast<uint8_t*> (Sound);
 		memcpy(ptr,iptr+Runtime->sound_pos,len);
 //		Runtime->sound_avail -= len;
 		Runtime->sound_pos += len;

@@ -396,7 +396,7 @@ LDBI_MesgVec* CDosCard::GetMessages()
 		return false;
 	}
 	memcpy(format,&buf.sound_req,sizeof(dosbox::LDB_SoundInfo));
-	return true;
+	return buf.sound_fmt_ok;
 }
 
 uint32_t CDosCard::FillSound(LDBI_SndSample* buf, uint32_t samples)
