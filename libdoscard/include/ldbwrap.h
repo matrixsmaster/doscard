@@ -44,9 +44,9 @@ namespace doscard {
 /// Frameskip absolute maximum.
 #define LDBW_FRAMESKIP_MAX 10
 /// Input string buffer size
-#define LDBW_STRINGBUF_SIZE 8196
+#define LDBW_STRINGBUF_SIZE 2048
 /// Buffer holds at most this number of samples.
-#define LDBW_SNDBUF_SAMPLES 1024
+#define LDBW_SNDBUF_SAMPLES 4096
 
 /* ****************** Capabilities Data Constants ****************** */
 /// Video output.
@@ -130,11 +130,11 @@ typedef struct SRuntimeData {
 	uint32_t frame_cnt;
 	bool frame_dirty;
 	uint8_t frameskip_cnt;
-	uint32_t* framebuf;
+	uint32_t* framebuf;		//FIXME: Use Screen instead!
 //	uint32_t crc;
 	dosbox::LDB_SoundInfo sound_req;
 	bool sound_fmt_ok;
-	uint32_t sound_avail,sound_pos;
+	uint32_t sound_avail,sound_pos,sound_rec;
 } LDBI_RuntimeData;
 
 typedef struct SExtendedData {

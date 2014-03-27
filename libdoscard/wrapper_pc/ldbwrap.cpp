@@ -27,6 +27,7 @@
 #endif
 
 #define FA_TEST if ((!ptr) || (!len)) return -1
+#define MFREE(x) { if (x) free(x); x = NULL; }
 
 using namespace dosbox;
 
@@ -82,6 +83,7 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->framebuf = NULL;
 	Runtime->sound_avail = 0;
 	Runtime->sound_pos = 0;
+	Runtime->sound_rec = 0;
 	Runtime->sound_fmt_ok = false;
 	memset(&Runtime->sound_req,0,sizeof(LDB_SoundInfo));
 	return DCM_SetInstanceCaps(NULL,DOSCRD_CAPS_STANDARD);
@@ -91,15 +93,15 @@ int32_t DCC_TryDestroyInstance(void)
 {
 	if ((!DOS) && (!Runtime)) return 0;
 	if (Runtime->on) return -1;
-	if (Runtime->framebuf) free(Runtime->framebuf);
+	MFREE(Runtime->framebuf);
 	delete DOS;
 	delete Runtime;
-	if (Screen) free(Screen);
-	if (Sound) free(Sound);
+	MFREE(Screen);
+	MFREE(Sound);
 	if (Events) delete Events;
 	if (Messages) delete Messages;
-	if (StringInput) free(StringInput);
 	if (ExtendedData) delete ExtendedData;
+	MFREE(StringInput);
 	return 0;
 }
 
@@ -151,19 +153,27 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
-	uint8_t* iptr;
+	uint8_t* iptr,*optr;
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
+	int64_t rem = 0;
 	FA_TEST;
 	MUTEX_LOCK;
-	if ((len + Runtime->sound_pos) > Runtime->sound_avail)
-		len = Runtime->sound_avail - Runtime->sound_pos;
-	if (len) {
+	rem = (len + Runtime->sound_pos) - sz;
+	if (rem < 0) rem = 0;
+	else if (rem > 0) len = sz - Runtime->sound_pos;
+	if ((len) && (Sound)) {
 		iptr = reinterpret_cast<uint8_t*> (Sound);
-		memcpy(ptr,iptr+Runtime->sound_pos,len);
-//		Runtime->sound_avail -= len;
+//		memcpy(ptr,iptr+Runtime->sound_pos,len);
+		if (rem) {
+			optr = reinterpret_cast<uint8_t*> (ptr);
+//			memcpy(optr+len,iptr,rem);
+		}
 		Runtime->sound_pos += len;
+		if (Runtime->sound_pos > sz)
+			Runtime->sound_pos -= sz;
 	}
 	MUTEX_UNLOCK;
-	return static_cast<int32_t> (len);
+	return static_cast<int32_t> (len+rem);
 }
 
 int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
@@ -219,20 +229,23 @@ int32_t DCM_SetInstanceCaps(void* ptr, uint64_t len)
 	DC_REG_CAP_MACRO(DOSCRD_CAP_PARIO, DBCB_LPTIO,			LDBCB_LIO);
 	DC_REG_CAP_MACRO(DOSCRD_CAP_EHOUT, DBCB_LogSTDOUT,		LDBCB_STO);
 	DC_REG_CAP_MACRO(DOSCRD_CAP_TTYIN, DBCB_PullTTYInput,	LDBCB_STI);
+	//Free some allocations if they won't needed
+	if (!(Caps & DOSCRD_CAP_VIDEO)) MFREE(Runtime->framebuf);
+	if (!(Caps & DOSCRD_CAP_AUDIO)) MFREE(Sound);
 	return 0;
 }
 
 int32_t DCN_GetInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	//TODO
+	//TODO: Extended Data
 	return -1;
 }
 
 int32_t DCO_AddInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	//TODO
+	//TODO: Extended Data
 	return -1;
 }
 

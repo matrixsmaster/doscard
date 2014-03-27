@@ -90,7 +90,9 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 int32_t LDBCB_SND(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
-	unsigned int sz = LDBW_SNDBUF_SAMPLES * 2 * sizeof(LDBI_SndSample);
+	uint8_t* ptr;
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
+	int64_t rem = 0;
 	MUTEX_LOCK;
 	if (len == sizeof(LDB_SoundInfo)) {
 		memcpy(&Runtime->sound_req,buf,len);
@@ -98,12 +100,25 @@ int32_t LDBCB_SND(void* buf, size_t len)
 	} else {
 		if (!Sound) {
 			Sound = reinterpret_cast<LDBI_SndSample*> (malloc(sz));
-			memset(Sound,0,sz);
+			memset(Sound,0,sz); //silence
 		}
 		if (len > sz) len = sz;
-		Runtime->sound_avail = len;
-		Runtime->sound_pos = 0;
-		if (Sound) memcpy(Sound,buf,len);
+		rem = (len + Runtime->sound_rec) - sz;
+		if (rem < 0) rem = 0;
+		else if (rem > 0) len = sz - Runtime->sound_rec;
+//		Runtime->sound_avail = len;
+//		Runtime->sound_pos = 0;
+		if (Sound) {
+			ptr = reinterpret_cast<uint8_t*> (Sound);
+//			memcpy(ptr+Runtime->sound_rec,buf,len);
+			if (rem) {
+				ptr = reinterpret_cast<uint8_t*> (buf);
+//				memcpy(Sound,ptr+len,rem);
+			}
+		}
+		Runtime->sound_rec += len;
+		if (Runtime->sound_rec > sz)
+			Runtime->sound_rec -= sz;
 	}
 	MUTEX_UNLOCK;
 	return 0;

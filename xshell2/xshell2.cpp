@@ -408,7 +408,7 @@ void UpdateMachine(int n)
 
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 {
-//	xnfo(0,13,"acal: %d",len);
+	xnfo(0,13,"acal: %d",len);
 	MACH_INBOUND(active);
 	memset(stream,0,len);
 	LDBI_SndSample* buf = reinterpret_cast<LDBI_SndSample*> (stream);
