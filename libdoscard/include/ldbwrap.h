@@ -46,7 +46,7 @@ namespace doscard {
 /// Input string buffer size
 #define LDBW_STRINGBUF_SIZE 2048
 /// Buffer holds at most this number of samples.
-#define LDBW_SNDBUF_SAMPLES 4096
+#define LDBW_SNDBUF_SAMPLES 2048
 
 /* ****************** Capabilities Data Constants ****************** */
 /// Video output.

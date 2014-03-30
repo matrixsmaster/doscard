@@ -377,11 +377,12 @@ void UpdateMachine(int n)
 		free(outstr);
 	}
 #endif
-/*
+
 	//FIXME
-	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT >= SNDRING_BUFLEN)?
+	LDBI_SndSample tmpbuf[SNDRING_ONESHOT];
+	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT > SNDRING_BUFLEN)?
 						(SNDRING_BUFLEN - mach->sound.wr):SNDRING_ONESHOT;
-	uint32_t r = mach->m->FillSound(mach->sound.buf+mach->sound.wr,wrlen);
+	uint32_t r = mach->m->FillSound(tmpbuf,wrlen);
 	if (r > 0) {
 		 if (!sdl.audio) {
 			 LDB_SoundInfo fmt;
@@ -395,8 +396,13 @@ void UpdateMachine(int n)
 		 }
 		 mach->sound.wr += r;
 		 //TODO
+		 SDL_LockAudio();
+		 memcpy(mach->sound.buf+mach->sound.wr,tmpbuf,r*sizeof(LDBI_SndSample));
+		 mach->sound.wr += r;
+		 if (mach->sound.wr >= SNDRING_BUFLEN) mach->sound.wr = 0;
+		 SDL_UnlockAudio();
 	}
-	*/
+	/*
 	if (!sdl.audio) {
 		LDB_SoundInfo fmt;
 		if (mach->m->GetSoundFormat(&fmt)) {
@@ -404,15 +410,30 @@ void UpdateMachine(int n)
 			SDLInitAudio(&fmt);
 		}
 	}
+	*/
 }
 
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 {
 	xnfo(0,13,"acal: %d",len);
 	MACH_INBOUND(active);
+	int rem = 0;
+	LDBI_SndSample* ptr = reinterpret_cast<LDBI_SndSample*> (stream);
 	memset(stream,0,len);
-	LDBI_SndSample* buf = reinterpret_cast<LDBI_SndSample*> (stream);
-	cc[active]->m->FillSound(buf,len/sizeof(LDBI_SndSample));
+	len /= sizeof(LDBI_SndSample);
+	rem = len + cc[active]->sound.rd - SNDRING_BUFLEN;
+	if (rem > 0)
+		len = SNDRING_BUFLEN - cc[active]->sound.rd;
+	else
+		rem = 0;
+	memcpy(ptr,&cc[active]->sound.buf[cc[active]->sound.rd],len*sizeof(LDBI_SndSample));
+	if (rem) {
+		memcpy(ptr+len,cc[active]->sound.buf,rem*sizeof(LDBI_SndSample));
+		cc[active]->sound.rd = rem;
+	} else
+		cc[active]->sound.rd += len;
+//	LDBI_SndSample* buf = reinterpret_cast<LDBI_SndSample*> (stream);
+//	cc[active]->m->FillSound(buf,len/sizeof(LDBI_SndSample));
 }
 
 void AddMachineEvents(int n, SDL_Event e)

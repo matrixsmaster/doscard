@@ -153,27 +153,30 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
-	uint8_t* iptr,*optr;
-	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
-	int64_t rem = 0;
+	uint8_t* iptr;//,*optr;
+//	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
+//	int64_t rem = 0;
 	FA_TEST;
 	MUTEX_LOCK;
-	rem = (len + Runtime->sound_pos) - sz;
-	if (rem < 0) rem = 0;
-	else if (rem > 0) len = sz - Runtime->sound_pos;
+//	rem = (len + Runtime->sound_pos) - sz;
+//	if (rem < 0) rem = 0;
+//	else if (rem > 0) len = sz - Runtime->sound_pos;
 	if ((len) && (Sound)) {
 		iptr = reinterpret_cast<uint8_t*> (Sound);
-//		memcpy(ptr,iptr+Runtime->sound_pos,len);
-		if (rem) {
-			optr = reinterpret_cast<uint8_t*> (ptr);
-//			memcpy(optr+len,iptr,rem);
-		}
+		if (Runtime->sound_pos + len > Runtime->sound_avail)
+			len = Runtime->sound_avail - Runtime->sound_pos;
+		memcpy(ptr,iptr+Runtime->sound_pos,len);
 		Runtime->sound_pos += len;
-		if (Runtime->sound_pos > sz)
-			Runtime->sound_pos -= sz;
+//		if (rem) {
+//			optr = reinterpret_cast<uint8_t*> (ptr);
+//			memcpy(optr+len,iptr,rem);
+//		}
+//		Runtime->sound_pos += len;
+//		if (Runtime->sound_pos > sz)
+//			Runtime->sound_pos -= sz;
 	}
 	MUTEX_UNLOCK;
-	return static_cast<int32_t> (len+rem);
+	return static_cast<int32_t> (len);//+rem);
 }
 
 int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
