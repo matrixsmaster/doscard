@@ -17,6 +17,7 @@
  */
 
 #include "ldbwrap.h"
+#include "syncs.h"
 
 using namespace dosbox;
 
@@ -42,15 +43,15 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 		case DISPLAY_ABOR_SIGNATURE:
 			if (Runtime->disp_fsm) {
 				Runtime->disp_fsm = 1;
-				MUTEX_UNLOCK;
+				UNLOCK_SCREEN;
 			}
 			break;
 
 		default:
 			if (Runtime->disp_fsm == 1) {
-				if (mutex > 0) {
+				if (MUTEX_TEST(mutex_screen)) {
 					if (Runtime->frameskip_cnt++ >= LDBW_FRAMESKIP_MAX) {
-						MUTEX_LOCK;
+						LOCK_SCREEN;
 					} else
 						return DISPLAY_RET_BUSY;
 				}
@@ -62,9 +63,9 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 				Runtime->lcdh = *dw & 0xffff;
 				Runtime->frame_cnt = 0;
 				Runtime->disp_fsm = 2;
-				if ((!Runtime->framebuf) || (old_w*old_h != Runtime->lcdw*Runtime->lcdh)) {
-					Runtime->framebuf = reinterpret_cast<uint32_t*>
-					(realloc(Runtime->framebuf,sizeof(uint32_t)*Runtime->lcdw*Runtime->lcdh));
+				if ((!Screen) || (old_w*old_h != Runtime->lcdw*Runtime->lcdh)) {
+					Screen = reinterpret_cast<uint32_t*>
+					(realloc(Screen,sizeof(uint32_t)*Runtime->lcdw*Runtime->lcdh));
 					Runtime->frame_dirty = true;
 				}
 //				printf("frm sz = %d x %d\n",Runtime->lcdw,Runtime->lcdh);
@@ -73,13 +74,13 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 			break;
 		}
 	} else if ((Runtime->disp_fsm == 2) && (len == Runtime->lcdw * 4)) {
-		memcpy(Runtime->framebuf+(Runtime->lcdw*Runtime->frame_cnt),buf,len);
+		memcpy(Screen+(Runtime->lcdw*Runtime->frame_cnt),buf,len);
 //		for (uint64_t i=0; i<len/4; i++)
 //			Runtime->crc += dw[i];
 		if (++Runtime->frame_cnt >= Runtime->lcdh) {
 			Runtime->disp_fsm = 1;
 //			printf("frm crc = %u\n",Runtime->crc);
-			MUTEX_UNLOCK;
+			UNLOCK_SCREEN;
 		}
 	} else {
 		return -1;
@@ -93,7 +94,7 @@ int32_t LDBCB_SND(void* buf, size_t len)
 	uint8_t* ptr;
 	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
 //	int64_t rem = 0;
-	MUTEX_LOCK;
+	LOCK_SOUND;
 	if (len == sizeof(LDB_SoundInfo)) {
 		memcpy(&Runtime->sound_req,buf,len);
 		Runtime->sound_fmt_ok = true;
@@ -122,7 +123,7 @@ int32_t LDBCB_SND(void* buf, size_t len)
 //		if (Runtime->sound_rec > sz)
 //			Runtime->sound_rec -= sz;
 	}
-	MUTEX_UNLOCK;
+	UNLOCK_SOUND;
 	return 0;
 }
 
@@ -131,13 +132,13 @@ int32_t LDBCB_UIE(void* buf, size_t len)
 	int32_t r = 0;
 	LDB_UIEvent e;
 	if ((!buf) || (len != sizeof(LDB_UIEvent))) return -1;
-	if (mutex) return 0;
-	MUTEX_LOCK;
+//	if (MUTEX_TEST(mutex_events)) return 0;
+	LOCK_EVENTS;
 	if (Events->empty()) return 0;
 	r = Events->size();
 	e = Events->back();
 	Events->pop_back();
-	MUTEX_UNLOCK;
+	UNLOCK_EVENTS;
 	memcpy(buf,&e,len);
 	return r;
 }
@@ -168,9 +169,9 @@ int32_t LDBCB_MSG(void* buf, size_t len)
 	if ((!buf) || (!len)) return -1;
 	char* str = reinterpret_cast<char*> (buf);
 	std::string nstr(str);
-	MUTEX_LOCK;
+	LOCK_STRING;
 	Messages->push_back(nstr);
-	MUTEX_UNLOCK;
+	UNLOCK_STRING;
 	return 0;
 }
 
@@ -275,12 +276,18 @@ int32_t LDBCB_FIO(void* buf, size_t len)
 int32_t LDBCB_CIO(void* buf, size_t len)
 {
 	//TODO COM port IO
+	LOCK_EXTEND;
+	//TODO: Extended Data
+	UNLOCK_EXTEND;
 	return 0;
 }
 
 int32_t LDBCB_LIO(void* buf, size_t len)
 {
 	//TODO LPT port IO
+	LOCK_EXTEND;
+	//TODO: Extended Data
+	UNLOCK_EXTEND;
 	return 0;
 }
 
@@ -305,9 +312,9 @@ int32_t LDBCB_STI(void* buf, size_t len)
 	char* out = reinterpret_cast<char*> (buf);
 	uint32_t i,l,j = 1;
 	if (Caps & DOSCRD_TTYIN_BLK) {
-		MUTEX_WAIT_FOR_EVENT((strlen(StringInput)));
+		MUTEX_WAIT_FOR_EVENT(mutex_string,(strlen(StringInput)));
 	} else {
-		MUTEX_LOCK;
+		LOCK_STRING;
 	}
 	l = strlen(StringInput);
 	for (i=0; ((i<len) && j && l); i++) {
@@ -328,7 +335,7 @@ int32_t LDBCB_STI(void* buf, size_t len)
 		memmove(StringInput,StringInput+i,l-i);
 		StringInput[l-i] = 0;
 	}
-	MUTEX_UNLOCK;
+	UNLOCK_STRING;
 	return static_cast<int32_t> (i);
 }
 

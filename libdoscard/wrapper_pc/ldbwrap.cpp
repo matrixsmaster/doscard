@@ -17,6 +17,7 @@
  */
 
 #include "ldbwrap.h"
+#include "syncs.h"
 
 #ifndef BUILDATE
 #define BUILDATE "unknown date"
@@ -42,7 +43,7 @@ LDBI_MesgVec* Messages;
 char* StringInput;
 LDBI_EDFIFO* ExtendedData;
 LDBI_caps Caps;
-volatile int mutex;
+MUTEX_GLOBAL_VAR;
 
 int32_t DCA_WrapperInit(void)
 {
@@ -55,7 +56,10 @@ int32_t DCA_WrapperInit(void)
 	StringInput = NULL;
 	ExtendedData = NULL;
 	Caps = 0;
-	mutex = 0;
+	MUTEX_GLOBAL_INIT;
+#ifdef MUTEX_DEBUG
+	MUTEX_PRINT_INFO;
+#endif
 	//return API version
 	return LDBWINTVER;
 }
@@ -80,7 +84,6 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->frame_cnt = 0;
 	Runtime->frame_dirty = true;
 	Runtime->frameskip_cnt = 0;
-	Runtime->framebuf = NULL;
 	Runtime->sound_avail = 0;
 	Runtime->sound_pos = 0;
 	Runtime->sound_rec = 0;
@@ -93,7 +96,6 @@ int32_t DCC_TryDestroyInstance(void)
 {
 	if ((!DOS) && (!Runtime)) return 0;
 	if (Runtime->on) return -1;
-	MFREE(Runtime->framebuf);
 	delete DOS;
 	delete Runtime;
 	MFREE(Screen);
@@ -136,18 +138,18 @@ int32_t DCG_GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
 		return -1;
-	MUTEX_LOCK;
+	LOCK_RUNTIME;
 	memcpy(ptr,Runtime,len);
-	MUTEX_UNLOCK;
+	UNLOCK_RUNTIME;
 	return 0;
 }
 
 int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	MUTEX_LOCK;
-	memcpy(ptr,Runtime->framebuf,len);
-	MUTEX_UNLOCK;
+	LOCK_SCREEN;
+	memcpy(ptr,Screen,len);
+	UNLOCK_SCREEN;
 	return 0;
 }
 
@@ -157,7 +159,7 @@ int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 //	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
 //	int64_t rem = 0;
 	FA_TEST;
-	MUTEX_LOCK;
+	LOCK_SOUND;
 //	rem = (len + Runtime->sound_pos) - sz;
 //	if (rem < 0) rem = 0;
 //	else if (rem > 0) len = sz - Runtime->sound_pos;
@@ -175,7 +177,7 @@ int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 //		if (Runtime->sound_pos > sz)
 //			Runtime->sound_pos -= sz;
 	}
-	MUTEX_UNLOCK;
+	UNLOCK_SOUND;
 	return static_cast<int32_t> (len);//+rem);
 }
 
@@ -185,9 +187,9 @@ int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 	FA_TEST;
 	if (len != sizeof(LDB_UIEvent)) return -1;
 	pe = reinterpret_cast<LDB_UIEvent*> (ptr);
-	MUTEX_LOCK;
+	LOCK_EVENTS;
 	Events->insert(Events->begin(),*pe);
-	MUTEX_UNLOCK;
+	UNLOCK_EVENTS;
 	return 0;
 }
 
@@ -195,12 +197,12 @@ int32_t DCK_GetInstanceMessages(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	LDBI_MesgVec* dst = reinterpret_cast<LDBI_MesgVec*> (ptr);
-	MUTEX_LOCK;
+	LOCK_STRING;
 	while (!Messages->empty()) {
 		dst->push_back(*Messages->begin());
 		Messages->erase(Messages->begin());
 	}
-	MUTEX_UNLOCK;
+	UNLOCK_STRING;
 	return 0;
 }
 
@@ -233,7 +235,7 @@ int32_t DCM_SetInstanceCaps(void* ptr, uint64_t len)
 	DC_REG_CAP_MACRO(DOSCRD_CAP_EHOUT, DBCB_LogSTDOUT,		LDBCB_STO);
 	DC_REG_CAP_MACRO(DOSCRD_CAP_TTYIN, DBCB_PullTTYInput,	LDBCB_STI);
 	//Free some allocations if they won't needed
-	if (!(Caps & DOSCRD_CAP_VIDEO)) MFREE(Runtime->framebuf);
+	if (!(Caps & DOSCRD_CAP_VIDEO)) MFREE(Screen);
 	if (!(Caps & DOSCRD_CAP_AUDIO)) MFREE(Sound);
 	return 0;
 }
@@ -241,28 +243,32 @@ int32_t DCM_SetInstanceCaps(void* ptr, uint64_t len)
 int32_t DCN_GetInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
+	LOCK_EXTEND;
 	//TODO: Extended Data
+	UNLOCK_EXTEND;
 	return -1;
 }
 
 int32_t DCO_AddInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
+	LOCK_EXTEND;
 	//TODO: Extended Data
+	UNLOCK_EXTEND;
 	return -1;
 }
 
 int32_t DCP_AddInstanceString(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	MUTEX_LOCK;
+	LOCK_STRING;
 	char* inp = reinterpret_cast<char*> (ptr);
 	uint32_t l = strlen(StringInput);
 	if ((len+l) >= (LDBW_STRINGBUF_SIZE-1))
 		len = LDBW_STRINGBUF_SIZE - l - 1;
 	strncpy(StringInput+l,inp,len);
 	StringInput[len+l] = 0;
-	MUTEX_UNLOCK;
+	UNLOCK_STRING;
 	return 0;
 }
 

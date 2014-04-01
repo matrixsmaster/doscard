@@ -379,29 +379,29 @@ void UpdateMachine(int n)
 #endif
 
 	//FIXME
-	LDBI_SndSample tmpbuf[SNDRING_ONESHOT];
-	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT > SNDRING_BUFLEN)?
-						(SNDRING_BUFLEN - mach->sound.wr):SNDRING_ONESHOT;
-	uint32_t r = mach->m->FillSound(tmpbuf,wrlen);
-	if (r > 0) {
-		 if (!sdl.audio) {
-			 LDB_SoundInfo fmt;
-			 if (mach->m->GetSoundFormat(&fmt)) {
-				 xnfo(0,9,"Setting audio. F=%d",fmt.freq);
-				 SDLInitAudio(&fmt);
-			 } else {
-				 xnfo(1,9,"Unable to get sound format");
-				 return;
-			 }
-		 }
-		 mach->sound.wr += r;
-		 //TODO
-		 SDL_LockAudio();
-		 memcpy(mach->sound.buf+mach->sound.wr,tmpbuf,r*sizeof(LDBI_SndSample));
-		 mach->sound.wr += r;
-		 if (mach->sound.wr >= SNDRING_BUFLEN) mach->sound.wr = 0;
-		 SDL_UnlockAudio();
-	}
+//	LDBI_SndSample tmpbuf[SNDRING_ONESHOT];
+//	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT > SNDRING_BUFLEN)?
+//						(SNDRING_BUFLEN - mach->sound.wr):SNDRING_ONESHOT;
+//	uint32_t r = mach->m->FillSound(tmpbuf,wrlen);
+//	if (r > 0) {
+//		 if (!sdl.audio) {
+//			 LDB_SoundInfo fmt;
+//			 if (mach->m->GetSoundFormat(&fmt)) {
+//				 xnfo(0,9,"Setting audio. F=%d",fmt.freq);
+//				 SDLInitAudio(&fmt);
+//			 } else {
+//				 xnfo(1,9,"Unable to get sound format");
+//				 return;
+//			 }
+//		 }
+//		 mach->sound.wr += r;
+//		 //TODO
+//		 SDL_LockAudio();
+//		 memcpy(mach->sound.buf+mach->sound.wr,tmpbuf,r*sizeof(LDBI_SndSample));
+//		 mach->sound.wr += r;
+//		 if (mach->sound.wr >= SNDRING_BUFLEN) mach->sound.wr = 0;
+//		 SDL_UnlockAudio();
+//	}
 	/*
 	if (!sdl.audio) {
 		LDB_SoundInfo fmt;
@@ -415,7 +415,7 @@ void UpdateMachine(int n)
 
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 {
-	xnfo(0,13,"acal: %d",len);
+//	xnfo(0,13,"acal: %d",len);
 	MACH_INBOUND(active);
 	int rem = 0;
 	LDBI_SndSample* ptr = reinterpret_cast<LDBI_SndSample*> (stream);

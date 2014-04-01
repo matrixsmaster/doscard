@@ -130,8 +130,6 @@ typedef struct SRuntimeData {
 	uint32_t frame_cnt;
 	bool frame_dirty;
 	uint8_t frameskip_cnt;
-	uint32_t* framebuf;		//FIXME: Use Screen instead!
-//	uint32_t crc;
 	dosbox::LDB_SoundInfo sound_req;
 	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos,sound_rec;
@@ -171,13 +169,6 @@ extern LDBI_MesgVec* Messages;
 extern char* StringInput;
 extern LDBI_EDFIFO* ExtendedData;
 extern LDBI_caps Caps;
-extern volatile int32_t mutex;
-
-/* ****************** Weak Sync Macros ****************** */
-
-#define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
-#define MUTEX_UNLOCK mutex = 0
-#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
 
 /* ****************** DosCard Wrap Export Functions ****************** */
 
