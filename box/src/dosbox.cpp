@@ -236,26 +236,66 @@ void CDosBox::Init()
 void CDosBox::Clear()
 {
 	if (!init_ok) return;
-	LOG_MSG("Cleaning subsystems...");
+	//This messages here just for debugging unusual exits
+	LOG_MSG("Clear(): Cleaning subsystems...");
+
+	LOG_MSG("Clear(): SNDBLSTR");
 	SBLASTER_Clear();
+
+	LOG_MSG("Clear(): PCSPKR");
 	PCSPEAKER_Clear();
+
+	LOG_MSG("Clear(): XMS");
 	XMS_Clear();
+
+	LOG_MSG("Clear(): EMS");
 	EMS_Clear();
+
+	LOG_MSG("Clear(): DOS");
 	DOS_Clear();
+
+	LOG_MSG("Clear(): KBD");
 	DOS_KeyboardLayout_Clear();
+
+	LOG_MSG("Clear(): CDEX");
 	MSCDEX_Clear();
+
+	LOG_MSG("Clear(): BIOS");
 	BIOS_Clear();
+
+	LOG_MSG("Clear(): SERPORT");
 	SERIAL_Clear();
+
+	LOG_MSG("Clear(): IO");
 	IO_Clear();
+
+	LOG_MSG("Clear(): PAGING");
 	PAGING_Clear();
+
+	LOG_MSG("Clear(): MEM");
 	MEM_Clear();
+
+	LOG_MSG("Clear(): PIC");
 	PIC_Clear();
+
+	LOG_MSG("Clear(): TMR");
 	TIMER_Clear();
+
+	LOG_MSG("Clear(): CMOS");
 	CMOS_Clear();
+
+	LOG_MSG("Clear(): CPU");
 	CPU_Clear();
+
+	LOG_MSG("Clear(): DMA");
 	DMA_Clear();
+
+	LOG_MSG("Clear(): MIXER");
 	MIXER_Clear();
+
+	LOG_MSG("Clear(): VGAMEM");
 	VGA_Memory_Clear();
+
 	init_ok = false;
 }
 
@@ -356,11 +396,12 @@ void CDosBox::SetQuit()
 {
 	LOG_MSG("CDosBox::SetQuit(): Called");
 	pause_mode = false;
-	quit = true;
-	if (first_shell) {
+	if ((first_shell) && (!quit)) {
+		LOG_MSG("CDosBox::SetQuit(): first_shell present, setting exit flag...");
 		DOS_Shell* ptr = reinterpret_cast<DOS_Shell*> (first_shell);
 		ptr->exit = true;
 	}
+	quit = true;
 }
 
 void CDosBox::SetPause(bool paused)

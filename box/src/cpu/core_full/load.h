@@ -339,7 +339,21 @@ l_M_Ed:
 		continue;
 /* Direct operations */
 	case L_STRING:
+		/*string.h renamed to string_c to eliminate disambiguation issue with stdlibc string.h
+		static code analyzers mark this as potential issue with a high severity rating.
+
+		App.: In this particular case, severity is very high (highest possible)
+		because original lines was:
 		#include "string.h"
+		which will lead to inclusion of stdlibc string.h in some (albeit common) circumstances,
+		which will be silently discarded by #ifdefs inside and only one operation left in this
+		particular virtual cpu operation: goto <label>. Compiler will be absolutely happy
+		with such a thing, revealing even no warning (there was no syntax error).
+		In other places (core_normal.cpp) inclusion directive contains some path
+		("core_normal/somefile.h"), but this one - wasn't!
+		It's a very VERY dangerous coding style!
+		*/
+		#include "./string_c.h"
 		goto nextopcode;
 	case D_PUSHAw:
 		{

@@ -2,7 +2,7 @@
 ## Copyright (C) 2013-2014 Soloviov Dmitry
 
 APP	:= headless
-CXX	:= g++-4.8.2
+CXX	:= g++-4.8.3
 INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := 
 CXXFLAGS := -g -O0 -Wall -Wextra $(INCLUDES) $(DEFINES)

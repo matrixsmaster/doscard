@@ -2,7 +2,7 @@
 ## Copyright (C) 2013-2014 Soloviov Dmitry
 
 LIB := libdoscard
-CXX	:= g++-4.8.2
+CXX	:= g++-4.8.3
 WRAPSRC  := wrapper_pc
 WRAPLIB  := libdbwrap.bc
 INCLUDES := -Iinclude -I$(WRAPSRC)
@@ -13,7 +13,7 @@ BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 DEFINES += $(BLDINFO)
 CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := 
-LD_BDYN := -lLLVM-3.4 -lpthread -ldl -lrt
+LD_BDYN := -lLLVM-3.3 -lpthread -ldl -lrt
 LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := doscard.o
 

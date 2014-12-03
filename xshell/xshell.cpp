@@ -105,7 +105,7 @@ int32_t XS_UpdateScreenBuffer(void* buf, size_t len)
 			if (disp_fsm == 1) {
 				if (SDL_AtomicGet(&at_flag) > 0) {
 					if (frameskip_cnt++ >= FRAMESKIP_MAX) {
-#if XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 						xnfo(0,2,"Force frame");
 #endif
 						while (SDL_AtomicGet(&at_flag) > 0) ;
@@ -118,7 +118,7 @@ int32_t XS_UpdateScreenBuffer(void* buf, size_t len)
 				uint16_t old_h = lcd_h;
 				lcd_w = (*dw >> 16);
 				lcd_h = *dw & 0xffff;
-#if XSHELL_VERBOSE
+#if XSHELL_VERBOSE > 1
 				xnfo(0,2,"Frame resolution received: %dx%d",lcd_w,lcd_h);
 #endif
 				frame_cnt = 0;
@@ -337,7 +337,7 @@ static void XS_SDLoop()
 				mye.t = LDB_UIE_KBD;
 				mye.pressed = (e.type == SDL_KEYDOWN);
 				mye.key = KBD_NONE;
-				//FIXME: use key-list!
+				//FIXME: use key-list rather than this brute-force!
 				for (i=0; i<(sizeof(XShellKeyboardMap)/sizeof(XShellKeyboardPair)); i++)
 					if (XShellKeyboardMap[i].sdl == e.key.keysym.scancode) {
 						mye.key = XShellKeyboardMap[i].db;
@@ -356,6 +356,7 @@ static void XS_SDLoop()
 				//no break
 			case SDL_MOUSEMOTION:
 				mye.t = LDB_UIE_MOUSE;
+				//FIXME: mouse moves looks not so good, investigation needed
 				mye.m.rel.x = static_cast<float>(e.motion.xrel);
 				mye.m.rel.y = static_cast<float>(e.motion.yrel);
 				mye.m.abs.x = static_cast<float>(e.motion.x);
@@ -392,7 +393,7 @@ static void XS_SDLoop()
 
 		/* Update Window*/
 		SDL_RenderPresent(ren);
-		SDL_Delay(5);
+		SDL_Delay(5);			//FIXME: MAGIC delay
 	} while (!quit);
 	SDL_AtomicSet(&at_flag,-10);
 }
@@ -547,27 +548,40 @@ int main(int argc, char* argv[])
 	int r;
 	xnfo(0,1,"ALIVE!");
 
+	// Create DOSCard class instance
 	doscard = new CDosBox();
 	if (doscard) xnfo(0,1,"Class instance created");
 	else abort();
 
+	// Create SDL2 Window
 	if (XS_SDLInit()) xnfo(-1,1,"Unable to create SDL2 context!");
 	xnfo(0,1,"SDL2 context created successfully");
 
+	// Register our callbacks to doscard core
 	XS_ldb_register();
 
+	// Request for 64MB RAM
+	LDB_Settings* setts = doscard->GetConfig();
+	setts->mem.total_ram = 64;
+	doscard->SetConfig(setts);
+
+	// Create SDL2 Thread for DOS and run it
 	dosboxthr = SDL_CreateThread(DosRun,"DosThread",NULL);
 	if (!dosboxthr) xnfo(-1,1,"Unable to create DOS thread!");
 	xnfo(0,1,"DOS Thread running!");
 
+	// Just a loop entry point :)
 	XS_SDLoop();
 	xnfo(0,1,"SDLoop() Exited");
 
+	// Now, when our loop is finished for some reason, just wait for thread
 	SDL_WaitThread(dosboxthr,&r);
 	xnfo(0,1,"DOS Thread Exited (%d)",r);
 
+	// ...and close the window
 	XS_SDLKill();
 
+	// We're done!
 	xnfo(0,1,"QUIT");
 	return (EXIT_SUCCESS);
 }

@@ -128,7 +128,9 @@ static INLINE Bit32u Fetchd() {
 
 #include "instructions.h"
 #include "core_normal/support.h"
-#include "core_normal/string.h"
+//string.h renamed to string_d to eliminate disambiguation issue with stdlibc string.h
+//static code analyzers mark this as potential issue with a high severity rating
+#include "core_normal/string_d.h"
 
 
 #define EALookupTable (core.ea_table)

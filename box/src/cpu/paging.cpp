@@ -183,6 +183,11 @@ static INLINE void InitPageUpdateLink(Bitu relink,PhysPt addr) {
 static INLINE void InitPageCheckPresence(PhysPt lin_addr,bool writing,X86PageEntry& table,X86PageEntry& entry)
 {
 //	if (GCC_UNLIKELY(myldbi->quit)) return;
+	//FIXME: this function uses E_Exit as emergency exit (C.O.) but we've not always want
+	//to exit while we exiting (e.g., after win95 closing, page fault fails and uses E_Exit,
+	//which triggers stopping of first SHELL instance, and then SHELL begins to quit normally,
+	//after all this mess we double-free'ing some memory).
+	//SHORTLY - This needs to be investigated!
 	Bitu lin_page=lin_addr >> 12;
 	Bitu d_index=lin_page >> 10;
 	Bitu t_index=lin_page & 0x3ff;

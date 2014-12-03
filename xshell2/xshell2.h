@@ -22,9 +22,14 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include "doscard.h"
 #include "../xshell/xskbd.h"
+
+#ifdef XSHELL2_TTFOUT
+#include <SDL2/SDL_ttf.h>
+#else
+typedef int TTF_Font;
+#endif
 
 #define XSHELL_DEF_WND_W 800
 #define XSHELL_DEF_WND_H 600
