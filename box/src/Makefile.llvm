@@ -1,5 +1,5 @@
 ## DosCard Project DosBox Module Main MAKEFILE for LLVM
-## Copyright (C) 2013-2014 Soloviov Dmitry
+## Copyright (C) 2013-2014 Dmitry Soloviov
 
 ## Internal name. Do not use 'libdosbox' in external projects as it may interfere with
 ## some existing code and/or libraries.

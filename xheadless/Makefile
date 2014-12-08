@@ -1,5 +1,5 @@
 ## DosCard Project XS Headless Test MAKEFILE
-## Copyright (C) 2013-2014 Soloviov Dmitry
+## Copyright (C) 2013-2014 Dmitry Soloviov
 
 APP	:= headless
 CXX	:= g++-4.8.3

@@ -1,6 +1,6 @@
 _________________________________WTF?!____________________________________
 The main goal of this project is creation of embeddable version of DosBox,
-which may relatively easily run on something really low-cost. Like STM32
+which may relatively easily run on something really low-cost. Like cheap
 microcontrollers.
 So the first thing needed to be done is truncation of source code tree.
 The vanilla dosbox compiled on $(see gcc.ver) weights 10.8 MB*
@@ -68,8 +68,13 @@ and that's working so far (without the ability of running W95, though).
 
 
 4. Select a chip to port this thing into and draw the schematics
+-> STALLED due to uncertainity about target arch
+
 5. Write the ld script for a chip selected (arm/chip/load.ld)
+-> CANCELLED
+
 6. Write our own crt0 replace for this chip (arm/chip/start.S)
+-> CANCELLED
 
 7. Made something with CDROM_ImageFile AudioFile - Using SDL_sound is just unreal.
 
@@ -109,7 +114,7 @@ porting on possible target arch.
 14. Get rid of static qualifiers. Make sure there's no static methods or members.
 ->STALLED
 
-15. Run a set of statical analysis processes to seek and eliminate violations,
+15. Run a set of static analysis processes to seek and eliminate violations,
 unused code, creepy pointer arithmetic and so on.
 Note: Understand 3.1 had found >19000 violations on a smallest ruleset. More complex
 rulesets may unveil much more violations and potential problems. The number was
@@ -124,14 +129,15 @@ width on all platforms.
 files by find'ing, grep'ing and sort'ing.
 
 18. Destroy MSG system to move all this string constants from data to code area and
-save some amount of RAM. Moreover, DOS in any language different from English is just
-a stupid crazy thing (lobotomized vegetables may prefer it). May be I don't speak
-Englush very well (and it's true), but I can't use any OS with my native language
-interface. Sometimes I was forced to do such things, but now I switched to Gentoo, so
-I'm a boss :)
+save some amount of RAM. Moreover, DOS with any language different from English is just
+a stupid crazy thing.
 Note: while moving to a "new" system (just defines, nothing more) some of old "macro"
 strings was detected as broken e.g. "PROGAM_MOUNT_ILL_TYPE" or "MSCDEX_ERROR_PATH"
 some of them contains typos, some just missing. The system wasn't be able to catch
 such errors.
 -> DONE!
+
+19. Cure broken sync code within LLVM-encapsulated doscard (xshell2 wrapper).
+Note: atomic operations definition for LLVM needed.
+Note2: rev162 is working, though. So you can just roll back to R162 and enjoy :)
 

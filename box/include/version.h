@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
- *  Copyright (C) 2013-2014  Soloviov Dmitry
+ *  Copyright (C) 2013-2014  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,6 +35,6 @@
 #endif
 
 #define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
-#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Soloviov 'MatrixS_Master' Dmitry."
+#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Dmitry 'MatrixS_Master' Soloviov."
 
 #endif

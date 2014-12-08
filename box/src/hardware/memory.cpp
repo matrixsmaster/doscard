@@ -534,7 +534,7 @@ void PreparePCJRCartRom(void) {
 	}
 }
 
-HostPt GetMemBase(void) { return MemBase; }
+//HostPt GetMemBase(void) { return MemBase; }
 
 class MEMORY {
 private:

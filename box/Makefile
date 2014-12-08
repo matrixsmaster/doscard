@@ -1,5 +1,5 @@
 ## DosCard Project DosBox Module Chain MAKEFILE
-## Copyright (C) 2013-2014 Soloviov Dmitry
+## Copyright (C) 2013-2014 Dmitry Soloviov
 
 all:
 	cd src; make all

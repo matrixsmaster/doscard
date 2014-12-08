@@ -1,5 +1,5 @@
 ## DosCard Project XShell MAKEFILE
-## Copyright (C) 2013-2014 Soloviov Dmitry
+## Copyright (C) 2013-2014 Dmitry Soloviov
 
 ##TODO: make callcatcher work on AR
 

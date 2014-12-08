@@ -1,5 +1,5 @@
 ## DosCard Project Top Level MAKEFILE
-## Copyright (C) 2013-2014 Soloviov Dmitry
+## Copyright (C) 2013-2014 Dmitry Soloviov
 
 all:
 	echo -e "Targets available:\n \
