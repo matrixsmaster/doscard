@@ -1185,18 +1185,17 @@ class DOS {
 private:
 	CALLBACK_HandlerObject callback[7];
 public:
-	DOS(void*)
-	{
+	DOS() {
 		callback[0].Install(DOS_20Handler,CB_IRET,"DOS Int 20");
 		callback[0].Set_RealVec(0x20);
 
 		callback[1].Install(DOS_21Handler,CB_INT21,"DOS Int 21");
 		callback[1].Set_RealVec(0x21);
-	//Pseudo code for int 21
-	// sti
-	// callback 
-	// iret
-	// retf  <- int 21 4c jumps here to mimic a retf Cyber
+		//Pseudo code for int 21
+		// sti
+		// callback
+		// iret
+		// retf  <- int 21 4c jumps here to mimic a retf Cyber
 
 		callback[2].Install(DOS_25Handler,CB_RETF,"DOS Int 25");
 		callback[2].Set_RealVec(0x25);
@@ -1227,25 +1226,26 @@ public:
 		DOS_SetupMisc();							/* Some additional dos interrupts */
 		DOS_SDA(DOS_SDA_SEG,DOS_SDA_OFS).SetDrive(25); /* Else the next call gives a warning. */
 		DOS_SetDefaultDrive(25);
-	
+
 		dos.version.major=5;
 		dos.version.minor=0;
 	}
-	~DOS(){
+
+	~DOS() {
 		for (Bit16u i=0;i<DOS_DRIVES;i++) delete Drives[i];
 	}
 };
 
-static DOS* test;
+static DOS* dos_instance;
 
 void DOS_Init()
 {
-	test = new DOS(NULL);
+	dos_instance = new DOS();
 }
 
 void DOS_Clear()
 {
-	delete test;
+	delete dos_instance;
 }
 
 }

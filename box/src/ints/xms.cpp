@@ -472,18 +472,18 @@ public:
 		for (Bitu i = 1;i<XMS_HANDLES;i++) 
 			if(!xms_handles[i].free) XMS_FreeMemory(i);
 	}
-
 };
-static XMS* test;
+
+static XMS* xms_instance;
 
 void XMS_Init()
 {
-	test = new XMS();
+	xms_instance = new XMS();
 }
 
 void XMS_Clear()
 {
-	delete test;
+	delete xms_instance;
 }
 
 }

@@ -107,8 +107,6 @@ void Set_Label(char const * const input, char * const output, bool cdrom) {
 		output[labelPos-1] = 0;
 }
 
-
-
 DOS_Drive::DOS_Drive() {
 	curdir[0]=0;
 	info[0]=0;
@@ -136,39 +134,6 @@ void DriveManager::InitializeDrive(int drive) {
 		disk->Activate();
 	}
 }
-
-/*
-void DriveManager::CycleDrive(bool pressed) {
-	if (!pressed) return;
-		
-	// do one round through all drives or stop at the next drive with multiple disks
-	int oldDrive = currentDrive;
-	do {
-		currentDrive = (currentDrive + 1) % DOS_DRIVES;
-		int numDisks = driveInfos[currentDrive].disks.size();
-		if (numDisks > 1) break;
-	} while (currentDrive != oldDrive);
-}
-
-void DriveManager::CycleDisk(bool pressed) {
-	if (!pressed) return;
-	
-	int numDisks = driveInfos[currentDrive].disks.size();
-	if (numDisks > 1) {
-		// cycle disk
-		int currentDisk = driveInfos[currentDrive].currentDisk;
-		DOS_Drive* oldDisk = driveInfos[currentDrive].disks[currentDisk];
-		currentDisk = (currentDisk + 1) % numDisks;		
-		DOS_Drive* newDisk = driveInfos[currentDrive].disks[currentDisk];
-		driveInfos[currentDrive].currentDisk = currentDisk;
-		
-		// copy working directory, acquire system resources and finally switch to next drive		
-		strcpy(newDisk->curdir, oldDisk->curdir);
-		newDisk->Activate();
-		Drives[currentDrive] = newDisk;
-	}
-}
-*/
 
 void DriveManager::CycleAllDisks(void) {
 	for (int idrive=0; idrive<DOS_DRIVES; idrive++) {

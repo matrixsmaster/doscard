@@ -1302,8 +1302,8 @@ private:
 	DOS_Device * emm_device;
 	/* location in protected unfreeable memory where the ems name and callback are
 	 * stored  32 bytes.*/
-	static Bit16u ems_baseseg;
-	RealPt old4b_pointer,old67_pointer;
+	Bit16u ems_baseseg;
+	RealPt old67_pointer;
 	CALLBACK_HandlerObject call_vdma,call_vcpi,call_v86mon;
 	Bitu call_int67;
 
@@ -1325,7 +1325,7 @@ public:
 
 		BIOS_ZeroExtendedSize(true);
 
-		if (!ems_baseseg) ems_baseseg=DOS_GetMemory(2);	//We have 32 bytes
+		ems_baseseg = DOS_GetMemory(2);	//We have 32 bytes
 
 		/* Add a little hack so it appears that there is an actual ems device installed */
 		char const* emsname="EMMXXXX0";
@@ -1447,19 +1447,16 @@ public:
 	}
 };
 		
-static EMS* test;
+static EMS* ems_instance;
 
 void EMS_Init()
 {
-	test = new EMS();
+	ems_instance = new EMS();
 }
 
 void EMS_Clear()
 {
-	delete test;
+	delete ems_instance;
 }
-
-//Initialize static members
-Bit16u EMS::ems_baseseg = 0;
 
 }

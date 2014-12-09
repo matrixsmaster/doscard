@@ -336,17 +336,18 @@ private:
 	AutoexecObject autoexec[17];
 	AutoexecObject autoexec_echo;
 public:
-	AUTOEXEC(void*) {
+	AUTOEXEC() {
 		//Register a virtual AUOEXEC.BAT file
 		VFILE_Register("AUTOEXEC.BAT",(Bit8u *)autoexec_data,(Bit32u)strlen(autoexec_data));
 	}
+	~AUTOEXEC() {}
 };
 
-static AUTOEXEC* test;
+static AUTOEXEC* autoexec_instance;
 
 void AUTOEXEC_Init()
 {
-	test = new AUTOEXEC(NULL);
+	autoexec_instance = new AUTOEXEC();
 }
 
 static char const * const path_string="PATH=Z:\\";

@@ -1081,67 +1081,52 @@ const char* DOS_GetLoadedLayout(void) {
 	return NULL;
 }
 
-
-class DOS_KeyboardLayout {
-public:
-	DOS_KeyboardLayout()
-	{
-		dos.loaded_codepage=437;	// US codepage already initialized
-		loaded_layout=new keyboard_layout();
-		char* layoutname = "auto";
-
-		Bits wants_dos_codepage = -1;
-		if (!strncmp(layoutname,"auto",4)) {
-			//there was win32 related block
-		}
-
-		bool extract_codepage = true;
-		if (wants_dos_codepage>0) {
-			if ((loaded_layout->read_codepage_file("auto", (Bitu)wants_dos_codepage)) == KEYB_NOERROR) {
-				// preselected codepage was successfully loaded
-				extract_codepage = false;
-			}
-		}
-		if (extract_codepage) {
-			// try to find a good codepage for the requested layout
-			Bitu req_codepage = loaded_layout->extract_codepage(layoutname);
-			loaded_layout->read_codepage_file("auto", req_codepage);
-		}
-
-		if (loaded_layout->read_keyboard_file(layoutname, dos.loaded_codepage)) {
-			if (strncmp(layoutname,"auto",4)) {
-				LOG_MSG("Error loading keyboard layout %s",layoutname);
-			}
-		} else {
-			const char* lcode = loaded_layout->main_language_code();
-			if (lcode) {
-				LOG_MSG("DOS keyboard layout loaded with main language code %s for layout %s",lcode,layoutname);
-			}
-		}
-	}
-
-	~DOS_KeyboardLayout(){
-		if ((dos.loaded_codepage!=437) && (CurMode->type==M_TEXT)) {
-			INT10_ReloadRomFonts();
-			dos.loaded_codepage=437;	// US codepage
-		}
-		if (loaded_layout) {
-			delete loaded_layout;
-			loaded_layout=NULL;
-		}
-	}
-};
-
-static DOS_KeyboardLayout* test;
-
 void DOS_KeyboardLayout_Init()
 {
-	test = new DOS_KeyboardLayout();
+	dos.loaded_codepage=437;	// US codepage already initialized
+	loaded_layout=new keyboard_layout();
+	char* layoutname = "auto";
+
+	Bits wants_dos_codepage = -1;
+	if (!strncmp(layoutname,"auto",4)) {
+		//there was win32 related block
+	}
+
+	bool extract_codepage = true;
+	if (wants_dos_codepage>0) {
+		if ((loaded_layout->read_codepage_file("auto", (Bitu)wants_dos_codepage)) == KEYB_NOERROR) {
+			// preselected codepage was successfully loaded
+			extract_codepage = false;
+		}
+	}
+	if (extract_codepage) {
+		// try to find a good codepage for the requested layout
+		Bitu req_codepage = loaded_layout->extract_codepage(layoutname);
+		loaded_layout->read_codepage_file("auto", req_codepage);
+	}
+
+	if (loaded_layout->read_keyboard_file(layoutname, dos.loaded_codepage)) {
+		if (strncmp(layoutname,"auto",4)) {
+			LOG_MSG("Error loading keyboard layout %s",layoutname);
+		}
+	} else {
+		const char* lcode = loaded_layout->main_language_code();
+		if (lcode) {
+			LOG_MSG("DOS keyboard layout loaded with main language code %s for layout %s",lcode,layoutname);
+		}
+	}
 }
 
 void DOS_KeyboardLayout_Clear()
 {
-	delete test;
+	if ((dos.loaded_codepage!=437) && (CurMode->type==M_TEXT)) {
+		INT10_ReloadRomFonts();
+		dos.loaded_codepage=437;	// US codepage
+	}
+	if (loaded_layout) {
+		delete loaded_layout;
+		loaded_layout=NULL;
+	}
 }
 
 }

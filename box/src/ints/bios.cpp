@@ -1285,16 +1285,16 @@ void BIOS_SetComPorts(Bit16u baseaddr[]) {
 }
 
 
-static BIOS* test;
+static BIOS* bios_instance;
 
 void BIOS_Init()
 {
-	test = new BIOS(NULL);
+	bios_instance = new BIOS(NULL);
 }
 
 void BIOS_Clear()
 {
-	delete test;
+	delete bios_instance;
 }
 
 }

@@ -1207,42 +1207,33 @@ bool CSerial::Putchar(Bit8u data, bool wait_dsr, bool wait_cts, Bitu timeout) {
 	return true;
 }
 
-class SERIALPORTS {
-public:
-	SERIALPORTS()
-	{
-		Bit16u biosParameter[4] = { 0, 0, 0, 0 };
+void SERIAL_Init()
+{
+	Bit16u biosParameter[4] = { 0, 0, 0, 0 };
 
-//		char s_property[] = "serialx";
-		for(Bitu i = 0; i < 4; i++) {
-			// get the configuration property
-//			s_property[6] = '1' + i;
-//			Prop_multival* p = section->Get_multival(s_property);
-//			std::string type = p->GetSection()->Get_string("type");
-//			CommandLine cmd(0,p->GetSection()->Get_string("parameters"));
-//
-			// detect the type
+	for(Bitu i = 0; i < 4; i++) {
+		// detect the type
 
-			serialports[i] = NULL;
-			if (!myldbi->GetConfig()->tty[i].enabled) {
-				LOG_MSG("Serial port %d disabled",i);
-				continue;
-			}
-			
-			if (myldbi->GetConfig()->tty[i].dummy) {
-//			if (type=="dummy") {
-				serialports[i] = new CSerialDummy(i,NULL);
-				LOG_MSG("Serial port %d configured as dummy",i);
-			}
+		serialports[i] = NULL;
+		if (!myldbi->GetConfig()->tty[i].enabled) {
+			LOG_MSG("Serial port %d disabled",i);
+			continue;
+		}
+
+		if (myldbi->GetConfig()->tty[i].dummy) {
+			//			if (type=="dummy") {
+			serialports[i] = new CSerialDummy(i,NULL);
+			LOG_MSG("Serial port %d configured as dummy",i);
+		}
 #if 0
-			else if (type=="directserial") {
-				serialports[i] = new CDirectSerial (i, &cmd);
-				if (!serialports[i]->InstallationSuccessful)  {
-					// serial port name was wrong or already in use
-					delete serialports[i];
-					serialports[i] = NULL;
-				}
+		else if (type=="directserial") {
+			serialports[i] = new CDirectSerial (i, &cmd);
+			if (!serialports[i]->InstallationSuccessful)  {
+				// serial port name was wrong or already in use
+				delete serialports[i];
+				serialports[i] = NULL;
 			}
+		}
 #endif
 //			else if(type=="disabled") {
 //				serialports[i] = NULL;
@@ -1250,34 +1241,18 @@ public:
 //				serialports[i] = NULL;
 //				LOG_MSG("Invalid type for serial%d",i+1);
 //			}
-			if (serialports[i]) biosParameter[i] = serial_baseaddr[i];
-		} // for 1-4
-		BIOS_SetComPorts (biosParameter);
-	}
-
-	~SERIALPORTS()
-	{
-		for (Bitu i = 0; i < 4; i++)
-			if (serialports[i]) {
-				delete serialports[i];
-				serialports[i] = 0;
-			}
-	}
-};
-
-static SERIALPORTS *testSerialPortsBaseclass;
-
-void SERIAL_Init()
-{
-	// should never happen
-	if (testSerialPortsBaseclass) delete testSerialPortsBaseclass;
-	testSerialPortsBaseclass = new SERIALPORTS();
+		if (serialports[i]) biosParameter[i] = serial_baseaddr[i];
+	} // for 1-4
+	BIOS_SetComPorts (biosParameter);
 }
 
 void SERIAL_Clear()
 {
-	delete testSerialPortsBaseclass;
-	testSerialPortsBaseclass = NULL;
+	for (Bitu i = 0; i < 4; i++)
+		if (serialports[i]) {
+			delete serialports[i];
+			serialports[i] = 0;
+		}
 }
 
 }
