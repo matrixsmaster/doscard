@@ -593,17 +593,17 @@ public:
 };	
 
 	
-static MEMORY* test;	
+static MEMORY* memory_instance;
 
 
 void MEM_Init()
 {
-	test = new MEMORY();
+	memory_instance = new MEMORY();
 }
 
 void MEM_Clear()
 {
-	delete test;
+	delete memory_instance;
 }
 
 }

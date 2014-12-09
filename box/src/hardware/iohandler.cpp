@@ -499,29 +499,15 @@ Bitu IO_ReadD(Bitu port) {
 	return retval;
 }
 
-class IO {
-public:
-	IO(void*) {
-		iof_queue.used=0;
-		IO_FreeReadHandler(0,IO_MA,IO_MAX);
-		IO_FreeWriteHandler(0,IO_MA,IO_MAX);
-	}
-	~IO()
-	{
-		//Same as the constructor ?
-	}
-};
-
-static IO* test;
-
 void IO_Init()
 {
-	test = new IO(NULL);
+	iof_queue.used=0;
+	IO_FreeReadHandler(0,IO_MA,IO_MAX);
+	IO_FreeWriteHandler(0,IO_MA,IO_MAX);
 }
 
 void IO_Clear()
 {
-	delete test;
 }
 
 }

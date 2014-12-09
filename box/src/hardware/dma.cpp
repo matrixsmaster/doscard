@@ -343,59 +343,53 @@ again:
 	return done;
 }
 
-class DMA {
-public:
-	DMA(void*) {
-		Bitu i;
-		DmaControllers[0] = new DmaController(0);
-		if (IS_EGAVGA_ARCH) DmaControllers[1] = new DmaController(1);
-		else DmaControllers[1] = NULL;
-	
-		for (i=0;i<0x10;i++) {
-			Bitu mask=IO_MB;
-			if (i<8) mask|=IO_MW;
-			/* install handler for first DMA controller ports */
-			DmaControllers[0]->DMA_WriteHandler[i].Install(i,DMA_Write_Port,mask);
-			DmaControllers[0]->DMA_ReadHandler[i].Install(i,DMA_Read_Port,mask);
-			if (IS_EGAVGA_ARCH) {
-				/* install handler for second DMA controller ports */
-				DmaControllers[1]->DMA_WriteHandler[i].Install(0xc0+i*2,DMA_Write_Port,mask);
-				DmaControllers[1]->DMA_ReadHandler[i].Install(0xc0+i*2,DMA_Read_Port,mask);
-			}
-		}
-		/* install handlers for ports 0x81-0x83 (on the first DMA controller) */
-		DmaControllers[0]->DMA_WriteHandler[0x10].Install(0x81,DMA_Write_Port,IO_MB,3);
-		DmaControllers[0]->DMA_ReadHandler[0x10].Install(0x81,DMA_Read_Port,IO_MB,3);
-
-		if (IS_EGAVGA_ARCH) {
-			/* install handlers for ports 0x81-0x83 (on the second DMA controller) */
-			DmaControllers[1]->DMA_WriteHandler[0x10].Install(0x89,DMA_Write_Port,IO_MB,3);
-			DmaControllers[1]->DMA_ReadHandler[0x10].Install(0x89,DMA_Read_Port,IO_MB,3);
-		}
-	}
-	~DMA(){
-		if (DmaControllers[0]) {
-			delete DmaControllers[0];
-			DmaControllers[0]=NULL;
-		}
-		if (DmaControllers[1]) {
-			delete DmaControllers[1];
-			DmaControllers[1]=NULL;
-		}
-	}
-};
+//class DMA {
+//public:
+//	DMA(void*) {
+//
+//	}
+//	~DMA(){
+//
+//	}
+//};
 
 void DMA_SetWrapping(Bitu wrap) {
 	dma_wrapping = wrap;
 }
 
-static DMA* test;
+//static DMA* test;
 
 void DMA_Init()
 {
 	DMA_SetWrapping(0xffff);
-	test = new DMA(NULL);
+	//test = new DMA(NULL);
 	Bitu i;
+	DmaControllers[0] = new DmaController(0);
+	if (IS_EGAVGA_ARCH) DmaControllers[1] = new DmaController(1);
+	else DmaControllers[1] = NULL;
+
+	for (i=0;i<0x10;i++) {
+		Bitu mask=IO_MB;
+		if (i<8) mask|=IO_MW;
+		/* install handler for first DMA controller ports */
+		DmaControllers[0]->DMA_WriteHandler[i].Install(i,DMA_Write_Port,mask);
+		DmaControllers[0]->DMA_ReadHandler[i].Install(i,DMA_Read_Port,mask);
+		if (IS_EGAVGA_ARCH) {
+			/* install handler for second DMA controller ports */
+			DmaControllers[1]->DMA_WriteHandler[i].Install(0xc0+i*2,DMA_Write_Port,mask);
+			DmaControllers[1]->DMA_ReadHandler[i].Install(0xc0+i*2,DMA_Read_Port,mask);
+		}
+	}
+	/* install handlers for ports 0x81-0x83 (on the first DMA controller) */
+	DmaControllers[0]->DMA_WriteHandler[0x10].Install(0x81,DMA_Write_Port,IO_MB,3);
+	DmaControllers[0]->DMA_ReadHandler[0x10].Install(0x81,DMA_Read_Port,IO_MB,3);
+
+	if (IS_EGAVGA_ARCH) {
+		/* install handlers for ports 0x81-0x83 (on the second DMA controller) */
+		DmaControllers[1]->DMA_WriteHandler[0x10].Install(0x89,DMA_Write_Port,IO_MB,3);
+		DmaControllers[1]->DMA_ReadHandler[0x10].Install(0x89,DMA_Read_Port,IO_MB,3);
+	}
+//	Bitu i;
 	for (i=0;i<LINK_START;i++) {
 		ems_board_mapping[i]=i;
 	}
@@ -403,7 +397,14 @@ void DMA_Init()
 
 void DMA_Clear()
 {
-	delete test;
+	if (DmaControllers[0]) {
+		delete DmaControllers[0];
+		DmaControllers[0]=NULL;
+	}
+	if (DmaControllers[1]) {
+		delete DmaControllers[1];
+		DmaControllers[1]=NULL;
+	}
 }
 
 }

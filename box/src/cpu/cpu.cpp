@@ -2115,143 +2115,145 @@ void CPU_Reset_AutoAdjust(void) {
 	myldbi->ticksScheduled = 0;
 }
 
-class CPU {
-private:
-	static bool inited;
-public:
-	CPU()
-	{
-		if(inited) {
-			Change_Config();
-			return;
-		}
-		inited=true;
-		reg_eax=0;
-		reg_ebx=0;
-		reg_ecx=0;
-		reg_edx=0;
-		reg_edi=0;
-		reg_esi=0;
-		reg_ebp=0;
-		reg_esp=0;
-	
-		SegSet16(cs,0);
-		SegSet16(ds,0);
-		SegSet16(es,0);
-		SegSet16(fs,0);
-		SegSet16(gs,0);
-		SegSet16(ss,0);
-	
-		CPU_SetFlags(FLAG_IF,FMASK_ALL);		//Enable interrupts
-		cpu.cr0=0xffffffff;
-		CPU_SET_CRX(0,0);						//Initialize
-		cpu.code.big=false;
-		cpu.stack.mask=0xffff;
-		cpu.stack.notmask=0xffff0000;
-		cpu.stack.big=false;
-		cpu.trap_skip=false;
-		cpu.idt.SetBase(0);
-		cpu.idt.SetLimit(1023);
-
-		for (Bitu i=0; i<7; i++) {
-			cpu.drx[i]=0;
-			cpu.trx[i]=0;
-		}
-		if (CPU_ArchitectureType==CPU_ARCHTYPE_PENTIUMSLOW) {
-			cpu.drx[6]=0xffff0ff0;
-		} else {
-			cpu.drx[6]=0xffff1ff0;
-		}
-		cpu.drx[7]=0x00000400;
-
-		/* Init the cpu cores */
-		CPU_Core_Normal_Init();
-		CPU_Core_Simple_Init();
-		CPU_Core_Full_Init();
-		Change_Config();
-		CPU_JMP(false,0,0,0);					//Setup the first cpu core
-	}
-	bool Change_Config()
-	{
-		CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
-		//CPU_CycleLeft=0;//needed ?
-		CPU_Cycles=0;
-		CPU_SkipCycleAutoAdjust=false;
-		int val=0;
-
-		switch (myldbi->GetConfig()->cpu.cycles_change) {
-		case ALDB_CPU::LDB_CPU_CYCLE_MAX:
-			CPU_CycleMax=0;
-			CPU_CyclePercUsed=100;
-			CPU_CycleAutoAdjust=true;
-			CPU_CycleLimit=-1;
-			val = myldbi->GetConfig()->cpu.cycle_perc;
-			if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
-			val = myldbi->GetConfig()->cpu.cycle_limit;
-			if (val) CPU_CycleLimit = val;
-			break;
-
-		case ALDB_CPU::LDB_CPU_CYCLE_AUTO:
-			CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
-			CPU_CycleMax=3000;
-			CPU_OldCycleMax=3000;
-			CPU_CyclePercUsed=100;
-			val = myldbi->GetConfig()->cpu.cycle_perc;
-			if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
-			val = myldbi->GetConfig()->cpu.cycle_limit;
-			if (val) CPU_CycleLimit = val;
-			val = myldbi->GetConfig()->cpu.fix_cycles;
-			if (val) {
-				CPU_CycleMax = val;
-				CPU_OldCycleMax = val;
-			}
-			break;
-
-		default:
-			val = myldbi->GetConfig()->cpu.fix_cycles;
-			CPU_CycleMax = (Bit32s)val;
-		}
-
-		switch (myldbi->GetConfig()->cpu.core) {
-		case ALDB_CPU::LDB_CPU_SIMPLE:
-			cpudecoder = &CPU_Core_Simple_Run;
-			break;
-		case ALDB_CPU::LDB_CPU_FULL:
-			cpudecoder = &CPU_Core_Full_Run;
-			break;
-		default:
-			cpudecoder = &CPU_Core_Normal_Run;
-		}
-
-		CPU_ArchitectureType = myldbi->GetConfig()->cpu.family;
-		if (!CPU_ArchitectureType)
-			CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
-
-		if (CPU_ArchitectureType>=CPU_ARCHTYPE_486NEWSLOW) CPU_extflags_toggle=(FLAG_ID|FLAG_AC);
-		else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
-		else CPU_extflags_toggle=0;
-
-		if (CPU_CycleMax <= 0) CPU_CycleMax = 3000;
-		if (CPU_CycleAutoAdjust) GFX_SetTitle(CPU_CyclePercUsed,-1,false);
-		else GFX_SetTitle(CPU_CycleMax,-1,false);
-		return true;
-	}
-	~CPU(){ /* empty */};
-};
-	
-static CPU * test;
+//class CPU {
+//private:
+//	static bool inited;
+//public:
+//	CPU()
+//	{
+//		if(inited) {
+//			Change_Config();
+//			return;
+//		}
+//		inited=true;
+//
+//	}
+//	bool Change_Config()
+//	{
+//
+//	}
+//	~CPU(){ /* empty */};
+//};
+//
+//static CPU * test;
 
 void CPU_Init()
 {
-	test = new CPU();
+	reg_eax=0;
+	reg_ebx=0;
+	reg_ecx=0;
+	reg_edx=0;
+	reg_edi=0;
+	reg_esi=0;
+	reg_ebp=0;
+	reg_esp=0;
+
+	SegSet16(cs,0);
+	SegSet16(ds,0);
+	SegSet16(es,0);
+	SegSet16(fs,0);
+	SegSet16(gs,0);
+	SegSet16(ss,0);
+
+	CPU_SetFlags(FLAG_IF,FMASK_ALL);		//Enable interrupts
+	cpu.cr0=0xffffffff;
+	CPU_SET_CRX(0,0);						//Initialize
+	cpu.code.big=false;
+	cpu.stack.mask=0xffff;
+	cpu.stack.notmask=0xffff0000;
+	cpu.stack.big=false;
+	cpu.trap_skip=false;
+	cpu.idt.SetBase(0);
+	cpu.idt.SetLimit(1023);
+
+	for (Bitu i=0; i<7; i++) {
+		cpu.drx[i]=0;
+		cpu.trx[i]=0;
+	}
+	if (CPU_ArchitectureType==CPU_ARCHTYPE_PENTIUMSLOW) {
+		cpu.drx[6]=0xffff0ff0;
+	} else {
+		cpu.drx[6]=0xffff1ff0;
+	}
+	cpu.drx[7]=0x00000400;
+
+	/* Init the cpu cores */
+	CPU_Core_Normal_Init();
+	CPU_Core_Simple_Init();
+	CPU_Core_Full_Init();
+
+	/* Change config */
+	CPU_AutoDetermineMode=CPU_AUTODETERMINE_NONE;
+	//CPU_CycleLeft=0;//needed ?
+	CPU_Cycles=0;
+	CPU_SkipCycleAutoAdjust=false;
+	int val=0;
+
+	switch (myldbi->GetConfig()->cpu.cycles_change) {
+	case ALDB_CPU::LDB_CPU_CYCLE_MAX:
+		CPU_CycleMax=0;
+		CPU_CyclePercUsed=100;
+		CPU_CycleAutoAdjust=true;
+		CPU_CycleLimit=-1;
+		val = myldbi->GetConfig()->cpu.cycle_perc;
+		if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
+		val = myldbi->GetConfig()->cpu.cycle_limit;
+		if (val) CPU_CycleLimit = val;
+		break;
+
+	case ALDB_CPU::LDB_CPU_CYCLE_AUTO:
+		CPU_AutoDetermineMode|=CPU_AUTODETERMINE_CYCLES;
+		CPU_CycleMax=3000;
+		CPU_OldCycleMax=3000;
+		CPU_CyclePercUsed=100;
+		val = myldbi->GetConfig()->cpu.cycle_perc;
+		if ((val>0) && (val<=105)) CPU_CyclePercUsed = (Bit32s)val;
+		val = myldbi->GetConfig()->cpu.cycle_limit;
+		if (val) CPU_CycleLimit = val;
+		val = myldbi->GetConfig()->cpu.fix_cycles;
+		if (val) {
+			CPU_CycleMax = val;
+			CPU_OldCycleMax = val;
+		}
+		break;
+
+	default:
+		val = myldbi->GetConfig()->cpu.fix_cycles;
+		CPU_CycleMax = (Bit32s)val;
+	}
+
+	switch (myldbi->GetConfig()->cpu.core) {
+	case ALDB_CPU::LDB_CPU_SIMPLE:
+		cpudecoder = &CPU_Core_Simple_Run;
+		break;
+	case ALDB_CPU::LDB_CPU_FULL:
+		cpudecoder = &CPU_Core_Full_Run;
+		break;
+	default:
+		cpudecoder = &CPU_Core_Normal_Run;
+	}
+
+	CPU_ArchitectureType = myldbi->GetConfig()->cpu.family;
+	if (!CPU_ArchitectureType)
+		CPU_ArchitectureType = CPU_ARCHTYPE_MIXED;
+
+	if (CPU_ArchitectureType>=CPU_ARCHTYPE_486NEWSLOW) CPU_extflags_toggle=(FLAG_ID|FLAG_AC);
+	else if (CPU_ArchitectureType>=CPU_ARCHTYPE_486OLDSLOW) CPU_extflags_toggle=(FLAG_AC);
+	else CPU_extflags_toggle=0;
+
+	if (CPU_CycleMax <= 0) CPU_CycleMax = 3000;
+	if (CPU_CycleAutoAdjust) GFX_SetTitle(CPU_CyclePercUsed,-1,false);
+	else GFX_SetTitle(CPU_CycleMax,-1,false);
+
+	CPU_JMP(false,0,0,0);	//Setup the first cpu core
 }
 
 void CPU_Clear()
 {
-	delete test;
+//	delete test;
 }
 
 //initialize static members
-bool CPU::inited=false;
+//bool CPU::inited=false;
 
 }

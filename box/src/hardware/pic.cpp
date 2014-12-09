@@ -613,16 +613,16 @@ public:
 	}
 };
 
-static PIC_8259A* test;
+static PIC_8259A* pic8259a_instance;
 
 void PIC_Init()
 {
-	test = new PIC_8259A(NULL);
+	pic8259a_instance = new PIC_8259A(NULL);
 }
 
 void PIC_Clear()
 {
-	delete test;
+	delete pic8259a_instance;
 }
 
 }

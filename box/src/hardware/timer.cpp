@@ -457,16 +457,16 @@ public:
 	}
 };
 
-static TIMER* test;
+static TIMER* timer_instance;
 
 void TIMER_Init()
 {
-	test = new TIMER();
+	timer_instance = new TIMER();
 }
 
 void TIMER_Clear()
 {
-	delete test;
+	delete timer_instance;
 }
 
 uint32_t GetTicks()

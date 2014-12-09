@@ -1571,16 +1571,16 @@ public:
 }; //End of SBLASTER class
 
 
-static SBLASTER* test;
+static SBLASTER* sblaster_instance;
 
 void SBLASTER_Init()
 {
-	test = new SBLASTER();
+	sblaster_instance = new SBLASTER();
 }
 
 void SBLASTER_Clear()
 {
-	delete test;
+	delete sblaster_instance;
 }
 
 }

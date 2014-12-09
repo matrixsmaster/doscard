@@ -881,32 +881,20 @@ bool PAGING_Enabled(void) {
 	return paging.enabled;
 }
 
-class PAGING {
-public:
-	PAGING(void*)
-	{
-		/* Setup default Page Directory, force it to update */
-		paging.enabled=false;
-		PAGING_InitTLB();
-		Bitu i;
-		for (i=0;i<LINK_START;i++) {
-			paging.firstmb[i]=i;
-		}
-		pf_queue.used=0;
-	}
-	~PAGING(){}
-};
-
-static PAGING* test;
-
 void PAGING_Init()
 {
-	test = new PAGING(NULL);
+	/* Setup default Page Directory, force it to update */
+	paging.enabled=false;
+	PAGING_InitTLB();
+	Bitu i;
+	for (i=0;i<LINK_START;i++) {
+		paging.firstmb[i]=i;
+	}
+	pf_queue.used=0;
 }
 
 void PAGING_Clear()
 {
-	delete test;
 }
 
 }

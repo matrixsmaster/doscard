@@ -210,7 +210,7 @@ void CDosBox::Init()
 	VGA_Init();
 	KEYBOARD_Init();
 #if defined(PCI_FUNCTIONALITY_ENABLED)
-	PCI_Init(); //PCI bus
+	PCI_Init(); //PCI bus (FIXME: update code inside hardware/pci_bus.cpp to conform new style)
 #endif
 	MIXER_Init();
 #if C_DEBUG

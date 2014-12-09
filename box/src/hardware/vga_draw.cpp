@@ -1357,7 +1357,7 @@ void VGA_SetupDrawing(Bitu /*val*/) {
 			doublewidth=true;
 			width >>=1;
 		}
-		// fall-through
+		//no break
 	case M_LIN32:
 		width<<=3;
 		if (vga.crtc.mode_control & 0x8)

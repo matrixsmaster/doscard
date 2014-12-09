@@ -310,16 +310,16 @@ public:
 	}
 };
 
-static CMOS* test;
+static CMOS* cmos_instance;
 
 void CMOS_Init()
 {
-	test = new CMOS();
+	cmos_instance = new CMOS();
 }
 
 void CMOS_Clear()
 {
-	delete test;
+	delete cmos_instance;
 }
 
 }

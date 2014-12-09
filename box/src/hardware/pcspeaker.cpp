@@ -317,9 +317,9 @@ static void PCSPEAKER_CallBack(Bitu len) {
 			if(spkr.volwant > 0) spkr.volwant--; else spkr.volwant++;
 		
 		}
-	} 
-
+	}
 }
+
 class PCSPEAKER {
 private:
 	MixerObject MixerChan;
@@ -345,19 +345,19 @@ public:
 
 	~PCSPEAKER()
 	{
-		//TODO
 	}
 };
-static PCSPEAKER* test;
+
+static PCSPEAKER* pcspkr_instance;
 
 void PCSPEAKER_Init()
 {
-	test = new PCSPEAKER();
+	pcspkr_instance = new PCSPEAKER();
 }
 
 void PCSPEAKER_Clear()
 {
-	delete test;
+	delete pcspkr_instance;
 }
 
 }
