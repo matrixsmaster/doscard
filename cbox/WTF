@@ -1,0 +1,23 @@
+CBOX? WTF?!
+
+It's simple. I've bored and exhausted by trying to port all this c/c++ mixed code to
+low-end platforms. Situation with arm wasn't so horrible (but this still has an issue
+of RAM size), but now I'm headed to avr8 and pic16 archs, where all of the c++
+overhead and unpredictability makes my brain bleed out.
+Moreover, Box-MT had to be a multi-thread (MT) version, consist of multiple isolated
+(by conventional memory space) modules, and the whole system had to be linked via
+shared external dynamic RAM. This bizarre configuration was invented to support even
+low-costish silicon and truely make it possible to launch DOS (albeit slowly) on
+pure homebrew (laser and iron made PCB, DIP packages of chips, easily solderable) PC.
+I even have prepared PCBs (factory made) for this!
+
+There were many test attempts to crush the code in order to force it to do what I want
+to do :) None of them were committed to source control.
+
+So, CBOX (cbox) is my next step to make my dream come true: kludge all the code to
+make it pure C (ugly looking, maybe, but still pure C).
+After this task will be accomplished, I can restore my box-mt, and only after
+successfull testing, begin to port it to 8-bit MCUs.
+A huge task... But my PCBs laying on my desk looks at me all the time, I can't resist!
+
+
