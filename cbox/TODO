@@ -1,0 +1,23 @@
+1. Get rid of STL. We're unable to convert code (by hands or using cfront) with
+a lot of templates.
+
+2. Convert classes to structs and some global functions.
+Something like
+	class A {
+	private:
+		int x,y,z;
+	public:
+		A();
+		virtual ~A();
+		int myfun(int a);
+	};
+Becomes
+	typedef struct SA {
+		int x,y,z;
+	} A;
+	void A_Init(A* ptr);
+	void A_Clear(A* ptr);
+	int A_myfun(A* ptr, int a);
+Note: deal with inheritance.
+
+3. Get rid of 'new' and 'delete' - change them to either malloc(), or edram_malloc().
