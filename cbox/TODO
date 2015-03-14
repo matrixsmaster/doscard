@@ -21,3 +21,5 @@ Becomes
 Note: deal with inheritance.
 
 3. Get rid of 'new' and 'delete' - change them to either malloc(), or edram_malloc().
+
+OPTIONAL 1. Test compile with tcc and compare size to gcc -Os

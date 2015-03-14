@@ -35,6 +35,6 @@
 #endif
 
 #define COPYRIGHT_STRING_ORIGINAL "Copyright (C) 2002-2013 DOSBox Team, published under GNU GPL."
-#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2014 Dmitry 'MatrixS_Master' Soloviov."
+#define 	COPYRIGHT_STRING_NEW  "Copyright (C) 2013-2015 Dmitry 'MatrixS_Master' Soloviov."
 
 #endif

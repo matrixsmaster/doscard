@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Dmitry Soloviov
+ *  Copyright (C) 2014-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 
 #include "ldbwrap.h"
-#include "syncs.h"
 
 #ifndef BUILDATE
 #define BUILDATE "unknown date"
@@ -43,7 +42,7 @@ LDBI_MesgVec* Messages;
 char* StringInput;
 LDBI_EDFIFO* ExtendedData;
 LDBI_caps Caps;
-MUTEX_GLOBAL_VAR;
+LDBI_Mutex mutex;
 
 int32_t DCA_WrapperInit(void)
 {
@@ -56,10 +55,6 @@ int32_t DCA_WrapperInit(void)
 	StringInput = NULL;
 	ExtendedData = NULL;
 	Caps = 0;
-	MUTEX_GLOBAL_INIT;
-#ifdef MUTEX_DEBUG
-	MUTEX_PRINT_INFO;
-#endif
 	//return API version
 	return LDBWINTVER;
 }
@@ -138,18 +133,18 @@ int32_t DCG_GetInstanceRuntime(void* ptr, uint64_t len)
 {
 	if ((!Runtime) || (!ptr) || (len != sizeof(LDBI_RuntimeData)))
 		return -1;
-	LOCK_RUNTIME;
+	MUTEX_LOCK;
 	memcpy(ptr,Runtime,len);
-	UNLOCK_RUNTIME;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
 int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	LOCK_SCREEN;
+	MUTEX_LOCK;
 	memcpy(ptr,Screen,len);
-	UNLOCK_SCREEN;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
@@ -159,7 +154,7 @@ int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 //	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
 //	int64_t rem = 0;
 	FA_TEST;
-	LOCK_SOUND;
+	MUTEX_LOCK;
 //	rem = (len + Runtime->sound_pos) - sz;
 //	if (rem < 0) rem = 0;
 //	else if (rem > 0) len = sz - Runtime->sound_pos;
@@ -177,7 +172,7 @@ int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 //		if (Runtime->sound_pos > sz)
 //			Runtime->sound_pos -= sz;
 	}
-	UNLOCK_SOUND;
+	MUTEX_UNLOCK;
 	return static_cast<int32_t> (len);//+rem);
 }
 
@@ -187,9 +182,9 @@ int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 	FA_TEST;
 	if (len != sizeof(LDB_UIEvent)) return -1;
 	pe = reinterpret_cast<LDB_UIEvent*> (ptr);
-	LOCK_EVENTS;
+	MUTEX_LOCK;
 	Events->insert(Events->begin(),*pe);
-	UNLOCK_EVENTS;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
@@ -197,12 +192,12 @@ int32_t DCK_GetInstanceMessages(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	LDBI_MesgVec* dst = reinterpret_cast<LDBI_MesgVec*> (ptr);
-	LOCK_STRING;
+	MUTEX_LOCK;
 	while (!Messages->empty()) {
 		dst->push_back(*Messages->begin());
 		Messages->erase(Messages->begin());
 	}
-	UNLOCK_STRING;
+	MUTEX_UNLOCK;
 	return 0;
 }
 
@@ -243,32 +238,28 @@ int32_t DCM_SetInstanceCaps(void* ptr, uint64_t len)
 int32_t DCN_GetInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	LOCK_EXTEND;
 	//TODO: Extended Data
-	UNLOCK_EXTEND;
 	return -1;
 }
 
 int32_t DCO_AddInstanceExtData(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	LOCK_EXTEND;
 	//TODO: Extended Data
-	UNLOCK_EXTEND;
 	return -1;
 }
 
 int32_t DCP_AddInstanceString(void* ptr, uint64_t len)
 {
 	FA_TEST;
-	LOCK_STRING;
+	MUTEX_LOCK;
 	char* inp = reinterpret_cast<char*> (ptr);
 	uint32_t l = strlen(StringInput);
 	if ((len+l) >= (LDBW_STRINGBUF_SIZE-1))
 		len = LDBW_STRINGBUF_SIZE - l - 1;
 	strncpy(StringInput+l,inp,len);
 	StringInput[len+l] = 0;
-	UNLOCK_STRING;
+	MUTEX_UNLOCK;
 	return 0;
 }
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Dmitry Soloviov
+ *  Copyright (C) 2014-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.5"
+#define VERSIONSTR "0.0.6"
 #define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 namespace doscard {

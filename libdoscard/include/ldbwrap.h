@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Dmitry Soloviov
+ *  Copyright (C) 2014-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #include <dirent.h>
 #include <vector>
 #include <string>
+
+#include "llvm_sync.h"
 
 #define DOSBOX_EXTERNAL_INCLUDE
 #include "../../box/include/dosbox.h"
@@ -169,6 +171,7 @@ extern LDBI_MesgVec* Messages;
 extern char* StringInput;
 extern LDBI_EDFIFO* ExtendedData;
 extern LDBI_caps Caps;
+extern LDBI_Mutex mutex;
 
 /* ****************** DosCard Wrap Export Functions ****************** */
 

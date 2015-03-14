@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Dmitry Soloviov
+ *  Copyright (C) 2014-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,17 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-//IMPORTANT: DO NOT USE
+//IMPORTANT: Reverted to more stable, but less functional 'kludge' version
 
 #ifndef LLVM_SYNC_H_
 #define LLVM_SYNC_H_
 
-typedef atomic_int LDBI_Mutex;
+//typedef atomic_int LDBI_Mutex;
 //TODO: __sync_bool_compare_and_swap();
+
+typedef volatile unsigned int LDBI_Mutex;
 #define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
 #define MUTEX_UNLOCK mutex = 0
 #define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
-
 
 
 #endif /* LLVM_SYNC_H_ */

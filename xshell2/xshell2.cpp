@@ -317,6 +317,8 @@ bool PushMachine()
 		return false;
 	}
 	xnfo(0,6,"Prepared successfully");
+	card->SetCapabilities(DOSCRD_CAPS_BASIC | DOSCRD_CAP_VIDEO  | DOSCRD_CAP_EVENT);
+	xnfo(0,6,"Silent mode engaged");
 
 	mach->m = card;
 
