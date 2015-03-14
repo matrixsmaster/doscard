@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015  Dmitry Soloviov
+ *  Copyright (C) 2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@
 #include <vector>
 #include <string>
 
-#include "llvm_sync.h"
-
 #define DOSBOX_EXTERNAL_INCLUDE
 #include "../../box/include/dosbox.h"
 
@@ -48,7 +46,7 @@ namespace doscard {
 /// Input string buffer size
 #define LDBW_STRINGBUF_SIZE 2048
 /// Buffer holds at most this number of samples.
-#define LDBW_SNDBUF_SAMPLES 2048
+#define LDBW_SNDBUF_SAMPLES 4096
 
 /* ****************** Capabilities Data Constants ****************** */
 /// Video output.
@@ -132,6 +130,8 @@ typedef struct SRuntimeData {
 	uint32_t frame_cnt;
 	bool frame_dirty;
 	uint8_t frameskip_cnt;
+	uint32_t* framebuf;		//FIXME: Use Screen instead!
+//	uint32_t crc;
 	dosbox::LDB_SoundInfo sound_req;
 	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos,sound_rec;
@@ -171,7 +171,13 @@ extern LDBI_MesgVec* Messages;
 extern char* StringInput;
 extern LDBI_EDFIFO* ExtendedData;
 extern LDBI_caps Caps;
-extern LDBI_Mutex mutex;
+extern volatile int32_t mutex;
+
+/* ****************** Weak Sync Macros ****************** */
+
+#define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
+#define MUTEX_UNLOCK mutex = 0
+#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
 
 /* ****************** DosCard Wrap Export Functions ****************** */
 

@@ -1,5 +1,5 @@
 ## DosCard Project DosCard PC Wrapper for LLVM
-## Copyright (C) 2013-2014 Dmitry Soloviov
+## Copyright (C) 2013-2014 Soloviov Dmitry
 
 LIBNAME	 := libdbwrap
 CXX		 := clang++

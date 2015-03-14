@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015  Dmitry Soloviov
+ *  Copyright (C) 2014  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ LDBI_MesgVec* Messages;
 char* StringInput;
 LDBI_EDFIFO* ExtendedData;
 LDBI_caps Caps;
-LDBI_Mutex mutex;
+volatile int mutex;
 
 int32_t DCA_WrapperInit(void)
 {
@@ -55,6 +55,7 @@ int32_t DCA_WrapperInit(void)
 	StringInput = NULL;
 	ExtendedData = NULL;
 	Caps = 0;
+	mutex = 0;
 	//return API version
 	return LDBWINTVER;
 }
@@ -79,6 +80,7 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->frame_cnt = 0;
 	Runtime->frame_dirty = true;
 	Runtime->frameskip_cnt = 0;
+	Runtime->framebuf = NULL;
 	Runtime->sound_avail = 0;
 	Runtime->sound_pos = 0;
 	Runtime->sound_rec = 0;
@@ -91,6 +93,7 @@ int32_t DCC_TryDestroyInstance(void)
 {
 	if ((!DOS) && (!Runtime)) return 0;
 	if (Runtime->on) return -1;
+	MFREE(Runtime->framebuf);
 	delete DOS;
 	delete Runtime;
 	MFREE(Screen);
@@ -143,37 +146,34 @@ int32_t DCH_GetInstanceScreen(void* ptr, uint64_t len)
 {
 	FA_TEST;
 	MUTEX_LOCK;
-	memcpy(ptr,Screen,len);
+	memcpy(ptr,Runtime->framebuf,len);
 	MUTEX_UNLOCK;
 	return 0;
 }
 
 int32_t DCI_GetInstanceSound(void* ptr, uint64_t len)
 {
-	uint8_t* iptr;//,*optr;
-//	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
-//	int64_t rem = 0;
+	uint8_t* iptr,*optr;
+	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
+	int64_t rem = 0;
 	FA_TEST;
 	MUTEX_LOCK;
-//	rem = (len + Runtime->sound_pos) - sz;
-//	if (rem < 0) rem = 0;
-//	else if (rem > 0) len = sz - Runtime->sound_pos;
+	rem = (len + Runtime->sound_pos) - sz;
+	if (rem < 0) rem = 0;
+	else if (rem > 0) len = sz - Runtime->sound_pos;
 	if ((len) && (Sound)) {
 		iptr = reinterpret_cast<uint8_t*> (Sound);
-		if (Runtime->sound_pos + len > Runtime->sound_avail)
-			len = Runtime->sound_avail - Runtime->sound_pos;
-		memcpy(ptr,iptr+Runtime->sound_pos,len);
-		Runtime->sound_pos += len;
-//		if (rem) {
-//			optr = reinterpret_cast<uint8_t*> (ptr);
+//		memcpy(ptr,iptr+Runtime->sound_pos,len);
+		if (rem) {
+			optr = reinterpret_cast<uint8_t*> (ptr);
 //			memcpy(optr+len,iptr,rem);
-//		}
-//		Runtime->sound_pos += len;
-//		if (Runtime->sound_pos > sz)
-//			Runtime->sound_pos -= sz;
+		}
+		Runtime->sound_pos += len;
+		if (Runtime->sound_pos > sz)
+			Runtime->sound_pos -= sz;
 	}
 	MUTEX_UNLOCK;
-	return static_cast<int32_t> (len);//+rem);
+	return static_cast<int32_t> (len+rem);
 }
 
 int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
@@ -230,7 +230,7 @@ int32_t DCM_SetInstanceCaps(void* ptr, uint64_t len)
 	DC_REG_CAP_MACRO(DOSCRD_CAP_EHOUT, DBCB_LogSTDOUT,		LDBCB_STO);
 	DC_REG_CAP_MACRO(DOSCRD_CAP_TTYIN, DBCB_PullTTYInput,	LDBCB_STI);
 	//Free some allocations if they won't needed
-	if (!(Caps & DOSCRD_CAP_VIDEO)) MFREE(Screen);
+	if (!(Caps & DOSCRD_CAP_VIDEO)) MFREE(Runtime->framebuf);
 	if (!(Caps & DOSCRD_CAP_AUDIO)) MFREE(Sound);
 	return 0;
 }

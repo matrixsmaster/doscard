@@ -1,5 +1,5 @@
 ## DosCard Project LibDOSCard MAKEFILE
-## Copyright (C) 2013-2014 Dmitry Soloviov
+## Copyright (C) 2013-2015 Soloviov Dmitry
 
 LIB := libdoscard
 CXX	:= g++-4.8.3
