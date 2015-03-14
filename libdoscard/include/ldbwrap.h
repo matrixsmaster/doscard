@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2014-2015  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #include <dirent.h>
 #include <vector>
 #include <string>
+
+#include "llvm_sync.h"
 
 #define DOSBOX_EXTERNAL_INCLUDE
 #include "../../box/include/dosbox.h"
@@ -171,13 +173,7 @@ extern LDBI_MesgVec* Messages;
 extern char* StringInput;
 extern LDBI_EDFIFO* ExtendedData;
 extern LDBI_caps Caps;
-extern volatile int32_t mutex;
-
-/* ****************** Weak Sync Macros ****************** */
-
-#define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
-#define MUTEX_UNLOCK mutex = 0
-#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
+extern LDBI_Mutex mutex;
 
 /* ****************** DosCard Wrap Export Functions ****************** */
 

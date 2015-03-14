@@ -24,6 +24,8 @@
 //typedef atomic_int LDBI_Mutex;
 //TODO: __sync_bool_compare_and_swap();
 
+/* ****************** Weak Sync Macros ****************** */
+
 typedef volatile unsigned int LDBI_Mutex;
 #define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
 #define MUTEX_UNLOCK mutex = 0

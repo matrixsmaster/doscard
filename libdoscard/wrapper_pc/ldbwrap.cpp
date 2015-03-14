@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2014-2015  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ LDBI_MesgVec* Messages;
 char* StringInput;
 LDBI_EDFIFO* ExtendedData;
 LDBI_caps Caps;
-volatile int mutex;
+LDBI_Mutex mutex;
 
 int32_t DCA_WrapperInit(void)
 {

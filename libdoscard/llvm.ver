@@ -1,2 +1,5 @@
 LLVM (and clang++) versions tested successfully:
 3.4
+
+with some uncomfortable glitches:
+3.3

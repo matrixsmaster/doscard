@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2014  Soloviov Dmitry
+ *  Copyright (C) 2013-2015  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -372,7 +372,7 @@ void UpdateMachine(int n)
 
 #ifndef XSHELL2_TTFOUT
 	//Message Processing
-	char* outstr = LinearMachineOutput(n,true);
+	char* outstr = NULL;//LinearMachineOutput(n,true);
 	if (outstr) {
 		xnfo(0,9,"[MACHINE %d MSG]: %s",n,outstr);
 		free(outstr);
@@ -397,6 +397,7 @@ void UpdateMachine(int n)
 		 mach->sound.wr += r;
 		 //TODO
 	}
+*/
 
 	if (!sdl.audio) {
 		LDB_SoundInfo fmt;
@@ -404,7 +405,7 @@ void UpdateMachine(int n)
 			xnfo(0,9,"Setting audio. F=%d",fmt.freq);
 			SDLInitAudio(&fmt);
 		}
-	}*/
+	}
 }
 
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len)

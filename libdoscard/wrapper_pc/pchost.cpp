@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2014-2015  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -89,6 +89,7 @@ int32_t LDBCB_LCD(void* buf, size_t len)
 
 int32_t LDBCB_SND(void* buf, size_t len)
 {
+#if 0
 	if ((!buf) || (!len)) return -1;
 	uint8_t* ptr;
 	unsigned int sz = LDBW_SNDBUF_SAMPLES * sizeof(LDBI_SndSample);
@@ -121,6 +122,7 @@ int32_t LDBCB_SND(void* buf, size_t len)
 			Runtime->sound_rec -= sz;
 	}
 	MUTEX_UNLOCK;
+#endif
 	return 0;
 }
 
@@ -135,7 +137,7 @@ int32_t LDBCB_UIE(void* buf, size_t len)
 	r = Events->size();
 	e = Events->back();
 	Events->pop_back();
-	MUTEX_UNLOCK;
+	MUTEX_UNLOCK;			//WTF?!
 	memcpy(buf,&e,len);
 	return r;
 }

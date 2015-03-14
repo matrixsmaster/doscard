@@ -22,9 +22,12 @@
 #include <string>
 #include <vector>
 #include <SDL2/SDL.h>
-//#include <SDL2/SDL_ttf.h>
 #include "doscard.h"
 #include "../xshell/xskbd.h"
+
+#ifdef XSHELL2_TTFOUT
+#include <SDL2/SDL_ttf.h>
+#endif
 
 #define XSHELL_DEF_WND_W 800
 #define XSHELL_DEF_WND_H 600
@@ -38,8 +41,11 @@ typedef struct SxsSDL {
 	SDL_AudioDeviceID audio;
 	SDL_Window* wnd;
 	SDL_Renderer* ren;
-	//TTF_Font* fnt;
+#ifdef XSHELL2_TTFOUT
+	TTF_Font* fnt;
+#else
 	void* fnt;
+#endif
 	SDL_Color txtcol;
 } XSSDL;
 
