@@ -12,6 +12,11 @@ mt:
 	cd src; make -f Makefile.llvm all
 .PHONY: mt
 
+mingw:
+	cd src; make -f Makefile.mingw all
+.PHONY: mingw
+
 clean:
-	cd src; make -f Makefile.llvm clean
 	cd src; make -f Makefile.gcc clean
+	cd src; make -f Makefile.llvm clean
+	cd src; make -f Makefile.mingw clean

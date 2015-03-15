@@ -1,0 +1,53 @@
+## DosCard Project LibDOSCard MAKEFILE
+## Copyright (C) 2013-2015 Dmitry Soloviov
+
+LIB := libdoscard
+CXX	:= g++
+
+WRAPSRC  := wrapper_pc
+WRAPLIB  := libdbwrap.a
+LDBLOC	 := ../../box
+LDBFILE  := libdosbox.a
+
+INCLUDES := -I../include -I$(WRAPSRC) -I ../../box/include
+
+##WARNING: to make unistd compatible with pthreads in mingw
+INCLUDES += -I.. -include "inc_mingw/unistd.h"
+DEFINES  := -D__struct_timespec_defined=1
+
+##INCLUDES += -include "inc_mingw/doscard_mingw.h"
+DEFINES += -DBUILD_LDC_DLL=1
+
+BLDINFO := -DBUILDATE="\"$(shell date)\""
+BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
+BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
+DEFINES += $(BLDINFO)
+
+CXXFLAGS := -g -O2 $(INCLUDES) $(DEFINES)
+LD_STAT := -ldbwrap -ldosbox
+LD_BDYN := -lpthread
+LD_LIBS := -L. -L$(WRAPSRC) -L$(LDBLOC)/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+LD_LIBS += -Wl,--out-implib,$(LIB).a
+LD_LIBS += -Wl,--no-undefined -Wl,--enable-runtime-pseudo-reloc
+
+SUPPORTS := doscard-st.o
+
+all:	$(LDBFILE) $(WRAPLIB) $(SUPPORTS)
+	$(CXX) -shared $(CXXFLAGS) -o $(LIB).dll $(SUPPORTS) $(LD_LIBS)
+	expr `cat buildno` + 1 > buildno
+.PHONY: all
+
+$(LDBFILE):
+	cd ../../box; make mingw
+	mv -f $(LDBLOC)/src/$(LDBFILE) ./
+	
+$(WRAPLIB):
+	cd $(WRAPSRC); make -f Makefile.mingw all
+	mv -f $(WRAPSRC)/$(WRAPLIB) ./
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	cd $(WRAPSRC); make -f Makefile.gcc clean
+	rm -f *.o *.a *.dll

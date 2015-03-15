@@ -29,6 +29,12 @@ ldcst:
 	cd libdoscard; make st
 .PHONY: ldcst
 
+##libdoscard (mingw)
+mingw:
+	cd box; make clean
+	cd libdoscard; make mingw
+.PHONY: mingw
+
 ##XShell 1 (native, single-instance)
 xsh1: ldb
 	cd xshell; make all

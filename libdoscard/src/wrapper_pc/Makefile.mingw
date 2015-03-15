@@ -2,16 +2,19 @@
 ## Copyright (C) 2013-2015 Dmitry Soloviov
 
 LIBNAME	 := libdbwrap
-CXX		 := g++-4.8.3
+CXX		 := g++
 
-INCLUDES := -I../../include
+INCLUDES := -I../../include -I ../../../box/include
 
-DEFINES :=
+##WARNING: to make unistd compatible with pthreads in mingw
+INCLUDES += -I../.. -include "inc_mingw/unistd.h"
+DEFINES  := -D__struct_timespec_defined=1
+
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 DEFINES += $(BLDINFO)
 
-CXXFLAGS := -c -g -O2 -fPIC -Wall $(INCLUDES) $(DEFINES)
+CXXFLAGS := -c -g -O2 $(INCLUDES) $(DEFINES)
 LD_LIBS  := 
 SUPPORTS := pchost.o ldbwrap.o
 

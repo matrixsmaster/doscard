@@ -146,6 +146,8 @@ int32_t LDBCB_TCK(void* buf, size_t len)
 {
 	if ((!buf) || (len < 4)) return -1;
 	uint32_t* val = reinterpret_cast<uint32_t*>(buf);
+	//FIXME: commented out due to inability to use precision clocking under mingw
+#if 0
 	struct timespec r;
 	if (!Runtime->clkres) {
 		Runtime->clkres = new struct timespec;
@@ -160,6 +162,7 @@ int32_t LDBCB_TCK(void* buf, size_t len)
 		*val = r.tv_sec * 1000 + (r.tv_nsec / 1000000);
 		*val -= *Runtime->clkbeg;
 	}
+#endif
 	return 0;
 }
 
