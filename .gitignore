@@ -1,4 +1,6 @@
 .settings
 *.iso
+*.img
 *.bc
 *.o
+*.a

@@ -1,5 +1,5 @@
 ## DosCard Project DosBox Module Main MAKEFILE
-## Copyright (C) 2013-2014 Dmitry Soloviov
+## Copyright (C) 2013-2015 Dmitry Soloviov
 
 ## Internal name. Do not use 'libdosbox' in external projects as it may interfere with
 ## some existing code and/or libraries.
@@ -10,7 +10,11 @@ BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
 CC_DEFS := $(BLDINFO) -DHAVE_CONFIG_H -D_GNU_SOURCE -DHOST_64BIT
-CC_FLAG := -g -O2 -Wall -Wextra -finstrument-functions -fno-strict-aliasing $(EXT_CC_FLAGS)
+CC_FLAG := -g -O2 -Wall -Wextra -fno-strict-aliasing $(EXT_CC_FLAGS)
+
+ifeq ($(INSTRUMENT),1)
+CC_FLAG += -finstrument-functions
+endif
 
 CC_INCL := -I$(MNDIR)/../include -I. -I../..
 CC_COMP := $(CXX) $(CC_DEFS) $(CC_FLAG) $(CC_INCL)
@@ -49,10 +53,15 @@ LIB_OBJS += $(LTOP_SRC:.cpp=.o)
 
 
 all:	$(LIB_OBJS)
-##TODO: make instrumentation compilation conditional 
+ifeq ($(INSTRUMENT),1)
 	$(CXX) -g -c $(EXT_CC_FLAGS) instrument.cpp -o instrument.o
+endif
 	rm -f $(LIBNAME).a
+ifeq ($(INSTRUMENT),1)
 	ar cru $(LIBNAME).a instrument.o $(LIB_OBJS)
+else
+	ar cru $(LIBNAME).a $(LIB_OBJS)
+endif
 	echo $(LIBNAME).a instrument.o $(LIB_OBJS) 1> objs.txt
 	ranlib $(LIBNAME).a
 	expr `cat buildno` + 1 > buildno
