@@ -317,7 +317,7 @@ bool PushMachine()
 		return false;
 	}
 	xnfo(0,6,"Prepared successfully");
-	card->SetCapabilities(DOSCRD_CAPS_BASIC | DOSCRD_CAP_VIDEO | DOSCRD_CAP_EVENT);
+	//card->SetCapabilities(DOSCRD_CAPS_BASIC | DOSCRD_CAP_VIDEO | DOSCRD_CAP_EVENT);
 
 	mach->m = card;
 
