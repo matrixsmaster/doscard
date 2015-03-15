@@ -1,0 +1,28 @@
+## DosCard Project DosCard PC Wrapper gcc static lib
+## Copyright (C) 2013-2015 Soloviov Dmitry
+
+LIBNAME	 := libdbwrap
+CXX		 := g++-4.8.3
+
+INCLUDES := -I../../include
+
+DEFINES  :=
+BLDINFO := -DBUILDATE="\"$(shell date)\""
+BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
+DEFINES += $(BLDINFO)
+
+CXXFLAGS := -c -g -O2 -Wall $(INCLUDES) $(DEFINES)
+LD_LIBS  := ../../../box/src/libdosbox.a
+SUPPORTS := pchost.o ldbwrap.o
+
+all:	$(SUPPORTS)
+	cd ../../../box; make all
+	rm -f $(LIBNAME).a
+	ar cru $(LIBNAME).a $(SUPPORTS) $(LD_LIBS)
+	ranlib $(LIBNAME).a
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+	
+clean:
+	rm -f *.a *.o

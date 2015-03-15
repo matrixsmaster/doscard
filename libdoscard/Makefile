@@ -1,34 +1,17 @@
-## DosCard Project LibDOSCard MAKEFILE
-## Copyright (C) 2013-2015 Soloviov Dmitry
+## DosCard Project LibDOSCard Chain MAKEFILE
+## Copyright (C) 2013-2015 Dmitry Soloviov
 
-LIB := libdoscard
-CXX	:= g++-4.8.3
-WRAPSRC  := wrapper_pc
-WRAPLIB  := libdbwrap.bc
-INCLUDES := -Iinclude -I$(WRAPSRC)
-DEFINES := -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS
-BLDINFO := -DBUILDATE="\"$(shell date)\""
-BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
-BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
-DEFINES += $(BLDINFO)
-CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
-LD_STAT := 
-LD_BDYN := -lLLVM-3.4 -lpthread -ldl -lrt
-LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
-SUPPORTS := doscard.o
+all: mt
+.PHONY:	all
 
-all:	$(WRAPLIB) $(SUPPORTS)
-	$(CXX) -shared $(CXXFLAGS) -o $(LIB).so $(SUPPORTS) $(LD_LIBS)
-	expr `cat buildno` + 1 > buildno
-.PHONY: all
+st:
+	cd src; make -f Makefile.gcc all
+.PHONY: st
 
-$(WRAPLIB):
-	cd $(WRAPSRC); make all
-	cp -a $(WRAPSRC)/$(WRAPLIB) ./
-
-%.o:	%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+mt:
+	cd src; make -f Makefile.llvm all
+.PHONY: mt
 
 clean:
-	cd $(WRAPSRC); make clean
-	rm -f *.o *.bc *.so
+	cd src; make -f Makefile.llvm clean
+	cd src; make -f Makefile.gcc clean

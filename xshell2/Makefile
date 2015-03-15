@@ -8,7 +8,7 @@ DEFINES :=
 CXXFLAGS := -g -O2 -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := 
 LD_BDYN := -ldoscard -lSDL2 -lX11 -lrt -lm -ldl -lpthread
-LD_LIBS := -L../libdoscard -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+LD_LIBS := -L../libdoscard/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
 SUPPORTS := xsupport.o
 
 all:	$(SUPPORTS) $(APP).o

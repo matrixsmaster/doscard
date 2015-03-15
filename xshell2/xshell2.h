@@ -32,7 +32,7 @@
 #define XSHELL_DEF_WND_W 800
 #define XSHELL_DEF_WND_H 600
 #define XSHELL_CAPTION "DosCard XSHELL II"
-#define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
+#define BITFILE_ALTPATH "../libdoscard/src/libdbwrap.bc"
 #define XSHELL_FONTFILE "LiberationMono-Regular.ttf"
 #define SNDRING_BUFLEN (44100*2)
 #define SNDRING_ONESHOT 1024

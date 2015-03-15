@@ -20,7 +20,7 @@
 #define DOSCARD_H_
 
 /* Specific Inclusion */
-#ifdef DOSCARD_SOURCE
+#ifdef DOSCARD_MT_SOURCE
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/ADT/Triple.h>
 #include <llvm/Bitcode/ReaderWriter.h>
@@ -81,7 +81,7 @@ enum EDOSCRDState {
 	DOSCRD_PAUSED
 };
 
-#ifdef DOSCARD_SOURCE
+#ifdef DOSCARD_MT_SOURCE
 
 typedef std::vector<llvm::Function*> DCFuncs;
 

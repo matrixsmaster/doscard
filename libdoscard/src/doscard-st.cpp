@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014  Soloviov Dmitry
+ *  Copyright (C) 2014-2015  Soloviov Dmitry
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,27 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define DOSCARD_SOURCE
 #include "doscard.h"
-
-#ifndef BUILDATE
-#define BUILDATE "unknown date"
-#endif
-
-#ifndef COMPILERNAME
-#define COMPILERNAME "unknown compiler"
-#endif
-
-#ifndef BUILDNUMBER
-#define BUILDNUMBER "0"
-#endif
-
-//Get function by Letter Macro
-#define GFUNCL(x) phld->funcs->at(x - 'A')
-
-using namespace std;
-using namespace dosbox;
-using namespace llvm;
+#include "doscard-head.h"
 
 namespace doscard {
 
@@ -44,14 +25,11 @@ static int verbose;
 
 void LibDosCardInit(int verb)
 {
-	InitializeNativeTarget();
-	llvm_start_multithreaded();
 	verbose = verb;
 }
 
 void LibDosCardExit(void)
 {
-	llvm_shutdown();
 }
 
 static void verb(const char* fmt,...)
@@ -118,62 +96,6 @@ bool CDosCard::TryLoad(const char* filename)
 {
 	if ((state != DOSCRD_NOT_READY) && (state != DOSCRD_LOADFAIL))
 		return false;
-	SMDiagnostic err;
-	string fn;
-	string errstr;
-	char* ostr;
-	state = DOSCRD_LOADFAIL;
-	FreeModule();
-
-	//Load file
-	fn = (filename)? filename:DEFAULTLIBNAME;
-	phld->module = ParseIRFile(fn,err,(*(phld->context)));
-	if (!phld->module) return false;
-	if (phld->module->MaterializeAllPermanently(&errstr)) {
-		verb("TryLoad(): bitcode didn't read correctly (%s)\n",errstr.c_str());
-		return false;
-	}
-
-	//Create Engine
-	verb("TryLoad(): Bitcode file loaded. Trying to build engine...\n");
-	phld->engbld = new EngineBuilder(phld->module);
-	if (!phld->engbld) return false;
-	phld->engbld->setErrorStr(&errstr);
-	phld->engbld->setEngineKind(EngineKind::JIT);
-	phld->engbld->setOptLevel(CodeGenOpt::Default); //Less is very good too
-	phld->engine = phld->engbld->create();
-	if (!phld->engine) {
-		verb("TryLoad(): couldn't create EE (%s)\n",errstr.c_str());
-		return false;
-	}
-
-	verb("TryLoad(): Loading functions...\n");
-	if (!LoadFunctions()) return false;
-
-	//Check API
-	GenericValue ret = phld->engine->runFunction(GFUNCL('A'),GenArgs());
-	if (ret.IntVal != static_cast<uint64_t> (LDBWINTVER)) {
-		verb("TryLoad(): Wrong API version\n");
-		return false;
-	}
-
-	//Run static constructors
-	verb("TryLoad(): Enabling statics...\n");
-	phld->engine->runStaticConstructorsDestructors(false);
-
-	//Get Version String
-	ostr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN/2));
-	ret = phld->engine->runFunction(GFUNCL('L'),GenArgs(ostr,VERSTRMAXLEN/2));
-	if (ret.IntVal != 0) {
-		verb("TryLoad(): Failed to get version information\n");
-		free(ostr);
-		return false;
-	}
-	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,ostr);
-	free(ostr);
-	verstr[VERSTRMAXLEN-1] = 0;
-
-	//OK
 	verb("TryLoad(): Loading OK.\n");
 	state = DOSCRD_LOADED;
 	return true;
@@ -206,33 +128,10 @@ void CDosCard::FreeModule()
 
 bool CDosCard::LoadFunctions()
 {
-	int n,i = 0;
-	Module::iterator I;
-	DCFuncs::iterator j;
-	string cnm;
-	Function* Fn;
-	phld->funcs = new DCFuncs;
-	phld->funcs->resize(LDBWRAP_FUNCS_Q,NULL);
-	for (I = phld->module->begin(); I != phld->module->end(); ++I) {
-		cnm = I->getName().str();
-		if (cnm.length() < 5) continue;
-		if ((cnm[0] == 'D') && (cnm[1] == 'C') && (cnm[3] == '_')) {
-			Fn = &*I; //construction got from llvm's tools/lli
-			n = static_cast<int> (cnm[2] - 'A');
-			if ((n < 0) || (n >= LDBWRAP_FUNCS_Q)) continue;
-			(*phld->funcs)[n] = Fn;
-			if (++i >= LDBWRAP_FUNCS_Q) {
-				for (j = phld->funcs->begin(); j != phld->funcs->end(); ++j)
-					verb("LoadFunctions(): $0x%x\n",*j);
-				verb("LoadFunctions(): Done!\n");
-				return true;
-			}
-		}
-	}
-	verb("LoadFunctions(): FAILED!\n");
-	return false;
+	return true;
 }
 
+#if 0
 DCArgs CDosCard::GenArgs(void)
 {
 	DCArgs ret;
@@ -259,6 +158,7 @@ DCArgs CDosCard::GenArgs(void* ptr, uint64_t len)
 	ret.push_back(y);
 	return ret;
 }
+#endif
 
 EDOSCRDState CDosCard::GetCurrentState()
 {

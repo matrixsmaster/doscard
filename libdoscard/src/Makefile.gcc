@@ -1,0 +1,36 @@
+## DosCard Project LibDOSCard MAKEFILE
+## Copyright (C) 2013-2015 Soloviov Dmitry
+
+LIB := libdoscard
+CXX	:= g++-4.8.3
+
+WRAPSRC  := wrapper_pc
+WRAPLIB  := libdbwrap.a
+
+INCLUDES := -I../include -I$(WRAPSRC)
+
+BLDINFO := -DBUILDATE="\"$(shell date)\""
+BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
+BLDINFO += -DBUILDNUMBER="\"$(shell cat buildno)\""
+DEFINES += $(BLDINFO)
+
+CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
+LD_STAT := 
+LD_BDYN := -lpthread -ldl -lrt
+LD_LIBS := -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
+SUPPORTS := doscard-st.o
+
+all:	$(WRAPLIB) $(SUPPORTS)
+	$(CXX) -shared $(CXXFLAGS) -o $(LIB).so $(SUPPORTS) $(LD_LIBS)
+	expr `cat buildno` + 1 > buildno
+.PHONY: all
+
+$(WRAPLIB):
+	cd $(WRAPSRC); make -f Makefile.gcc all
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	cd $(WRAPSRC); make -f Makefile.gcc clean
+	rm -f *.o *.a*.so
