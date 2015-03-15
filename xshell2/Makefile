@@ -1,5 +1,5 @@
 ## DosCard Project XShell-2 MAKEFILE
-## Copyright (C) 2013-2015 Soloviov Dmitry
+## Copyright (C) 2013-2015 Dmitry Soloviov
 
 APP	:= xshell2
 CXX	:= g++-4.8.3

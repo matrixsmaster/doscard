@@ -1,5 +1,5 @@
 ## DosCard Project DosCard PC Wrapper gcc static lib
-## Copyright (C) 2013-2015 Soloviov Dmitry
+## Copyright (C) 2013-2015 Dmitry Soloviov
 
 LIBNAME	 := libdbwrap
 CXX		 := g++-4.8.3

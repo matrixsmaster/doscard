@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015  Soloviov Dmitry
+ *  Copyright (C) 2014-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -102,35 +102,6 @@ bool CDosCard::LoadFunctions()
 {
 	return true;
 }
-
-#if 0
-DCArgs CDosCard::GenArgs(void)
-{
-	DCArgs ret;
-	return ret;
-}
-
-DCArgs CDosCard::GenArgs(dosbox::LDB_Settings* pset)
-{
-	DCArgs ret;
-	GenericValue p;
-	p.PointerVal = pset;
-	ret.push_back(p);
-	return ret;
-}
-
-DCArgs CDosCard::GenArgs(void* ptr, uint64_t len)
-{
-	DCArgs ret;
-	GenericValue x;
-	x.PointerVal = ptr;
-	ret.push_back(x);
-	GenericValue y;
-	y.IntVal = APInt(64,len,false);
-	ret.push_back(y);
-	return ret;
-}
-#endif
 
 EDOSCRDState CDosCard::GetCurrentState()
 {
