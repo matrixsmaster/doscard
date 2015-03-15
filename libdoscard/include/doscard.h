@@ -64,7 +64,7 @@
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.5"
+#define VERSIONSTR "0.0.10"
 #define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 namespace doscard {

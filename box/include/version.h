@@ -20,7 +20,7 @@
 #ifndef DOSBOX_VERSION_H_
 #define DOSBOX_VERSION_H_
 
-#define VERSION "0.0.9"
+#define VERSION "0.0.10"
 
 #ifndef BUILDNUMBER
 #define BUILDNUMBER "unknown"
