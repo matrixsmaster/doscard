@@ -58,6 +58,7 @@
 /* Common Inclusion */
 #include <vector>
 #include <string>
+#include <stdarg.h>
 #include "ldbwrap.h"
 
 /* ****************** DosCard Generic Constants ****************** */

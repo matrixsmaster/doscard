@@ -1,12 +1,15 @@
-## DosCard Project Top Level MAKEFILE
-## Copyright (C) 2013-2014 Dmitry Soloviov
+## DosCard Project Top Level Chain Makefile
+## Copyright (C) 2013-2015 Dmitry Soloviov
 
 all:
 	echo -e "Targets available:\n \
-	ldb - libDosBox\n \
-	ldc - libDosCard\n \
-	xsh1 - XShell 1\n \
-	xsh2 - XShell 2"
+	ldb     - libDosBox\n \
+	ldc     - libDosCard multi-thread\n \
+	ldcst   - libDosCard single-thread\n \
+	xsh1    - XShell 1 native\n \
+	xsh2    - XShell 2 multi-thread\n \
+	xsh2st  - XShell 2 single-thread\n \
+	hdless  - XHeadless testing program"
 .PHONY: all
 
 ##libdosbox (native)
@@ -17,8 +20,14 @@ ldb:
 ##libdoscard (native + llvm)
 ldc:
 	cd box; make clean
-	cd libdoscard; make all
+	cd libdoscard; make mt
 .PHONY: ldc
+
+##libdoscard (native + native)
+ldcst:
+	cd box; make clean
+	cd libdoscard; make st
+.PHONY: ldcst
 
 ##XShell 1 (native, single-instance)
 xsh1: ldb
@@ -30,10 +39,15 @@ xsh2: ldc
 	cd xshell2; make all
 .PHONY: xsh2
 
+##XShell 2 (native, single-instance)
+xsh2st: ldcst
+	cd xshell2; make all
+.PHONY: xsh2st
+
 ##Headless Mode Test
-headless: ldc
+hdless: ldc
 	cd xheadless; make all
-.PHONY: headless
+.PHONY: hdless
 
 clean:
 	cd box; make clean

@@ -53,12 +53,7 @@ CDosCard::CDosCard(bool autoload)
 {
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
-	phld = new DCPHolder;
-	phld->context = new LLVMContext();
-	phld->module = NULL;
-	phld->engbld = NULL;
-	phld->engine = NULL;
-	phld->funcs = NULL;
+	phld = 0;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
 	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
 	if (autoload) TryLoad(NULL);
@@ -79,15 +74,13 @@ CDosCard::~CDosCard()
 		//no break
 	case DOSCRD_SHUTDOWN:
 	case DOSCRD_INITED:
-		phld->engine->runFunction(GFUNCL('C'),GenArgs());
+		DCC_TryDestroyInstance();
 		break;
 	default:
 		//just to make compiler happy
 		break;
 	}
 	FreeModule();
-	delete phld->context;
-	delete phld;
 	if (verstr) free(verstr);
 	if (framebuffer) free(framebuffer);
 }
@@ -103,27 +96,6 @@ bool CDosCard::TryLoad(const char* filename)
 
 void CDosCard::FreeModule()
 {
-	if (phld->funcs) delete phld->funcs;
-	phld->funcs = NULL;
-	if (phld->engbld) delete phld->engbld;
-	phld->engbld = NULL;
-	if (phld->engine) {
-		//FIXME: this method won't do anything really!
-		//I tested it carefully, but nothing happens after call to this function
-		//with argument <true>. LLVM uses it's own code in atexit() instead
-		//http://lists.cs.uiuc.edu/pipermail/llvmdev/2011-September/043106.html
-		phld->engine->runStaticConstructorsDestructors(true);
-//		delete phld->engine;
-	}
-	phld->engine = NULL;
-	if (phld->module) {
-		//Just to make sure we really destroy all code
-		Module::iterator I;
-		for (I = phld->module->begin(); I != phld->module->end(); ++I)
-			I->Dematerialize();
-		delete phld->module; //in lli they didn't delete module, but the engine instead
-	}
-	phld->module = NULL;
 }
 
 bool CDosCard::LoadFunctions()
@@ -169,8 +141,7 @@ LDB_Settings* CDosCard::GetSettings()
 {
 	if ((state == DOSCRD_INITED) || (state == DOSCRD_RUNNING)) {
 		LDB_Settings set;
-		GenericValue r = phld->engine->runFunction(GFUNCL('E'),GenArgs(&set));
-		if (r.IntVal == 0) {
+		if (DCE_GetInstanceSettings(&set) == 0) {
 			if (!settings) {
 				settings = reinterpret_cast<LDB_Settings*> (malloc(sizeof(LDB_Settings)));
 				memset(settings,0,sizeof(LDB_Settings)); //just to make sure there's no random data
@@ -190,16 +161,14 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
 	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return false;
-	GenericValue r = phld->engine->runFunction(GFUNCL('F'),GenArgs(pset));
-	if (r.IntVal != 0) return false;
+	if (DCF_SetInstanceSettings(pset) != 0) return false;
 	return true;
 }
 
 bool CDosCard::Prepare()
 {
 	if (state != DOSCRD_LOADED) return false;
-	GenericValue r = phld->engine->runFunction(GFUNCL('B'),GenArgs(NULL));
-	if (r.IntVal != 0) {
+	if (DCB_CreateInstance(NULL) != 0) {
 		verb("Prepare(): Error while creating new instance\n");
 		return false;
 	}
@@ -218,8 +187,7 @@ int CDosCard::Run()
 void CDosCard::SetPause(bool paused)
 {
 	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
-		GenericValue r = phld->engine->runFunction(GFUNCL('Q'),GenArgs(NULL,(paused?1:0)));
-		if ((r.IntVal == 0) && (paused != (state == DOSCRD_PAUSED)))
+		if ((DCQ_SetInstancePause(NULL,(paused?1:0)) == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
 	}
 }
@@ -227,7 +195,7 @@ void CDosCard::SetPause(bool paused)
 void CDosCard::DoNotCallRunner()
 {
 	verb("Runner() executed!\n");
-	GenericValue r = phld->engine->runFunction(GFUNCL('D'),GenArgs());
+	DCD_RunInstance();
 	verb("Runner() finished natively!\n");
 	state = DOSCRD_SHUTDOWN;
 }
@@ -236,8 +204,7 @@ int CDosCard::SetCapabilities(LDBI_caps flags)
 {
 	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return -1;
 	uint64_t caps = static_cast<uint64_t> (flags);
-	GenericValue r = phld->engine->runFunction(GFUNCL('M'),GenArgs(NULL,caps));
-	if (r.IntVal != 0) return -1;
+	if (DCM_SetInstanceCaps(NULL,caps) != 0) return -1;
 	return 0;
 }
 
@@ -245,8 +212,7 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 {
 	LDBI_RuntimeData buf;
 	if ((state != DOSCRD_RUNNING) || (!w) || (!h)) return NULL;
-	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
-	if (r.IntVal != 0) {
+	if (DCG_GetInstanceRuntime(&buf,sizeof(buf)) != 0) {
 		verb("GetFramebuffer(): Unable to collect runtime data\n");
 		return NULL;
 	}
@@ -259,7 +225,7 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 		verb("GetFramebuffer: Unable to reallocate memory for new framebuffer size (%u)\n",sz);
 		return NULL;
 	}
-	r = phld->engine->runFunction(GFUNCL('H'),GenArgs(framebuffer,sz));
+	DCH_GetInstanceScreen(framebuffer,sz);
 	framebufsz = sz;
 	return framebuffer;
 }
@@ -267,7 +233,7 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 {
 	if (state != DOSCRD_RUNNING) return;
-	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
+	DCJ_AddInstanceEvents(&e,sizeof(e));
 }
 
 void CDosCard::PutString(char* str)
@@ -275,13 +241,13 @@ void CDosCard::PutString(char* str)
 	if (state != DOSCRD_RUNNING) return;
 	uint64_t l = 0;
 	if (str) l = static_cast<uint64_t> (strlen(str));
-	GenericValue r = phld->engine->runFunction(GFUNCL('P'),GenArgs(str,l));
+	DCP_AddInstanceString(str,l);
 }
 
 LDBI_MesgVec* CDosCard::GetMessages()
 {
 	if (state != DOSCRD_RUNNING) return NULL;
-	GenericValue r = phld->engine->runFunction(GFUNCL('K'),GenArgs(&msgbuff,sizeof(void*)));
+	DCK_GetInstanceMessages(&msgbuff,sizeof(void*));
 	return &msgbuff;
 }
 
@@ -290,8 +256,7 @@ LDBI_MesgVec* CDosCard::GetMessages()
 	LDBI_RuntimeData buf;
 	if (!format) return false;
 	if ((state != DOSCRD_RUNNING) && (state != DOSCRD_PAUSED)) return false;
-	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
-	if (r.IntVal != 0) {
+	if (DCG_GetInstanceRuntime(&buf,sizeof(buf)) != 0) {
 		verb("GetSoundFormat(): Unable to collect runtime data\n");
 		return false;
 	}
@@ -302,8 +267,8 @@ LDBI_MesgVec* CDosCard::GetMessages()
 uint32_t CDosCard::FillSound(LDBI_SndSample* buf, uint32_t samples)
 {
 	if ((!buf) || (samples < 2) || (state != DOSCRD_RUNNING)) return 0;
-	GenericValue r = phld->engine->runFunction(GFUNCL('I'),GenArgs(buf,samples*sizeof(LDBI_SndSample)));
-	uint32_t ret = static_cast<uint32_t> (*r.IntVal.getRawData() / sizeof(LDBI_SndSample));
+	int32_t r = DCI_GetInstanceSound(buf,samples*sizeof(LDBI_SndSample));
+	uint32_t ret = static_cast<uint32_t> (r / sizeof(LDBI_SndSample));
 	verb("FillSound(): ret=%u\n",ret);
 	return ret;
 }
