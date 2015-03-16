@@ -19,17 +19,23 @@
 #include "doscard.h"
 #include "doscard-head.h"
 
+//TODO: make it work :)
+//#define CHECK_INSTANCE(X) if (instance > 0) return (X)
+//#define CHECK_INSTANCE	  if (instance > 0) return
+
 namespace doscard {
 
-static int verbose;
+static int verbose,instance;
 
 void LibDosCardInit(int verb)
 {
 	verbose = verb;
+	instance = 0;
 }
 
 void LibDosCardExit(void)
 {
+	instance = 0;
 }
 
 static void verb(const char* fmt,...)
@@ -51,6 +57,8 @@ void* DosCardThread(void* ptr)
 
 CDosCard::CDosCard(bool autoload)
 {
+//	CHECK_INSTANCE;
+	instance++;
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
 	phld = 0;
