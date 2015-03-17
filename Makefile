@@ -6,6 +6,7 @@ all:
 	ldb     - libDosBox\n \
 	ldc     - libDosCard multi-thread\n \
 	ldcst   - libDosCard single-thread\n \
+	mingw   - libDosCard single-thread for MinGW\n \
 	xsh1    - XShell 1 native\n \
 	xsh2    - XShell 2 multi-thread\n \
 	xsh2st  - XShell 2 single-thread\n \

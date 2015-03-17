@@ -6,7 +6,7 @@ CXX		 := g++-4.8.3
 
 INCLUDES := -I../../include
 
-DEFINES :=
+DEFINES := 
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""
 DEFINES += $(BLDINFO)

@@ -8,7 +8,7 @@ INCLUDES := -I../../include -I ../../../box/include
 
 ##WARNING: to make unistd compatible with pthreads in mingw
 INCLUDES += -I../.. -include "inc_mingw/unistd.h"
-DEFINES  := -D__struct_timespec_defined=1
+DEFINES  := -D__struct_timespec_defined=1 -DUSE_WEAK_CLOCKING=1
 
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""

@@ -26,16 +26,16 @@ static CDosCard* g_card = NULL;
 void WinDosCardInit(int verb)
 {
 	LibDosCardInit(verb);
-	puts("Hello from WinDosCardInit() !!!");
 	g_card = new CDosCard(true);
-	if (g_card) puts("Valid instance!");
+	if (g_card) puts("WinDosCard: Ready");
+	else puts("WinDosCard: Failed to initialize!");
 }
 
 void WinDosCardExit(void)
 {
-	delete g_card;
+	if (g_card) delete g_card;
 	LibDosCardExit();
-	puts("Bye from WinDosCardExit() !");
+	puts("WinDosCard: Bye!");
 }
 
 bool WinDosCardTryLoad(const char* filename)
@@ -45,70 +45,81 @@ bool WinDosCardTryLoad(const char* filename)
 
 doscard::EDOSCRDState WinDosCardGetCurrentState()
 {
-	//
+	if (g_card) return (g_card->GetCurrentState());
+	else return doscard::DOSCRD_NOT_READY;
 }
 
 dosbox::LDB_Settings* WinDosCardGetSettings()
 {
-	//
+	if (g_card) return (g_card->GetSettings());
+	else return NULL;
 }
 
 char* WinDosCardGetVersionStringSafe()
 {
-	//
+	if (g_card) return (g_card->GetVersionStringSafe());
+	else return NULL;
 }
 
 bool WinDosCardApplySettings(dosbox::LDB_Settings* pset)
 {
-	//
+	if (g_card) return (g_card->ApplySettings(pset));
+	else return false;
 }
 
 bool WinDosCardPrepare()
 {
-	//
+	if (g_card) return (g_card->Prepare());
+	else return false;
 }
 
 int WinDosCardRun()
 {
-	//
+	if (g_card) return (g_card->Run());
+	else return 0;
 }
 
 void WinDosCardSetPause(bool paused)
 {
-	//
+	if (g_card) return (g_card->SetPause(paused));
 }
 
 int WinDosCardSetCapabilities(doscard::LDBI_caps flags)
 {
-	//
+	if (g_card) return (g_card->SetCapabilities(flags));
+	else return 0;
 }
 
 uint32_t* WinDosCardGetFramebuffer(int* w, int* h)
 {
-	//
+	if (g_card) return (g_card->GetFramebuffer(w,h));
+	else return NULL;
 }
 
 void WinDosCardPutEvent(dosbox::LDB_UIEvent e)
 {
-	//
+	if (g_card) return (g_card->PutEvent(e));
 }
 
 void WinDosCardPutString(char* str)
 {
-	//
+	if (g_card) return (g_card->PutString(str));
 }
 
 doscard::LDBI_MesgVec* WinDosCardGetMessages()
 {
-	//
+	if (g_card) return (g_card->GetMessages());
+	else return NULL;
 }
 
 bool WinDosCardGetSoundFormat(dosbox::LDB_SoundInfo* format)
 {
-	//
+	if (g_card) return (g_card->GetSoundFormat(format));
+	else return false;
 }
 
 uint32_t WinDosCardFillSound(doscard::LDBI_SndSample* buf, uint32_t samples)
 {
-	//
+	if (g_card) return (g_card->FillSound(buf,samples));
+	else return 0;
 }
