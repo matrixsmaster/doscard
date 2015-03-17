@@ -17,24 +17,30 @@
  */
 
 #include "doscard.h"
+#include "doscard_vs.h"
 
-CDosCard* g_card = NULL;
+using namespace doscard;
+
+static CDosCard* g_card = NULL;
 
 void WinDosCardInit(int verb)
 {
 	LibDosCardInit(verb);
+	puts("Hello from WinDosCardInit() !!!");
 	g_card = new CDosCard(true);
+	if (g_card) puts("Valid instance!");
 }
 
 void WinDosCardExit(void)
 {
 	delete g_card;
 	LibDosCardExit();
+	puts("Bye from WinDosCardExit() !");
 }
 
 bool WinDosCardTryLoad(const char* filename)
 {
-	//
+	return true;
 }
 
 doscard::EDOSCRDState WinDosCardGetCurrentState()

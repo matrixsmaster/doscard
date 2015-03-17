@@ -19,12 +19,13 @@
 #ifndef DOSCARD_VS_H_INCL_
 #define DOSCARD_VS_H_INCL_
 
-#include "doscard_common.h"
+//#include "doscard_common.h"
 
 #ifdef BUILD_LDC_DLL
 #define LDC_DLL __declspec(dllexport)
 #else
-#define LDC_DLL __declspec(dllimport)
+#define LDC_DLL 
+//__declspec(dllimport)
 #endif
 
 extern "C" {
