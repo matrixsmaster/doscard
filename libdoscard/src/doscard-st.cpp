@@ -96,8 +96,30 @@ CDosCard::~CDosCard()
 
 bool CDosCard::TryLoad(const char* filename)
 {
+	char* ostr;
+
 	if ((state != DOSCRD_NOT_READY) && (state != DOSCRD_LOADFAIL))
 		return false;
+
+	state = DOSCRD_LOADFAIL;
+
+	//Check API
+	if (DCA_WrapperInit() != LDBWINTVER) {
+		verb("TryLoad(): Incorrect internal API version. Please rebuild libdoscard!\n");
+		return false;
+	}
+
+	//Get Version String
+	ostr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN/2));
+	if (DCL_GetVersionString(ostr,VERSTRMAXLEN/2) != 0) {
+		verb("TryLoad(): Failed to get version information\n");
+		return false;
+	}
+	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,ostr);
+	free(ostr);
+	verstr[VERSTRMAXLEN-1] = 0;
+
+	//OK
 	verb("TryLoad(): Loading OK.\n");
 	state = DOSCRD_LOADED;
 	return true;
@@ -160,7 +182,6 @@ int CDosCard::Run()
 {
 	if (state != DOSCRD_INITED) return -1;
 	state = DOSCRD_RUNNING;
-	puts("CDosCard::Run(): creating pthread");
 	pthread_create(&dosthread,NULL,DosCardThread,this);
 	return 0;
 }

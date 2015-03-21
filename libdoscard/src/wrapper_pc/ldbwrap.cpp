@@ -86,7 +86,7 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->sound_rec = 0;
 	Runtime->sound_fmt_ok = false;
 	memset(&Runtime->sound_req,0,sizeof(LDB_SoundInfo));
-	return DCM_SetInstanceCaps(NULL,DOSCRD_CAPS_STANDARD);
+	return DCM_SetInstanceCaps(NULL,static_cast<uint64_t>(DOSCRD_CAPS_STANDARD));
 }
 
 int32_t DCC_TryDestroyInstance(void)
@@ -182,9 +182,13 @@ int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 	FA_TEST;
 	if (len != sizeof(LDB_UIEvent)) return -1;
 	pe = reinterpret_cast<LDB_UIEvent*> (ptr);
-	MUTEX_LOCK;
-	Events->insert(Events->begin(),*pe);
-	MUTEX_UNLOCK;
+	if (Caps & DOSCRD_CAP_EVENT) {
+		MUTEX_LOCK;
+		Events->insert(Events->begin(),*pe);
+		MUTEX_UNLOCK;
+	} else {
+		if (pe->t == LDB_UIE_QUIT) DOS->SetQuit();
+	}
 	return 0;
 }
 

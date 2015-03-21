@@ -1,7 +1,7 @@
-## DosCard Project XS Headless Test MAKEFILE
+## Part of DosCard Project
 ## Copyright (C) 2013-2015 Dmitry Soloviov
 
-APP	:= headless
+APP	:= xtest
 CXX	:= g++-4.8.3
 INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := -DBITFILE_ALTPATH=\"../libdoscard/src/libdbwrap.bc\"

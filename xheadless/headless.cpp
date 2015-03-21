@@ -25,7 +25,10 @@
 
 #include "doscard.h"
 
-#define BITFILE_ALTPATH "../libdoscard/src/libdbwrap.bc"
+#ifndef BITFILE_ALTPATH
+#define BITFILE_ALTPATH "./libdbwrap.bc"
+#endif
+
 #define INSTR_BUFLEN 64
 
 using namespace doscard;
@@ -76,6 +79,7 @@ int main(int argc, char* argv[])
 		printf("Couldn't load VM!\n");
 		abort();
 	}
+	printf("Version info:\n%s\n",vm->GetVersionStringSafe());
 
 	//and prepare it
 	if (!vm->Prepare()) {

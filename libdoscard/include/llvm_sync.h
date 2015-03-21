@@ -21,15 +21,23 @@
 #ifndef LLVM_SYNC_H_
 #define LLVM_SYNC_H_
 
+#define USE_WAITING_MUTEXES 3
+
 //typedef atomic_int LDBI_Mutex;
-//TODO: __sync_bool_compare_and_swap();
+//TODO: play around __sync_bool_compare_and_swap();
+typedef volatile unsigned int LDBI_Mutex;
 
 /* ****************** Weak Sync Macros ****************** */
 
-typedef volatile unsigned int LDBI_Mutex;
-#define MUTEX_LOCK do {while (mutex) usleep(1); mutex = 1;} while(0)
 #define MUTEX_UNLOCK mutex = 0
-#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(2);} while(1)
+
+#ifdef USE_WAITING_MUTEXES
+#define MUTEX_LOCK do {while (mutex) usleep(USE_WAITING_MUTEXES); mutex = 1;} while(0)
+#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; usleep(USE_WAITING_MUTEXES*2);} while(1)
+#else
+#define MUTEX_LOCK do {while (mutex); mutex = 1;} while(0)
+#define MUTEX_WAIT_FOR_EVENT(X) do {MUTEX_LOCK; if (X) break; MUTEX_UNLOCK; } while(1)
+#endif
 
 
 #endif /* LLVM_SYNC_H_ */

@@ -177,8 +177,8 @@ int32_t LDBCB_MSG(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
 	char* str = reinterpret_cast<char*> (buf);
-	std::string nstr(str);
 	MUTEX_LOCK;
+	std::string nstr(str);
 	Messages->push_back(nstr);
 	MUTEX_UNLOCK;
 	return 0;
