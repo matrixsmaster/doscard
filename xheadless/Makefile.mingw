@@ -9,6 +9,7 @@ INCLUDES := -I. -I../box/include -I../libdoscard/include
 INCLUDES += -I../libdoscard -include "inc_mingw/unistd.h"
 DEFINES  := -D__struct_timespec_defined=1
 
+DEFINES  += -DDONT_USE_FCNTL=1
 CXXFLAGS := -g -O0 -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := 
 LD_BDYN := -ldoscard

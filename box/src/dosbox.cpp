@@ -55,7 +55,6 @@ void CDosBox::RunMachine()
 Bitu CDosBox::NormalLoop()
 {
 	Bits ret;
-	puts("CDosBox::NormalLoop()");
 	for(;;) {
 		while (pause_mode) Callback(DBCB_NOPIdle,NULL,DOSBOX_IDLE_LEN);
 		loopcount++;
@@ -232,7 +231,6 @@ void CDosBox::Init()
 	CDROM_Image_Init();
 	AUTOEXEC_Init();
 	init_ok = true;
-	puts("CDosBox::Init(): init_ok = true");
 }
 
 void CDosBox::Clear()
@@ -382,16 +380,9 @@ int32_t CDosBox::UnregisterCallback(LDB_CallbackType t, bool unreg_all)
 
 int32_t CDosBox::Callback(LDB_CallbackType t, void* p, size_t l)
 {
-	int32_t r;
-	printf("CDosBox::Callback(%hu): called\n",*(reinterpret_cast<uint16_t*>(&t)));
-	if (GCC_UNLIKELY(!ldb_callbacks[t])) {
-		puts("CDosBox::Callback(): not found");
+	if (GCC_UNLIKELY(!ldb_callbacks[t]))
 		return LDB_CALLBACK_RET_NOT_FOUND;
-	}
-	printf("CDosBox::Callback(): found, calling 0x%08x...\n",reinterpret_cast<uint32_t>(ldb_callbacks[t]));
-	r = ((*ldb_callbacks[t])(p,l));
-	printf("CDosBox::Callback(): finished with %d\n",r);
-	return r;
+	return ((*ldb_callbacks[t])(p,l));
 }
 
 void CDosBox::SetConfig(LDB_Settings* c)
@@ -421,21 +412,16 @@ void CDosBox::SetPause(bool paused)
 
 void CDosBox::Execute()
 {
-	puts("CDosBox::Execute(): Enter");
 	LOG_MSG("CDosBox::Execute(): Enter");
-	puts("CDosBox::Execute(): Alive");
 	if (!config) return;
-	puts("CDosBox::Execute(): Still alive :)");
 	LOG_MSG("DOSCARD version %s build %s",VERSION,BUILDNUMBER);
 	LOG_MSG(COPYRIGHT_STRING_ORIGINAL);
 	LOG_MSG(COPYRIGHT_STRING_NEW);
 	LOG_MSG("Compiled with %s %s",COMPILERNAME,BUILDATE);
 	LOG_MSG("CDosBox::Execute(): Initializing subsystems...");
-	puts("CDosBox::Execute(): Pre-init()");
 	Init();
 	loopcount = 0;
 	LOG_MSG("CDosBox::Execute(): Run!");
-	puts("CDosBox::Execute(): Pre-Shell_init()");
 	SHELL_Init();
 	LOG_MSG("CDosBox::Execute(): loopcount = %lu",loopcount);
 	Clear();

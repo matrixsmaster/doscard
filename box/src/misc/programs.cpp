@@ -136,7 +136,6 @@ static void DOS_CON_Write(const char* buf)
 	Bit16u i,s = 1;
 	Bit8u out;
 	Bit16u size = (Bit16u)strlen(buf);
-	printf("DOS_CON_Write('%s'); size = %hu\n",buf,size);
 	for (i = 0; i < size; i++) {
 		if (buf[i] == 0xA && last_written_character != 0xD) {
 			out = 0xD;
@@ -145,7 +144,6 @@ static void DOS_CON_Write(const char* buf)
 		last_written_character = out = buf[i];
 		DOS_WriteFile(STDOUT,&out,&s);
 	}
-	puts("DOS_CON_Write() OK");
 }
 
 void Program::WriteOut(const char * format,...)
@@ -153,12 +151,9 @@ void Program::WriteOut(const char * format,...)
 	char buf[2048];
 	va_list msg;
 
-	puts("Program::WriteOut() called");
-	printf("format = '%s'\n",format);
 	va_start(msg,format);
 	vsnprintf(buf,2047,format,msg);
 	va_end(msg);
-	puts("Program::WriteOut() parse ok");
 
 	DOS_CON_Write(buf);
 }

@@ -62,7 +62,7 @@ CDosCard::CDosCard(bool autoload)
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
 	framebuffer = NULL;
-	phld = 0;
+	phld = NULL;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
 	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
 	if (autoload) TryLoad(NULL);
@@ -71,7 +71,6 @@ CDosCard::CDosCard(bool autoload)
 CDosCard::~CDosCard()
 {
 	LDB_UIEvent etmp;
-	puts("Destructor: 1");
 	switch (state) {
 	case DOSCRD_PAUSED:
 		SetPause(false);
@@ -90,13 +89,9 @@ CDosCard::~CDosCard()
 		//just to make compiler happy
 		break;
 	}
-	puts("Destructor: 2");
 	FreeModule();
-	puts("Destructor: 3");
 	if (verstr) free(verstr);
-	puts("Destructor: 4");
 	if (framebuffer) free(framebuffer);
-	puts("Destructor: 5");
 }
 
 bool CDosCard::TryLoad(const char* filename)

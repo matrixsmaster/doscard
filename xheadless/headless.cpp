@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2014  Dmitry Soloviov
+ *  Copyright (C) 2013-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,10 +18,14 @@
 
 #include <string>
 #include <vector>
-//#include <fcntl.h>
+
+#ifndef DONT_USE_FCNTL
+#include <fcntl.h>
+#endif
+
 #include "doscard.h"
 
-#define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
+#define BITFILE_ALTPATH "../libdoscard/src/libdbwrap.bc"
 #define INSTR_BUFLEN 64
 
 using namespace doscard;
@@ -41,7 +45,7 @@ int main(int argc, char* argv[])
 
 	printf("\n---------------------------------------------------\n");
 	printf("|              DosCard Headless Mode              |\n");
-	printf("| (C) Dmitry 'MatrixS_Master' Soloviov, 2013-2014 |\n");
+	printf("| (C) Dmitry 'MatrixS_Master' Soloviov, 2013-2015 |\n");
 	printf("---------------------------------------------------\n\n");
 
 	nomsg = false;
@@ -57,7 +61,11 @@ int main(int argc, char* argv[])
 	//prepare everything
 	ml = strlen(DOSCRD_EHOUT_MARKER);
 	memset(istr,0,sizeof(istr));
-	//fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK); //for nonblocking input
+
+#ifndef DONT_USE_FCNTL
+	fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK); //for nonblocking input
+#endif
+
 	//init libdoscard
 	if (nomsg) LibDosCardInit(0); //no debugging
 	else LibDosCardInit(1); //with some debug output
