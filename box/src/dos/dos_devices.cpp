@@ -126,7 +126,9 @@ bool device_CON::Read(Bit8u * data,Bit16u * size)
 {
 	Bit16u oldax = reg_ax;
 	Bit16u count = 0;
+	puts("device_CON::Read(): 0");
 	int32_t ret = myldbi->Callback(DBCB_PullTTYInput,data,*size);
+	puts("device_CON::Read(): 1");
 	if (ret > 0) {
 //		myldbi->RunMachine();
 //		PIC_RunQueue();
@@ -197,7 +199,9 @@ bool device_CON::Write(Bit8u * data,Bit16u * size)
 	Bit16u count = 0;
 	Bit8u col,row;
 	Bit8u tempdata;
+	puts("device_CON::Write(): 0");
 	myldbi->Callback(DBCB_LogSTDOUT,data,*size);
+	puts("device_CON::Write(): 1");
 	while (*size>count) {
 		if (!ansi.esc){
 			if(data[count]=='\033') {

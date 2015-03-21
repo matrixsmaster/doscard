@@ -18,8 +18,7 @@
 
 #include <string>
 #include <vector>
-#include <unistd.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include "doscard.h"
 
 #define BITFILE_ALTPATH "../libdoscard/libdbwrap.bc"
@@ -58,7 +57,7 @@ int main(int argc, char* argv[])
 	//prepare everything
 	ml = strlen(DOSCRD_EHOUT_MARKER);
 	memset(istr,0,sizeof(istr));
-	fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK); //for nonblocking input
+	//fcntl(0,F_SETFL,fcntl(0,F_GETFL) | O_NONBLOCK); //for nonblocking input
 	//init libdoscard
 	if (nomsg) LibDosCardInit(0); //no debugging
 	else LibDosCardInit(1); //with some debug output

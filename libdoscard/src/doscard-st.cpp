@@ -61,6 +61,7 @@ CDosCard::CDosCard(bool autoload)
 	instance++;
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
+	framebuffer = NULL;
 	phld = 0;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
 	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
@@ -70,6 +71,7 @@ CDosCard::CDosCard(bool autoload)
 CDosCard::~CDosCard()
 {
 	LDB_UIEvent etmp;
+	puts("Destructor: 1");
 	switch (state) {
 	case DOSCRD_PAUSED:
 		SetPause(false);
@@ -88,9 +90,13 @@ CDosCard::~CDosCard()
 		//just to make compiler happy
 		break;
 	}
+	puts("Destructor: 2");
 	FreeModule();
+	puts("Destructor: 3");
 	if (verstr) free(verstr);
+	puts("Destructor: 4");
 	if (framebuffer) free(framebuffer);
+	puts("Destructor: 5");
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -159,6 +165,7 @@ int CDosCard::Run()
 {
 	if (state != DOSCRD_INITED) return -1;
 	state = DOSCRD_RUNNING;
+	puts("CDosCard::Run(): creating pthread");
 	pthread_create(&dosthread,NULL,DosCardThread,this);
 	return 0;
 }

@@ -151,8 +151,9 @@ int32_t LDBCB_TCK(void* buf, size_t len)
 		Runtime->clkbeg = new uint32_t;
 		Runtime->clkbeg = 0;
 	} else {
-		Runtime->clkbeg++;
+		(*Runtime->clkbeg)++;
 		*val = *Runtime->clkbeg;
+		printf("LDBCB_TCK(): weak clock: %u\n",(*val));
 	}
 #else
 	struct timespec r;
@@ -178,9 +179,11 @@ int32_t LDBCB_MSG(void* buf, size_t len)
 	if ((!buf) || (!len)) return -1;
 	char* str = reinterpret_cast<char*> (buf);
 	std::string nstr(str);
+	printf("LDBCB_MSG(): '%s'\n",str);
 	MUTEX_LOCK;
 	Messages->push_back(nstr);
 	MUTEX_UNLOCK;
+	puts("LDBCB_MSG(): mutex unlocked");
 	return 0;
 }
 
@@ -297,15 +300,22 @@ int32_t LDBCB_LIO(void* buf, size_t len)
 int32_t LDBCB_STO(void* buf, size_t len)
 {
 	if ((!buf) || (!len)) return -1;
+	puts("LDBCB_STO(): called");
 	char* ins = reinterpret_cast<char*> (buf);
-	unsigned int sl = len + strlen(DOSCRD_EHOUT_MARKER) + 1;
+	printf("buf = '%s'\n",ins);
+	uint32_t el = strlen(DOSCRD_EHOUT_MARKER);
+	uint32_t sl = len + el + 1;
+	printf("LDBCB_STO(): length calc = %u (len=%u, ehout len=%u)\n",sl,len,el);
 	char* str = reinterpret_cast<char*> (malloc(sl));
 	if (!str) return -1;
 	strcpy(str,DOSCRD_EHOUT_MARKER);
-	strncat(str,ins,sl-1);
+	//strncat(str,ins,sl-el-1);
+	strncat(str,ins,len);
 	str[sl-1] = 0;
 	LDBCB_MSG(str,sl);
-	free(str);
+	puts("LDBCB_STO(): 1");
+	free(str); //WARNING!!!!! Memory leak if left commented!
+	puts("LDBCB_STO(): finished");
 	return 0;
 }
 

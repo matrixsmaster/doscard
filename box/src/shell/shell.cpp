@@ -284,6 +284,7 @@ void DOS_Shell::RunInternal(void)
 }
 
 void DOS_Shell::Run(void) {
+	puts("DOS_Shell::Run(): called");
 	char input_line[CMD_MAXLINE] = {0};
 	std::string line;
 	if (cmd->FindStringRemainBegin("/C",line)) {
@@ -296,16 +297,20 @@ void DOS_Shell::Run(void) {
 		temp.RunInternal();				// exits when no bf is found.
 		return;
 	}
+	puts("DOS_Shell::Run(): 1");
 	/* Start a normal shell and check for a first command init */
 	WriteOut("DOSCARD ver.%s bld.%s\n%s\n%s\n\n\n",
 			VERSION,BUILDNUMBER,COPYRIGHT_STRING_ORIGINAL,COPYRIGHT_STRING_NEW);
 
+	puts("DOS_Shell::Run(): 2");
 	if (cmd->FindString("/INIT",line,true)) {
 		strcpy(input_line,line.c_str());
 		line.erase();
 		ParseLine(input_line);
 	}
+	puts("DOS_Shell::Run(): 3");
 	do {
+		puts("DOS_Shell::Run(): 4");
 		if (bf){
 			if(bf->ReadLine(input_line)) {
 				if (echo) {
@@ -324,7 +329,9 @@ void DOS_Shell::Run(void) {
 			ParseLine(input_line);
 			if (echo && !bf) WriteOut_NoParsing("\n");
 		}
+		puts("DOS_Shell::Run(): 5");
 	} while (!exit);
+	puts("DOS_Shell::Run(): exit");
 }
 
 void DOS_Shell::SyntaxError(void) {
@@ -357,15 +364,19 @@ static char const * const init_line="/INIT AUTOEXEC.BAT";
 
 void SHELL_Init()
 {
+	puts("SHELL_Init(): 0");
 	call_shellstop=CALLBACK_Allocate();
 	/* Setup the startup CS:IP to kill the last running machine when exitted */
 	RealPt newcsip=CALLBACK_RealPointer(call_shellstop);
 	SegSet16(cs,RealSeg(newcsip));
 	reg_ip=RealOff(newcsip);
 
+	puts("SHELL_Init(): 1");
 	CALLBACK_Setup(call_shellstop,shellstop_handler,CB_IRET,"shell stop");
+	puts("SHELL_Init(): 2");
 	PROGRAMS_MakeFile("COMMAND.COM",SHELL_ProgramStart);
 
+	puts("SHELL_Init(): 3");
 	/* Now call up the shell for the first time */
 	Bit16u psp_seg=DOS_FIRST_SHELL;
 	Bit16u env_seg=DOS_FIRST_SHELL+19; //DOS_GetMemory(1+(4096/16))+1;
@@ -373,6 +384,7 @@ void SHELL_Init()
 	SegSet16(ss,stack_seg);
 	reg_sp=2046;
 
+	puts("SHELL_Init(): 4");
 	/* Set up int 24 and psp (Telarium games) */
 	real_writeb(psp_seg+16+1,0,0xea);		/* far jmp */
 	real_writed(psp_seg+16+1,1,real_readd(0,0x24*4));
@@ -381,6 +393,7 @@ void SHELL_Init()
 	/* Set up int 23 to "int 20" in the psp. Fixes what.exe */
 	real_writed(0,0x23*4,((Bit32u)psp_seg<<16));
 
+	puts("SHELL_Init(): 5");
 	/* Setup MCBs */
 	DOS_MCB pspmcb((Bit16u)(psp_seg-1));
 	pspmcb.SetPSPSeg(psp_seg);	// MCB of the command shell psp
@@ -391,6 +404,7 @@ void SHELL_Init()
 	envmcb.SetSize(DOS_MEM_START-env_seg);
 	envmcb.SetType(0x4d);
 
+	puts("SHELL_Init(): 6");
 	/* Setup environment */
 	PhysPt env_write=PhysMake(env_seg,0);
 	MEM_BlockWrite(env_write,path_string,(Bitu)(strlen(path_string)+1));
@@ -402,10 +416,12 @@ void SHELL_Init()
 	env_write+=2;
 	MEM_BlockWrite(env_write,full_name,(Bitu)(strlen(full_name)+1));
 
+	puts("SHELL_Init(): 7");
 	DOS_PSP psp(psp_seg);
 	psp.MakeNew(0);
 	dos.psp(psp_seg);
 
+	puts("SHELL_Init(): 8");
 	/* The start of the filetable in the psp must look like this:
 	 * 01 01 01 00 02
 	 * In order to achieve this: First open 2 files. Close the first and
@@ -419,6 +435,7 @@ void SHELL_Init()
 	DOS_OpenFile("CON",OPEN_READWRITE,&dummy);	/* STDAUX */
 	DOS_OpenFile("CON",OPEN_READWRITE,&dummy);	/* STDPRN */
 
+	puts("SHELL_Init(): 9");
 	psp.SetParent(psp_seg);
 	/* Set the environment */
 	psp.SetEnvironment(env_seg);
@@ -428,15 +445,19 @@ void SHELL_Init()
 	strcpy(tail.buffer,init_line);
 	MEM_BlockWrite(PhysMake(psp_seg,128),&tail,128);
 
+	puts("SHELL_Init(): 10");
 	/* Setup internal DOS Variables */
 	dos.dta(RealMake(psp_seg,0x80));
 	dos.psp(psp_seg);
 
-
+	puts("SHELL_Init(): 11");
 	SHELL_ProgramStart(&first_shell);
+	puts("SHELL_Init(): 12");
 	first_shell->Run();
+	puts("SHELL_Init(): 13");
 	delete first_shell;
 	first_shell = 0;//Make clear that it shouldn't be used anymore
+	puts("SHELL_Init(): 14");
 }
 
 }
