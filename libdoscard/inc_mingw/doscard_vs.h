@@ -57,8 +57,8 @@ int LDC_DLL WinDosCardRun();
 /// Pause/Resume VM.
 void LDC_DLL WinDosCardSetPause(bool paused);
 
-/// Do NOT use this function.
-//void DoNotCallRunner();
+/// Interleaved Mode
+//TODO
 
 /// Try to set capabilities flags.
 int LDC_DLL WinDosCardSetCapabilities(doscard::LDBI_caps flags);

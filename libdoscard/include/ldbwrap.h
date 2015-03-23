@@ -40,13 +40,20 @@ namespace doscard {
 
 /* ****************** DosCard Generic Constants ****************** */
 /// API Version.
-#define LDBWINTVER 3
+#define LDBWINTVER 4
+
+/// Letter index of last wrapper function.
+#define LDBWRAP_LAST_FUNC_L 'R'
+
 /// Number of wrapper functions accessible.
-#define LDBWRAP_FUNCS_Q ((int)('Q'-'A'+1))
+#define LDBWRAP_FUNCS_Q ((int)(LDBWRAP_LAST_FUNC_L-'A'+1))
+
 /// Frameskip absolute maximum.
 #define LDBW_FRAMESKIP_MAX 10
+
 /// Input string buffer size
 #define LDBW_STRINGBUF_SIZE 2048
+
 /// Buffer holds at most this number of samples.
 #define LDBW_SNDBUF_SAMPLES 4096
 
@@ -90,6 +97,9 @@ namespace doscard {
 /// STDIN blocking input.
 #define DOSCRD_TTYIN_BLK 0x400
 
+/// Interleaved mode auto-restart
+#define DOSCRD_ILV_AUTOR 0x800
+
 /// Basic functionality macro.
 #define DOSCRD_CAPS_BASIC	 (	DOSCRD_CAP_MESSG | \
 								DOSCRD_CAP_FILIO | \
@@ -99,7 +109,8 @@ namespace doscard {
 #define DOSCRD_CAPS_STANDARD (	DOSCRD_CAPS_BASIC | \
 								DOSCRD_CAP_VIDEO  | \
 								DOSCRD_CAP_AUDIO  | \
-								DOSCRD_CAP_EVENT  )
+								DOSCRD_CAP_EVENT  | \
+								DOSCRD_ILV_AUTOR  )
 
 /// Macro for headless mode.
 #define DOSCRD_CAPS_HEADLESS (	DOSCRD_CAPS_BASIC | \
@@ -137,6 +148,7 @@ typedef struct SRuntimeData {
 	dosbox::LDB_SoundInfo sound_req;
 	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos,sound_rec;
+	uint32_t interleave;
 } LDBI_RuntimeData;
 
 typedef struct SExtendedData {
@@ -195,6 +207,7 @@ int32_t DCN_GetInstanceExtData(void*,uint64_t);
 int32_t DCO_AddInstanceExtData(void*,uint64_t);
 int32_t DCP_AddInstanceString(void*,uint64_t);
 int32_t DCQ_SetInstancePause(void*,uint64_t);
+int32_t DCR_SetInstanceInterleave(void* ptr, uint64_t len);
 }
 
 } //namespace doscard

@@ -85,8 +85,9 @@ int32_t DCB_CreateInstance(dosbox::LDB_Settings* set)
 	Runtime->sound_pos = 0;
 	Runtime->sound_rec = 0;
 	Runtime->sound_fmt_ok = false;
+	Runtime->interleave = 0;
 	memset(&Runtime->sound_req,0,sizeof(LDB_SoundInfo));
-	return DCM_SetInstanceCaps(NULL,static_cast<uint64_t>(DOSCRD_CAPS_STANDARD));
+	return (DCM_SetInstanceCaps(NULL,static_cast<uint64_t>(DOSCRD_CAPS_STANDARD)));
 }
 
 int32_t DCC_TryDestroyInstance(void)
@@ -180,12 +181,15 @@ int32_t DCJ_AddInstanceEvents(void* ptr, uint64_t len)
 {
 	LDB_UIEvent* pe;
 	FA_TEST;
+	if ((!DOS) || (!Runtime)) return -1;
 	if (len != sizeof(LDB_UIEvent)) return -1;
 	pe = reinterpret_cast<LDB_UIEvent*> (ptr);
 	if (Caps & DOSCRD_CAP_EVENT) {
 		MUTEX_LOCK;
 		Events->insert(Events->begin(),*pe);
 		MUTEX_UNLOCK;
+		if ((Caps & DOSCRD_ILV_AUTOR) && (Runtime->interleave))
+			DOS->SetPause(false);
 	} else {
 		if (pe->t == LDB_UIE_QUIT) DOS->SetQuit();
 	}
@@ -269,8 +273,16 @@ int32_t DCP_AddInstanceString(void* ptr, uint64_t len)
 
 int32_t DCQ_SetInstancePause(void* ptr, uint64_t len)
 {
-	if (!DOS) return -1;
+	if ((!DOS) || (!Runtime)) return -1;
 	DOS->SetPause((len > 0));
+	return 0;
+}
+
+int32_t DCR_SetInstanceInterleave(void* ptr, uint64_t len)
+{
+	if ((!DOS) || (!Runtime)) return -1;
+	Runtime->interleave = static_cast<uint32_t>(len);
+	DOS->SetInterleave(Runtime->interleave);
 	return 0;
 }
 

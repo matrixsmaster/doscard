@@ -2,4 +2,4 @@ LLVM (and clang++) versions tested successfully:
 3.4 (works perfectly so far)
 
 with some uncomfortable glitches:
-3.3 (completely failed to run pagefault, segfaults on mutexed operations)
+3.3 (completely failed to run pagefault, random segfaults on mutexed operations)

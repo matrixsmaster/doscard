@@ -249,6 +249,14 @@ static void SDLoop()
 					PopMachine();
 					break;
 
+				case SDL_SCANCODE_KP_1:
+					ModILeaveActive(-1000);
+					break;
+
+				case SDL_SCANCODE_KP_3:
+					ModILeaveActive(1000);
+					break;
+
 				case SDL_SCANCODE_KP_4:
 					active--;
 					break;
@@ -317,7 +325,6 @@ bool PushMachine()
 		return false;
 	}
 	xnfo(0,6,"Prepared successfully");
-	//card->SetCapabilities(DOSCRD_CAPS_BASIC | DOSCRD_CAP_VIDEO | DOSCRD_CAP_EVENT);
 
 	mach->m = card;
 
@@ -378,6 +385,7 @@ void UpdateMachine(int n)
 		free(outstr);
 	}
 #endif
+
 /*
 	//FIXME
 	uint32_t wrlen = (mach->sound.wr + SNDRING_ONESHOT >= SNDRING_BUFLEN)?
@@ -449,6 +457,17 @@ void PauseActive(bool p)
 	MACH_INBOUND(active);
 	xnfo(0,11,"active = %d, pause req = %hd",active,p);
 	cc[active]->m->SetPause(p);
+}
+
+void ModILeaveActive(int32_t mod)
+{
+	MACH_INBOUND(active);
+	uint32_t r = cc[active]->ileave;
+	if ((int32_t)r + mod < 0) mod = -r;
+	r += mod;
+	xnfo(0,14,"active = %d, mod by %d, result = %u",active,mod,r);
+	cc[active]->ileave = r;
+	cc[active]->m->SetInterleave(r);
 }
 
 int main(int /*argc*/, char** /*argv*/)

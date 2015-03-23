@@ -81,6 +81,8 @@ CDosCard::~CDosCard()
 		SetPause(false);
 		//no break
 	case DOSCRD_RUNNING:
+		SetInterleave(0);
+		SetPause(false);
 		memset(&etmp,0,sizeof(etmp));
 		etmp.t = LDB_UIE_QUIT;
 		PutEvent(etmp);
@@ -308,6 +310,13 @@ void CDosCard::SetPause(bool paused)
 		GenericValue r = phld->engine->runFunction(GFUNCL('Q'),GenArgs(NULL,(paused?1:0)));
 		if ((r.IntVal == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
+	}
+}
+
+void CDosCard::SetInterleave(uint32_t cycles)
+{
+	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
+		GenericValue r = phld->engine->runFunction(GFUNCL('R'),GenArgs(NULL,static_cast<uint32_t>(cycles)));
 	}
 }
 

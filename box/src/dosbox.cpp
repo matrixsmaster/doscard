@@ -1,6 +1,6 @@
 /*
  *  Copyright (C) 2002-2013  The DOSBox Team
- *  Copyright (C) 2013-2014  Dmitry Soloviov
+ *  Copyright (C) 2013-2015  Dmitry Soloviov
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,19 +45,29 @@
 
 namespace dosbox {
 
-CDosBox* myldbi;
+CDosBox* myldbi;	// THE instance (globally available in libdosbox)
 
 void CDosBox::RunMachine()
 {
 	while ((!quit) && (!NormalLoop()));
+	if (interleaved) {
+		loopcount = 1;
+		pause_mode = true;
+	}
 }
 
 Bitu CDosBox::NormalLoop()
 {
 	Bits ret;
-	for(;;) {
-		while (pause_mode) Callback(DBCB_NOPIdle,NULL,DOSBOX_IDLE_LEN);
-		loopcount++;
+	for(;;loopcount++) {
+
+		if ((interleaved) && (loopcount % interleaved == 0))
+			pause_mode = true;
+		while (pause_mode) {
+			Callback(DBCB_NOPIdle,NULL,DOSBOX_IDLE_LEN);
+			if (quit) return 1;
+		}
+
 		if (PIC_RunQueue()) {
 			ret = (*cpudecoder)();
 			if (GCC_UNLIKELY(ret<0)) return 1;
@@ -77,6 +87,7 @@ Bitu CDosBox::NormalLoop()
 			} else break;
 		}
 	}
+
 	if (GCC_UNLIKELY(ticksLocked)) {
 		ticksRemain=5;
 		/* Reset any auto cycle guessing for this frame */
@@ -306,7 +317,9 @@ CDosBox::CDosBox()
 	init_ok = false;
 	myldbi = this;
 	quit = false;
+	loopcount = 1;
 	pause_mode = false;
+	interleaved = 0;
 
 #if C_DEBUG	
 	LOG_StartUp();
@@ -410,6 +423,16 @@ void CDosBox::SetPause(bool paused)
 	pause_mode = paused;
 }
 
+bool CDosBox::GetPause()
+{
+	return pause_mode;
+}
+
+void CDosBox::SetInterleave(uint32_t cycles)
+{
+	interleaved = cycles;
+}
+
 void CDosBox::Execute()
 {
 	LOG_MSG("CDosBox::Execute(): Enter");
@@ -420,10 +443,9 @@ void CDosBox::Execute()
 	LOG_MSG("Compiled with %s %s",COMPILERNAME,BUILDATE);
 	LOG_MSG("CDosBox::Execute(): Initializing subsystems...");
 	Init();
-	loopcount = 0;
 	LOG_MSG("CDosBox::Execute(): Run!");
 	SHELL_Init();
-	LOG_MSG("CDosBox::Execute(): loopcount = %lu",loopcount);
+	//LOG_MSG("CDosBox::Execute(): loopcount = %lu",loopcount);
 	Clear();
 	LOG_MSG("CDosBox::Execute(): Exit");
 }

@@ -32,7 +32,7 @@
 /* ****************** DosCard Generic Constants ****************** */
 
 #define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.10"
+#define VERSIONSTR "0.0.11"
 #define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 /* ****************** DosCard data types ****************** */
@@ -101,6 +101,7 @@ typedef struct SRuntimeData {
 	dosbox::LDB_SoundInfo sound_req;
 	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos,sound_rec;
+	uint32_t interleave;
 } LDBI_RuntimeData;
 
 typedef struct SExtendedData {

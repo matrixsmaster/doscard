@@ -76,6 +76,8 @@ CDosCard::~CDosCard()
 		SetPause(false);
 		//no break
 	case DOSCRD_RUNNING:
+		SetInterleave(0);
+		SetPause(false);
 		memset(&etmp,0,sizeof(etmp));
 		etmp.t = LDB_UIE_QUIT;
 		PutEvent(etmp);
@@ -192,6 +194,12 @@ void CDosCard::SetPause(bool paused)
 		if ((DCQ_SetInstancePause(NULL,(paused?1:0)) == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
 	}
+}
+
+void CDosCard::SetInterleave(uint32_t cycles)
+{
+	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED))
+		DCR_SetInstanceInterleave(NULL,static_cast<uint64_t>(cycles));
 }
 
 void CDosCard::DoNotCallRunner()

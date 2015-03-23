@@ -48,6 +48,7 @@ private:
 	bool init_ok;
 	uint64_t loopcount;
 	bool pause_mode;
+	uint32_t interleaved;
 
 public:
 	CDosBox();
@@ -64,6 +65,8 @@ public:
 	inline LDB_Settings* GetConfig() { return config->GetSettings(); }
 	void SetQuit();
 	void SetPause(bool paused);
+	bool GetPause();
+	void SetInterleave(uint32_t cycles);
 
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;

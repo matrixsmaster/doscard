@@ -65,7 +65,7 @@
 
 #define DEFAULTLIBNAME "libdbwrap.bc"
 #define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.10"
+#define VERSIONSTR "0.0.11"
 #define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
 
 namespace doscard {
@@ -134,6 +134,9 @@ public:
 
 	/// Pause/Resume VM.
 	void SetPause(bool paused);
+
+	/// Set Interleaved mode cycles interval.
+	void SetInterleave(uint32_t cycles);
 
 	/// Do NOT use this function.
 	void DoNotCallRunner();
