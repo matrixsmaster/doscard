@@ -84,6 +84,11 @@ void WinDosCardSetPause(bool paused)
 	if (g_card) return (g_card->SetPause(paused));
 }
 
+void LDC_DLL WinDosCardSetInterleave(uint32_t cycles)
+{
+	if (g_card) return (g_card->SetInterleave(cycles));
+}
+
 int WinDosCardSetCapabilities(doscard::LDBI_caps flags)
 {
 	if (g_card) return (g_card->SetCapabilities(flags));

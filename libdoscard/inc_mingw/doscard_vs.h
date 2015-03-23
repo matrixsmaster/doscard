@@ -57,8 +57,8 @@ int LDC_DLL WinDosCardRun();
 /// Pause/Resume VM.
 void LDC_DLL WinDosCardSetPause(bool paused);
 
-/// Interleaved Mode
-//TODO
+/// Interleaved mode setting.
+void LDC_DLL WinDosCardSetInterleave(uint32_t cycles);
 
 /// Try to set capabilities flags.
 int LDC_DLL WinDosCardSetCapabilities(doscard::LDBI_caps flags);

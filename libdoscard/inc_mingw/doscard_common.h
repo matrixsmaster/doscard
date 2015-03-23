@@ -29,17 +29,10 @@
 #include "keyboard.h"
 #include "ldbconf.h"
 
-/* ****************** DosCard Generic Constants ****************** */
-
-#define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.11"
-#define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
-
-/* ****************** DosCard data types ****************** */
-
-namespace dosbox {
 
 /* ****************** Events Pipe Data Structures ****************** */
+
+namespace dosbox {
 
 enum LDB_UIEventE {
 	LDB_UIE_NONE = 0,
@@ -72,51 +65,10 @@ typedef struct {
 
 } // namespace dosbox
 
-namespace doscard {
 
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL,
-	DOSCRD_PAUSED
-};
+/* ****************** DosCard data types ****************** */
 
-typedef uint32_t LDBI_caps;
+#include "..\include\doscard_types.h"
 
-typedef struct SRuntimeData {
-	bool on;
-	uint16_t lcdw,lcdh;
-	uint64_t sndsize;
-	struct timespec* clkres;
-	uint32_t* clkbeg;
-	uint8_t disp_fsm;
-	uint32_t frame_cnt;
-	bool frame_dirty;
-	uint8_t frameskip_cnt;
-	uint32_t* framebuf;		//FIXME: Use Screen instead!
-//	uint32_t crc;
-	dosbox::LDB_SoundInfo sound_req;
-	bool sound_fmt_ok;
-	uint32_t sound_avail,sound_pos,sound_rec;
-	uint32_t interleave;
-} LDBI_RuntimeData;
-
-typedef struct SExtendedData {
-	//TODO
-} LDBI_ExtData;
-
-typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
-typedef std::vector<std::string> LDBI_MesgVec;
-typedef std::vector<LDBI_ExtData> LDBI_EDFIFO;
-typedef int16_t LDBI_SndSample;
-
-//Fillers
-typedef int DCPHolder;
-typedef std::vector<std::string> DCArgs;
-
-} // namespace doscard
 
 #endif /* DOSCARD_COMMON_H_ */

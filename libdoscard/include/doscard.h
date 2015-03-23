@@ -60,49 +60,9 @@
 #include <string>
 #include <stdarg.h>
 #include "ldbwrap.h"
-
-/* ****************** DosCard Generic Constants ****************** */
-
-#define DEFAULTLIBNAME "libdbwrap.bc"
-#define VERSTRMAXLEN 1536
-#define VERSIONSTR "0.0.11"
-#define VERINFOTEMPL "libDosCard ver. %s build %s\nCompiled with %s on %s\nwrapper: %s"
+#include "doscard_types.h"
 
 namespace doscard {
-
-/* ****************** DosCard data types ****************** */
-
-enum EDOSCRDState {
-	DOSCRD_NOT_READY = 0,
-	DOSCRD_LOADED,
-	DOSCRD_INITED,
-	DOSCRD_RUNNING,
-	DOSCRD_SHUTDOWN,
-	DOSCRD_LOADFAIL,
-	DOSCRD_PAUSED
-};
-
-#ifdef DOSCARD_MT_SOURCE
-
-typedef std::vector<llvm::Function*> DCFuncs;
-
-typedef struct {
-	llvm::LLVMContext* context;
-	llvm::Module* module;
-	llvm::EngineBuilder* engbld;
-	llvm::ExecutionEngine* engine;
-	DCFuncs* funcs;
-} DCPHolder;
-
-typedef std::vector<llvm::GenericValue> DCArgs;
-
-#else
-
-//Fillers
-typedef int DCPHolder;
-typedef std::vector<std::string> DCArgs;
-
-#endif
 
 /* ****************** DosCard Main Class Definition ****************** */
 
