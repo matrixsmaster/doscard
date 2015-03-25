@@ -19,6 +19,9 @@
 #include "doscard.h"
 #include "doscard-head.h"
 
+//Check VM state is active
+#define VMACTIVE ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED))
+
 //TODO: make it work :)
 //#define CHECK_INSTANCE(X) if (instance > 0) return (X)
 //#define CHECK_INSTANCE	  if (instance > 0) return
@@ -138,12 +141,19 @@ bool CDosCard::LoadFunctions()
 
 EDOSCRDState CDosCard::GetCurrentState()
 {
+	if ((state == DOSCRD_INITED) || VMACTIVE) {
+		LDBI_RuntimeData dat;
+		if (DCG_GetInstanceRuntime(&dat,sizeof(dat)) == 0) {
+			if (dat.paused) state = DOSCRD_PAUSED;
+			else if (dat.on) state = DOSCRD_RUNNING;
+		}
+	}
 	return state;
 }
 
 LDB_Settings* CDosCard::GetSettings()
 {
-	if ((state == DOSCRD_INITED) || (state == DOSCRD_RUNNING)) {
+	if ((state == DOSCRD_INITED) || VMACTIVE) {
 		LDB_Settings set;
 		if (DCE_GetInstanceSettings(&set) == 0) {
 			if (!settings) {
@@ -164,7 +174,7 @@ char* CDosCard::GetVersionStringSafe()
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
-	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return false;
+	if ((state != DOSCRD_INITED) && (!VMACTIVE)) return false;
 	if (DCF_SetInstanceSettings(pset) != 0) return false;
 	return true;
 }
@@ -190,7 +200,7 @@ int CDosCard::Run()
 
 void CDosCard::SetPause(bool paused)
 {
-	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
+	if (VMACTIVE) {
 		if ((DCQ_SetInstancePause(NULL,(paused?1:0)) == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
 	}
@@ -198,7 +208,7 @@ void CDosCard::SetPause(bool paused)
 
 void CDosCard::SetInterleave(uint32_t cycles)
 {
-	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED))
+	if (VMACTIVE)
 		DCR_SetInstanceInterleave(NULL,static_cast<uint64_t>(cycles));
 }
 
@@ -212,7 +222,7 @@ void CDosCard::DoNotCallRunner()
 
 int CDosCard::SetCapabilities(LDBI_caps flags)
 {
-	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return -1;
+	if ((state != DOSCRD_INITED) && (!VMACTIVE)) return -1;
 	uint64_t caps = static_cast<uint64_t> (flags);
 	if (DCM_SetInstanceCaps(NULL,caps) != 0) return -1;
 	return 0;
@@ -221,7 +231,7 @@ int CDosCard::SetCapabilities(LDBI_caps flags)
 uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 {
 	LDBI_RuntimeData buf;
-	if ((state != DOSCRD_RUNNING) || (!w) || (!h)) return NULL;
+	if ((!VMACTIVE) || (!w) || (!h)) return NULL;
 	if (DCG_GetInstanceRuntime(&buf,sizeof(buf)) != 0) {
 		verb("GetFramebuffer(): Unable to collect runtime data\n");
 		return NULL;
@@ -242,13 +252,13 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 {
-	if (state != DOSCRD_RUNNING) return;
+	if (!VMACTIVE) return;
 	DCJ_AddInstanceEvents(&e,sizeof(e));
 }
 
 void CDosCard::PutString(char* str)
 {
-	if (state != DOSCRD_RUNNING) return;
+	if (!VMACTIVE) return;
 	uint64_t l = 0;
 	if (str) l = static_cast<uint64_t> (strlen(str));
 	DCP_AddInstanceString(str,l);
@@ -256,7 +266,7 @@ void CDosCard::PutString(char* str)
 
 LDBI_MesgVec* CDosCard::GetMessages()
 {
-	if (state != DOSCRD_RUNNING) return NULL;
+	if (!VMACTIVE) return NULL;
 	DCK_GetInstanceMessages(&msgbuff,sizeof(void*));
 	return &msgbuff;
 }
@@ -264,8 +274,7 @@ LDBI_MesgVec* CDosCard::GetMessages()
  bool CDosCard::GetSoundFormat(dosbox::LDB_SoundInfo* format)
 {
 	LDBI_RuntimeData buf;
-	if (!format) return false;
-	if ((state != DOSCRD_RUNNING) && (state != DOSCRD_PAUSED)) return false;
+	if ((!format) || (!VMACTIVE)) return false;
 	if (DCG_GetInstanceRuntime(&buf,sizeof(buf)) != 0) {
 		verb("GetSoundFormat(): Unable to collect runtime data\n");
 		return false;

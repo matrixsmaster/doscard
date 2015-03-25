@@ -50,19 +50,24 @@ CDosBox* myldbi;	// THE instance (globally available in libdosbox)
 void CDosBox::RunMachine()
 {
 	while ((!quit) && (!NormalLoop()));
+#if 0
 	if (interleaved) {
 		loopcount = 1;
 		pause_mode = true;
 	}
+#endif
 }
 
 Bitu CDosBox::NormalLoop()
 {
 	Bits ret;
-	for(;;loopcount++) {
+	for(;;) {
+		loopcount++;
 
-		if ((interleaved) && (loopcount % interleaved == 0))
+		if ((interleaved) && (loopcount % interleaved == 0)) {
 			pause_mode = true;
+			//printf("DEBUG: Interleave mode: burst complete, loopcount = %lu\n",loopcount);
+		}
 		while (pause_mode) {
 			Callback(DBCB_NOPIdle,NULL,DOSBOX_IDLE_LEN);
 			if (quit) return 1;

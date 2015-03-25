@@ -180,11 +180,14 @@ static void DrawUI()
 			tmp.h -= 2;
 #endif
 			if (k < cc.size()) {
+				mach = cc[k];
 				if (k == active) {
-					SDL_SetRenderDrawColor(sdl.ren,0,255,0,255);
+					if (mach->m->GetCurrentState() == DOSCRD_PAUSED)
+						SDL_SetRenderDrawColor(sdl.ren,255,255,0,255);
+					else
+						SDL_SetRenderDrawColor(sdl.ren,0,255,0,255);
 					SDL_RenderFillRect(sdl.ren,&cur);
 				}
-				mach = cc[k];
 				if (mach->frame)
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
 				if (sdl.fnt) {
@@ -428,7 +431,8 @@ void XS_AudioCallback(void* userdata, uint8_t* stream, int len)
 void AddMachineEvents(int n, SDL_Event e)
 {
 	MACH_INBOUND(n);
-	if (cc[n]->m->GetCurrentState() != DOSCRD_RUNNING) return;
+	EDOSCRDState mst = cc[n]->m->GetCurrentState();
+	if ((mst != DOSCRD_RUNNING) && (mst != DOSCRD_PAUSED)) return;
 	unsigned int i;
 	LDB_UIEvent mye;
 	memset(&mye,0,sizeof(mye));

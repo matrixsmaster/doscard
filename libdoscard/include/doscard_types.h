@@ -75,6 +75,7 @@ typedef struct SRuntimeData {
 	bool sound_fmt_ok;
 	uint32_t sound_avail,sound_pos,sound_rec;
 	uint32_t interleave;
+	bool paused;
 } LDBI_RuntimeData;
 
 typedef struct SExtendedData {

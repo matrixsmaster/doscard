@@ -23,6 +23,9 @@
 //Get function by Letter Macro
 #define GFUNCL(x) phld->funcs->at(x - 'A')
 
+//Check VM state is active
+#define VMACTIVE ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED))
+
 using namespace llvm;
 
 namespace doscard {
@@ -251,12 +254,20 @@ DCArgs CDosCard::GenArgs(void* ptr, uint64_t len)
 
 EDOSCRDState CDosCard::GetCurrentState()
 {
+	if ((state == DOSCRD_INITED) || VMACTIVE) {
+		LDBI_RuntimeData dat;
+		GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&dat,sizeof(dat)));
+		if (r.IntVal == 0) {
+			if (dat.paused) state = DOSCRD_PAUSED;
+			else if (dat.on) state = DOSCRD_RUNNING;
+		}
+	}
 	return state;
 }
 
 LDB_Settings* CDosCard::GetSettings()
 {
-	if ((state == DOSCRD_INITED) || (state == DOSCRD_RUNNING)) {
+	if ((state == DOSCRD_INITED) || VMACTIVE) {
 		LDB_Settings set;
 		GenericValue r = phld->engine->runFunction(GFUNCL('E'),GenArgs(&set));
 		if (r.IntVal == 0) {
@@ -278,7 +289,7 @@ char* CDosCard::GetVersionStringSafe()
 bool CDosCard::ApplySettings(LDB_Settings* pset)
 {
 	if (!pset) return false;
-	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return false;
+	if ((state != DOSCRD_INITED) && (!VMACTIVE)) return false;
 	GenericValue r = phld->engine->runFunction(GFUNCL('F'),GenArgs(pset));
 	if (r.IntVal != 0) return false;
 	return true;
@@ -306,7 +317,7 @@ int CDosCard::Run()
 
 void CDosCard::SetPause(bool paused)
 {
-	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
+	if (VMACTIVE) {
 		GenericValue r = phld->engine->runFunction(GFUNCL('Q'),GenArgs(NULL,(paused?1:0)));
 		if ((r.IntVal == 0) && (paused != (state == DOSCRD_PAUSED)))
 			state = (state == DOSCRD_RUNNING)? DOSCRD_PAUSED:DOSCRD_RUNNING;
@@ -315,7 +326,7 @@ void CDosCard::SetPause(bool paused)
 
 void CDosCard::SetInterleave(uint32_t cycles)
 {
-	if ((state == DOSCRD_RUNNING) || (state == DOSCRD_PAUSED)) {
+	if (VMACTIVE) {
 		GenericValue r = phld->engine->runFunction(GFUNCL('R'),GenArgs(NULL,static_cast<uint32_t>(cycles)));
 	}
 }
@@ -330,7 +341,7 @@ void CDosCard::DoNotCallRunner()
 
 int CDosCard::SetCapabilities(LDBI_caps flags)
 {
-	if ((state != DOSCRD_INITED) && (state != DOSCRD_RUNNING)) return -1;
+	if ((state != DOSCRD_INITED) && (!VMACTIVE)) return -1;
 	uint64_t caps = static_cast<uint64_t> (flags);
 	GenericValue r = phld->engine->runFunction(GFUNCL('M'),GenArgs(NULL,caps));
 	if (r.IntVal != 0) return -1;
@@ -340,7 +351,7 @@ int CDosCard::SetCapabilities(LDBI_caps flags)
 uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 {
 	LDBI_RuntimeData buf;
-	if ((state != DOSCRD_RUNNING) || (!w) || (!h)) return NULL;
+	if ((!VMACTIVE) || (!w) || (!h)) return NULL;
 	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
 	if (r.IntVal != 0) {
 		verb("GetFramebuffer(): Unable to collect runtime data\n");
@@ -362,13 +373,13 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)
 {
-	if (state != DOSCRD_RUNNING) return;
+	if (!VMACTIVE) return;
 	GenericValue r = phld->engine->runFunction(GFUNCL('J'),GenArgs(&e,sizeof(e)));
 }
 
 void CDosCard::PutString(char* str)
 {
-	if (state != DOSCRD_RUNNING) return;
+	if (!VMACTIVE) return;
 	uint64_t l = 0;
 	if (str) l = static_cast<uint64_t> (strlen(str));
 	GenericValue r = phld->engine->runFunction(GFUNCL('P'),GenArgs(str,l));
@@ -376,7 +387,7 @@ void CDosCard::PutString(char* str)
 
 LDBI_MesgVec* CDosCard::GetMessages()
 {
-	if (state != DOSCRD_RUNNING) return NULL;
+	if (!VMACTIVE) return NULL;
 	GenericValue r = phld->engine->runFunction(GFUNCL('K'),GenArgs(&msgbuff,sizeof(void*)));
 	return &msgbuff;
 }
@@ -384,8 +395,7 @@ LDBI_MesgVec* CDosCard::GetMessages()
  bool CDosCard::GetSoundFormat(dosbox::LDB_SoundInfo* format)
 {
 	LDBI_RuntimeData buf;
-	if (!format) return false;
-	if ((state != DOSCRD_RUNNING) && (state != DOSCRD_PAUSED)) return false;
+	if ((!format) || (!VMACTIVE)) return false;
 	GenericValue r = phld->engine->runFunction(GFUNCL('G'),GenArgs(&buf,sizeof(buf)));
 	if (r.IntVal != 0) {
 		verb("GetSoundFormat(): Unable to collect runtime data\n");
