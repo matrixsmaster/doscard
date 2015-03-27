@@ -61,6 +61,7 @@
 #include <stdarg.h>
 #include "ldbwrap.h"
 #include "doscard_types.h"
+#include "frameproc.h"
 
 namespace doscard {
 
@@ -85,6 +86,9 @@ public:
 
 	/// Try to apply settings provided.
 	bool ApplySettings(dosbox::LDB_Settings* pset);
+
+	/// Apply some video post-process settings.
+	void ApplyPostProcess(LDBI_PostProcess* pset);
 
 	/// Prepare instance for execution.
 	bool Prepare();
@@ -131,9 +135,12 @@ private:
 	uint64_t framebufsz;
 	pthread_t dosthread;
 	LDBI_MesgVec msgbuff;
+	LDBI_PostProcess pproc;
+	uint32_t* procedframe;
 
 	void FreeModule();
 	bool LoadFunctions();
+	uint32_t* DoPostProcess(int* w, int* h);
 	//(void)
 	DCArgs GenArgs(void);
 	//(LDB_Settings*)

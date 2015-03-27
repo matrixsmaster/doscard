@@ -28,6 +28,7 @@
 #include "fake_inttypes.h"
 #include "keyboard.h"
 #include "ldbconf.h"
+#include "frameproc.h"
 
 
 /* ****************** Events Pipe Data Structures ****************** */

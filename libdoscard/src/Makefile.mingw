@@ -35,7 +35,7 @@ LD_LIBS += -Wl,--out-implib,$(LIB).a
 ##LD_LIBS += -Wl,--no-undefined -Wl,--enable-runtime-pseudo-reloc
 
 #XHeadless-MinGW: remove winwrap
-SUPPORTS := doscard-st.o wrapper_w32/winwrap.o
+SUPPORTS := doscard-st.o utils/frameproc.o wrapper_w32/winwrap.o
 
 all:	$(LDBFILE) $(WRAPLIB) $(SUPPORTS)
 	$(CXX) -shared $(CXXFLAGS) -o $(LIB).dll $(SUPPORTS) $(LD_LIBS)

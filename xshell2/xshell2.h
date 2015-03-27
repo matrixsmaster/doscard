@@ -47,6 +47,7 @@ typedef struct SxsSDL {
 	void* fnt;
 #endif
 	SDL_Color txtcol;
+	bool autosize;
 } XSSDL;
 
 typedef struct SxsSndRing {

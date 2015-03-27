@@ -65,9 +65,11 @@ CDosCard::CDosCard(bool autoload)
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
 	framebuffer = NULL;
+	procedframe = NULL;
 	phld = NULL;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
 	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
+	memset(&pproc,0,sizeof(pproc));
 	if (autoload) TryLoad(NULL);
 }
 
@@ -97,6 +99,7 @@ CDosCard::~CDosCard()
 	FreeModule();
 	if (verstr) free(verstr);
 	if (framebuffer) free(framebuffer);
+	if (procedframe) free(procedframe);
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -177,6 +180,12 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 	if ((state != DOSCRD_INITED) && (!VMACTIVE)) return false;
 	if (DCF_SetInstanceSettings(pset) != 0) return false;
 	return true;
+}
+
+void CDosCard::ApplyPostProcess(LDBI_PostProcess* pset)
+{
+	if (pset) memcpy(&pproc,pset,sizeof(pproc));
+	else pproc.on = false;
 }
 
 bool CDosCard::Prepare()

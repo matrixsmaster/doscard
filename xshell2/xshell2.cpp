@@ -32,6 +32,7 @@ static int SDLInit()
 	sdl.wnd = NULL;
 	sdl.ren = NULL;
 	sdl.audio = 0;
+	sdl.autosize = false;
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
 		xnfo(-1,2,"SDL2 Init Error");
 		return 1;
@@ -165,10 +166,17 @@ static void DrawUI()
 	ClearUI();
 	cur = frm;
 	k = 0;
+	int rw = 0;
+	int rh = 0;
+
 	for (i=0; i<w; i++) {
 		for (j=0; j<h; j++) {
 			SDL_SetRenderDrawColor(sdl.ren,255,0,0,255);
 			SDL_RenderDrawRect(sdl.ren,&cur);
+
+			rw = cur.x;
+			rh = cur.y;
+
 			tmp = cur;
 			tmp.x++;
 			tmp.y++;
@@ -188,8 +196,11 @@ static void DrawUI()
 						SDL_SetRenderDrawColor(sdl.ren,0,255,0,255);
 					SDL_RenderFillRect(sdl.ren,&cur);
 				}
-				if (mach->frame)
+				if (mach->frame) {
 					SDL_RenderCopy(sdl.ren,mach->frame,NULL,&tmp);
+					rw += mach->rrect.w;
+					rh += mach->rrect.h;
+				}
 				if (sdl.fnt) {
 #ifdef XSHELL2_TTFOUT
 					char* lin = LinearMachineOutput(k,false);
@@ -222,6 +233,8 @@ static void DrawUI()
 		cur.y = frm.y;
 	}
 	SDL_RenderPresent(sdl.ren);
+	if (sdl.autosize)
+		SDL_SetWindowSize(sdl.wnd,rw,rh);
 }
 
 static void SDLoop()
@@ -276,6 +289,10 @@ static void SDLoop()
 					PauseActive(false);
 					break;
 
+				case SDL_SCANCODE_KP_PERIOD:
+					sdl.autosize ^= true;
+					break;
+
 				default: break;
 				}
 				break;
@@ -308,6 +325,17 @@ bool PushMachine()
 	CDosCard* card = new CDosCard(true);
 	xnfo(0,6,"Machine created");
 
+	LDBI_PostProcess test;
+	test.on = true;
+	test.typ = DOSCRD_VID_COLOR;
+	test.fmt = DOSCRD_VIDFMT_DWORD;
+	test.w = 320;
+	test.h = 240;
+	test.gamma[0] = 0;
+	test.gamma[0] = 0;
+	test.gamma[0] = 0;
+	test.threshold = 120;
+
 	r = 0;
 	if (card->GetCurrentState() != DOSCRD_LOADED) {
 		r = 1;
@@ -334,6 +362,8 @@ bool PushMachine()
 	memset(mach->sound.buf,0,SNDRING_BUFLEN*sizeof(LDBI_SndSample));
 	mach->sound.rd = 0;
 	mach->sound.wr = 0;
+
+	mach->m->ApplyPostProcess(&test);
 
 	cc.push_back(mach);
 	return true;

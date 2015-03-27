@@ -65,6 +65,8 @@ CDosCard::CDosCard(bool autoload)
 {
 	state = DOSCRD_NOT_READY;
 	settings = NULL;
+	framebuffer = NULL;
+	procedframe = NULL;
 	phld = new DCPHolder;
 	phld->context = new LLVMContext();
 	phld->module = NULL;
@@ -73,6 +75,7 @@ CDosCard::CDosCard(bool autoload)
 	phld->funcs = NULL;
 	verstr = reinterpret_cast<char*> (malloc(VERSTRMAXLEN));
 	snprintf(verstr,VERSTRMAXLEN-1,VERINFOTEMPL,VERSIONSTR,BUILDNUMBER,COMPILERNAME,BUILDATE,"<none>");
+	memset(&pproc,0,sizeof(pproc));
 	if (autoload) TryLoad(NULL);
 }
 
@@ -104,6 +107,7 @@ CDosCard::~CDosCard()
 	delete phld;
 	if (verstr) free(verstr);
 	if (framebuffer) free(framebuffer);
+	if (procedframe) free(procedframe);
 }
 
 bool CDosCard::TryLoad(const char* filename)
@@ -225,6 +229,16 @@ bool CDosCard::LoadFunctions()
 	return false;
 }
 
+uint32_t* CDosCard::DoPostProcess(int* w, int* h)
+{
+	if (convert_frame(framebuffer,procedframe,&pproc)) {
+		*w = pproc.w;
+		*h = pproc.h;
+		return procedframe;
+	} else
+		return framebuffer;
+}
+
 DCArgs CDosCard::GenArgs(void)
 {
 	DCArgs ret;
@@ -293,6 +307,12 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 	GenericValue r = phld->engine->runFunction(GFUNCL('F'),GenArgs(pset));
 	if (r.IntVal != 0) return false;
 	return true;
+}
+
+void CDosCard::ApplyPostProcess(LDBI_PostProcess* pset)
+{
+	if (pset) memcpy(&pproc,pset,sizeof(pproc));
+	else pproc.on = false;
 }
 
 bool CDosCard::Prepare()
@@ -368,7 +388,8 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 	}
 	r = phld->engine->runFunction(GFUNCL('H'),GenArgs(framebuffer,sz));
 	framebufsz = sz;
-	return framebuffer;
+	if (pproc.on) return (DoPostProcess(w,h));
+	else return framebuffer;
 }
 
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)

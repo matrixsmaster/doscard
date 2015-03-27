@@ -20,7 +20,7 @@ CXXFLAGS := -g -O2 -fPIC -Wall -Wextra $(INCLUDES) $(DEFINES)
 LD_STAT := -ldbwrap -ldosbox
 LD_BDYN := -lpthread -ldl -lrt
 LD_LIBS := -L. -L$(WRAPSRC) -L$(LDBLOC)/src -Wl,-static $(LD_STAT) -Wl,-Bdynamic $(LD_BDYN)
-SUPPORTS := doscard-st.o
+SUPPORTS := doscard-st.o utils/frameproc.o
 
 all:	$(LDBFILE) $(WRAPLIB) $(SUPPORTS)
 	$(CXX) -shared $(CXXFLAGS) -o $(LIB).so $(SUPPORTS) $(LD_LIBS)

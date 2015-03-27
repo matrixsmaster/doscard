@@ -82,6 +82,28 @@ typedef struct SExtendedData {
 	//TODO
 } LDBI_ExtData;
 
+enum EDOSCRDVidOut {
+	DOSCRD_VID_COLOR = 0,
+	DOSCRD_VID_GS, //grayscale
+	DOSCRD_VID_BW //black-n-white
+};
+
+enum EDOSCRDVidFmt {
+	DOSCRD_VIDFMT_DWORD = 0, //default 24-bit (xRGBx888)
+	DOSCRD_VIDFMT_WORD,		//16bit: R5 G7 B4
+	DOSCRD_VIDFMT_BYTE,		//8bit: grayscale or R2 G4 B2
+	DOSCRD_VIDFMT_BIT		//1bit black/white
+};
+
+typedef struct SPostProcess {
+	bool on;
+	EDOSCRDVidOut typ;
+	EDOSCRDVidFmt fmt;
+	int w,h;
+	float gamma[3];
+	uint8_t threshold;
+} LDBI_PostProcess;
+
 typedef std::vector<dosbox::LDB_UIEvent> LDBI_EventVec;
 typedef std::vector<std::string> LDBI_MesgVec;
 typedef std::vector<LDBI_ExtData> LDBI_EDFIFO;
