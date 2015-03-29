@@ -48,6 +48,9 @@ char* LDC_DLL WinDosCardGetVersionStringSafe();
 /// Try to apply settings provided.
 bool LDC_DLL WinDosCardApplySettings(dosbox::LDB_Settings* pset);
 
+/// Apply some video post-process settings.
+void LDC_DLL WinDosCardApplyPostProcess(doscard::LDBI_PostProcess* pset);
+
 /// Prepare instance for execution.
 bool LDC_DLL WinDosCardPrepare();
 

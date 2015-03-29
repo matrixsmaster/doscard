@@ -67,6 +67,11 @@ bool WinDosCardApplySettings(dosbox::LDB_Settings* pset)
 	else return false;
 }
 
+void WinDosCardApplyPostProcess(LDBI_PostProcess* pset)
+{
+	if (g_card) return (g_card->ApplyPostProcess(pset));
+}
+
 bool WinDosCardPrepare()
 {
 	if (g_card) return (g_card->Prepare());
