@@ -29,7 +29,7 @@ static int max(const int a, const int b)
 
 bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, const LDBI_PostProcess* set)
 {
-	int x,y,z,q,i;
+	int x,y,z,q;
 	uint32_t v;
 	float b,g,r,kx,ky,ex,ey;
 	if ((!src) || (!dst) || (ow < 1) || (oh < 1) || (!set)) return false;
@@ -63,7 +63,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		v |= (uint32_t)(floor(g));
 		v <<= 8;
 		v |= (uint32_t)(floor(b));
-		temp[x] = v | 0xff000000;
+		src[x] = v | 0xff000000;
 	}
 
 	//resize
@@ -75,15 +75,13 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		ex = 0;
 		z = 0;
 		if (kx == 1.0) {
-			memcpy(line,temp+(ow*y),ow*4);
+			memcpy(line,src+(ow*y),ow*4);
 		} else {
 			r = g = b = 0;
 			for (x = 0; x < ow; x++) {
-				v = temp[ow*y+x];
+				v = src[ow*y+x];
+				ex += kx;
 				if (kx > 1) {
-					//for (i = 0; i < floor(kx); i++) line[z++] = v;
-					//ex += kx - floor(kx);
-					ex += kx;
 					while (ex >= 1.0) {
 						line[z++] = v;
 						ex -= 1.0;
@@ -92,7 +90,6 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 					b += v & 0xff;
 					g += (v >> 8) & 0xff;
 					r += (v >> 16) & 0xff;
-					ex += kx;
 					if (ex >= 1.0) {
 						v = (uint32_t)(floor(r / floor(1/kx)));
 						v <<= 8;
@@ -108,27 +105,18 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 			}
 		}
 		if (ky > 1) {
-			//for (i = 0; i < floor(ky); i++) {
-				/*memcpy(dst+(set->w*q),line,set->w*4);
+			ey += ky;
+			while (ey >= 1.0) {
+				memcpy(temp+(set->w*q),line,set->w*4);
 				q++;
-				ey += ky - floor(ky);*/
-				ey += ky;
-				while (ey >= 1.0) {
-					memcpy(dst+(set->w*q),line,set->w*4);
-					q++;
-					ey -= 1.0;
-				}
-			//}
-		} else if (ky < 1)
+				ey -= 1.0;
+			}
+		} else
 			memcpy(temp+(set->w*y),line,set->w*4);
-		else
-			memcpy(dst+(set->w*y),line,set->w*4);
 	}
-	//printf("k = %.0f\tz = %d\n",k,z);
 	if (ky < 1) {
 		ey = 0;
 		q = 0;
-//		memcpy(line,temp,set->w*4);
 		for (y = 1; y < oh; y++) {
 			for (x = 0; x < set->w; x++) {
 				v = temp[set->w*(y-1)+x];
@@ -149,12 +137,33 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 			}
 			ey += ky;
 			if (ey >= 1.0) {
-				memcpy(dst+(set->w*q),line,set->w*4);
+				memcpy(temp+(set->w*q),line,set->w*4);
 				q++;
 				ey -= 1.0;
 			}
 		}
 	}
+
+	//TODO: grayscale & b/w
+	q = set->w * set->h;
+	for (z = 0; (z < q) && (set->typ != DOSCRD_VID_COLOR); z++) {
+		v = temp[z];
+		b = v & 0xff;
+		g = (v >> 8) & 0xff;
+		r = (v >> 16) & 0xff;
+		v = (uint32_t)(floor(r / 2));
+		v <<= 8;
+		v |= (uint32_t)(floor(g / 2));
+		v <<= 8;
+		v |= (uint32_t)(floor(b / 2));
+		temp[z] = v | 0xff000000;
+	}
+
+	//TODO: format conversion
+	q *= 4;
+
+	//copy to dest
+	memcpy(dst,temp,q);
 
 	free(line);
 	free(temp);

@@ -23,16 +23,13 @@ using namespace std;
 using namespace dosbox;
 using namespace doscard;
 
-static XSSDL sdl;
-static DOSMachines cc; //computing center :)
-static int active;
+static XSSDL sdl;				//some SDL2-related runtime data
+static DOSMachines cc;			//our computing center :)
+static int active;				//currently active machine index
+static LDBI_PostProcess ppset;	//post-processing runtime settings (if any)
 
 static int SDLInit()
 {
-	sdl.wnd = NULL;
-	sdl.ren = NULL;
-	sdl.audio = 0;
-	sdl.autosize = false;
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
 		xnfo(-1,2,"SDL2 Init Error");
 		return 1;
@@ -59,8 +56,6 @@ static int SDLInit()
 	sdl.txtcol.r = 127;
 	sdl.txtcol.g = 127;
 	sdl.txtcol.b = 127;
-#else
-	sdl.fnt = NULL;
 #endif
 
 	SDL_SetWindowTitle(sdl.wnd,XSHELL_CAPTION);
@@ -293,6 +288,10 @@ static void SDLoop()
 					sdl.autosize ^= true;
 					break;
 
+				case SDL_SCANCODE_KP_DIVIDE:
+					ppset.on ^= true;
+					break;
+
 				default: break;
 				}
 				break;
@@ -325,17 +324,6 @@ bool PushMachine()
 	CDosCard* card = new CDosCard(true);
 	xnfo(0,6,"Machine created");
 
-	LDBI_PostProcess test;
-	test.on = true;
-	test.typ = DOSCRD_VID_COLOR;
-	test.fmt = DOSCRD_VIDFMT_DWORD;
-	test.w = 320;
-	test.h = 240;
-	test.gamma[0] = 1;
-	test.gamma[1] = 1;
-	test.gamma[2] = 1;
-	test.threshold = 120;
-
 	r = 0;
 	if (card->GetCurrentState() != DOSCRD_LOADED) {
 		r = 1;
@@ -363,7 +351,7 @@ bool PushMachine()
 	mach->sound.rd = 0;
 	mach->sound.wr = 0;
 
-	mach->m->ApplyPostProcess(&test);
+	mach->m->ApplyPostProcess(&ppset);
 
 	cc.push_back(mach);
 	return true;
@@ -504,12 +492,92 @@ void ModILeaveActive(int32_t mod)
 	cc[active]->m->SetInterleave(r);
 }
 
-int main(int /*argc*/, char** /*argv*/)
+bool ParseArgs(int argc, char* argv[])
 {
+	int i;
+	int fsm = 0;
+	float tmpf;
+	for (i = 1; i < argc; i++) {
+		switch (fsm) {
+		case 0:
+			if ((strlen(argv[i]) < 2) || (argv[i][0] != '-')) {
+				printf("Error parsing arguments. '%s' is not a valid switch. Abort.\n",argv[i]);
+				return false;
+			}
+			switch (argv[i][1]) {
+			case 'p': fsm = 1; break;
+			case 'w': fsm = 2; break;
+			case 'h': fsm = 3; break;
+			case 'a': fsm = 4; break;
+			case 'g': fsm = 5; break;
+			default:
+				printf("Unknown switch %c. Skipping...\n",argv[i][1]);
+				fsm = 999;
+				break;
+			}
+			break;
+		case 1:
+			if (atoi(argv[i])) {
+				printf("Post-processing ON.\n");
+				ppset.on = true;
+			} else {
+				printf("Post-processing OFF.\n");
+				ppset.on = false;
+			}
+			fsm = 0;
+			break;
+		case 2:
+			ppset.w = atoi(argv[i]);
+			if (ppset.w < 1) ppset.w = 1;
+			if (ppset.w > 9999) ppset.w = 9999; //unreal
+			printf("Post-process frame width set to %d\n",ppset.w);
+			fsm = 0;
+			break;
+		case 3:
+			ppset.h = atoi(argv[i]);
+			if (ppset.h < 1) ppset.h = 1;
+			if (ppset.h > 9999) ppset.h = 9999; //unreal
+			printf("Post-process frame height set to %d\n",ppset.h);
+			fsm = 0;
+			break;
+		case 4:
+			if (atoi(argv[i])) {
+				printf("Auto window size ON.\n");
+				sdl.autosize = true;
+			} else {
+				printf("Auto window size OFF.\n");
+				sdl.autosize = false;
+			}
+			fsm = 0;
+			break;
+		case 5:
+			tmpf = atof(argv[i]);
+			ppset.gamma[0] = tmpf;
+			ppset.gamma[1] = tmpf;
+			ppset.gamma[2] = tmpf;
+			printf("Post-process gamma correction value = %f\n",tmpf);
+			fsm = 0;
+			break;
+		default:
+			//just trash a parameter
+			fsm = 0;
+			break;
+		}
+	}
+	return true;
+}
+
+int main(int argc, char* argv[])
+{
+	active = 0;
+	memset(&sdl,0,sizeof(sdl));
+	memset(&ppset,0,sizeof(ppset));
+	if (!ParseArgs(argc,argv)) _exit(EXIT_FAILURE);
+
 	LibDosCardInit(1);
 	xnfo(0,1,"ALIVE!");
+
 	if (!PushMachine()) _exit(EXIT_FAILURE);
-	active = 0;
 
 	SDLInit();
 	SDLoop();
