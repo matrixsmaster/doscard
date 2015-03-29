@@ -61,6 +61,7 @@ typedef struct SxsDOSM {
 	SDL_Rect rrect;
 	XSSndRing sound;
 	uint32_t ileave;
+	int cdepth;
 } XSDOSM;
 
 typedef std::vector<XSDOSM*> DOSMachines;

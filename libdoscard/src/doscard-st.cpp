@@ -142,6 +142,16 @@ bool CDosCard::LoadFunctions()
 	return true;
 }
 
+uint32_t* CDosCard::DoPostProcess(int* w, int* h)
+{
+	if (convert_frame(framebuffer,procedframe,*w,*h,&pproc)) {
+		*w = pproc.w;
+		*h = pproc.h;
+		return procedframe;
+	} else
+		return framebuffer;
+}
+
 EDOSCRDState CDosCard::GetCurrentState()
 {
 	if ((state == DOSCRD_INITED) || VMACTIVE) {
@@ -184,7 +194,19 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 
 void CDosCard::ApplyPostProcess(LDBI_PostProcess* pset)
 {
-	if (pset) memcpy(&pproc,pset,sizeof(pproc));
+	if (pset) {
+		memcpy(&pproc,pset,sizeof(pproc));
+		if (!pproc.on) return;
+		uint32_t sz = get_buffer_size(pset);
+		if (sz) {
+			procedframe = reinterpret_cast<uint32_t*> (realloc(procedframe,sz));
+			if (!procedframe) pproc.on = false;
+		} else {
+			if (procedframe) free(procedframe);
+			procedframe = NULL;
+			pproc.on = false;
+		}
+	}
 	else pproc.on = false;
 }
 
@@ -256,7 +278,8 @@ uint32_t* CDosCard::GetFramebuffer(int* w, int* h)
 	}
 	DCH_GetInstanceScreen(framebuffer,sz);
 	framebufsz = sz;
-	return framebuffer;
+	if (pproc.on) return (DoPostProcess(w,h));
+	else return framebuffer;
 }
 
 void CDosCard::PutEvent(dosbox::LDB_UIEvent e)

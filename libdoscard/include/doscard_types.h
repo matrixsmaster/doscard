@@ -89,9 +89,9 @@ enum EDOSCRDVidOut {
 };
 
 enum EDOSCRDVidFmt {
-	DOSCRD_VIDFMT_DWORD = 0, //default 24-bit (xRGBx888)
-	DOSCRD_VIDFMT_WORD,		//16bit: R5 G7 B4
-	DOSCRD_VIDFMT_BYTE,		//8bit: grayscale or R2 G4 B2
+	DOSCRD_VIDFMT_DWORD = 0, //default ARGB8888
+	DOSCRD_VIDFMT_WORD,		//16bit: xRGB1555
+	DOSCRD_VIDFMT_BYTE,		//8bit: grayscale or RGB332
 	DOSCRD_VIDFMT_BIT		//1bit black/white
 };
 

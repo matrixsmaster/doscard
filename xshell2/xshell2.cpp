@@ -236,9 +236,12 @@ static void SDLoop()
 {
 	SDL_Event e;
 	unsigned int i;
-	bool quit = false;
+	bool ppupd, quit = false;
+
 	xnfo(0,5,"Loop begins");
 	do {
+		ppupd = false;
+
 		/* Event Processing*/
 		while (SDL_PollEvent(&e)) {
 
@@ -290,6 +293,16 @@ static void SDLoop()
 
 				case SDL_SCANCODE_KP_DIVIDE:
 					ppset.on ^= true;
+					ppupd = true;
+					break;
+
+				case SDL_SCANCODE_KP_MULTIPLY:
+					switch (ppset.typ) {
+					case DOSCRD_VID_COLOR: ppset.typ = DOSCRD_VID_GS; break;
+					case DOSCRD_VID_GS: ppset.typ = DOSCRD_VID_BW; break;
+					case DOSCRD_VID_BW: ppset.typ = DOSCRD_VID_COLOR; break;
+					}
+					ppupd = true;
 					break;
 
 				default: break;
@@ -306,7 +319,10 @@ static void SDLoop()
 		}
 
 		/* Machines */
-		for (i=0; i<cc.size(); i++) UpdateMachine(i);
+		for (i=0; i<cc.size(); i++) {
+			UpdateMachine(i);
+			if ((i == active) && ppupd) cc[i]->m->ApplyPostProcess(&ppset);
+		}
 
 		/* Update Window*/
 		DrawUI();
@@ -377,6 +393,7 @@ void ClearMachines()
 void UpdateMachine(int n)
 {
 	MACH_INBOUND(n);
+	uint32_t fmt;
 	XSDOSM* mach = cc[n];
 	EDOSCRDState stat = mach->m->GetCurrentState();
 	if (stat == DOSCRD_INITED)
@@ -388,15 +405,33 @@ void UpdateMachine(int n)
 	int w,h;
 	uint32_t* frmbuf = mach->m->GetFramebuffer(&w,&h);
 	if ((w != mach->rrect.w) || (h != mach->rrect.h)) {
+		//create rectangle and destroy old texture
 		mach->rrect.w = w;
 		mach->rrect.h = h;
 		if (mach->frame)
 			SDL_DestroyTexture(mach->frame);
-		mach->frame = SDL_CreateTexture(sdl.ren,SDL_PIXELFORMAT_ARGB8888,
-				SDL_TEXTUREACCESS_STREAMING,w,h);
+		//select format
+		fmt = SDL_PIXELFORMAT_ARGB8888; //by default
+		mach->cdepth = 4;
+		switch (ppset.fmt) {
+		case DOSCRD_VIDFMT_DWORD: break;
+		case DOSCRD_VIDFMT_WORD:
+			fmt = SDL_PIXELFORMAT_RGB555;
+			mach->cdepth = 2;
+			break;
+		case DOSCRD_VIDFMT_BYTE:
+			fmt = SDL_PIXELFORMAT_RGB332;
+			mach->cdepth = 1;
+			break;
+		default:
+			printf("Unsupported frame format!\n");
+			break;
+		}
+		//create
+		mach->frame = SDL_CreateTexture(sdl.ren,fmt,SDL_TEXTUREACCESS_STREAMING,w,h);
 	}
 	if (mach->frame)
-		SDL_UpdateTexture(mach->frame,NULL,frmbuf,mach->rrect.w*sizeof(uint32_t));
+		SDL_UpdateTexture(mach->frame,NULL,frmbuf,mach->rrect.w*mach->cdepth);
 
 #ifndef XSHELL2_TTFOUT
 	//Message Processing
@@ -505,11 +540,14 @@ bool ParseArgs(int argc, char* argv[])
 				return false;
 			}
 			switch (argv[i][1]) {
-			case 'p': fsm = 1; break;
-			case 'w': fsm = 2; break;
-			case 'h': fsm = 3; break;
-			case 'a': fsm = 4; break;
-			case 'g': fsm = 5; break;
+			case 'p': fsm = 1; break;	//post-process on/off
+			case 'w': fsm = 2; break;	//width
+			case 'h': fsm = 3; break;	//height
+			case 'a': fsm = 4; break;	//auto-size on/off
+			case 'g': fsm = 5; break;	//gamma value
+			case 'r': fsm = 6; break;	//gRayscale mode
+			case 'b': fsm = 7; break;	//Black/white threshold
+			case 'f': fsm = 8; break;	//pixel Format
 			default:
 				printf("Unknown switch %c. Skipping...\n",argv[i][1]);
 				fsm = 999;
@@ -558,10 +596,42 @@ bool ParseArgs(int argc, char* argv[])
 			printf("Post-process gamma correction value = %f\n",tmpf);
 			fsm = 0;
 			break;
+		case 6:
+			switch (argv[i][0]) {
+			case 'G': ppset.typ = DOSCRD_VID_GS; puts("Grayscale mode."); break;
+			case 'B': ppset.typ = DOSCRD_VID_BW; puts("Black and white mode."); break;
+			default:
+				printf("Invalid grayscaling flag %c. Skipping...\n",argv[i][0]);
+			}
+			fsm = 0;
+			break;
+		case 7:
+			ppset.threshold = (uint8_t)atoi(argv[i]);
+			printf("Black/white mode threshold set to %hhu\n",ppset.threshold);
+			fsm = 0;
+			break;
+		case 8:
+			switch (atoi(argv[i])) {
+			case 32:
+			case 24:
+				ppset.fmt = DOSCRD_VIDFMT_DWORD;
+				break;
+			case 16:
+				ppset.fmt = DOSCRD_VIDFMT_WORD;
+				break;
+			case 8:
+				ppset.fmt = DOSCRD_VIDFMT_BYTE;
+				break;
+			default:
+				printf("Unsupported bit depth of %s. Aborted.\n",argv[i]);
+				return false;
+			}
+			printf("%s-bit color depth used.\n",argv[i]);
+			fsm = 0;
+			break;
 		default:
 			//just trash a parameter
 			fsm = 0;
-			break;
 		}
 	}
 	return true;

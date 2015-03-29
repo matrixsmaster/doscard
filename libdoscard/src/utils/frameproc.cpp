@@ -31,6 +31,8 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 {
 	int x,y,z,q;
 	uint32_t v;
+	uint16_t* wbuf;
+	uint8_t* bbuf,br,bg,bb,byt;
 	float b,g,r,kx,ky,ex,ey;
 	if ((!src) || (!dst) || (ow < 1) || (oh < 1) || (!set)) return false;
 
@@ -144,23 +146,65 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		}
 	}
 
-	//TODO: grayscale & b/w
+	//apply grayscale and/or b/w
 	q = set->w * set->h;
 	for (z = 0; (z < q) && (set->typ != DOSCRD_VID_COLOR); z++) {
 		v = temp[z];
-		b = v & 0xff;
-		g = (v >> 8) & 0xff;
-		r = (v >> 16) & 0xff;
-		v = (uint32_t)(floor(r / 2));
+		r = v & 0xff;
+		r += (v >> 8) & 0xff;
+		r += (v >> 16) & 0xff;
+		r /= 3;
+		if (r < 0) r = 0;
+		if (r > 255) r = 255;
+		if (set->typ == DOSCRD_VID_BW)
+			r = (r >= set->threshold)? 255:0;
+		v = (uint32_t)(floor(r));
 		v <<= 8;
-		v |= (uint32_t)(floor(g / 2));
+		v |= (uint32_t)(floor(r));
 		v <<= 8;
-		v |= (uint32_t)(floor(b / 2));
+		v |= (uint32_t)(floor(r));
 		temp[z] = v | 0xff000000;
 	}
 
-	//TODO: format conversion
-	q *= 4;
+	//format conversion
+	wbuf = reinterpret_cast<uint16_t*> (temp);
+	bbuf = reinterpret_cast<uint8_t*> (temp);
+	if (set->fmt != DOSCRD_VIDFMT_DWORD) {
+		byt = 0;
+		for (z=0,y=0,x=0; z < q; z++) {
+			v = temp[z];
+			bb = v & 0xff;
+			bg = (v >> 8) & 0xff;
+			br = (v >> 16) & 0xff;
+			switch (set->fmt) {
+			case DOSCRD_VIDFMT_WORD:
+				//rgb555
+				wbuf[y++] = ((br>>3) << 10) | ((bg>>3) << 5) | (bb>>3);
+				break;
+			case DOSCRD_VIDFMT_BYTE:
+				//rgb332
+				bbuf[y++] = ((br>>5) << 5) | ((bg>>5) << 2) | (bb>>6);
+				break;
+			case DOSCRD_VIDFMT_BIT:
+				//bw 1
+				byt |= ((br & 0x80) || (bg & 0x80) || (bb & 0x80))? 1:0;
+				byt <<= 1;
+				if (++x > 7) {
+					bbuf[y++] = byt;
+					byt = 0;
+					x = 0;
+				}
+				break;
+			default: break; //just to make compiler happy :)
+			}
+		}
+	}
+	switch (set->fmt) {
+	case DOSCRD_VIDFMT_DWORD: q *= 4; break;
+	case DOSCRD_VIDFMT_WORD: q *= 2; break;
+	case DOSCRD_VIDFMT_BIT: q /= 8; break;
+	default: break; //just to make compiler happy :)
+	}
 
 	//copy to dest
 	memcpy(dst,temp,q);
