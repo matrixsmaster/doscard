@@ -23,7 +23,8 @@
 
 namespace doscard {
 
-bool convert_frame(uint32_t* src, uint32_t* dst, LDBI_PostProcess* set);
+bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, const LDBI_PostProcess* set);
+uint32_t get_buffer_size(const LDBI_PostProcess* set);
 
 }
 

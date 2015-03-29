@@ -231,7 +231,7 @@ bool CDosCard::LoadFunctions()
 
 uint32_t* CDosCard::DoPostProcess(int* w, int* h)
 {
-	if (convert_frame(framebuffer,procedframe,&pproc)) {
+	if (convert_frame(framebuffer,procedframe,*w,*h,&pproc)) {
 		*w = pproc.w;
 		*h = pproc.h;
 		return procedframe;
@@ -311,7 +311,19 @@ bool CDosCard::ApplySettings(LDB_Settings* pset)
 
 void CDosCard::ApplyPostProcess(LDBI_PostProcess* pset)
 {
-	if (pset) memcpy(&pproc,pset,sizeof(pproc));
+	if (pset) {
+		memcpy(&pproc,pset,sizeof(pproc));
+		if (!pproc.on) return;
+		uint32_t sz = get_buffer_size(pset);
+		if (sz) {
+			procedframe = reinterpret_cast<uint32_t*> (realloc(procedframe,sz));
+			if (!procedframe) pproc.on = false;
+		} else {
+			if (procedframe) free(procedframe);
+			procedframe = NULL;
+			pproc.on = false;
+		}
+	}
 	else pproc.on = false;
 }
 

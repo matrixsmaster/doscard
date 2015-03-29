@@ -331,9 +331,9 @@ bool PushMachine()
 	test.fmt = DOSCRD_VIDFMT_DWORD;
 	test.w = 320;
 	test.h = 240;
-	test.gamma[0] = 0;
-	test.gamma[0] = 0;
-	test.gamma[0] = 0;
+	test.gamma[0] = 1;
+	test.gamma[1] = 1;
+	test.gamma[2] = 1;
 	test.threshold = 120;
 
 	r = 0;
