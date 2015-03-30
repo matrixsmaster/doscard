@@ -150,6 +150,7 @@ int32_t LDBCB_TCK(void* buf, size_t len)
 	if (!Runtime->clkbeg) {
 		Runtime->clkbeg = new uint32_t;
 		*Runtime->clkbeg = static_cast<uint32_t> (clock());
+		*val = 0;
 	} else {
 		*val = static_cast<uint32_t> (clock());
 		*val -= *Runtime->clkbeg;

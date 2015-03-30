@@ -63,6 +63,9 @@ void LDC_DLL WinDosCardSetPause(bool paused);
 /// Interleaved mode setting.
 void LDC_DLL WinDosCardSetInterleave(uint32_t cycles);
 
+/// Try to use as many CPU resources as possible.
+void LDC_DLL WinDosCardUnlockSpeed(bool on);
+
 /// Try to set capabilities flags.
 int LDC_DLL WinDosCardSetCapabilities(doscard::LDBI_caps flags);
 
