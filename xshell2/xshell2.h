@@ -62,6 +62,7 @@ typedef struct SxsDOSM {
 	XSSndRing sound;
 	uint32_t ileave;
 	int cdepth;
+	bool fastfwd;
 } XSDOSM;
 
 typedef std::vector<XSDOSM*> DOSMachines;
@@ -73,6 +74,7 @@ void UpdateMachine(int n);
 void AddMachineEvents(int n, SDL_Event e);
 void PauseActive(bool p);
 void ModILeaveActive(int32_t mod);
+void ToggleUnlockActive();
 void XS_AudioCallback(void* userdata, uint8_t* stream, int len);
 
 #define NSDLRECT(R,A,B,C,D) {R.x = A; R.y = B; R.w = C; R.h = D;}

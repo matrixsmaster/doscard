@@ -21,10 +21,16 @@
 
 namespace doscard {
 
-static int max(const int a, const int b)
+static inline int max(const int a, const int b)
 {
 	if (a > b) return a;
 	else return b;
+}
+
+static inline void bound(float* f, float min, float max)
+{
+	if (*f < min) *f = min;
+	if (*f > max) *f = max;
 }
 
 bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, const LDBI_PostProcess* set)
@@ -50,22 +56,19 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 	for (x = 0; x < ow * oh; x++) {
 		v = src[x];
 		b = set->gamma[2] * (float)(v&0xff);
-		b = (b > 255)? 255:b;
-		b = (b < 0)? 0:b;
+		bound(&b,0,255);
 		v >>= 8;
 		g = set->gamma[1] * (float)(v&0xff);
-		g = (g > 255)? 255:g;
-		g = (g < 0)? 0:g;
+		bound(&g,0,255);
 		v >>= 8;
 		r = set->gamma[0] * (float)(v&0xff);
-		r = (r > 255)? 255:r;
-		r = (r < 0)? 0:r;
+		bound(&r,0,255);
 		v = (uint32_t)(floor(r));
 		v <<= 8;
 		v |= (uint32_t)(floor(g));
 		v <<= 8;
 		v |= (uint32_t)(floor(b));
-		src[x] = v | 0xff000000;
+		src[x] = v | ALPHAVALUE;
 	}
 
 	//resize
@@ -73,7 +76,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 	ky = (float)set->h / (float)oh;
 	ey = 0;
 	q = 0;
-	for (y = 0; y < oh; y++) {
+	for (y = 0; y < oh; y++) /* Scale up and Scale down by X */ {
 		ex = 0;
 		z = 0;
 		if (kx == 1.0) {
@@ -98,9 +101,8 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 						v |= (uint32_t)(floor(g / floor(1/kx)));
 						v <<= 8;
 						v |= (uint32_t)(floor(b / floor(1/kx)));
-						v |= 0xff000000;
+						line[z++] = v | ALPHAVALUE;
 						r = g = b = 0;
-						line[z++] = v;
 						ex -= 1.0;
 					}
 				}
@@ -116,7 +118,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		} else
 			memcpy(temp+(set->w*y),line,set->w*4);
 	}
-	if (ky < 1) {
+	if (ky < 1) /* Scale down by Y */ {
 		ey = 0;
 		q = 0;
 		for (y = 1; y < oh; y++) {
@@ -134,8 +136,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 				v |= (uint32_t)(floor(g / 2));
 				v <<= 8;
 				v |= (uint32_t)(floor(b / 2));
-				v |= 0xff000000;
-				line[x] = v;
+				line[x] = v | ALPHAVALUE;
 			}
 			ey += ky;
 			if (ey >= 1.0) {
@@ -154,8 +155,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		r += (v >> 8) & 0xff;
 		r += (v >> 16) & 0xff;
 		r /= 3;
-		if (r < 0) r = 0;
-		if (r > 255) r = 255;
+		bound(&r,0,255);
 		if (set->typ == DOSCRD_VID_BW)
 			r = (r >= set->threshold)? 255:0;
 		v = (uint32_t)(floor(r));
@@ -163,7 +163,7 @@ bool convert_frame(uint32_t* src, uint32_t* dst, const int ow, const int oh, con
 		v |= (uint32_t)(floor(r));
 		v <<= 8;
 		v |= (uint32_t)(floor(r));
-		temp[z] = v | 0xff000000;
+		temp[z] = v | ALPHAVALUE;
 	}
 
 	//format conversion

@@ -305,6 +305,10 @@ static void SDLoop()
 					ppupd = true;
 					break;
 
+				case SDL_SCANCODE_PAUSE:
+					ToggleUnlockActive();
+					break;
+
 				default: break;
 				}
 				break;
@@ -527,6 +531,17 @@ void ModILeaveActive(int32_t mod)
 	cc[active]->m->SetInterleave(r);
 }
 
+void ToggleUnlockActive()
+{
+	MACH_INBOUND(active);
+	cc[active]->fastfwd ^= true;
+	if (cc[active]->fastfwd)
+		xnfo(0,15,"unlocking speed of #%d",active);
+	else
+		xnfo(0,15,"locking speed of #%d",active);
+	cc[active]->m->UnlockSpeed(cc[active]->fastfwd);
+}
+
 bool ParseArgs(int argc, char* argv[])
 {
 	int i;
@@ -536,7 +551,7 @@ bool ParseArgs(int argc, char* argv[])
 		switch (fsm) {
 		case 0:
 			if ((strlen(argv[i]) < 2) || (argv[i][0] != '-')) {
-				printf("Error parsing arguments. '%s' is not a valid switch. Abort.\n",argv[i]);
+				xnfo(0,16,"Error parsing arguments. '%s' is not a valid switch. Abort.",argv[i]);
 				return false;
 			}
 			switch (argv[i][1]) {
@@ -549,17 +564,17 @@ bool ParseArgs(int argc, char* argv[])
 			case 'b': fsm = 7; break;	//Black/white threshold
 			case 'f': fsm = 8; break;	//pixel Format
 			default:
-				printf("Unknown switch %c. Skipping...\n",argv[i][1]);
+				xnfo(0,16,"Unknown switch %c. Skipping...",argv[i][1]);
 				fsm = 999;
 				break;
 			}
 			break;
 		case 1:
 			if (atoi(argv[i])) {
-				printf("Post-processing ON.\n");
+				xnfo(0,16,"Post-processing ON.");
 				ppset.on = true;
 			} else {
-				printf("Post-processing OFF.\n");
+				xnfo(0,16,"Post-processing OFF.");
 				ppset.on = false;
 			}
 			fsm = 0;
@@ -568,22 +583,22 @@ bool ParseArgs(int argc, char* argv[])
 			ppset.w = atoi(argv[i]);
 			if (ppset.w < 1) ppset.w = 1;
 			if (ppset.w > 9999) ppset.w = 9999; //unreal
-			printf("Post-process frame width set to %d\n",ppset.w);
+			xnfo(0,16,"Post-process frame width set to %d",ppset.w);
 			fsm = 0;
 			break;
 		case 3:
 			ppset.h = atoi(argv[i]);
 			if (ppset.h < 1) ppset.h = 1;
 			if (ppset.h > 9999) ppset.h = 9999; //unreal
-			printf("Post-process frame height set to %d\n",ppset.h);
+			xnfo(0,16,"Post-process frame height set to %d",ppset.h);
 			fsm = 0;
 			break;
 		case 4:
 			if (atoi(argv[i])) {
-				printf("Auto window size ON.\n");
+				xnfo(0,16,"Auto window size ON.");
 				sdl.autosize = true;
 			} else {
-				printf("Auto window size OFF.\n");
+				xnfo(0,16,"Auto window size OFF.");
 				sdl.autosize = false;
 			}
 			fsm = 0;
@@ -593,21 +608,21 @@ bool ParseArgs(int argc, char* argv[])
 			ppset.gamma[0] = tmpf;
 			ppset.gamma[1] = tmpf;
 			ppset.gamma[2] = tmpf;
-			printf("Post-process gamma correction value = %f\n",tmpf);
+			xnfo(0,16,"Post-process gamma correction value = %f",tmpf);
 			fsm = 0;
 			break;
 		case 6:
 			switch (argv[i][0]) {
-			case 'G': ppset.typ = DOSCRD_VID_GS; puts("Grayscale mode."); break;
-			case 'B': ppset.typ = DOSCRD_VID_BW; puts("Black and white mode."); break;
+			case 'G': ppset.typ = DOSCRD_VID_GS; xnfo(0,16,"Grayscale mode."); break;
+			case 'B': ppset.typ = DOSCRD_VID_BW; xnfo(0,16,"Black and white mode."); break;
 			default:
-				printf("Invalid grayscaling flag %c. Skipping...\n",argv[i][0]);
+				xnfo(0,16,"Invalid grayscaling flag %c. Skipping...",argv[i][0]);
 			}
 			fsm = 0;
 			break;
 		case 7:
 			ppset.threshold = (uint8_t)atoi(argv[i]);
-			printf("Black/white mode threshold set to %hhu\n",ppset.threshold);
+			xnfo(0,16,"Black/white mode threshold set to %hhu",ppset.threshold);
 			fsm = 0;
 			break;
 		case 8:
@@ -623,10 +638,10 @@ bool ParseArgs(int argc, char* argv[])
 				ppset.fmt = DOSCRD_VIDFMT_BYTE;
 				break;
 			default:
-				printf("Unsupported bit depth of %s. Aborted.\n",argv[i]);
+				xnfo(0,16,"Unsupported bit depth of %s. Aborted.",argv[i]);
 				return false;
 			}
-			printf("%s-bit color depth used.\n",argv[i]);
+			xnfo(0,16,"%s-bit color depth used.",argv[i]);
 			fsm = 0;
 			break;
 		default:
@@ -639,13 +654,14 @@ bool ParseArgs(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	xnfo(0,1,"ALIVE!");
 	active = 0;
 	memset(&sdl,0,sizeof(sdl));
 	memset(&ppset,0,sizeof(ppset));
 	if (!ParseArgs(argc,argv)) _exit(EXIT_FAILURE);
 
 	LibDosCardInit(1);
-	xnfo(0,1,"ALIVE!");
+	xnfo(0,1,"Library initialized");
 
 	if (!PushMachine()) _exit(EXIT_FAILURE);
 
@@ -656,7 +672,9 @@ int main(int argc, char* argv[])
 	ClearMachines();
 	SDLKill();
 
-	xnfo(0,1,"QUIT");
+	xnfo(0,1,"Calling library exit()...");
 	LibDosCardExit();
+
+	xnfo(0,1,"QUIT");
 	_exit(EXIT_SUCCESS);
 }

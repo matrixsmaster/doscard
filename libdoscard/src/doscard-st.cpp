@@ -243,6 +243,12 @@ void CDosCard::SetInterleave(uint32_t cycles)
 		DCR_SetInstanceInterleave(NULL,static_cast<uint64_t>(cycles));
 }
 
+void CDosCard::UnlockSpeed(bool on)
+{
+	if (VMACTIVE)
+		DCS_UnlockSpeed(NULL,(on)?1:0);
+}
+
 void CDosCard::DoNotCallRunner()
 {
 	verb("Runner() executed!\n");

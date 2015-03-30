@@ -291,4 +291,11 @@ int32_t DCR_SetInstanceInterleave(void* ptr, uint64_t len)
 	return 0;
 }
 
+int32_t DCS_UnlockSpeed(void* ptr, uint64_t len)
+{
+	if ((!DOS) || (!Runtime)) return -1;
+	DOS->UnlockSpeed(len > 0);
+	return 0;
+}
+
 } //namespace doscard

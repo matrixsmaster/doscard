@@ -89,6 +89,8 @@ int32_t DCO_AddInstanceExtData(void*,uint64_t);
 int32_t DCP_AddInstanceString(void*,uint64_t);
 int32_t DCQ_SetInstancePause(void*,uint64_t);
 int32_t DCR_SetInstanceInterleave(void* ptr, uint64_t len);
+int32_t DCS_UnlockSpeed(void* ptr, uint64_t len);
+
 }
 
 } //namespace doscard

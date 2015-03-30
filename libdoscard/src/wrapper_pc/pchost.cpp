@@ -137,7 +137,7 @@ int32_t LDBCB_UIE(void* buf, size_t len)
 	r = Events->size();
 	e = Events->back();
 	Events->pop_back();
-	MUTEX_UNLOCK;			//WTF?!
+	MUTEX_UNLOCK;			//FIXME: WTF?!
 	memcpy(buf,&e,len);
 	return r;
 }
@@ -149,10 +149,10 @@ int32_t LDBCB_TCK(void* buf, size_t len)
 #if USE_WEAK_CLOCKING
 	if (!Runtime->clkbeg) {
 		Runtime->clkbeg = new uint32_t;
-		Runtime->clkbeg = 0;
+		*Runtime->clkbeg = static_cast<uint32_t> (clock());
 	} else {
-		(*Runtime->clkbeg)++;
-		*val = *Runtime->clkbeg;
+		*val = static_cast<uint32_t> (clock());
+		*val -= *Runtime->clkbeg;
 	}
 #else
 	struct timespec r;

@@ -49,6 +49,7 @@ private:
 	uint64_t loopcount;
 	bool pause_mode;
 	uint32_t interleaved;
+	bool was_autoadj;
 
 public:
 	CDosBox();
@@ -67,6 +68,7 @@ public:
 	void SetPause(bool paused);
 	bool GetPause();
 	void SetInterleave(uint32_t cycles);
+	void UnlockSpeed(bool on);
 
 	Bit32u ticksRemain,ticksLast,ticksAdded,ticksScheduled;
 	Bit32s ticksDone;

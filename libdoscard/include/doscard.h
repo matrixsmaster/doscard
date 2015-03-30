@@ -102,6 +102,9 @@ public:
 	/// Set Interleaved mode cycles interval.
 	void SetInterleave(uint32_t cycles);
 
+	/// Try to use as many CPU resources as possible.
+	void UnlockSpeed(bool on);
+
 	/// Do NOT use this function.
 	void DoNotCallRunner();
 

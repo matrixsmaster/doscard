@@ -363,6 +363,13 @@ void CDosCard::SetInterleave(uint32_t cycles)
 	}
 }
 
+void CDosCard::UnlockSpeed(bool on)
+{
+	if (VMACTIVE) {
+		GenericValue r = phld->engine->runFunction(GFUNCL('S'),GenArgs(NULL,(on)?1:0));
+	}
+}
+
 void CDosCard::DoNotCallRunner()
 {
 	verb("Runner() executed!\n");

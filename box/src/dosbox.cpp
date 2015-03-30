@@ -50,12 +50,6 @@ CDosBox* myldbi;	// THE instance (globally available in libdosbox)
 void CDosBox::RunMachine()
 {
 	while ((!quit) && (!NormalLoop()));
-#if 0
-	if (interleaved) {
-		loopcount = 1;
-		pause_mode = true;
-	}
-#endif
 }
 
 Bitu CDosBox::NormalLoop()
@@ -93,7 +87,7 @@ Bitu CDosBox::NormalLoop()
 		}
 	}
 
-	if (GCC_UNLIKELY(ticksLocked)) {
+	if (ticksLocked) {
 		ticksRemain=5;
 		/* Reset any auto cycle guessing for this frame */
 		ticksLast = GetTicks();
@@ -178,28 +172,6 @@ Bitu CDosBox::NormalLoop()
 	}
 	return 0;
 }
-/*
-static void DOSBOX_UnlockSpeed( bool pressed ) {
-	static bool autoadjust = false;
-	if (pressed) {
-		LOG_MSG("Fast Forward ON");
-		ticksLocked = true;
-		if (CPU_CycleAutoAdjust) {
-			autoadjust = true;
-			CPU_CycleAutoAdjust = false;
-			CPU_CycleMax /= 3;
-			if (CPU_CycleMax<1000) CPU_CycleMax=1000;
-		}
-	} else {
-		LOG_MSG("Fast Forward OFF");
-		ticksLocked = false;
-		if (autoadjust) {
-			autoadjust = false;
-			CPU_CycleAutoAdjust = true;
-		}
-	}
-}
-*/
 
 void CDosBox::Init()
 {
@@ -325,6 +297,7 @@ CDosBox::CDosBox()
 	loopcount = 1;
 	pause_mode = false;
 	interleaved = 0;
+	was_autoadj = false;
 
 #if C_DEBUG	
 	LOG_StartUp();
@@ -436,6 +409,27 @@ bool CDosBox::GetPause()
 void CDosBox::SetInterleave(uint32_t cycles)
 {
 	interleaved = cycles;
+}
+
+void CDosBox::UnlockSpeed(bool on)
+{
+	if (on) {
+		LOG_MSG("Fast Forward ON");
+		ticksLocked = true;
+		if (CPU_CycleAutoAdjust) {
+			was_autoadj = true;
+			CPU_CycleAutoAdjust = false;
+			CPU_CycleMax /= 3;
+			if (CPU_CycleMax < 1000) CPU_CycleMax=1000;
+		}
+	} else {
+		LOG_MSG("Fast Forward OFF");
+		ticksLocked = false;
+		if (was_autoadj) {
+			was_autoadj = false;
+			CPU_CycleAutoAdjust = true;
+		}
+	}
 }
 
 void CDosBox::Execute()

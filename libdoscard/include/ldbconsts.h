@@ -30,7 +30,7 @@
 #define LDBWINTVER 4
 
 /// Letter index of last wrapper function.
-#define LDBWRAP_LAST_FUNC_L 'R'
+#define LDBWRAP_LAST_FUNC_L 'S'
 
 /// Number of wrapper functions accessible.
 #define LDBWRAP_FUNCS_Q ((int)(LDBWRAP_LAST_FUNC_L-'A'+1))

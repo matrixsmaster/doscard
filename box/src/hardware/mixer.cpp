@@ -332,12 +332,11 @@ void MixerChannel::FillUp(void) {
 //	SDL_UnlockAudio();
 }
 
-extern bool ticksLocked;
 static inline bool Mixer_irq_important(void)
 {
 	/* In some states correct timing of the irqs is more important then 
 	 * non stuttering audo */
-	return (myldbi->ticksLocked);// || (CaptureState & (CAPTURE_WAVE|CAPTURE_VIDEO)));
+	return (myldbi->ticksLocked);
 }
 
 /* Mix a certain amount of new samples */
