@@ -9,7 +9,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h> //FIXME
 #include "VM86.h"
 #include "VM86bios.h"
 
@@ -48,21 +47,16 @@ void VM86::Reset()
 
 	// Set DL equal to the boot device: 0 for the FD, or 0x80 for the HD. Normally, boot from the FD.
 	// But, if the HD image file is prefixed with @, then boot from the HD
-//	regs8[REG_DL] = ((argc > 3) && (*argv[3] == '@')) ? argv[3]++, 0x80 : 0;
 	regs8[REG_DL] = 0;
 
-	// Open BIOS (file id disk[2]), floppy disk image (disk[1]), and hard disk image (disk[0]) if specified
-//	disk[2] = open("bios", 32898);
-//	printf("DEBUG: bios = %d\n",disk[2]);
+	// Open floppy disk image (disk[1]), and hard disk image (disk[0]) if specified
 	disk[1] = open("fd.raw", 32898);
-	printf("DEBUG: floppy = %d\n",disk[1]);
 	disk[0] = 0;
 
 	// Set CX:AX equal to the hard disk image size, if present
 	CAST(unsigned)regs16[REG_AX] = *disk ? lseek(*disk, 0, 2) >> 9 : 0;
 
 	// Load BIOS image into F000:0100, and set IP to 0100
-//	read(disk[2], regs8 + (reg_ip = 0x100), 0xFF00);
 	memcpy(regs8 + (reg_ip = 0x100), bios, bios_len);
 
 	// Load instruction decoding helper table
