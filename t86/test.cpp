@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -12,9 +12,16 @@
 
 using namespace std;
 
+#define PRNSIZEMACRO(a) cout << "\t" #a " = " << sizeof(a) << endl;
+
 int main(int argc, char* argv[])
 {
 	VM86 vm;
+
+	cout << "Type sizes:" << endl;
+	PRNSIZEMACRO(unsigned);
+	PRNSIZEMACRO(unsigned short);
+	PRNSIZEMACRO(unsigned char);
 
 	cout << "Running..." << endl;
 	vm.Run();

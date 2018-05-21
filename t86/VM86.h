@@ -3,29 +3,45 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
 #ifndef VM86_H_
 #define VM86_H_
 
-#include <time.h>
-#include <sys/timeb.h>
-#include <memory.h>
 #include "VM86conf.h"
+
+#ifndef USRIO
+#include <memory.h>
+#ifdef USE_RAW_OUTPUT
+#include <unistd.h>
+#endif
+#endif
+
+#ifdef MRAM_TEST
+#include "MRAM.h"
+#endif
 
 class VM86 {
 protected:
+#ifndef MRAM_TEST
 	unsigned char mem[RAM_SIZE], io_ports[IO_PORT_COUNT];
-	unsigned char *opcode_stream, *regs8;
+	unsigned char *opcode_stream,*regs8;
+	unsigned short *regs16;
+#else
+	RAM<uch> mem, io_ports;
+	RAMptr<uch> opcode_stream,regs8;
+	RAM<unsigned short> mem_us;
+	RAMptr<unsigned short> regs16;
+#endif
+
 	unsigned char i_rm, i_w, i_reg, i_mod, i_mod_size, i_d, i_reg4bit;
 	unsigned char raw_opcode_id, xlat_opcode_id, extra;
 	unsigned char rep_mode;
 	unsigned char seg_override_en, rep_override_en;
 	unsigned char trap_flag, int8_asap, scratch_uchar, io_hi_lo, *vid_mem_base, spkr_en;
-	unsigned char bios_table_lookup[20][256];
-	unsigned short *regs16, reg_ip, seg_override;
+	unsigned short reg_ip, seg_override;
 	unsigned short file_index, wave_counter;
 	unsigned int op_source, op_dest, rm_addr, op_to_addr, op_from_addr;
 	unsigned int i_data0, i_data1, i_data2;
@@ -33,11 +49,12 @@ protected:
 	unsigned int inst_counter, set_flags_type;
 	unsigned int GRAPHICS_X, GRAPHICS_Y, pixel_colors[16], vmem_ctr;
 	int op_result, disk[NUMVDISKS], scratch_int;
-	time_t clock_buf;
-	struct timeb ms_clock;
+//	time_t clock_buf;
+//	struct timeb ms_clock;
 	unsigned short vid_addr_lookup[VIDEO_RAM_SIZE], cga_colors[4];
 	int pause;
 
+	void OpenDD();
 	void CloseDD();
 	char set_CF(int new_CF);
 	char set_AF(int new_AF);
@@ -48,6 +65,13 @@ protected:
 	void set_opcode(unsigned char opcode);
 	char pc_interrupt(unsigned char interrupt_num);
 	int AAA_AAS(char which_operation);
+	void DecodeRM_REG();
+	void MUL();
+	void IMUL();
+	void DIV();
+	void IDIV();
+	void DAA();
+	void DAS();
 	void audio_callback(void *data, unsigned char *stream, int len);
 	void IEU();
 	void LocalOpcode();
@@ -63,13 +87,13 @@ public:
 	int GetState()		const	{ return pause; }
 };
 
-// Helper macros
+#if MRAM_TEST
+void my_memcpy(RAMptr<uch>* p, const void* src, unsigned len);
+#elif USRIO
+void memcpy(void* dst, const void* src, unsigned len);
+#endif
 
-// Decode mod, r_m and reg fields in instruction
-#define DECODE_RM_REG scratch2_uint = 4 * !i_mod, \
-					  op_to_addr = rm_addr = i_mod < 3 ? SEGREG(seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm], bios_table_lookup[scratch2_uint][i_rm], regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+) : GET_REG_ADDR(i_rm), \
-					  op_from_addr = GET_REG_ADDR(i_reg), \
-					  i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint)
+// Helper macros
 
 // Return memory-mapped register location (offset into mem array) for register #reg_id
 #define GET_REG_ADDR(reg_id) (REGS_BASE + (i_w ? 2 * reg_id : 2 * reg_id + reg_id / 4 & 7))
@@ -81,14 +105,6 @@ public:
 #define OPCODE ;break; case
 #define OPCODE_CHAIN ; /* no break */ case
 
-// [I]MUL/[I]DIV/DAA/DAS/ADC/SBB helpers
-#define MUL_MACRO(op_data_type,out_regs) (set_opcode(0x10), \
-										  out_regs[i_w + 1] = (op_result = CAST(op_data_type)mem[rm_addr] * (op_data_type)*out_regs) >> 16, \
-										  regs16[REG_AX] = op_result, \
-										  set_OF(set_CF(op_result - (op_data_type)op_result)))
-#define DIV_MACRO(out_data_type,in_data_type,out_regs) (scratch_int = CAST(out_data_type)mem[rm_addr]) && !(scratch2_uint = (in_data_type)(scratch_uint = (out_regs[i_w+1] << 16) + regs16[REG_AX]) / scratch_int, scratch2_uint - (out_data_type)scratch2_uint) ? out_regs[i_w+1] = scratch_uint - scratch_int * (*out_regs = scratch2_uint) : pc_interrupt(0)
-#define DAA_DAS(op1,op2,mask,min) set_AF((((scratch2_uint = regs8[REG_AL]) & 0x0F) > 9) || regs8[FLAG_AF]) && (op_result = regs8[REG_AL] op1 6, set_CF(regs8[FLAG_CF] || (regs8[REG_AL] op2 scratch2_uint))), \
-								  set_CF((((mask & 1 ? scratch2_uint : regs8[REG_AL]) & mask) > min) || regs8[FLAG_CF]) && (op_result = regs8[REG_AL] op1 0x60)
 #define ADC_SBB_MACRO(a) OP(a##= regs8[FLAG_CF] +), \
 						 set_CF(regs8[FLAG_CF] && (op_result == op_dest) || (a op_result < a(int)op_dest)), \
 						 set_AF_OF_arith()
@@ -96,6 +112,7 @@ public:
 // Execute arithmetic/logic operations in emulator memory/registers
 #define R_M_OP(dest,op,src) (i_w ? op_dest = CAST(unsigned short)dest, op_result = CAST(unsigned short)dest op (op_source = CAST(unsigned short)src) \
 								 : (op_dest = dest, op_result = dest op (op_source = CAST(unsigned char)src)))
+
 #define MEM_OP(dest,op,src) R_M_OP(mem[dest],op,mem[src])
 #define OP(op) MEM_OP(op_to_addr,op,op_from_addr)
 
@@ -114,8 +131,15 @@ public:
 
 // Reinterpretation cast
 #define CAST(a) *(a*)&
+//#define CAST(a) (a)
 
 // Keyboard driver for console. This may need changing for UNIX/non-UNIX platforms
-#define KEYBOARD_DRIVER read(0, mem + 0x4A6, 1) && (int8_asap = (mem[0x4A6] == 0x1B), pc_interrupt(7))
+#if USE_RAW_OUTPUT && (!USRIO)
+#define KEYBOARD_DRIVER read(0, &(mem[0x4A6]), 1) && (int8_asap = (mem[0x4A6] == 0x1B), pc_interrupt(7))
+#elif USE_RAW_OUTPUT
+#define KEYBOARD_DRIVER read(0, &(mem[0x4A6]), 1) && (int8_asap = (mem[0x4A6] == 0x1B), pc_interrupt(7)) /*FIXME*/
+#else
+#define KEYBOARD_DRIVER 1 /*nothing to do, keyboard disabled because terminal is in blocking mode*/
+#endif
 
 #endif /* VM86_H_ */

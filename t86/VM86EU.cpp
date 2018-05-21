@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -18,7 +18,7 @@ void VM86::IEU()
 		OPCODE_CHAIN 0: // Conditional jump (JAE, JNAE, etc.)
 			// i_w is the invert flag, e.g. i_w == 1 means JNAE, whereas i_w == 0 means JAE
 			scratch_uchar = raw_opcode_id / 2 & 7;
-			reg_ip += (char)i_data0 * (i_w ^ (regs8[bios_table_lookup[TABLE_COND_JUMP_DECODE_A][scratch_uchar]] || regs8[bios_table_lookup[TABLE_COND_JUMP_DECODE_B][scratch_uchar]] || regs8[bios_table_lookup[TABLE_COND_JUMP_DECODE_C][scratch_uchar]] ^ regs8[bios_table_lookup[TABLE_COND_JUMP_DECODE_D][scratch_uchar]]))
+			reg_ip += (char)i_data0 * (i_w ^ (regs8[lookup_table[TABLE_COND_JUMP_DECODE_A][scratch_uchar]] || regs8[lookup_table[TABLE_COND_JUMP_DECODE_B][scratch_uchar]] || regs8[lookup_table[TABLE_COND_JUMP_DECODE_C][scratch_uchar]] ^ regs8[lookup_table[TABLE_COND_JUMP_DECODE_D][scratch_uchar]]))
 		OPCODE 1: // MOV reg, imm
 			i_w = !!(raw_opcode_id & 8);
 			R_M_OP(mem[GET_REG_ADDR(i_reg4bit)], =, i_data0)
@@ -30,7 +30,7 @@ void VM86::IEU()
 			i_w = 1;
 			i_d = 0;
 			i_reg = i_reg4bit;
-			DECODE_RM_REG;
+			DecodeRM_REG();
 			i_reg = extra
 		OPCODE_CHAIN 5: // INC|DEC|JMP|CALL|PUSH
 			if (i_reg < 2) // INC|DEC
@@ -40,9 +40,9 @@ void VM86::IEU()
 				set_OF(op_dest + 1 - i_reg == 1 << (TOP_BIT - 1)),
 				(xlat_opcode_id == 5) && (set_opcode(0x10), 0); // Decode like ADC
 			else if (i_reg != 6) // JMP|CALL
-				i_reg - 3 || R_M_PUSH(regs16[REG_CS]), // CALL (far)
-				i_reg & 2 && R_M_PUSH(reg_ip + 2 + i_mod*(i_mod != 3) + 2*(!i_mod && i_rm == 6)), // CALL (near or far)
-				i_reg & 1 && (regs16[REG_CS] = CAST(short)mem[op_from_addr + 2]), // JMP|CALL (far)
+				(i_reg - 3) || R_M_PUSH(regs16[REG_CS]), // CALL (far)
+				(i_reg & 2) && R_M_PUSH(reg_ip + 2 + i_mod*(i_mod != 3) + 2*(!i_mod && i_rm == 6)), // CALL (near or far)
+				(i_reg & 1) && (regs16[REG_CS] = CAST(short)mem[op_from_addr + 2]), // JMP|CALL (far)
 				R_M_OP(reg_ip, =, mem[op_from_addr]),
 				set_opcode(0x9A); // Decode like CALL
 			else // PUSH
@@ -64,13 +64,17 @@ void VM86::IEU()
 					set_opcode(0x28); // Decode like SUB
 					set_CF(op_result > op_dest)
 				OPCODE 4: // MUL
-					i_w ? MUL_MACRO(unsigned short, regs16) : MUL_MACRO(unsigned char, regs8)
+					MUL();
+//					i_w ? MUL_MACRO(unsigned short, regs16) : MUL_MACRO(unsigned char, regs8)
 				OPCODE 5: // IMUL
-					i_w ? MUL_MACRO(short, regs16) : MUL_MACRO(char, regs8)
+					IMUL();
+//					i_w ? MUL_MACRO(short, regs16) : MUL_MACRO(char, regs8)
 				OPCODE 6: // DIV
-					i_w ? DIV_MACRO(unsigned short, unsigned, regs16) : DIV_MACRO(unsigned char, unsigned short, regs8)
+					DIV();
+//					i_w ? DIV_MACRO(unsigned short, unsigned, regs16) : DIV_MACRO(unsigned char, unsigned short, regs8)
 				OPCODE 7: // IDIV
-					i_w ? DIV_MACRO(short, int, regs16) : DIV_MACRO(char, short, regs8);
+					IDIV();
+//					i_w ? DIV_MACRO(short, int, regs16) : DIV_MACRO(char, short, regs8);
 			}
 		OPCODE 7: // ADD|OR|ADC|SBB|AND|SUB|XOR|CMP AL/AX, immed
 			rm_addr = REGS_BASE;
@@ -113,12 +117,12 @@ void VM86::IEU()
 			if (!i_w) // MOV
 				i_w = 1,
 				i_reg += 8,
-				DECODE_RM_REG,
+				DecodeRM_REG(),
 				OP(=);
 			else if (!i_d) // LEA
 				seg_override_en = 1,
 				seg_override = REG_ZERO,
-				DECODE_RM_REG,
+				DecodeRM_REG(),
 				R_M_OP(mem[op_from_addr], =, rm_addr);
 			else // POP
 				R_M_POP(mem[rm_addr])
@@ -126,7 +130,7 @@ void VM86::IEU()
 			i_mod = i_reg = 0;
 			i_rm = 6;
 			i_data1 = i_data0;
-			DECODE_RM_REG;
+			DecodeRM_REG();
 			MEM_OP(op_from_addr, =, op_to_addr)
 		OPCODE 12: // ROL|ROR|RCL|RCR|SHL|SHR|???|SAR reg/mem, 1/CL/imm (80186)
 			scratch2_uint = SIGN_OF(mem[rm_addr]),
@@ -285,7 +289,8 @@ void VM86::IEU()
 			rep_override_en && rep_override_en++
 		OPCODE 28: // DAA/DAS
 			i_w = 0;
-			extra ? DAA_DAS(-=, >=, 0xFF, 0x99) : DAA_DAS(+=, <, 0xF0, 0x90) // extra = 0 for DAA, 1 for DAS
+//			extra ? DAA_DAS(-=, >=, 0xFF, 0x99) : DAA_DAS(+=, <, 0xF0, 0x90) // extra = 0 for DAA, 1 for DAS
+			extra ? DAS() : DAA();
 		OPCODE 29: // AAA/AAS
 			op_result = AAA_AAS(extra - 1)
 		OPCODE 30: // CBW
@@ -310,7 +315,7 @@ void VM86::IEU()
 			regs8[REG_AH] = scratch_uint
 		OPCODE 37: // LES|LDS reg, r/m
 			i_w = i_d = 1;
-			DECODE_RM_REG;
+			DecodeRM_REG();
 			OP(=);
 			MEM_OP(REGS_BASE + extra, =, rm_addr + 2)
 		OPCODE 38: // INT 3
