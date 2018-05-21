@@ -133,8 +133,25 @@ void OS()
 void OS()
 {
 	LCD_Clear(LCD_COLOR_GREEN);
+	LCD_SetFont(&Font8x8);
 	LCD_DisplayStringLine(LCD_LINE_0,(uint8_t*)"Starting...");
-	VM86_Start();
+
+	VM86_Start(SDRAM_BANK_ADDR);
+
+	char* str;
+	for (int l = 1, p = 0;;) {
+		STM_EVAL_LEDToggle(LED3);
+
+		str = VM86_FullStep();
+		if (!str) continue;
+
+		LCD_DisplayChar(l*8,p*8,str[0]);
+		if (++p >= 30) {
+			p = 0;
+			if (++l >= 40) l = 0;
+		}
+		free(str);
+	}
 }
 
 #endif

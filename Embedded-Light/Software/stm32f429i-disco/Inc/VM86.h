@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2018
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -78,7 +78,7 @@ protected:
 	bool PullInput(int &ch);
 
 public:
-	VM86();
+	VM86(uint32_t base_addr);
 	virtual ~VM86();
 
 	void Reset();
@@ -98,11 +98,17 @@ public:
 #endif
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-	void VM86_Start();
+
+	void VM86_Start(uint32_t base_addr);
+
+	char* VM86_FullStep();
+
+	void VM86_Stop();
+
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* VM86_H_ */

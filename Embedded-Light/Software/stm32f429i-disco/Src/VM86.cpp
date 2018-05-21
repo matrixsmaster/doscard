@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2018
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -11,18 +11,18 @@
 #include "VM86bios.h"
 #include "VM86macro.h"
 #include <unistd.h>
-#include "main.h"
 
-VM86::VM86()
+static VM86* g_VM;
+
+VM86::VM86(uint32_t base_addr)
 {
 	static_assert(sizeof(int) == 4,"Incorrect int type size");
 
-	mem = (uint8_t*)(SDRAM_BANK_ADDR + RAM_SHIFT);
+	mem = (uint8_t*)(base_addr + RAM_SHIFT);
 	io_ports = mem + RAM_SIZE;
 	vid_addr_lookup = (uint16_t*)(io_ports + IO_PORT_COUNT);
 
 	memcpy(cga_colors,cga_colors_table,sizeof(cga_colors));
-//	memset(disk,0,sizeof(disk));
 	for (int i = 0; i < NUMVDISKS; i++) disk[i] = 0;
 	pause = 0;
 
@@ -272,15 +272,7 @@ int VM86::FullStep()
 {
 	if (pause) return pause;
 	// Check the finishing condition. Terminates if CS:IP = 0:0
-//	char abuf[32];
 	opcode_stream = mem + 16 * regs16[REG_CS] + reg_ip;
-//	snprintf(abuf,sizeof(abuf),"0x%02X:0x%02X:0x%02X",regs16[REG_CS],reg_ip,*opcode_stream);
-//	snprintf(abuf,sizeof(abuf),"0x%02X",regs16[REG_CS]);
-//	LCD_DisplayStringLine(LCD_LINE_3,(uint8_t*)abuf);
-//	snprintf(abuf,sizeof(abuf),"0x%02X",reg_ip);
-//	LCD_DisplayStringLine(LCD_LINE_4,(uint8_t*)abuf);
-//	snprintf(abuf,sizeof(abuf),"0x%02X",*opcode_stream);
-//	LCD_DisplayStringLine(LCD_LINE_5,(uint8_t*)abuf);
 	if (opcode_stream == mem) pause = 2;
 	else Step(); // Do an actual step
 	return pause;
@@ -332,48 +324,28 @@ void VM86::PullAudioData(void *data, uint8_t *stream, int len)
 	spkr_en = io_ports[0x61] & 3;
 }
 
-void VM86_Start()
+void VM86_Start(uint32_t base_addr)
 {
-	VM86 vm;
-	vm.Reset();
-	std::string s;
+	g_VM = new VM86(base_addr);
+	g_VM->Reset();
+}
 
-	s = "Reset complete";
+char* VM86_FullStep()
+{
+	if (g_VM->FullStep()) return NULL;
 
-	LCD_Clear(LCD_COLOR_RED);
-	LCD_SetFont(&Font8x8);
-	LCD_DisplayStringLine(LCD_LINE_0,(uint8_t*)s.c_str());
+	std::string s = g_VM->PullTextOutput();
+	if (s.empty()) return NULL;
 
-	s.clear();
+	unsigned ln = (s.length() < IOBUF_MAXLEN)? s.length() : IOBUF_MAXLEN;
+	char* tmp = (char*)malloc(ln+1);
+	if (tmp) memcpy(tmp,s.c_str(),ln);
+	tmp[ln] = 0;
+	return tmp;
+}
 
-//	uint32_t n = 0;
-//	char abuf[32];
-	int l = 1, p = 0;
-
-	do {
-//    	while (STM_EVAL_PBGetState(BUTTON_USER) != Bit_SET) ;
-//    	while (STM_EVAL_PBGetState(BUTTON_USER) != Bit_RESET) ;
-
-		vm.FullStep();
-		s = vm.PullTextOutput();
-		STM_EVAL_LEDToggle(LED3);
-
-//		snprintf(abuf,sizeof(abuf),"%i : %lu",vm.getPause(),n++);
-//		LCD_DisplayStringLine(LCD_LINE_1,(uint8_t*)abuf);
-
-		if (!s.empty()) {
-			LCD_DisplayChar(l*8,p*8,s[0]);
-			if (++p >= 30) {
-				p = 0;
-				if (++l >= 40) l = 0;
-			}
-		}
-	} while (!vm.getPause());
-
-//	LCD_Clear(LCD_COLOR_GREEN);
-//	LCD_DisplayStringLine(LCD_LINE_0,(uint8_t*)s.c_str());
-
-	STM_EVAL_LEDOn(LED4);
-
-	for (;;) ;
+void VM86_Stop()
+{
+	delete g_VM;
+	g_VM = NULL;
 }

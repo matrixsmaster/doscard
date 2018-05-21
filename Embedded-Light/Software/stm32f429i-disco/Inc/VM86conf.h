@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2018
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -14,6 +14,8 @@
 #include "stm32f429i_discovery_sdram.h"
 
 #define RAM_SHIFT 0x200000
+
+#define IOBUF_MAXLEN 16
 
 #define TIMESTEP 5
 #define AUDIOSILENCE 0x80
