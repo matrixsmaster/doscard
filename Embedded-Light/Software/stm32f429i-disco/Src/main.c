@@ -1,8 +1,11 @@
 #include "stm32f4xx.h"
 #include "main.h"
+#include "usbh_hid_core.h"
+#include "usbh_usr.h"
 #include "os.h"
 
-#define IS42S16400J_SIZE             0x400000
+extern USB_OTG_CORE_HANDLE            USB_OTG_Core;
+extern USBH_HOST                      USB_Host;
 
 int main(void)
 { 
@@ -18,6 +21,8 @@ int main(void)
   system_stm32f4xx.c file
   */
   
+//  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+
   /* Initialize LEDs and user-push button mounted on STM32F429I-DISCOVERY */
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
@@ -42,13 +47,19 @@ int main(void)
   FMC_SDRAMWriteProtectionConfig(FMC_Bank2_SDRAM,DISABLE); 
 
   /* Clear whole available SDRAM area */
-  for (uint32_t counter = 0x00; counter < IS42S16400J_SIZE; counter++)
-  {
-	  *(__IO uint16_t*) (SDRAM_BANK_ADDR + 2*counter) = (uint16_t)0x00;
-  }
+  for (uint32_t i = 0x00; i < IS42S16400J_SIZE; i++)
+	  *(__IO uint16_t*) (SDRAM_BANK_ADDR + 2*i) = (uint16_t)0x00;
+
+  USBH_Init(&USB_OTG_Core,
+		  USB_OTG_HS_CORE_ID,
+		  &USB_Host,
+		  NULL,//&USBH_MSC_cb,
+		  &USBH_USR_cb);
+
+  for (;;) USBH_USR_BackgroundProcess();
 
   /* Start our OS */
-  OS();
+  //OS();
 
   for (;;) ; //stop right there
   return 0; //would never happen, but make code analyzers happy

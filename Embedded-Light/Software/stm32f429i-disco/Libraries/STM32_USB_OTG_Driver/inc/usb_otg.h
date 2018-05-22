@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file    FMC_SDRAM/main.h 
+  * @file    usb_otg.h
   * @author  MCD Application Team
-  * @version V1.0.1
-  * @date    11-November-2013
-  * @brief   Header for main.c module
+  * @version V2.1.0
+  * @date    19-March-2012
+  * @brief   OTG Core Header
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -24,22 +24,76 @@
   *
   ******************************************************************************
   */
-  
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __USB_OTG__
+#define __USB_OTG__
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f429i_discovery.h"
-#include "stm32f429i_discovery_sdram.h"
-#include "stm32f429i_discovery_lcd.h"
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-#define IS42S16400J_SIZE             0x400000
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/** @addtogroup USB_OTG_DRIVER
+  * @{
+  */
+  
+/** @defgroup USB_OTG
+  * @brief This file is the 
+  * @{
+  */ 
 
-#endif /* __MAIN_H */
 
+/** @defgroup USB_OTG_Exported_Defines
+  * @{
+  */ 
+
+
+void USB_OTG_InitiateSRP(void);
+void USB_OTG_InitiateHNP(uint8_t state , uint8_t mode);
+//void USB_OTG_Switchback (USB_OTG_CORE_DEVICE *pdev);
+//uint32_t  USB_OTG_GetCurrentState (USB_OTG_CORE_DEVICE *pdev);
+
+/**
+  * @}
+  */ 
+
+
+/** @defgroup USB_OTG_Exported_Types
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+
+/** @defgroup USB_OTG_Exported_Macros
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+/** @defgroup USB_OTG_Exported_Variables
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+/** @defgroup USB_OTG_Exported_FunctionsPrototype
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+
+#endif //__USB_OTG__
+
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

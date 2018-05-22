@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    global_includes.h 
+  * @file    bsp.h
   * @author  MCD Application Team
   * @version V1.0.1
   * @date    11-November-2013
-  * @brief   general includes for all the project files
+  * @brief   Header for bsp module
   ******************************************************************************
   * @attention
   *
@@ -23,33 +23,30 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
-  
+  */
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __GLOBAL_INCLUDES_H__
-#define __GLOBAL_INCLUDES_H__
+#ifndef __BSP_H
+#define __BSP_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "global_conf.h"
-
-#include "stm32f429i_discovery.h"
-#include "stm32f429i_discovery_lcd.h"
-#include "stm32f429i_discovery_ioe.h"
-#include "stm32f429i_discovery_sdram.h"
-#include "stm32f429i_discovery_l3gd20.h"
-
-#include "usbh_usr.h"
+#include "global_includes.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#define LOBYTE(x)  ((uint8_t)(x & 0x00FF))
-#define HIBYTE(x)  ((uint8_t)((x & 0xFF00) >>8)) 
-/* Exported types ------------------------------------------------------------*/
-extern __IO uint32_t USB_Host_Application_Ready;
 /* Exported functions ------------------------------------------------------- */
+uint32_t LowLevel_Init (void);
+void BSP_Pointer_Update(void);
 
-#endif /* __GLOBAL_INCLUDES_H__ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __BSP_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-

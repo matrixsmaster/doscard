@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    global_includes.h 
+  * @file    bsp.c
   * @author  MCD Application Team
   * @version V1.0.1
   * @date    11-November-2013
-  * @brief   general includes for all the project files
+  * @brief   bsp
   ******************************************************************************
   * @attention
   *
@@ -23,33 +23,24 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
-  
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __GLOBAL_INCLUDES_H__
-#define __GLOBAL_INCLUDES_H__
+  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "global_conf.h"
+#include "bsp.h"
 
-#include "stm32f429i_discovery.h"
-#include "stm32f429i_discovery_lcd.h"
-#include "stm32f429i_discovery_ioe.h"
-#include "stm32f429i_discovery_sdram.h"
-#include "stm32f429i_discovery_l3gd20.h"
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+__IO uint32_t TS_Pressed;
+__IO uint32_t TS_Orientation = 0;
+__ALIGN_BEGIN USB_OTG_CORE_HANDLE            USB_OTG_Core __ALIGN_END;
+__ALIGN_BEGIN USBH_HOST                      USB_Host __ALIGN_END;
 
-#include "usbh_usr.h"
+/* Private function prototypes -----------------------------------------------*/
+uint32_t BSP_TSC_Init(void);
+void Alarm_Init(void);
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-#define LOBYTE(x)  ((uint8_t)(x & 0x00FF))
-#define HIBYTE(x)  ((uint8_t)((x & 0xFF00) >>8)) 
-/* Exported types ------------------------------------------------------------*/
-extern __IO uint32_t USB_Host_Application_Ready;
-/* Exported functions ------------------------------------------------------- */
-
-#endif /* __GLOBAL_INCLUDES_H__ */
+/* Private functions ---------------------------------------------------------*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
