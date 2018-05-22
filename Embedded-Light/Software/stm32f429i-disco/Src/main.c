@@ -41,14 +41,17 @@ int main(void)
   /* Disable write protection */
   FMC_SDRAMWriteProtectionConfig(FMC_Bank2_SDRAM,DISABLE); 
 
+  /* Clear whole available SDRAM area */
   for (uint32_t counter = 0x00; counter < IS42S16400J_SIZE; counter++)
   {
 	  *(__IO uint16_t*) (SDRAM_BANK_ADDR + 2*counter) = (uint16_t)0x00;
   }
 
+  /* Start our OS */
   OS();
 
-  return 0; //would never happen
+  for (;;) ; //stop right there
+  return 0; //would never happen, but make code analyzers happy
 }
 
 #ifdef  USE_FULL_ASSERT

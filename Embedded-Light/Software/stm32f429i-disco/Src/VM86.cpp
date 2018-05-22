@@ -12,8 +12,6 @@
 #include "VM86macro.h"
 #include <unistd.h>
 
-static VM86* g_VM;
-
 VM86::VM86(uint32_t base_addr)
 {
 	static_assert(sizeof(int) == 4,"Incorrect int type size");
@@ -322,30 +320,4 @@ void VM86::PullAudioData(void *data, uint8_t *stream, int len)
 		stream[i] = (spkr_en == 3) && CAST(uint16_t,mem[0x4AA]) ? -((54 * wave_counter++ / CAST(uint16_t,mem[0x4AA])) & 1) : AUDIOSILENCE;
 
 	spkr_en = io_ports[0x61] & 3;
-}
-
-void VM86_Start(uint32_t base_addr)
-{
-	g_VM = new VM86(base_addr);
-	g_VM->Reset();
-}
-
-char* VM86_FullStep()
-{
-	if (g_VM->FullStep()) return NULL;
-
-	std::string s = g_VM->PullTextOutput();
-	if (s.empty()) return NULL;
-
-	unsigned ln = (s.length() < IOBUF_MAXLEN)? s.length() : IOBUF_MAXLEN;
-	char* tmp = (char*)malloc(ln+1);
-	if (tmp) memcpy(tmp,s.c_str(),ln);
-	tmp[ln] = 0;
-	return tmp;
-}
-
-void VM86_Stop()
-{
-	delete g_VM;
-	g_VM = NULL;
 }

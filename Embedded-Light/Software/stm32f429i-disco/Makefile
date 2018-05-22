@@ -28,12 +28,13 @@ OPT		:= -O2
  
 CC_DEFS := -DUSE_STDPERIPH_DRIVER -D__thumb2__=1 -DRUN_FROM_FLASH=1 -DUSE_MINI_THREADS
 
-CC_FLAG := $(CHIP) $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer 
-CC_FLAG += -std=gnu99 -mno-sched-prolog -fno-hosted -fmessage-length=0
+CC_FLAG := -std=gnu99 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer 
+CC_FLAG += -mno-sched-prolog -fno-hosted -fmessage-length=0
 CC_FLAG += -Wno-deprecated-declarations -Wno-unused-parameter -Wno-unused-variable
+CC_FLAG += $(CHIP)
 
-CXX_FLAG := $(CHIP) $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer 
-CXX_FLAG += -std=c++11 -fsigned-char
+CXX_FLAG := -std=c++11 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer -fsigned-char 
+CXX_FLAG += $(CHIP)
 
 LD_FLAG := $(CHIP) $(DBG) $(OPT) -L$(DEPSRC) -Wl,--gc-sections
 LD_FLAG += -mcpu=cortex-m4 -static -fwhole-program -Xlinker $(LINKSCR)

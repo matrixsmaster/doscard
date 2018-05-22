@@ -969,6 +969,11 @@ void LCD_DrawMonoPict(const uint32_t *Pict)
   }
 }
 
+__IO uint16_t* LCD_GetCurrentBuffer()
+{
+	return (__IO uint16_t*)CurrentFrameBuffer;
+}
+
 /**
   * @brief  Displays a bitmap picture loaded in the internal Flash.
   * @param  BmpAddress: Bmp picture address in the internal Flash.

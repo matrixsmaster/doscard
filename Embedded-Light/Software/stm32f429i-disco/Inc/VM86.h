@@ -10,20 +10,15 @@
 #ifndef VM86_H_
 #define VM86_H_
 
-#ifdef __cplusplus
 #include <deque>
 #include <string>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-//#include <memory.h>
 #include <unistd.h>
 #include "mthreads.h"
 #include "VM86conf.h"
 
-#ifdef __cplusplus
 class VM86
 {
 protected:
@@ -95,20 +90,5 @@ public:
 	bool PullVideoData(void *data, int len);
 	void PullAudioData(void *data, uint8_t *stream, int len);
 };
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	void VM86_Start(uint32_t base_addr);
-
-	char* VM86_FullStep();
-
-	void VM86_Stop();
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* VM86_H_ */
