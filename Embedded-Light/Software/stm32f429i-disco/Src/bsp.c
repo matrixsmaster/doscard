@@ -27,6 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
+#include "usbh_hid_keybd.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -38,9 +39,17 @@ __ALIGN_BEGIN USB_OTG_CORE_HANDLE            USB_OTG_Core __ALIGN_END;
 __ALIGN_BEGIN USBH_HOST                      USB_Host __ALIGN_END;
 
 /* Private function prototypes -----------------------------------------------*/
-uint32_t BSP_TSC_Init(void);
-void Alarm_Init(void);
 
 /* Private functions ---------------------------------------------------------*/
+
+void USR_KEYBRD_Init()
+{
+	//
+}
+
+void USR_KEYBRD_ProcessData(uint8_t pbuf)
+{
+	STM_EVAL_LEDToggle(LED3);
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -34,6 +34,8 @@
 #include "semphr.h"
 #endif
 
+#include <string.h>
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -159,7 +161,20 @@ void USBH_USR_DeviceSpeedDetected(uint8_t DeviceSpeed)
   */
 void USBH_USR_Device_DescAvailable(void *DeviceDesc)
 {
-	LCD_DisplayStringLine(LCD_LINE_2,(uint8_t*)"Device read!");
+	char buf[90],tmp[4];
+	uint8_t* dsc = (uint8_t*)DeviceDesc;
+	int l = 2;
+	buf[0] = 0;
+	for (int i = 0; i < USB_DEVICE_DESC_SIZE; i++) {
+		snprintf(tmp,sizeof(tmp),"%02X",*(dsc++));
+		strcat(buf,tmp);
+		if (i && !(i%6)) {
+			LCD_DisplayStringLine(LINE(l),(uint8_t*)buf);
+			buf[0] = 0;
+			l++;
+		}
+	}
+	if (strlen(buf)) LCD_DisplayStringLine(LINE(l),(uint8_t*)buf);
 }
 
 /**
@@ -180,7 +195,7 @@ void USBH_USR_Configuration_DescAvailable(USBH_CfgDesc_TypeDef * cfgDesc,
     USBH_InterfaceDesc_TypeDef *itfDesc,
     USBH_EpDesc_TypeDef *epDesc)
 {
-	LCD_DisplayStringLine(LCD_LINE_2,(uint8_t*)"Device read!");
+//	LCD_DisplayStringLine(LCD_LINE_3,(uint8_t*)"Config read!");
 }
 
 /**

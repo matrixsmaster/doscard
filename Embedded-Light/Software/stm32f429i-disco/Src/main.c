@@ -1,6 +1,7 @@
 #include "stm32f4xx.h"
 #include "main.h"
 #include "usbh_hid_core.h"
+#include "usbh_hid_keybd.h"
 #include "usbh_usr.h"
 #include "os.h"
 
@@ -53,10 +54,13 @@ int main(void)
   USBH_Init(&USB_OTG_Core,
 		  USB_OTG_HS_CORE_ID,
 		  &USB_Host,
-		  NULL,//&USBH_MSC_cb,
+		  &HID_KEYBRD_cb,
 		  &USBH_USR_cb);
 
-  for (;;) USBH_USR_BackgroundProcess();
+  for (;;) {
+	  USBH_USR_BackgroundProcess();
+//	  HID_KEYBRD_cb
+  }
 
   /* Start our OS */
   //OS();
