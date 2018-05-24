@@ -1,0 +1,10 @@
+4 Left d-pad: cursor keys (arrow keys)
+4 Right d-pad: character selection
+1 Center key on right d-pad: confirm character
+1 A button on the right of the left d-pad: backspace
+1 A button on the left of the right d-pad: enter
+2 Buttons on the bottom line: space
+3+3 Buttons on the left side: Shift, Ctrl, Alt
+--
+19
++ Power button
