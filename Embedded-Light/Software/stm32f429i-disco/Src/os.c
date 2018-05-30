@@ -24,7 +24,6 @@ void OS_DrawChar(int col, int row, char x)
 	}
 }
 
-#if 0
 void OS()
 {
 	LCD_Clear(LCD_COLOR_GREEN);
@@ -60,10 +59,3 @@ void OS()
 	VM86_Stop();
 	LCD_Clear(LCD_COLOR_RED);
 }
-#else
-void OS()
-{
-	LCD_Clear(LCD_COLOR_BLACK);
-	//
-}
-#endif
