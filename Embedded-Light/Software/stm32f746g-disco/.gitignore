@@ -1,0 +1,7 @@
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+.mxproject
+mx.scratch
