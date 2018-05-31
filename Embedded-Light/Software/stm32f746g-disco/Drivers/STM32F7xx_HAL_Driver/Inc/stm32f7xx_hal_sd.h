@@ -2,11 +2,13 @@
   ******************************************************************************
   * @file    stm32f7xx_hal_sd.h
   * @author  MCD Application Team
+  * @version V1.2.0
+  * @date    30-December-2016
   * @brief   Header file of SD HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -381,8 +383,8 @@ typedef struct
  
 /**
   * @brief  Enable the SD device interrupt.
-  * @param  __HANDLE__ SD Handle  
-  * @param  __INTERRUPT__ specifies the SDMMC interrupt sources to be enabled.
+  * @param  __HANDLE__: SD Handle  
+  * @param  __INTERRUPT__: specifies the SDMMC interrupt sources to be enabled.
   *         This parameter can be one or a combination of the following values:
   *            @arg SDMMC_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
   *            @arg SDMMC_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
@@ -412,8 +414,8 @@ typedef struct
 
 /**
   * @brief  Disable the SD device interrupt.
-  * @param  __HANDLE__ SD Handle   
-  * @param  __INTERRUPT__ specifies the SDMMC interrupt sources to be disabled.
+  * @param  __HANDLE__: SD Handle   
+  * @param  __INTERRUPT__: specifies the SDMMC interrupt sources to be disabled.
   *          This parameter can be one or a combination of the following values:
   *            @arg SDMMC_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
   *            @arg SDMMC_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
@@ -443,8 +445,8 @@ typedef struct
 
 /**
   * @brief  Check whether the specified SD flag is set or not. 
-  * @param  __HANDLE__ SD Handle   
-  * @param  __FLAG__ specifies the flag to check. 
+  * @param  __HANDLE__: SD Handle   
+  * @param  __FLAG__: specifies the flag to check. 
   *          This parameter can be one of the following values:
   *            @arg SDMMC_FLAG_CCRCFAIL: Command response received (CRC check failed)
   *            @arg SDMMC_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
@@ -474,8 +476,8 @@ typedef struct
 
 /**
   * @brief  Clear the SD's pending flags.
-  * @param  __HANDLE__ SD Handle  
-  * @param  __FLAG__ specifies the flag to clear.  
+  * @param  __HANDLE__: SD Handle  
+  * @param  __FLAG__: specifies the flag to clear.  
   *          This parameter can be one or a combination of the following values:
   *            @arg SDMMC_FLAG_CCRCFAIL: Command response received (CRC check failed)
   *            @arg SDMMC_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
@@ -494,8 +496,8 @@ typedef struct
 
 /**
   * @brief  Check whether the specified SD interrupt has occurred or not.
-  * @param  __HANDLE__ SD Handle   
-  * @param  __INTERRUPT__ specifies the SDMMC interrupt source to check. 
+  * @param  __HANDLE__: SD Handle   
+  * @param  __INTERRUPT__: specifies the SDMMC interrupt source to check. 
   *          This parameter can be one of the following values:
   *            @arg SDMMC_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
   *            @arg SDMMC_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
@@ -525,8 +527,8 @@ typedef struct
 
 /**
   * @brief  Clear the SD's interrupt pending bits.
-  * @param  __HANDLE__ SD Handle
-  * @param  __INTERRUPT__ specifies the interrupt pending bit to clear. 
+  * @param  __HANDLE__: SD Handle
+  * @param  __INTERRUPT__: specifies the interrupt pending bit to clear. 
   *          This parameter can be one or a combination of the following values:
   *            @arg SDMMC_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
   *            @arg SDMMC_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt

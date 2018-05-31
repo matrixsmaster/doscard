@@ -68,9 +68,9 @@
 /* #define HAL_I2S_MODULE_ENABLED   */
 /* #define HAL_IWDG_MODULE_ENABLED   */
 /* #define HAL_LPTIM_MODULE_ENABLED   */
-#define HAL_LTDC_MODULE_ENABLED
+/* #define HAL_LTDC_MODULE_ENABLED   */
 #define HAL_QSPI_MODULE_ENABLED
-#define HAL_RNG_MODULE_ENABLED
+/* #define HAL_RNG_MODULE_ENABLED   */
 #define HAL_RTC_MODULE_ENABLED
 #define HAL_SAI_MODULE_ENABLED
 #define HAL_SD_MODULE_ENABLED
@@ -106,7 +106,7 @@
   *        (when HSE is used as system clock source, directly or through the PLL).  
   */
 #if !defined  (HSE_VALUE) 
-  #define HSE_VALUE    ((uint32_t)8000000U) /*!< Value of the External oscillator in Hz */
+  #define HSE_VALUE    ((uint32_t)25000000U) /*!< Value of the External oscillator in Hz */
 #endif /* HSE_VALUE */
 
 #if !defined  (HSE_STARTUP_TIMEOUT)

@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    usbd_ioreq.h
   * @author  MCD Application Team
+  * @version V2.4.2
+  * @date    11-December-2015
   * @brief   Header file for the usbd_ioreq.c file
   ******************************************************************************
   * @attention

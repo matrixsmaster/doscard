@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    usbd_cdc.h
   * @author  MCD Application Team
+  * @version V2.4.2
+  * @date    11-December-2015
   * @brief   header file for the usbd_cdc.c file.
   ******************************************************************************
   * @attention

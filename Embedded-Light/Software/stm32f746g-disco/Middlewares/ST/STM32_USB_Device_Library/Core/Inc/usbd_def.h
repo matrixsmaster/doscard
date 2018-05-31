@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    usbd_def.h
   * @author  MCD Application Team
+  * @version V2.4.2
+  * @date    11-December-2015
   * @brief   General defines for the usb device library 
   ******************************************************************************
   * @attention

@@ -53,9 +53,7 @@
 #include "dma2d.h"
 #include "fatfs.h"
 #include "i2c.h"
-#include "ltdc.h"
 #include "quadspi.h"
-#include "rng.h"
 #include "rtc.h"
 #include "sai.h"
 #include "sdmmc.h"
@@ -122,21 +120,20 @@ int main(void)
   MX_FMC_Init();
   MX_I2C1_Init();
   MX_I2C3_Init();
-  MX_LTDC_Init();
   MX_QUADSPI_Init();
-  MX_RNG_Init();
   MX_RTC_Init();
   MX_SAI2_Init();
   MX_SDMMC1_SD_Init();
-  MX_TIM1_Init();
-  MX_TIM2_Init();
-  MX_TIM3_Init();
-  MX_TIM5_Init();
-  MX_TIM8_Init();
-  MX_TIM12_Init();
-  MX_USART1_UART_Init();
-  MX_USART6_UART_Init();
+//  MX_TIM1_Init();
+//  MX_TIM2_Init();
+//  MX_TIM3_Init();
+//  MX_TIM5_Init();
+//  MX_TIM8_Init();
+//  MX_TIM12_Init();
+
+//  MX_USART6_UART_Init();
   MX_FATFS_Init();
+  MX_USART1_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Transmit(&huart1,(uint8_t*)"TEST1\r\n",7,100);
@@ -202,16 +199,13 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE
-                              |RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 216;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 432;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -240,12 +234,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_RTC
-                              |RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART6
-                              |RCC_PERIPHCLK_SAI2|RCC_PERIPHCLK_I2C1
-                              |RCC_PERIPHCLK_I2C3|RCC_PERIPHCLK_SDMMC1
-                              |RCC_PERIPHCLK_CLK48;
-  PeriphClkInitStruct.PLLSAI.PLLSAIN = 50;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
+                              |RCC_PERIPHCLK_USART6|RCC_PERIPHCLK_SAI2
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C3
+                              |RCC_PERIPHCLK_SDMMC1|RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 100;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
   PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
   PeriphClkInitStruct.PLLSAI.PLLSAIP = RCC_PLLSAIP_DIV2;
@@ -253,8 +246,8 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_4;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
   PeriphClkInitStruct.Sai2ClockSelection = RCC_SAI2CLKSOURCE_PLLSAI;
-  PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
-  PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_HSI;
+  PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
+  PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   PeriphClkInitStruct.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
