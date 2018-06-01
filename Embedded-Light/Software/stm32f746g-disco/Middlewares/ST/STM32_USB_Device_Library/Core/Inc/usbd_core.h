@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    usbd_core.h
   * @author  MCD Application Team
-  * @version V2.4.2
-  * @date    11-December-2015
   * @brief   Header file for usbd_core.c file
   ******************************************************************************
   * @attention

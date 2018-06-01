@@ -57,7 +57,7 @@
 /* USER CODE END FirstSection */
 /* Includes ------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
-
+#include "usart.h"
 /* Extern variables ---------------------------------------------------------*/ 
   
 extern SD_HandleTypeDef hsd1;
@@ -75,6 +75,7 @@ uint8_t BSP_SD_Init(void)
   /* Check if the SD card is plugged in the slot */
   if (BSP_SD_IsDetected() != SD_PRESENT)
   {
+	  HAL_UART_Transmit(&huart1,(uint8_t*)"detect err ",11,100);
     return MSD_ERROR_SD_NOT_PRESENT;
   }
   /* HAL SD initialization */
@@ -85,6 +86,7 @@ uint8_t BSP_SD_Init(void)
     /* Enable wide operation */
     if (HAL_SD_ConfigWideBusOperation(&hsd1, SDMMC_BUS_WIDE_4B) != HAL_OK)
     {
+    	HAL_UART_Transmit(&huart1,(uint8_t*)"conf error ",11,100);
       sd_state = MSD_ERROR;
     }
   }
@@ -123,6 +125,7 @@ uint8_t BSP_SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBloc
 
   if (HAL_SD_ReadBlocks(&hsd1, (uint8_t *)pData, ReadAddr, NumOfBlocks, Timeout) != HAL_OK)
   {
+	  HAL_UART_Transmit(&huart1,(uint8_t*)"HAL SD READ ERROR ",18,100);
     sd_state = MSD_ERROR;
   }
 

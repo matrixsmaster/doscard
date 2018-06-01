@@ -46,13 +46,15 @@
   ******************************************************************************
 */
 #include "fatfs_platform.h"
+#include "usart.h"
 
 uint8_t	BSP_PlatformIsDetected(void) {
   uint8_t status = (uint8_t)0x01;
   /* Check SD card detect pin */
-  if (HAL_GPIO_ReadPin(SD_PORT,SD_PIN) == GPIO_PIN_RESET) {
-    status = (uint8_t)0x00;
-  }
+  HAL_UART_Transmit(&huart1,(uint8_t*)"reading... ",11,100);
+//  if (HAL_GPIO_ReadPin(SD_PORT,SD_PIN) == GPIO_PIN_RESET) {
+//    status = (uint8_t)0x00;
+//  }
   /* USER CODE BEGIN 1 */
   /* user code can be inserted here */
   /* USER CODE END 1 */ 

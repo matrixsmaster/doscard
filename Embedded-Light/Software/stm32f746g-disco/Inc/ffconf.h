@@ -46,7 +46,7 @@
   */
 
 #ifndef _FFCONF
-#define _FFCONF 32020	/* Revision ID */
+#define _FFCONF 68300	/* Revision ID */
 
 /*-----------------------------------------------------------------------------/
 / Additional user header to be used  

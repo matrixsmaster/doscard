@@ -116,13 +116,13 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CRC_Init();
-  MX_DMA2D_Init();
-  MX_FMC_Init();
-  MX_I2C1_Init();
-  MX_I2C3_Init();
-  MX_QUADSPI_Init();
-  MX_RTC_Init();
-  MX_SAI2_Init();
+//  MX_DMA2D_Init();
+//  MX_FMC_Init();
+//  MX_I2C1_Init();
+//  MX_I2C3_Init();
+//  MX_QUADSPI_Init();
+//  MX_RTC_Init();
+//  MX_SAI2_Init();
   MX_SDMMC1_SD_Init();
 //  MX_TIM1_Init();
 //  MX_TIM2_Init();
@@ -130,22 +130,53 @@ int main(void)
 //  MX_TIM5_Init();
 //  MX_TIM8_Init();
 //  MX_TIM12_Init();
-
+  MX_USART1_UART_Init();
 //  MX_USART6_UART_Init();
   MX_FATFS_Init();
-  MX_USART1_UART_Init();
-  MX_USB_DEVICE_Init();
+//  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&huart1,(uint8_t*)"TEST1\r\n",7,100);
-//  HAL_UART_Transmit(&huart6,(uint8_t*)"TEST6\r\n",7,100);
-  CDC_Transmit_FS((uint8_t*)"TESTU\r\n",7);
-//  memset(&SDFatFS,0,sizeof(SDFatFS));
-  uint8_t r = f_mount(&SDFatFS,SDPath,1);
-  if (!r) HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
-  char _b[6];
-  strcpy(_b,"R=0\r\n");
-  _b[2] += r;
-  HAL_UART_Transmit(&huart1,(uint8_t*)_b,5,100);
+  HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
+  //HAL_Delay(2000);
+  if (retSD) {
+	  for (;;) {
+		  HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
+		  HAL_Delay(500);
+	  }
+  }
+  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+  memset(&SDFatFS,0,sizeof(SDFatFS));
+  if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
+
+  {
+	  FIL fp;
+	  UINT rb;
+	  memset(&fp,0,sizeof(fp));
+
+	  if (f_open(&fp,"test.txt",FA_READ) != FR_OK) {
+		  const char _s[] = "Can't open file\r\n";
+		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+		  Error_Handler();
+	  } else {
+		  const char _s[] = "File opened\r\n";
+		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+	  }
+
+	  char buf[16];
+	  memset(buf,0,sizeof(buf));
+	  if (f_read(&fp,buf,sizeof(buf)-1,&rb) != FR_OK) {
+		  const char _s[] = "Can't read file\r\n";
+		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+		  Error_Handler();
+	  }
+
+	  char dbuf[64];
+	  snprintf(dbuf,sizeof(dbuf),"File contents read (%u): '%s'\r\n",rb,buf);
+	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);
+
+	  f_close(&fp);
+  }
+
+  HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -156,26 +187,9 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-//    HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
-//    HAL_Delay(200);
-//    HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
-//    HAL_Delay(200);
-//    HAL_GPIO_TogglePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin);
-//    HAL_Delay(200);
-	  uint8_t buf[2] = {0,0};
-	  HAL_UART_Receive(&huart1,buf,1,200);
-	  if (buf[0]) {
-		  HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
-		  HAL_UART_Transmit(&huart1,buf,1,100);
-	  } else {
-//		  CDC_Transmit_FS((uint8_t*)"TESTU\r\n",7);
-		  _b[2] = '0' + f_mount(&SDFatFS,SDPath,1);
-		  CDC_Transmit_FS((uint8_t*)_b,5);
-		  if (_b[2] == '0') break;
-	  }
+	  HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
+	  HAL_Delay(500);
   }
-  HAL_GPIO_TogglePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin);
-  for (;;) ;
   /* USER CODE END 3 */
 
 }
@@ -304,9 +318,9 @@ void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,0);
+	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,1);
 	HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
-	HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+	HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,0);
   while(1)
   {
   }

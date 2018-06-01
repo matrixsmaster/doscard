@@ -2,8 +2,6 @@
   ******************************************************************************
   * @file    usbd_req.c
   * @author  MCD Application Team
-  * @version V2.4.2
-  * @date    11-December-2015 
   * @brief   This file provides the standard USB requests following chapter 9.
   ******************************************************************************
   * @attention
