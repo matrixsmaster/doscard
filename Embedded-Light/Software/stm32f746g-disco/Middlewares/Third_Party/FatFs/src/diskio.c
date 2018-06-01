@@ -53,7 +53,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "diskio.h"
 #include "ff_gen_drv.h"
-#include "usart.h"
 
 #if defined ( __GNUC__ )
 #ifndef __weak
@@ -98,9 +97,7 @@ DSTATUS disk_initialize (
   if(disk.is_initialized[pdrv] == 0)
   {
     disk.is_initialized[pdrv] = 1;
-    HAL_UART_Transmit(&huart1,(uint8_t*)"pre-init ",9,100);
     stat = disk.drv[pdrv]->disk_initialize(disk.lun[pdrv]);
-    HAL_UART_Transmit(&huart1,(uint8_t*)"post-init ",10,100);
   }
   return stat;
 }

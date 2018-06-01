@@ -52,7 +52,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
-#include "usart.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -134,13 +133,10 @@ DSTATUS SD_initialize(BYTE lun)
   Stat = STA_NOINIT;
 #if !defined(DISABLE_SD_INIT)
 
-  HAL_UART_Transmit(&huart1,(uint8_t*)"pre-BSP init ",13,100);
   if(BSP_SD_Init() == MSD_OK)
   {
-	  HAL_UART_Transmit(&huart1,(uint8_t*)" OK ",4,100);
     Stat = SD_CheckStatus(lun);
   }
-  HAL_UART_Transmit(&huart1,(uint8_t*)"post-BSP init ",14,100);
 
 #else
   Stat = SD_CheckStatus(lun);

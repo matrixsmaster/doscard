@@ -56,7 +56,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx_hal.h"
 #include "main.h"
-#include "string.h"
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */

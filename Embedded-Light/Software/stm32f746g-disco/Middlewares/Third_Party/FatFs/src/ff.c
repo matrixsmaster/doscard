@@ -20,7 +20,7 @@
 
 #include "ff.h"			/* Declarations of FatFs API */
 #include "diskio.h"		/* Declarations of device I/O functions */
-#include "usart.h"
+
 
 /*--------------------------------------------------------------------------
 
@@ -924,12 +924,10 @@ FRESULT move_window (	/* Returns FR_OK or FR_DISK_ERROR */
 		if (res == FR_OK) {			/* Fill sector window with new data */
 			if (disk_read(fs->drv, fs->win, sector, 1) != RES_OK) {
 				sector = 0xFFFFFFFF;	/* Invalidate window if data is not reliable */
-				HAL_UART_Transmit(&huart1,(uint8_t*)"Err927 ",7,100);
 				res = FR_DISK_ERR;
 			}
 			fs->winsect = sector;
-		} else
-			HAL_UART_Transmit(&huart1,(uint8_t*)"Err932 ",7,100);
+		}
 	}
 	return res;
 }
@@ -3010,11 +3008,6 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 	/* Get logical drive number */
 	*rfs = 0;
 	vol = get_ldnumber(path);
-	{
-		char _s[] = "Vol=0\r\n";
-		_s[4] += (uint8_t)vol;
-		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-	}
 	if (vol < 0) return FR_INVALID_DRIVE;
 
 	/* Check if the file system object is valid or not */
@@ -3027,11 +3020,6 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 	mode &= (BYTE)~FA_READ;				/* Desired access mode, write access or not */
 	if (fs->fs_type) {					/* If the volume has been mounted */
 		stat = disk_status(fs->drv);
-		{
-			char _s[] = "Sta=0\r\n";
-			_s[4] += (uint8_t)stat;
-			HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-		}
 		if (!(stat & STA_NOINIT)) {		/* and the physical drive is kept initialized */
 			if (!_FS_READONLY && mode && (stat & STA_PROTECT)) {	/* Check write protection if needed */
 				return FR_WRITE_PROTECTED;
@@ -3046,11 +3034,6 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 	fs->fs_type = 0;					/* Clear the file system object */
 	fs->drv = LD2PD(vol);				/* Bind the logical drive and a physical drive */
 	stat = disk_initialize(fs->drv);	/* Initialize the physical drive */
-	{
-		char _s[] = "St2=0\r\n";
-		_s[4] += (uint8_t)stat;
-		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-	}
 	if (stat & STA_NOINIT) { 			/* Check if the initialization succeeded */
 		return FR_NOT_READY;			/* Failed to initialize due to no medium or hard error */
 	}
@@ -3065,11 +3048,6 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 	/* Find an FAT partition on the drive. Supports only generic partitioning rules, FDISK and SFD. */
 	bsect = 0;
 	fmt = check_fs(fs, bsect);			/* Load sector 0 and check if it is an FAT-VBR as SFD */
-	{
-		char _s[] = "Fm1=0\r\n";
-		_s[4] += (uint8_t)fmt;
-		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-	}
 	if (fmt == 2 || (fmt < 2 && LD2PT(vol) != 0)) {	/* Not an FAT-VBR or forced partition number */
 		for (i = 0; i < 4; i++) {		/* Get partition offset */
 			pt = fs->win + (MBR_Table + i * SZ_PTE);
@@ -3080,17 +3058,7 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 		do {							/* Find an FAT volume */
 			bsect = br[i];
 			fmt = bsect ? check_fs(fs, bsect) : 3;	/* Check the partition */
-			{
-				char _s[] = "Fm2=0\r\n";
-				_s[4] += (uint8_t)fmt;
-				HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-			}
 		} while (LD2PT(vol) == 0 && fmt >= 2 && ++i < 4);
-	}
-	{
-		char _s[] = "Fmt=0\r\n";
-		_s[4] += (uint8_t)fmt;
-		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
 	}
 	if (fmt == 4) return FR_DISK_ERR;		/* An error occured in the disk I/O layer */
 	if (fmt >= 2) return FR_NO_FILESYSTEM;	/* No FAT volume is found */
@@ -3272,6 +3240,8 @@ FRESULT validate (	/* Returns FR_OK or FR_INVALID_OBJECT */
 
 ----------------------------------------------------------------------------*/
 
+
+
 /*-----------------------------------------------------------------------*/
 /* Mount/Unmount a Logical Drive                                         */
 /*-----------------------------------------------------------------------*/
@@ -3313,9 +3283,7 @@ FRESULT f_mount (
 
 	if (!fs || opt != 1) return FR_OK;	/* Do not mount now, it will be mounted later */
 
-	HAL_UART_Transmit(&huart1,(uint8_t*)"pre-find ",9,100);
 	res = find_volume(&path, &fs, 0);	/* Force mounted the volume */
-	HAL_UART_Transmit(&huart1,(uint8_t*)"post-find ",10,100);
 	LEAVE_FF(fs, res);
 }
 
