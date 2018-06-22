@@ -65,6 +65,10 @@ clean:
 	rm -f $(APP) $(APP:.elf=.bin)
 .PHONY: clean
 
+purge:
+	find . -type f -iname '*.o' -delete
+.PHONY: purge
+
 %.o:	%.c
 	$(CC_INV) -c -o $@ $<
 	

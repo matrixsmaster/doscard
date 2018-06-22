@@ -68,7 +68,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usbd_cdc_if.h"
-#include "dollstop.h"
+//#include "dollstop.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -224,7 +224,7 @@ int main(void)
 	  UINT rb;
 	  memset(&fp,0,sizeof(fp));
 
-	  if (f_open(&fp,"test.txt",FA_READ) != FR_OK) {
+	  if (f_open(&fp,MYFILE,FA_READ) != FR_OK) {
 		  const char _s[] = "Can't open file\r\n";
 		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
 		  Error_Handler();
@@ -233,7 +233,7 @@ int main(void)
 		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
 	  }
 
-	  char buf[16];
+	  /*char buf[16];
 	  memset(buf,0,sizeof(buf));
 	  if (f_read(&fp,buf,sizeof(buf)-1,&rb) != FR_OK) {
 		  const char _s[] = "Can't read file\r\n";
@@ -243,13 +243,34 @@ int main(void)
 
 	  char dbuf[64];
 	  snprintf(dbuf,sizeof(dbuf),"File contents read (%u): '%s'\r\n",rb,buf);
-	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);
+	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);*/
+
+#if 0
+	  memset(SDRAM_PTR,0,480*272*3);
+	  uint8_t swp;
+	  for (int i = 0; i < 480*272; i++) {
+		  if (f_read(&fp,SDRAM_PTR+(i*3),3,&rb) != FR_OK) {
+			  const char _s[] = "Can't read file\r\n";
+			  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+			  Error_Handler();
+		  }
+		  swp = SDRAM_PTR[i*3];
+		  SDRAM_PTR[i*3] = SDRAM_PTR[i*3+2];
+		  SDRAM_PTR[i*3+2] = swp;
+	  }
+#else
+	  if (f_read(&fp,SDRAM_PTR,480*272*3,&rb) != FR_OK) {
+		  const char _s[] = "Can't read file\r\n";
+		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+		  Error_Handler();
+	  }
+#endif
 
 	  f_close(&fp);
   }
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
-  memcpy((uint8_t*)SDRAM_BANK_ADDR,&(gimp_image.pixel_data),gimp_image.bytes_per_pixel*gimp_image.height*gimp_image.width);
+//  memcpy((uint8_t*)SDRAM_BANK_ADDR,&(gimp_image.pixel_data),gimp_image.bytes_per_pixel*gimp_image.height*gimp_image.width);
   /* USER CODE END 2 */
 
   /* Infinite loop */

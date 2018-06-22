@@ -393,7 +393,10 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
+#define MYFILE 							"picture.raw"
+
 #define SDRAM_BANK_ADDR                 ((uint32_t)0xC0000000)
+#define SDRAM_PTR						((uint8_t*)SDRAM_BANK_ADDR)
 
 /* #define SDRAM_MEMORY_WIDTH            FMC_SDRAM_MEM_BUS_WIDTH_8  */
 #define SDRAM_MEMORY_WIDTH               FMC_SDRAM_MEM_BUS_WIDTH_16
