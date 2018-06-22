@@ -6,8 +6,10 @@
 #include "ff.h"
 #include "os.h"
 #include "usart.h"
+#include "dma2d.h"
 
 uint8_t* OS_Font_Array = NULL;
+static uint32_t clut[2];
 
 int OS_InitFont()
 {
@@ -33,12 +35,17 @@ int OS_InitFont()
 	while (f_gets(buf,sizeof(buf),&fp)) {
 		if (buf[0] != '0' && buf[0] != '1') continue;
 
-		uint8_t x = 0;
+		/*uint8_t x = 0;
 		for (int i = 0; i < 5; i++) {
 			if (buf[i] == '1') x |= 1 << (7-i);
+		}*/
+
+		for (int i = 0; i < 6; i++) {
+			if (i % 2) OS_Font_Array[sym*24+fsm*3+i/2] |= (buf[i] == '1')? 0x10 : 0;
+			else OS_Font_Array[sym*24+fsm*3+i/2] = (buf[i] == '1')? 1 : 0;
 		}
 
-		OS_Font_Array[sym*8+fsm] = x;
+//		OS_Font_Array[sym*8+fsm] = x;
 		if (++fsm >= 8) {
 			fsm = 0;
 			sym++;
@@ -51,28 +58,75 @@ int OS_InitFont()
 	HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
 
 	//FIXME: debug only
+
+//	memset(clut,0,sizeof(clut));
+//	for (uint32_t i = 1; i < 16; i++) clut[i] = 0xFF;
+	clut[0] = 0x00000000;
+	clut[1] = 0x000000FF;
+//	clut[2] = 0xFFFFFF;
+
+	DMA2D_CLUTCfgTypeDef cfg;
+	cfg.CLUTColorMode = DMA2D_CCM_RGB888;
+	cfg.Size = 2;
+	cfg.pCLUT = clut;
+
+	if (HAL_DMA2D_CLUTLoad(&hdma2d,cfg,1) != HAL_OK) {
+		const char _s[] = "CLUT config failed\r\n";
+		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+		return 3;
+
+	} else {
+		const char _s[] = "CLUT config passed\r\n";
+		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+	}
+
+	if (HAL_DMA2D_PollForTransfer(&hdma2d,10) == HAL_OK) {
+		const char _s[] = "CLUT Load Poll finished\r\n";
+		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+	}
+
+//	if (HAL_DMA2D_EnableCLUT(&hdma2d,1) != HAL_OK) {
+//		const char _s[] = "CLUT enabling failed\r\n";
+//		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
+//		return 4;
+//	}
+
+
 	memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 	int cx = 0, cy = 0;
 	for (int i = 0; i < sym; i++) {
+#if 1
+//		uint32_t* aa = OS_Font_Array+(i*24);
+//		uint32_t* bb = SDRAM_PTR+(cy*LCD_LINE_SIZE+cx)*3;
+		if (HAL_DMA2D_Start(&hdma2d,
+				(uint32_t)OS_Font_Array+(i*24),
+				(uint32_t)SDRAM_BANK_ADDR+(cy*LCD_LINE_SIZE+cx)*3,
+				6,8) == HAL_OK) HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+		else
+			HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,0);
+		if (HAL_DMA2D_PollForTransfer(&hdma2d,1) == HAL_OK)
+			HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
+		else
+			HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
+#else
 		for (int j = 0; j < 8; j++) {
-			uint8_t x = OS_Font_Array[i*8+j];
-//			snprintf(dbg,sizeof(dbg),"x=%02hX\r\n",x);
-//			HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
-			for (int k = 0; k < 6; k++) {
-				if (x & 0x80) {
-					memset(SDRAM_PTR+(((cy+j)*LCD_LINE_SIZE+cx+k)*3),0xFF,3); //white pixel
-//					snprintf(dbg,sizeof(dbg),"set at %d\r\n",(((cy+j)*LCD_LINE_SIZE+cx+k)*3));
-//					HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
-				}
-				x <<= 1;
+			for (int k = 0; k < 5; k++) {
+				uint8_t x = 0;
+				if (k % 2 == 0) x = OS_Font_Array[i*24+j*3+k/2] >> 4;
+				else x = OS_Font_Array[i*24+j*3+k/2] & 0x0F;
+//				snprintf(dbg,sizeof(dbg),"%d:%d + %d:%d  x = %02hX\r\n",cx,cy,k,j,x);
+//				HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
+				SDRAM_PTR[((cy+j)*LCD_LINE_SIZE+cx+k)*3] = x? 0xFF : 0;
 			}
 		}
+#endif
 		cx += 6;
 		if (cx >= 480) {
 			cx = 0;
 			cy += 9;
 		}
 	}
+	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,1);
 	for(;;);
 
 	return 0;

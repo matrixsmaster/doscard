@@ -209,7 +209,7 @@ int main(void)
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
   BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
-  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+//  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
 
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
