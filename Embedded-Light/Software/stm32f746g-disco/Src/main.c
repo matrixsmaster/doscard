@@ -209,7 +209,7 @@ int main(void)
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
   BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
-//  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
 
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
@@ -218,58 +218,9 @@ int main(void)
 
   if (OS_InitFont()) Error_Handler();
 
-  if (0) {
-	  FIL fp;
-	  UINT rb;
-	  memset(&fp,0,sizeof(fp));
-
-	  if (f_open(&fp,MYFILE,FA_READ) != FR_OK) {
-		  const char _s[] = "Can't open file\r\n";
-		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-		  Error_Handler();
-	  } else {
-		  const char _s[] = "File opened\r\n";
-		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-	  }
-
-	  /*char buf[16];
-	  memset(buf,0,sizeof(buf));
-	  if (f_read(&fp,buf,sizeof(buf)-1,&rb) != FR_OK) {
-		  const char _s[] = "Can't read file\r\n";
-		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-		  Error_Handler();
-	  }
-
-	  char dbuf[64];
-	  snprintf(dbuf,sizeof(dbuf),"File contents read (%u): '%s'\r\n",rb,buf);
-	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);*/
-
-#if 1
-	  memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
-	  uint8_t swp;
-	  for (int i = 0; i < 480*272; i++) {
-		  if (f_read(&fp,SDRAM_PTR+(i*3),3,&rb) != FR_OK) {
-			  const char _s[] = "Can't read file\r\n";
-			  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-			  Error_Handler();
-		  }
-		  swp = SDRAM_PTR[i*3];
-		  SDRAM_PTR[i*3] = SDRAM_PTR[i*3+2];
-		  SDRAM_PTR[i*3+2] = swp;
-	  }
-#else
-	  if (f_read(&fp,SDRAM_PTR,480*272*3,&rb) != FR_OK) {
-		  const char _s[] = "Can't read file\r\n";
-		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-		  Error_Handler();
-	  }
-#endif
-
-	  f_close(&fp);
-  }
-
   HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
-//  memcpy((uint8_t*)SDRAM_BANK_ADDR,&(gimp_image.pixel_data),gimp_image.bytes_per_pixel*gimp_image.height*gimp_image.width);
+  OS_PrintString("Test string. Printed.");
+//  OS();
   /* USER CODE END 2 */
 
   /* Infinite loop */

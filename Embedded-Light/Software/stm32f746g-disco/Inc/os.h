@@ -8,5 +8,7 @@
 extern uint8_t* OS_Font_Array;
 
 int OS_InitFont();
+void OS_PrintString(char* str);
+void OS();
 
 #endif /* INC_OS_H_ */

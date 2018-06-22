@@ -35,17 +35,13 @@ int OS_InitFont()
 	while (f_gets(buf,sizeof(buf),&fp)) {
 		if (buf[0] != '0' && buf[0] != '1') continue;
 
-		/*uint8_t x = 0;
-		for (int i = 0; i < 5; i++) {
-			if (buf[i] == '1') x |= 1 << (7-i);
-		}*/
-
 		for (int i = 0; i < 6; i++) {
-			if (i % 2) OS_Font_Array[sym*24+fsm*3+i/2] |= (buf[i] == '1')? 0x10 : 0;
-			else OS_Font_Array[sym*24+fsm*3+i/2] = (buf[i] == '1')? 1 : 0;
+			if (i % 2)
+				OS_Font_Array[sym*24+fsm*3+i/2] |= (buf[i] == '1')? 0x10 : 0;
+			else
+				OS_Font_Array[sym*24+fsm*3+i/2]  = (buf[i] == '1')? 1 : 0;
 		}
 
-//		OS_Font_Array[sym*8+fsm] = x;
 		if (++fsm >= 8) {
 			fsm = 0;
 			sym++;
@@ -57,13 +53,8 @@ int OS_InitFont()
 	snprintf(dbg,sizeof(dbg),"%d symbols read, FSM = %d\r\n",sym,fsm);
 	HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
 
-	//FIXME: debug only
-
-//	memset(clut,0,sizeof(clut));
-//	for (uint32_t i = 1; i < 16; i++) clut[i] = 0xFF;
-	clut[0] = 0x00000000;
-	clut[1] = 0x000000FF;
-//	clut[2] = 0xFFFFFF;
+	clut[0] = 0x00000000; //black
+	clut[1] = 0x000000FF; //green
 
 	DMA2D_CLUTCfgTypeDef cfg;
 	cfg.CLUTColorMode = DMA2D_CCM_RGB888;
@@ -85,19 +76,10 @@ int OS_InitFont()
 		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
 	}
 
-//	if (HAL_DMA2D_EnableCLUT(&hdma2d,1) != HAL_OK) {
-//		const char _s[] = "CLUT enabling failed\r\n";
-//		HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-//		return 4;
-//	}
-
-
 	memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
+#if 0
 	int cx = 0, cy = 0;
 	for (int i = 0; i < sym; i++) {
-#if 1
-//		uint32_t* aa = OS_Font_Array+(i*24);
-//		uint32_t* bb = SDRAM_PTR+(cy*LCD_LINE_SIZE+cx)*3;
 		if (HAL_DMA2D_Start(&hdma2d,
 				(uint32_t)OS_Font_Array+(i*24),
 				(uint32_t)SDRAM_BANK_ADDR+(cy*LCD_LINE_SIZE+cx)*3,
@@ -108,60 +90,73 @@ int OS_InitFont()
 			HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
 		else
 			HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
-#else
-		for (int j = 0; j < 8; j++) {
-			for (int k = 0; k < 5; k++) {
-				uint8_t x = 0;
-				if (k % 2 == 0) x = OS_Font_Array[i*24+j*3+k/2] >> 4;
-				else x = OS_Font_Array[i*24+j*3+k/2] & 0x0F;
-//				snprintf(dbg,sizeof(dbg),"%d:%d + %d:%d  x = %02hX\r\n",cx,cy,k,j,x);
-//				HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
-				SDRAM_PTR[((cy+j)*LCD_LINE_SIZE+cx+k)*3] = x? 0xFF : 0;
-			}
-		}
-#endif
+
 		cx += 6;
 		if (cx >= 480) {
 			cx = 0;
 			cy += 9;
 		}
 	}
-	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,1);
-	for(;;);
+#endif
+//	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,1);
 
 	return 0;
 }
 
-#if 0
+#if 1
 void OS_DrawChar(int col, int row, char x)
 {
 	if (x < 33 || x > 126) return;
-	__IO uint16_t* buf = LCD_GetCurrentBuffer();
-	int cx = (25-row)*8;
-	int cy = col*4;
-	for (int i = 0; i < 4; i++) {
-		uint8_t sym = font8x4_rotated[(x-33)*4+i];
-		for (int j = 0; j < 8; j++) {
-			if (sym & 0x80)
-				*(__IO uint16_t*)(buf+(LCD_PIXEL_WIDTH*cy+cx)) = 0; //FIXME: black color
-			sym <<= 1;
-			cx++;
+//	__IO uint16_t* buf = LCD_GetCurrentBuffer();
+	int cx = col * 9;
+	int cy = row * 6;
+//	for (int i = 0; i < 4; i++) {
+//		uint8_t sym = font8x4_rotated[(x-33)*4+i];
+//		for (int j = 0; j < 8; j++) {
+//			if (sym & 0x80)
+//				*(__IO uint16_t*)(buf+(LCD_PIXEL_WIDTH*cy+cx)) = 0; //FIXME: black color
+//			sym <<= 1;
+//			cx++;
+//		}
+
+	if (HAL_DMA2D_PollForTransfer(&hdma2d,1) == HAL_OK)
+		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
+	else
+		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
+
+		if (HAL_DMA2D_Start(&hdma2d,(uint32_t)OS_Font_Array+((x-33)*24),(uint32_t)SDRAM_BANK_ADDR+(cy*LCD_LINE_SIZE+cx)*3,6,8) == HAL_OK)
+			HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+		else
+			HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,0);
+
+
+//		cx = row*9;
+//		cy++;
+//	}
+}
+
+void OS_PrintString(char* str)
+{
+	int col = 0, row = 0;
+	for (unsigned i = 0; i < strlen(str); i++) {
+		OS_DrawChar(col,row,str[i]);
+		if (++col >= 80) {
+			col = 0;
+			row++;
 		}
-		cx = (25-row)*8;
-		cy++;
 	}
 }
 
 void OS()
 {
-	LCD_Clear(LCD_COLOR_GREEN);
+	memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 //	LCD_SetFont(&Font8x8);
 //	LCD_DisplayStringLine(LCD_LINE_0,(uint8_t*)"Starting...");
 
 	VM86_Start(SDRAM_BANK_ADDR);
 
 	for (int l = 1, p = 0, r = 0;;) {
-		STM_EVAL_LEDToggle(LED3);
+		HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
 
 		r = VM86_FullStep();
 		if (r < 0) break;
@@ -174,7 +169,7 @@ void OS()
 			if (bp) OS_DrawChar(p,l,bp);
 
 		} else if (r == 1) {
-			LCD_Clear(LCD_COLOR_GREEN);
+			memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 			char* bp = VM86_GetShadowBuf();
 			for (l = 0; l < VM86W_GEOMH; l++)
 				for (p = 0; p < VM86W_GEOMW; p++,bp++) {
@@ -185,6 +180,6 @@ void OS()
 	}
 
 	VM86_Stop();
-	LCD_Clear(LCD_COLOR_RED);
+	memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 }
 #endif
