@@ -27,7 +27,7 @@ INIT	:= $(MNDIR)/startup_stm32f746xx.o
 DBG		:= -g
 OPT		:= -Os
  
-CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1
+CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1 -DUSE_MINI_THREADS
 
 CC_FLAG := -std=gnu99 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer 
 CC_FLAG += -mno-sched-prolog -fno-hosted -fmessage-length=0
@@ -63,6 +63,7 @@ clean:
 	rm -f $(PROG_OBJ)
 	rm -f $(INIT)
 	rm -f $(APP) $(APP:.elf=.bin)
+	rm -f $(APP).map
 .PHONY: clean
 
 purge:

@@ -56,7 +56,6 @@
 #include "ltdc.h"
 #include "quadspi.h"
 #include "rtc.h"
-#include "sai.h"
 #include "sdmmc.h"
 #include "tim.h"
 #include "usart.h"
@@ -192,7 +191,6 @@ int main(void)
   MX_I2C3_Init();
   MX_QUADSPI_Init();
   MX_RTC_Init();
-  MX_SAI2_Init();
   MX_SDMMC1_SD_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
@@ -245,7 +243,7 @@ int main(void)
 	  snprintf(dbuf,sizeof(dbuf),"File contents read (%u): '%s'\r\n",rb,buf);
 	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);*/
 
-#if 0
+#if 1
 	  memset(SDRAM_PTR,0,480*272*3);
 	  uint8_t swp;
 	  for (int i = 0; i < 480*272; i++) {
@@ -344,9 +342,8 @@ void SystemClock_Config(void)
 
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_RTC
                               |RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART6
-                              |RCC_PERIPHCLK_SAI2|RCC_PERIPHCLK_I2C1
-                              |RCC_PERIPHCLK_I2C3|RCC_PERIPHCLK_SDMMC1
-                              |RCC_PERIPHCLK_CLK48;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C3
+                              |RCC_PERIPHCLK_SDMMC1|RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 100;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
   PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
@@ -354,7 +351,6 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PLLSAIDivQ = 1;
   PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_4;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
-  PeriphClkInitStruct.Sai2ClockSelection = RCC_SAI2CLKSOURCE_PLLSAI;
   PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
