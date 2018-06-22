@@ -53,6 +53,7 @@
 #include "dma2d.h"
 #include "fatfs.h"
 #include "i2c.h"
+#include "ltdc.h"
 #include "quadspi.h"
 #include "rtc.h"
 #include "sai.h"
@@ -64,14 +65,17 @@
 #include "fmc.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
+#include <string.h>
 #include "usbd_cdc_if.h"
+#include "dollstop.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+FMC_SDRAM_CommandTypeDef command;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,7 +87,67 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+/**
+  * @brief  Perform the SDRAM external memory initialization sequence
+  * @param  hsdram: SDRAM handle
+  * @param  Command: Pointer to SDRAM command structure
+  * @retval None
+  */
+static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_CommandTypeDef *Command)
+{
+  __IO uint32_t tmpmrd =0;
+  /* Step 3:  Configure a clock configuration enable command */
+  Command->CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = 0;
 
+  /* Send the command */
+  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+
+  /* Step 4: Insert 100 us minimum delay */
+  /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
+  HAL_Delay(1);
+
+  /* Step 5: Configure a PALL (precharge all) command */
+  Command->CommandMode = FMC_SDRAM_CMD_PALL;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+
+  /* Step 6 : Configure a Auto-Refresh command */
+  Command->CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 8;
+  Command->ModeRegisterDefinition = 0;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+
+  /* Step 7: Program the external memory mode register */
+  tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
+                     SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+                     SDRAM_MODEREG_CAS_LATENCY_2           |
+                     SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+                     SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+
+  Command->CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  Command->AutoRefreshNumber = 1;
+  Command->ModeRegisterDefinition = tmpmrd;
+
+  /* Send the command */
+  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+
+  /* Step 8: Set the refresh rate counter */
+  /* (15.62 us x Freq) - 20 */
+  /* Set the device refresh counter */
+  hsdram->Instance->SDRTR |= ((uint32_t)((1292)<< 1));
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -96,6 +160,12 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
+
+  /* Enable I-Cache-------------------------------------------------------------*/
+  SCB_EnableICache();
+
+  /* Enable D-Cache-------------------------------------------------------------*/
+  SCB_EnableDCache();
 
   /* MCU Configuration----------------------------------------------------------*/
 
@@ -134,8 +204,10 @@ int main(void)
   MX_USART6_UART_Init();
   MX_FATFS_Init();
   MX_USB_DEVICE_Init();
+  MX_LTDC_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
+  BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
   //HAL_Delay(2000);
   if (retSD) {
 	  for (;;) {
@@ -177,6 +249,7 @@ int main(void)
   }
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
+  memcpy((uint8_t*)SDRAM_BANK_ADDR,&(gimp_image.pixel_data),gimp_image.bytes_per_pixel*gimp_image.height*gimp_image.width);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -248,10 +321,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_USART6|RCC_PERIPHCLK_SAI2
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C3
-                              |RCC_PERIPHCLK_SDMMC1|RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC|RCC_PERIPHCLK_RTC
+                              |RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART6
+                              |RCC_PERIPHCLK_SAI2|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_I2C3|RCC_PERIPHCLK_SDMMC1
+                              |RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 100;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 2;
   PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
