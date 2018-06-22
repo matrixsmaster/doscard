@@ -67,6 +67,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usbd_cdc_if.h"
+#include "os.h"
 //#include "dollstop.h"
 /* USER CODE END Includes */
 
@@ -204,20 +205,20 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_LTDC_Init();
   /* USER CODE BEGIN 2 */
+  if (retSD) Error_Handler();
+
   HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
   BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
-  //HAL_Delay(2000);
-  if (retSD) {
-	  for (;;) {
-		  HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
-		  HAL_Delay(500);
-	  }
-  }
   HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
 
-  {
+  OS_Font_Array = SDRAM_PTR + LCD_SCREEN_SIZE;
+
+  if (OS_InitFont()) Error_Handler();
+
+  if (0) {
 	  FIL fp;
 	  UINT rb;
 	  memset(&fp,0,sizeof(fp));
@@ -244,7 +245,7 @@ int main(void)
 	  HAL_UART_Transmit(&huart1,(uint8_t*)dbuf,strlen(dbuf),100);*/
 
 #if 1
-	  memset(SDRAM_PTR,0,480*272*3);
+	  memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 	  uint8_t swp;
 	  for (int i = 0; i < 480*272; i++) {
 		  if (f_read(&fp,SDRAM_PTR+(i*3),3,&rb) != FR_OK) {
@@ -412,9 +413,11 @@ void _Error_Handler(char *file, int line)
 	HAL_GPIO_WritePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin,1);
 	HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
 	HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,0);
-  while(1)
-  {
-  }
+	while(1)
+	{
+		HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);
+		HAL_Delay(500);
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
