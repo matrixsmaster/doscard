@@ -67,6 +67,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "usbd_cdc_if.h"
+#include "VM86conf.h"
 #include "os.h"
 //#include "dollstop.h"
 /* USER CODE END Includes */
@@ -219,7 +220,25 @@ int main(void)
   if (OS_InitFont()) Error_Handler();
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
-  OS_PrintString("Test string. Printed.");
+
+  HAL_UART_Transmit(&huart1,(uint8_t*)"Loading disks...\r\n",18,100);
+//  bios_img = OS_InitDisk(OS_BIOS_FILE,&bios_len);
+//  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+//  if (!bios_img || !fd_img) Error_Handler();
+
+  char dbg[128];
+  snprintf(dbg,sizeof(dbg),"Test string. Last address = 0x%08lX",OS_Last_Address);
+  OS_PrintString(dbg);
+
+  uint8_t* arr = SDRAM_PTR;//(uint8_t*)malloc(128);
+  if (!arr) Error_Handler();
+//  memset(arr,0xFF,128);
+  while ((uint32_t)arr < SDRAM_BANK_ADDR+9*1024*1024) {
+	  snprintf(dbg,sizeof(dbg),"[0x%08lX] = %i\r\n",(uint32_t)arr,*(int16_t*)&arr[0]);
+	  HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
+	  arr += 1024;
+  }
+
 //  OS();
   /* USER CODE END 2 */
 

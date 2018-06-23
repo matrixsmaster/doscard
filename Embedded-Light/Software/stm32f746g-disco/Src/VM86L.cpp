@@ -3,28 +3,25 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2018
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
 #include <time.h>
-//#include <sys/timeb.h>
 #include <ctype.h>
 #include <unistd.h>
-//#include <fcntl.h>
-//#include <memory.h>
 #include "VM86.h"
 #include "VM86macro.h"
 #include "mthreads.h"
+#include "usart.h"
 
 /* Locals */
 static time_t seconds = 1234789;
 static uint16_t millis = 0;
 static size_t diskhead = 0;
 
-static uint8_t const fd_img[] = {
-0,0,0
-};
+uint8_t* fd_img = NULL;
+uint32_t fd_len = 0;
 
 /*Static read/write IO*/
 size_t sta_read(int, void* buf, size_t n)
@@ -37,12 +34,13 @@ size_t sta_read(int, void* buf, size_t n)
 size_t sta_write(int, const void* buf, size_t n)
 {
 	if (diskhead + n >= sizeof(fd_img)) return 0;
-	//memcpy(fd_img+diskhead,buf,n);
+	memcpy(fd_img+diskhead,buf,n);
 	return n;
 }
 
 void VM86::LocalOpcode()
 {
+	HAL_UART_Transmit(&huart1,(uint8_t*)"Local\r\n",7,10);
 	uint8_t* tmp = mem + SEGREG(REG_ES, REG_BX,);
 
 	switch ((char)i_data0)

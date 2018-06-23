@@ -1,0 +1,11 @@
+	modified:   Inc/VM86conf.h
+	modified:   Inc/os.h
+	modified:   Makefile
+	modified:   Src/VM86.cpp
+	modified:   Src/VM86EU.cpp
+	modified:   Src/VM86L.cpp
+	modified:   Src/VM86Wrapper.cpp
+	modified:   Src/main.c
+	modified:   Src/os.c
+
+	Inc/VM86bios.h

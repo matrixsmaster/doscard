@@ -12,7 +12,7 @@
 
 #include <inttypes.h>
 
-#define RAM_SHIFT 0x200000
+#define RAM_SHIFT 0
 
 #define IOBUF_MAXLEN 16
 
@@ -134,5 +134,8 @@ static const uint8_t lookup_table[20][256] = {
 	/* Table 19: FLAGS multipliers */
 	{ 0, 2, 4, 6, 7, 8, 9, 10, 11 }
 };
+
+extern uint8_t* /*bios_img,*/ fd_img;
+extern uint32_t /*bios_len,*/ fd_len;
 
 #endif /* VM86CONF_H_ */

@@ -267,10 +267,12 @@ void VM86Wrapper::UpdateScreen()
 
 void VM86_Start(uint32_t base_addr)
 {
-	g_VM = new VM86Wrapper(base_addr);
+	size_t sz = VM86W_GEOMW*VM86W_GEOMH;
+	shadow = (char*)base_addr;
+	memset(shadow,0,sz);
+
+	g_VM = new VM86Wrapper(base_addr + sz);
 	g_VM->SetGeometry(VM86W_GEOMW,VM86W_GEOMH);
-	shadow = (char*)malloc(VM86W_GEOMW*VM86W_GEOMH);
-	memset(shadow,0,VM86W_GEOMW*VM86W_GEOMH);
 }
 
 int VM86_FullStep()

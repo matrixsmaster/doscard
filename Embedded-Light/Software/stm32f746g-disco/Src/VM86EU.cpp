@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "VM86.h"
 #include "VM86macro.h"
+#include "usart.h"
 
 // AAA and AAS instructions - which_operation is +1 for AAA, and -1 for AAS
 int VM86::AAA_AAS(char which_operation)
@@ -303,7 +304,13 @@ void VM86::IEU()
 			}
 			reg_ip += scratch_uint*(char)i_data0;
 		OPCODE 14: // JMP | CALL int16_t/near
+			HAL_UART_Transmit(&huart1,(uint8_t*)"OP14\r\n",6,10);
 			reg_ip += 3 - i_d;
+			{
+				char buf[32];
+				snprintf(buf,sizeof(buf),"IP %hu\r\n",reg_ip);
+				HAL_UART_Transmit(&huart1,(uint8_t*)buf,strlen(buf),100);
+			}
 			if (!i_w)
 			{
 				if (i_d) // JMP far

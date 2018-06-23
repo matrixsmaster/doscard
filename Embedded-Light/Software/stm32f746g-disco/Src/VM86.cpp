@@ -11,6 +11,15 @@
 #include "VM86macro.h"
 #include <unistd.h>
 
+//FIXME: debug sentences
+#include "usart.h"
+#if 0
+uint8_t* bios_img = NULL;
+uint32_t bios_len = 0;
+#else
+#include "VM86bios.h"
+#endif
+
 VM86::VM86(uint32_t base_addr)
 {
 	static_assert(sizeof(int) == 4,"Incorrect int type size");
@@ -56,7 +65,7 @@ void VM86::Reset()
 
 	// Load BIOS image into F000:0100, and set IP to 0100
 	reg_ip = 0x100;
-//	memcpy(regs8 + reg_ip, bios, bios_len);
+	memcpy(regs8+reg_ip,bios_img,bios_len);
 }
 
 // Set carry flag
@@ -115,6 +124,7 @@ void VM86::set_opcode(uint8_t opcode)
 // Execute INT #interrupt_num on the emulated machine
 char VM86::pc_interrupt(uint8_t interrupt_num)
 {
+	HAL_UART_Transmit(&huart1,(uint8_t*)"INT\r\n",5,10);
 	set_opcode(0xCD); // Decode like INT
 
 	make_flags();
@@ -130,6 +140,7 @@ char VM86::pc_interrupt(uint8_t interrupt_num)
 // Decode mod, r_m and reg fields in instruction
 void VM86::DecodeRM_REG()
 {
+	HAL_UART_Transmit(&huart1,(uint8_t*)"DRM\r\n",5,10);
 	scratch2_uint = 4 * !i_mod;
 	op_to_addr = rm_addr = i_mod < 3 ?
 			SEGREG(seg_override_en ? seg_override : lookup_table[scratch2_uint + 3][i_rm], lookup_table[scratch2_uint][i_rm], regs16[lookup_table[scratch2_uint + 1][i_rm]] + lookup_table[scratch2_uint + 2][i_rm] * i_data1+)
@@ -150,20 +161,29 @@ void VM86::Step()
 	// Set up variables to prepare for decoding an opcode
 	set_opcode(*opcode_stream);
 
+	char buf[32];
+	snprintf(buf,sizeof(buf),"[0x%08lX] = 0x%02hX ID %hu\r\n",(uint32_t)opcode_stream,*opcode_stream,xlat_opcode_id);
+	HAL_UART_Transmit(&huart1,(uint8_t*)buf,strlen(buf),100);
+
 	// Extract i_w and i_d fields from instruction
 	i_w = (i_reg4bit = raw_opcode_id & 7) & 1;
 	i_d = i_reg4bit / 2 & 1;
+	HAL_UART_Transmit(&huart1,(uint8_t*)"S1\r\n",4,10);
 
 	// Extract instruction data fields
+	snprintf(buf,sizeof(buf),"data0 = 0x%02hX\r\n",*(int16_t*)&(opcode_stream[1]));
+	HAL_UART_Transmit(&huart1,(uint8_t*)buf,strlen(buf),100);
 	i_data0 = CAST(int16_t,opcode_stream[1]);
 	i_data1 = CAST(int16_t,opcode_stream[2]);
 	i_data2 = CAST(int16_t,opcode_stream[3]);
+	HAL_UART_Transmit(&huart1,(uint8_t*)"S2\r\n",4,10);
 
 	// seg_override_en and rep_override_en contain number of instructions to hold segment override and REP prefix respectively
 	if (seg_override_en)
 		seg_override_en--;
 	if (rep_override_en)
 		rep_override_en--;
+	HAL_UART_Transmit(&huart1,(uint8_t*)"S3\r\n",4,10);
 
 	// i_mod_size > 0 indicates that opcode uses i_mod/i_rm/i_reg, so decode them
 	if (i_mod_size)
@@ -183,7 +203,9 @@ void VM86::Step()
 	}
 
 	// Execute
+	HAL_UART_Transmit(&huart1,(uint8_t*)"Exec\r\n",6,10);
 	IEU();
+	HAL_UART_Transmit(&huart1,(uint8_t*)"IEU OK\r\n",8,10);
 
 	// Increment instruction pointer by computed instruction length. Tables in the BIOS binary
 	// help us here.

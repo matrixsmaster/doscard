@@ -24,17 +24,17 @@ CHIP	+= -specs=nosys.specs
 LINKSCR := -TSTM32F746NGHx_FLASH.ld
 INIT	:= $(MNDIR)/startup_stm32f746xx.o
 
-DBG		:= -g
-OPT		:= -Os
+DBG		:= 
+OPT		:= -O0
  
 CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1 -DUSE_MINI_THREADS
 
-CC_FLAG := -std=gnu99 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer 
+CC_FLAG := -std=gnu99 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer -fno-strict-aliasing
 CC_FLAG += -mno-sched-prolog -fno-hosted -fmessage-length=0
 CC_FLAG += -Wno-deprecated-declarations -Wno-unused-parameter -Wno-unused-variable
 CC_FLAG += $(CHIP)
 
-CXX_FLAG := -std=c++11 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer -fsigned-char 
+CXX_FLAG := -std=c++11 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fomit-frame-pointer -fsigned-char -fno-strict-aliasing
 CXX_FLAG += $(CHIP)
 
 LD_FLAG := $(CHIP) $(DBG) $(OPT) -L$(DEPSRC) -Wl,--gc-sections
