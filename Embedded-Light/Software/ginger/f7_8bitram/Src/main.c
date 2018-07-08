@@ -445,7 +445,7 @@ int main(void)
   if (r != FR_OK) Error_Handler();
   send("SD filesystem mounted\r\n");
 
-  for (int q = 0; q < 27; q++) {
+  for (int q = 0; q < 60; q++) {
 	  FIL fp;
 	  UINT br;
 	  char fn[64];
@@ -454,6 +454,7 @@ int main(void)
 	  memset(&fp,0,sizeof(fp));
 	  snprintf(fn,sizeof(fn),"anim-%d.bmp",q);
 	  send(fn);
+	  g_seg_mask = g_seg_font[q/10];
 
 	  if (f_open(&fp,fn,FA_READ) != FR_OK) {
 		  const char _s[] = "Can't open file\r\n";
@@ -519,7 +520,7 @@ int main(void)
 #else
 	  for (int i = 0; i < 10; i++) {
 		  g_seg_mask = g_seg_font[i];
-		  if (++pixlock > 26) pixlock = 0;
+		  if (++pixlock > 59) pixlock = 0;
 		  HAL_Delay(100);
 	  }
 #endif
