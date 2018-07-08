@@ -1,0 +1,7 @@
+(fp_lib_table
+  (lib (name tsop-54)(type Legacy)(uri "$(KIPRJMOD)/tsop-54.mod")(options "")(descr ""))
+  (lib (name "molex sd slot 2")(type Legacy)(uri "$(KIPRJMOD)/molex sd slot 2.mod")(options "")(descr ""))
+  (lib (name psa05)(type KiCad)(uri "$(KIPRJMOD)/psa05.pretty")(options "")(descr ""))
+  (lib (name qfp208)(type KiCad)(uri "$(KIPRJMOD)/qfp208.pretty")(options "")(descr ""))
+  (lib (name button_bourns)(type KiCad)(uri "$(KIPRJMOD)/button_bourns.pretty")(options "")(descr ""))
+)

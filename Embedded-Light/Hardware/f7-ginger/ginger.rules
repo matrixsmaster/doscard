@@ -1,0 +1,106 @@
+
+(rules PCB ginger
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 48186)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.2)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.8)
+    )
+  )
+  (rule
+    (width 150.0)
+    (clear 150.2)
+    (clear 75.0 (type smd_to_turn_gap))
+    (clear 37.6 (type smd_smd))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    "Net-(C1-Pad1)" GND "Net-(C2-Pad1)" +3V3 "Net-(C29-Pad2)" "Net-(C36-Pad2)" +5V /3v3int1
+    /3v3int2 "Net-(D1-Pad1)" "Net-(D2-Pad1)" "Net-(D2-Pad2)" "Net-(D3-Pad1)" "Net-(D3-Pad2)" "Net-(D4-Pad1)" "Net-(D4-Pad2)"
+    "Net-(D5-Pad1)" "Net-(D5-Pad2)" "/mem_a4" "/mem_a5" "/mem_a6" "/mem_a7" "/mem_a8" "/mem_a9"
+    "/mem_a11" "Net-(D6-Pad36)" "/mem_cke" "Net-(D6-Pad38)" "Net-(D6-Pad39)" "/mem_d4" "/mem_d5" "/mem_d6"
+    "/mem_d7" "/mem_d0" "/mem_d1" "/mem_d2" "/mem_d3" "/mem_we" "/mem_cas" "/mem_ras"
+    "/mem_cs" "Net-(D6-Pad20)" "Net-(D6-Pad21)" "/mem_a10" "/mem_a0" "/mem_a1" "/mem_a2" "/mem_a3"
+    "Net-(D7-Pad1)" "Net-(D8-Pad1)" "Net-(D8-Pad2)" /16seg1 /16seg0 /16seg10 /16seg9 /16seg2
+    /16seg8 /16seg11 /16seg7 /16seg13 /16seg15 /16seg3 /16seg12 /16seg16
+    /16seg14 "/16seg_A" /16seg6 /16seg4 /16seg5 "Net-(JP1-Pad1)" "Net-(JP1-Pad2)" "Net-(JP1-Pad3)"
+    "Net-(JP2-Pad1)" "Net-(P1-Pad5)" "/tft_rs" "/tft_wr" "/tft_rd" "/mem_d8" "/mem_d9" "/mem_d10"
+    "Net-(P1-Pad18)" "/mem_d11" "Net-(P1-Pad20)" "/mem_d12" "Net-(P1-Pad22)" "/mem_d13" "Net-(P1-Pad24)" "/mem_d14"
+    "Net-(P1-Pad26)" "/mem_d15" "Net-(P1-Pad28)" "/tft_cs" "Net-(P1-Pad30)" "Net-(P1-Pad31)" "Net-(P1-Pad32)" "/tft_reset"
+    "Net-(P1-Pad34)" "Net-(P1-Pad35)" "Net-(P1-Pad36)" "Net-(P1-Pad37)" "Net-(P1-Pad38)" "Net-(P1-Pad39)" "Net-(P1-Pad40)" "Net-(P3-Pad2)"
+    "Net-(P3-Pad3)" "Net-(P3-Pad4)" "Net-(P4-Pad2)" "Net-(P4-Pad3)" "Net-(P4-Pad4)" "Net-(P5-Pad2)" "Net-(P5-Pad3)" "Net-(P5-Pad4)"
+    "Net-(R3-Pad2)" "Net-(R6-Pad2)" "Net-(R9-Pad1)" "Net-(R10-Pad1)" "Net-(R11-Pad1)" "Net-(R12-Pad1)" "Net-(R13-Pad1)" "Net-(R14-Pad2)"
+    "Net-(SW10-Pad1)" "Net-(SW11-Pad1)" "Net-(SW12-Pad1)" "Net-(SW13-Pad1)" "Net-(U1-Pad2)" "Net-(U1-Pad3)" "Net-(U1-Pad4)" "Net-(U1-Pad5)"
+    "Net-(U1-Pad7)" "Net-(U1-Pad8)" "Net-(U1-Pad9)" "Net-(U1-Pad10)" "Net-(U1-Pad11)" "Net-(U1-Pad12)" "Net-(U1-Pad13)" "Net-(U1-Pad19)"
+    "Net-(U1-Pad20)" "Net-(U1-Pad21)" "Net-(U1-Pad27)" "Net-(U1-Pad28)" "Net-(U1-Pad29)" "Net-(U1-Pad30)" "Net-(U1-Pad31)" "Net-(U1-Pad36)"
+    "Net-(U1-Pad64)" "Net-(U1-Pad65)" "Net-(U1-Pad66)" "Net-(U1-Pad67)" "Net-(U1-Pad68)" "Net-(U1-Pad69)" "Net-(U1-Pad90)" "Net-(U1-Pad91)"
+    "Net-(U1-Pad95)" "Net-(U1-Pad96)" "Net-(U1-Pad97)" "Net-(U1-Pad98)" "Net-(U1-Pad99)" "Net-(U1-Pad100)" "Net-(U1-Pad101)" "Net-(U1-Pad102)"
+    "Net-(U1-Pad104)" "Net-(U1-Pad105)" "Net-(U1-Pad106)" "Net-(U1-Pad107)" "Net-(U1-Pad111)" "Net-(U1-Pad112)" "Net-(U1-Pad113)" "Net-(U1-Pad118)"
+    "Net-(U1-Pad119)" "Net-(U1-Pad120)" "Net-(U1-Pad121)" "Net-(U1-Pad122)" "Net-(U1-Pad123)" "Net-(U1-Pad126)" "Net-(U1-Pad127)" "Net-(U1-Pad128)"
+    "Net-(U1-Pad133)" "Net-(U1-Pad138)" "Net-(U1-Pad139)" "Net-(U1-Pad140)" "Net-(U1-Pad141)" "Net-(U1-Pad142)" "Net-(U1-Pad143)" "Net-(U1-Pad144)"
+    "Net-(U1-Pad147)" "Net-(U1-Pad151)" "Net-(U1-Pad152)" "Net-(U1-Pad153)" "Net-(U1-Pad154)" "Net-(U1-Pad155)" "Net-(U1-Pad156)" "Net-(U1-Pad157)"
+    "Net-(U1-Pad159)" "Net-(U1-Pad160)" "Net-(U1-Pad161)" "Net-(U1-Pad162)" "Net-(U1-Pad163)" "Net-(U1-Pad166)" "Net-(U1-Pad167)" "Net-(U1-Pad172)"
+    "Net-(U1-Pad174)" "Net-(U1-Pad175)" "Net-(U1-Pad176)" "Net-(U1-Pad177)" "Net-(U1-Pad178)" "Net-(U1-Pad190)" "Net-(U1-Pad192)" "Net-(U1-Pad193)"
+    "Net-(U1-Pad194)" "Net-(U1-Pad195)" "Net-(U1-Pad196)" "Net-(U1-Pad198)" "Net-(U1-Pad199)" "Net-(U1-Pad200)" "Net-(U1-Pad201)" "Net-(U1-Pad205)"
+    "Net-(U1-Pad206)" "Net-(U1-Pad207)" "Net-(U1-Pad208)" "Net-(U2-Pad1)" "Net-(U2-Pad8)" "Net-(U3-Pad2)" "Net-(U3-Pad3)" "Net-(U3-Pad6)"
+    "Net-(U3-Pad9)" "Net-(U3-Pad10)" "Net-(U3-Pad11)" "Net-(U3-Pad12)" "Net-(U3-Pad13)" "Net-(U3-Pad14)" "Net-(U3-Pad19)" "Net-(U3-Pad27)"
+    "Net-(U3-Pad28)" "Net-(U4-Pad2)" "Net-(U4-Pad3)" "Net-(U4-Pad6)" "Net-(U4-Pad9)" "Net-(U4-Pad10)" "Net-(U4-Pad11)" "Net-(U4-Pad12)"
+    "Net-(U4-Pad13)" "Net-(U4-Pad14)" "Net-(U4-Pad19)" "Net-(U4-Pad27)" "Net-(U4-Pad28)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)
