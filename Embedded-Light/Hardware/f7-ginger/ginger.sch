@@ -1797,7 +1797,7 @@ L R R20
 U 1 1 5B32E014
 P 5500 11850
 F 0 "R20" V 5580 11850 50  0000 C CNN
-F 1 "330" V 5500 11850 50  0000 C CNN
+F 1 "510" V 5500 11850 50  0000 C CNN
 F 2 "Resistors_SMD:R_0805" V 5430 11850 50  0001 C CNN
 F 3 "" H 5500 11850 50  0000 C CNN
 	1    5500 11850
@@ -2925,4 +2925,24 @@ Text Label 11450 1500 2    60   ~ 0
 cpu_reset
 Wire Wire Line
 	10850 1300 10850 1600
+Text Notes 3900 950  0    60   ~ 0
+TODO: replace jumper with button
+Text Notes 650  5050 0    60   ~ 0
+TODO: connect TFT_RD to 3V3 via 10k res.\nand optional DNP placeholder to connect to MCU's FMC_OE.
+Text Notes 2100 10650 0    60   ~ 0
+TODO: remove R5. Connect each cathode via\ndarlington pair (ULN2003A) + 330Ohm res.
+Text Notes 8600 10400 0    60   ~ 0
+TODO: remove UART3 channel
+Text Notes 11900 1300 0    60   ~ 0
+TODO: SWD connector
+Text Notes 9600 11250 0    60   ~ 0
+TODO: remove "weak" power input.
+Text Notes 4500 13750 0    60   ~ 0
+TODO: in case of using the battery power, it's pretty safe to remove a half of these capacitors.
+Text Notes 10100 8200 0    60   ~ 0
+TODO: more user LEDs (at least 2 more).
+Text Notes 10350 750  0    60   ~ 0
+TODO: 4-bit bus
+Text Notes 12550 5150 0    60   ~ 0
+TODO: replace mini USB with micro USB, or even better: USB A.
 $EndSCHEMATC
