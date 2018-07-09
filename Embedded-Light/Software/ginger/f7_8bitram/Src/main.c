@@ -81,27 +81,53 @@ const struct SGPIOPair g_seg_leds[] = {
 		{ Seg9_GPIO_Port, Seg9_Pin },
 		{ Seg10_GPIO_Port, Seg10_Pin },
 		{ Seg11_GPIO_Port, Seg11_Pin },
+		{ Seg13_GPIO_Port, Seg13_Pin }, //13 & 12 are swapped due to error in PCB design
 		{ Seg12_GPIO_Port, Seg12_Pin },
-		{ Seg13_GPIO_Port, Seg13_Pin },
 		{ Seg14_GPIO_Port, Seg14_Pin },
 		{ Seg15_GPIO_Port, Seg15_Pin },
 		{ Seg16_GPIO_Port, Seg16_Pin }
 };
 const uint32_t g_seg_font[] = {
-		0b00000000011111111, //0
-		0b00000000000001100, //1
-		0b01000100001110111, //2
-		0b01000100000111111, //3
-		0b01000100010001100, //4
-		0b01000100010111011, //5
-		0b01000100011111011, //6
-		0b00000000000001111, //7
-		0b01000100011111111, //8
-		0b01000100010111111, //9
+		0x000144FF,
+		0x0001000C,
+		0x00018877,
+		0x0001883F,
+		0x0001888C,
+		0x000188BB,
+		0x000188FB,
+		0x0001000F,
+		0x000188FF,
+		0x000188BF,
+		0x000088CF,
+		0x000094F3,
+		0x000000F3,
+		0x0000413F,
+		0x000080F3,
+		0x000080C3,
+		0x000008FB,
+		0x000088CC,
+		0x00002233,
+		0x0000003C,
+		0x000094C0,
+		0x000000F0,
+		0x000005CC,
+		0x000011CC,
+		0x000000FF,
+		0x000088C7,
+		0x000110FF,
+		0x000098C7,
+		0x000088BB,
+		0x00002203,
+		0x000000FC,
+		0x0000A884,
+		0x000050CC,
+		0x00005500,
+		0x00002500,
+		0x00004433,
 		0 //terminator
 };
-volatile uint8_t* pixbuf;
-volatile uint8_t pixlock = 0;
+volatile uint8_t* g_frames;
+volatile uint8_t g_frame_cnt = 0;
 volatile uint32_t g_btn_mask = 0;
 volatile uint8_t g_btn_cnt = 0;
 const struct SKeyboard g_kbd_btns = {
@@ -344,27 +370,11 @@ int main(void)
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(SDRAM_DQM_GPIO_Port,SDRAM_DQM_Pin,1);
-  HAL_GPIO_WritePin(Seg0_GPIO_Port,Seg0_Pin,1);
-  HAL_GPIO_WritePin(Seg1_GPIO_Port,Seg1_Pin,1);
-  HAL_GPIO_WritePin(Seg2_GPIO_Port,Seg2_Pin,1);
-  HAL_GPIO_WritePin(Seg3_GPIO_Port,Seg3_Pin,1);
-  HAL_GPIO_WritePin(Seg4_GPIO_Port,Seg4_Pin,1);
-  HAL_GPIO_WritePin(Seg5_GPIO_Port,Seg5_Pin,1);
-  HAL_GPIO_WritePin(Seg6_GPIO_Port,Seg6_Pin,1);
-  HAL_GPIO_WritePin(Seg7_GPIO_Port,Seg7_Pin,1);
-  HAL_GPIO_WritePin(Seg8_GPIO_Port,Seg8_Pin,1);
-  HAL_GPIO_WritePin(Seg9_GPIO_Port,Seg9_Pin,1);
-  HAL_GPIO_WritePin(Seg10_GPIO_Port,Seg10_Pin,1);
-  HAL_GPIO_WritePin(Seg11_GPIO_Port,Seg11_Pin,1);
-  HAL_GPIO_WritePin(Seg12_GPIO_Port,Seg12_Pin,1);
-  HAL_GPIO_WritePin(Seg13_GPIO_Port,Seg13_Pin,1);
-  HAL_GPIO_WritePin(Seg14_GPIO_Port,Seg14_Pin,1);
-  HAL_GPIO_WritePin(Seg15_GPIO_Port,Seg15_Pin,1);
-  HAL_GPIO_WritePin(Seg16_GPIO_Port,Seg16_Pin,1);
+  for (int i = 0; i < 17; i++)
+	  HAL_GPIO_WritePin(g_seg_leds[i].port,g_seg_leds[i].pin,1);
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_GPIO_WritePin(TFT_RS_GPIO_Port,TFT_RS_Pin,1);
 
-//#if USE_SDRAM
   HAL_GPIO_WritePin(SDRAM_DQM_GPIO_Port,SDRAM_DQM_Pin,0);
   if (SDRAM_InitSequence(&hsdram1)) {
 	  const char _s[] = "Unable to init SDRAM :(\r\n";
@@ -377,9 +387,6 @@ int main(void)
 	  size_t sz = 8*1024*1024; //8 MiB
 	  memset(tst,0,sz);
 	  send("memory nullified (bank 0)\r\n");
-//	  uint8_t* tst2 = (uint8_t*)0xC0800000;
-//	  memset(tst2,0,sz);
-//	  send("memory nullified (bank 1)\r\n");
 
 #if 0
 	  int16_t x = HAL_RNG_GetRandomNumber(&hrng);
@@ -417,56 +424,29 @@ int main(void)
 		  if (tst[i] != (uint8_t)i) {
 			  snprintf(buf,sizeof(buf),"mismatch @ %u\r\n",i);
 			  send(buf);
-		  } /*else {
-	  			  snprintf(buf,sizeof(buf),"%u OK\r\n",i);
-	  			  send(buf);
-	  		  }*/
+		  }
 	  }
 	  send("OK\r\n");
   }
 
-//#elif 0
   TFT_Init();
   Address_set(0,0,239,319);
   send("TFT LCD Initialization complete\r\n");
-#if 1
-  pixbuf = (uint8_t*)SDRAM_BANK_ADDR;
-  memset(pixbuf,0,320*240*4);
-//  for (int i = 0; i < 320*240; i++) {
-//	  pixbuf[i*4+1] = gimp_image.pixel_data[i*2+1];
-//	  pixbuf[i*4+3] = gimp_image.pixel_data[i*2];
-//  }
-//  HAL_TIM_Base_Start_IT(&htim6);
-//  if (HAL_DMA2D_Start(&hdma2d,(uint32_t)pixbuf,TFT_LCD_ADDR,480,320) == HAL_OK) send("DMA2D start OK\r\n");
-//  else {
-//	  send("DMA2D start FAILED\r\n");
-//	  Error_Handler();
-//  }
-//  if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK) send("DMA2D transfer complete\r\n");
-//  else send("Error polling DMA2D transfer status\r\n");
-#else
-  for (int i = 0; i < 320*240; i++)
-	  TFT_Snd((((uint16_t)gimp_image.pixel_data[i*2+1])<<8) | gimp_image.pixel_data[i*2]);
-#endif
-//#endif
+  g_frames = (uint8_t*)SDRAM_BANK_ADDR;
+  memset(g_frames,0,320*240*4);
 
   memset(&SDFatFS,0,sizeof(SDFatFS));
   FRESULT r = f_mount(&SDFatFS,SDPath,1);
-  {
-	  char _s[] = "r = 0\r\n";
-	  _s[4] += r;
-	  send(_s);
-	  g_seg_mask = g_seg_font[r & 0xF];
-  }
+  g_seg_mask = g_seg_font[r & 0xF];
   if (r != FR_OK) Error_Handler();
-  send("SD filesystem mounted\r\n");
+  send("SD mounted\r\n");
 
-  const int max_frames = 10;
+  const int max_frames = 30;
   for (int q = 0; q < max_frames; q++) {
 	  FIL fp;
 	  UINT br;
 	  char fn[64];
-	  volatile uint8_t* hold = pixbuf + q*(320*240*4);
+	  volatile uint8_t* hold = g_frames + q*(320*240*4);
 
 	  memset(&fp,0,sizeof(fp));
 	  snprintf(fn,sizeof(fn),"anim-%d.bmp",q);
@@ -480,10 +460,8 @@ int main(void)
 	  }
 
 	  f_lseek(&fp,138);
-//	  f_read(&fp,hold,320*240*4,&br);
 	  uint8_t r,g,b;
 	  uint16_t x, i = 0;
-//	  pixlock = 1;
 	  while (f_read(&fp,hold,4,&br) == FR_OK && br == 4) {
 		  r = hold[2] >> 3;
 		  g = hold[1] >> 2;
@@ -498,7 +476,6 @@ int main(void)
 		  i++;
 		  hold += 4;
 	  }
-//	  pixlock = 0;
 	  f_close(&fp);
   }
   HAL_TIM_Base_Start_IT(&htim6);
@@ -506,44 +483,60 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t pl = 1;
+  int n, i = 0;
+  for (n = 0; g_seg_font[n] > 0; n++) ;
   while (1)
   {
 
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-#if 0
-	  HAL_GPIO_TogglePin(Seg16_GPIO_Port,Seg16_Pin);
-	  HAL_Delay(500);
-#elif 0
-	  for (int j = 0; j < 8; j++) {
-		  for (int i = 0; i < 8; i++) {
-			  g_seg_mask = (1<<i);
-			  HAL_Delay(50);
-		  }
-		  g_seg_mask = 0;
+	  if (g_btn_mask & BTN_LJ_W) {
+		  if (g_frame_cnt == 0) g_frame_cnt = max_frames - 1;
+		  else g_frame_cnt--;
+
+	  } else if (g_btn_mask & BTN_LJ_E) {
+		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
+
+	  } else if (g_btn_mask & BTN_LJ_N) {
+		  g_frame_cnt = 0;
+		  pl = 0;
+
+	  } else if (g_btn_mask & BTN_LJ_S) {
+		  g_frame_cnt = max_frames - 1;
+		  pl = 0;
+
+	  } else if (g_btn_mask & BTN_LJ_C) {
+		  pl ^= 1;
+
+	  } else if (g_btn_mask & BTN_RJ_E) {
+		  i++;
+
+	  } else if (g_btn_mask & BTN_RJ_W) {
+		  i--;
+
+	  } else if (g_btn_mask & BTN_RJ_N) {
+		  i += 8;
+
+	  } else if (g_btn_mask & BTN_RJ_S) {
+		  i -= 8;
+
+	  } else if (g_btn_mask & BTN_RJ_C) {
+		  char _s[] = "Sym = 0\r\n";
+		  _s[6] += i;
+		  send(_s);
 	  }
-	  for (int i = 0; i < 3; i++) {
-		  g_seg_mask = ~g_seg_mask;
-		  HAL_Delay(300);
+
+	  if (pl) {
+		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
 	  }
-	  g_seg_mask = 0;
-	  HAL_Delay(1000);
-#elif 0
-	  for (int i = 0; i < 10; i++) {
-		  g_seg_mask = g_seg_font[i];
-		  HAL_Delay(600);
-	  }
-#else
-	  char dbuf[128];
-	  for (int i = 0; i < 10; i++) {
-		  g_seg_mask = g_seg_font[i];
-		  if (++pixlock >= max_frames) pixlock = 0;
-		  snprintf(dbuf,sizeof(dbuf),"K=0x%08lX\tc=%hu\tr4=%c\r\n",g_btn_mask,g_btn_cnt,'0'+HAL_GPIO_ReadPin(KbdR4_GPIO_Port,KbdR4_Pin));
-		  send(dbuf);
-		  HAL_Delay(100);
-	  }
-#endif
+
+	  if (i < 0) i = 0;
+	  if (i >= n) i = n-1;
+	  g_seg_mask = g_seg_font[i];
+
+	  HAL_Delay(100);
   }
   /* USER CODE END 3 */
 

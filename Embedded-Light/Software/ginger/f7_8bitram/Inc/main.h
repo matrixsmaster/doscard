@@ -143,6 +143,27 @@
 
 #define TFT_LCD_ADDR						     ((uint32_t)0x60000000)
 
+#define BTN_LM_1	0x80000
+#define BTN_LM_2	0x4000
+#define BTN_LM_3	0x200
+#define BTN_RM_1	0x8000
+#define BTN_RM_2	0x400
+#define BTN_RM_3	0x20
+#define BTN_LJ_N	0x10
+#define BTN_LJ_E	0x2000
+#define BTN_LJ_S	0x100
+#define BTN_LJ_W	0x40000
+#define BTN_LJ_C	0x1
+#define BTN_RJ_N	0x4
+#define BTN_RJ_E	0x800
+#define BTN_RJ_S	0x40
+#define BTN_RJ_W	0x10000
+#define BTN_RJ_C	0x2
+#define BTN_Q_NW	0x8
+#define BTN_Q_NE	0x1000
+#define BTN_Q_SW	0x20000
+#define BTN_Q_SE	0x80
+
 struct SGPIOPair {
 	  GPIO_TypeDef* port;
 	  uint16_t pin;
@@ -158,8 +179,8 @@ void send(const char* s);
 extern volatile uint32_t g_seg_mask;
 extern volatile uint8_t g_seg_cnt;
 extern const struct SGPIOPair g_seg_leds[];
-extern volatile uint8_t* pixbuf;
-extern volatile uint8_t pixlock;
+extern volatile uint8_t* g_frames;
+extern volatile uint8_t g_frame_cnt;
 extern volatile uint32_t g_btn_mask;
 extern volatile uint8_t g_btn_cnt;
 extern const struct SKeyboard g_kbd_btns;

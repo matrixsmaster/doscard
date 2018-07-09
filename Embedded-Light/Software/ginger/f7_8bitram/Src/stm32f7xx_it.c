@@ -203,7 +203,7 @@ void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 	if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK)
-		HAL_DMA2D_Start(&hdma2d,((uint32_t)pixbuf)+pixlock*320*240*4,TFT_LCD_ADDR,480,320);
+		HAL_DMA2D_Start(&hdma2d,((uint32_t)g_frames)+g_frame_cnt*320*240*4,TFT_LCD_ADDR,480,320);
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
@@ -232,7 +232,6 @@ void TIM7_IRQHandler(void)
 	v >>= 1;
 	g_btn_mask &= ~((uint32_t)0x1F << (g_btn_cnt*5));
 	g_btn_mask |= v << (g_btn_cnt*5);
-//	g_btn_mask = v;
 	if (++g_btn_cnt > 3) g_btn_cnt = 0;
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
