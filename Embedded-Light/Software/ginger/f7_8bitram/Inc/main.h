@@ -148,6 +148,11 @@ struct SGPIOPair {
 	  uint16_t pin;
 };
 
+struct SKeyboard {
+	struct SGPIOPair trans[4];
+	struct SGPIOPair recv[5];
+};
+
 void send(const char* s);
 
 extern volatile uint32_t g_seg_mask;
@@ -155,6 +160,9 @@ extern volatile uint8_t g_seg_cnt;
 extern const struct SGPIOPair g_seg_leds[];
 extern volatile uint8_t* pixbuf;
 extern volatile uint8_t pixlock;
+extern volatile uint32_t g_btn_mask;
+extern volatile uint8_t g_btn_cnt;
+extern const struct SKeyboard g_kbd_btns;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

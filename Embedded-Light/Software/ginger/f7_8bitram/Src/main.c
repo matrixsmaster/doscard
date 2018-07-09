@@ -102,6 +102,22 @@ const uint32_t g_seg_font[] = {
 };
 volatile uint8_t* pixbuf;
 volatile uint8_t pixlock = 0;
+volatile uint32_t g_btn_mask = 0;
+volatile uint8_t g_btn_cnt = 0;
+const struct SKeyboard g_kbd_btns = {
+		{		{ KbdT0_GPIO_Port, KbdT0_Pin },
+				{ KbdT1_GPIO_Port, KbdT1_Pin },
+				{ KbdT2_GPIO_Port, KbdT2_Pin },
+				{ KbdT3_GPIO_Port, KbdT3_Pin },
+		},
+		{
+				{ KbdR0_GPIO_Port, KbdR0_Pin },
+				{ KbdR1_GPIO_Port, KbdR1_Pin },
+				{ KbdR2_GPIO_Port, KbdR2_Pin },
+				{ KbdR3_GPIO_Port, KbdR3_Pin },
+				{ KbdR4_GPIO_Port, KbdR4_Pin },
+		}
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -445,7 +461,8 @@ int main(void)
   if (r != FR_OK) Error_Handler();
   send("SD filesystem mounted\r\n");
 
-  for (int q = 0; q < 60; q++) {
+  const int max_frames = 10;
+  for (int q = 0; q < max_frames; q++) {
 	  FIL fp;
 	  UINT br;
 	  char fn[64];
@@ -518,9 +535,12 @@ int main(void)
 		  HAL_Delay(600);
 	  }
 #else
+	  char dbuf[128];
 	  for (int i = 0; i < 10; i++) {
 		  g_seg_mask = g_seg_font[i];
-		  if (++pixlock > 59) pixlock = 0;
+		  if (++pixlock >= max_frames) pixlock = 0;
+		  snprintf(dbuf,sizeof(dbuf),"K=0x%08lX\tc=%hu\tr4=%c\r\n",g_btn_mask,g_btn_cnt,'0'+HAL_GPIO_ReadPin(KbdR4_GPIO_Port,KbdR4_Pin));
+		  send(dbuf);
 		  HAL_Delay(100);
 	  }
 #endif

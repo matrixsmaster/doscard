@@ -2945,4 +2945,6 @@ Text Notes 10350 750  0    60   ~ 0
 TODO: 4-bit bus
 Text Notes 12550 5150 0    60   ~ 0
 TODO: replace mini USB with micro USB, or even better: USB A.
+Text Notes 2100 10900 0    60   ~ 0
+TODO: segments 12 and 13 should be swapped!
 $EndSCHEMATC

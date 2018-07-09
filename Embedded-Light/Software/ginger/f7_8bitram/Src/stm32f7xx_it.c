@@ -222,6 +222,18 @@ void TIM7_IRQHandler(void)
 	HAL_GPIO_WritePin(g_seg_leds[prev].port,g_seg_leds[prev].pin,1);
 	HAL_GPIO_WritePin(g_seg_leds[g_seg_cnt].port,g_seg_leds[g_seg_cnt].pin,v);
 	if (++g_seg_cnt > 16) g_seg_cnt = 0;
+
+	prev = (g_btn_cnt > 0)? g_btn_cnt-1 : 3;
+	HAL_GPIO_WritePin(g_kbd_btns.trans[prev].port,g_kbd_btns.trans[prev].pin,0);
+	HAL_GPIO_WritePin(g_kbd_btns.trans[g_btn_cnt].port,g_kbd_btns.trans[g_btn_cnt].pin,1);
+	v = 0;
+	for (int i = 4; i >= 0; i--,v<<=1)
+		v |= HAL_GPIO_ReadPin(g_kbd_btns.recv[i].port,g_kbd_btns.recv[i].pin);
+	v >>= 1;
+	g_btn_mask &= ~((uint32_t)0x1F << (g_btn_cnt*5));
+	g_btn_mask |= v << (g_btn_cnt*5);
+//	g_btn_mask = v;
+	if (++g_btn_cnt > 3) g_btn_cnt = 0;
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
