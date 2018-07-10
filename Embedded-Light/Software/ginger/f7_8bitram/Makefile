@@ -26,7 +26,7 @@ LINKSCR := -TSTM32F746BGTx_FLASH.ld
 INIT	:= $(MNDIR)/startup_stm32f746xx.o
 
 DBG		:= 
-OPT		:= -O0
+OPT		:= -O2
  
 CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1
 
@@ -69,11 +69,16 @@ clean:
 
 purge:
 	find . -type f -iname '*.o' -delete
+	sudo $(STLNK_P)/st-flash erase
 .PHONY: purge
 
 upload: all
 	sudo $(STLNK_P)/st-flash --reset write $(APP:.elf=.bin) 0x08000000
 .PHONY:	upload
+
+gr_upload: all
+	SUDO_ASKPASS=$(shell which ssh-askpass) sudo -A $(STLNK_P)/st-flash --reset write $(APP:.elf=.bin) 0x08000000
+.PHONY:	gr_upload
 
 %.o:	%.c
 	$(CC_INV) -c -o $@ $<
