@@ -64,7 +64,7 @@ clean:
 	rm -f $(DEPS_OBJ)
 	rm -f $(PROG_OBJ)
 	rm -f $(INIT)
-	rm -f $(APP) $(APP:.elf=.bin)
+	rm -f $(APP) $(APP:.elf=.bin) $(APP).map
 .PHONY: clean
 
 purge:
