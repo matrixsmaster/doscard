@@ -142,6 +142,9 @@
 #define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)
 
 #define TFT_LCD_ADDR						     ((uint32_t)0x60000000)
+#define TFT_LCD_WIDTH							 240
+#define TFT_LCD_HEIGHT							 320
+#define TFT_TOTAL_BYTES							 (TFT_LCD_WIDTH*TFT_LCD_HEIGHT*4)
 
 #define BTN_LM_1	0x80000
 #define BTN_LM_2	0x4000

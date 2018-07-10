@@ -60,6 +60,7 @@
 #include "fmc.h"
 
 /* USER CODE BEGIN Includes */
+#include "os.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -402,7 +403,6 @@ int main(void)
 	  memset(tst,0,sz);
 	  send("memory nullified (bank 0)\r\n");
 
-#if 1
 	  int16_t x = HAL_RNG_GetRandomNumber(&hrng);
 	  snprintf(buf,sizeof(buf),"Value generated: %hd\r\n",x);
 	  send(buf);
@@ -415,14 +415,6 @@ int main(void)
 	  snprintf(buf,sizeof(buf),"[ALIGNED] x = %hd\r\n",x);
 	  send(buf);
 
-//	  x = HAL_RNG_GetRandomNumber(&hrng);
-//	  snprintf(buf,sizeof(buf),"Next value generated: %hd\r\n",x);
-//	  send(buf);
-
-	  /*UNALIGNED DEREFERENCE IS STILL NOT WORKING ON F7 DEVICES,
-	   * ALTHOUGH IT'S WORKING PERFECTLY ON THE F4 DEVICES.
-	   */
-
 	  *(int16_t*)&tst[3] = x; //unaligned write access
 	  snprintf(buf,sizeof(buf),"[UNALIGNED] Wrote %hd\r\n",x);
 	  send(buf);
@@ -430,7 +422,6 @@ int main(void)
 	  x = *(int16_t*)&tst[3]; //unaligned read access
 	  snprintf(buf,sizeof(buf),"[UNALIGNED] x = %hd\r\n",x);
 	  send(buf);
-#endif
 
 	  for (size_t i = 0; i < sz; i++) tst[i] = (uint8_t)i;
 	  send("wrote some data\r\nchecking...  ");
@@ -444,10 +435,11 @@ int main(void)
   }
 
   TFT_Init();
-  Address_set(0,0,239,319);
+  Address_set(0,0,TFT_LCD_WIDTH-1,TFT_LCD_HEIGHT-1);
   send("TFT LCD Initialization complete\r\n");
   g_frames = (uint8_t*)SDRAM_BANK_ADDR;
-  memset(g_frames,0,320*240*4);
+  const int max_frames = 1;
+  memset(g_frames,0,TFT_TOTAL_BYTES);
 
   memset(&SDFatFS,0,sizeof(SDFatFS));
   FRESULT r = f_mount(&SDFatFS,SDPath,1);
@@ -455,7 +447,7 @@ int main(void)
   if (r != FR_OK) Error_Handler();
   send("SD mounted\r\n");
 
-  const int max_frames = 30;
+#if 0
   for (int q = 0; q < max_frames; q++) {
 	  FIL fp;
 	  UINT br;
@@ -463,6 +455,7 @@ int main(void)
 	  volatile uint8_t* hold = g_frames + q*(320*240*4);
 
 	  memset(&fp,0,sizeof(fp));
+	  //convert gif into bmp sequence: $ convert animation.gif -rotate 180 -flop anim.bmp
 	  snprintf(fn,sizeof(fn),"anim-%d.bmp",q);
 	  send(fn);
 	  g_seg_mask = g_seg_font[q/10];
@@ -492,14 +485,18 @@ int main(void)
 	  }
 	  f_close(&fp);
   }
+#endif
   HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint8_t pl = 1;
-  int n, i = 0;
+  int n, i = 0, col = 0, row = 0;
   for (n = 0; g_seg_font[n] > 0; n++) ;
+  if (OS_InitFloppy()) OS();
+  else Error_Handler();
+
   while (1)
   {
 
@@ -537,14 +534,23 @@ int main(void)
 		  i -= 8;
 
 	  } else if (g_btn_mask & BTN_RJ_C) {
-		  char _s[] = "Sym = 0\r\n";
-		  _s[6] += i;
-		  send(_s);
+//		  char _s[] = "Sym = 0\r\n";
+//		  _s[6] += i;
+//		  send(_s);
+
+		  char b[128];
+		  snprintf(b,sizeof(b),"Sym = %c, col = %d, row = %d, cnt = %hu\r\n",'0'+i,col,row,g_frame_cnt);
+		  send(b);
+		  OS_DrawChar(col++,row,'0'+i);
+		  if (col >= 80) {
+			  col = 0;
+			  if (++row >= 25) row = 0;
+		  }
 	  }
 
-	  if (pl) {
-		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
-	  }
+//	  if (pl) {
+//		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
+//	  }
 
 	  if (i < 0) i = 0;
 	  if (i >= n) i = n-1;

@@ -19,24 +19,23 @@ INCLS	:= -IInc
 INCLS	+= $(addprefix -I,$(shell find $(DEPDRV) -type f -iname "*.h" | xargs dirname | sort -u))
 INCLS	+= $(addprefix -I,$(shell find $(DEPMDW) -type f -iname "*.h" | xargs dirname | sort -u))
 
-CHIP	:= -DSTM32F746xx
-CHIP	+= -mcpu=cortex-m7 -mthumb
+CHIP	:= -mcpu=cortex-m7 -mthumb
 CHIP	+= -specs=nosys.specs
+CHIP	+= -DSTM32F746xx
 LINKSCR := -TSTM32F746BGTx_FLASH.ld
 INIT	:= $(MNDIR)/startup_stm32f746xx.o
 
 DBG		:= 
-OPT		:= -O2
+OPT		:= -Os
  
 CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1
 
-CC_FLAG := -std=gnu99 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fno-strict-aliasing
+CC_FLAG := -std=gnu99 $(CHIP) $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections
 CC_FLAG += -mno-sched-prolog -fno-hosted -fmessage-length=0
 CC_FLAG += -Wno-deprecated-declarations -Wno-unused-parameter -Wno-unused-variable
-CC_FLAG += $(CHIP)
 
-CXX_FLAG := -std=c++11 $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fno-strict-aliasing
-CXX_FLAG += $(CHIP)
+CXX_FLAG := -std=c++11 $(CHIP) $(DBG) $(OPT) -Wall -Wextra -ffunction-sections -fdata-sections -fsigned-char
+CXX_FLAG += -DUSE_MINI_THREADS
 
 LD_FLAG := $(CHIP) $(DBG) $(OPT) -L$(DEPSRC) -Wl,--gc-sections
 LD_FLAG += -mcpu=cortex-m7 -static -fwhole-program -Xlinker $(LINKSCR)
@@ -57,14 +56,14 @@ CXX_INV	:= $(CXX) $(CXX_FLAG) $(CC_DEFS) $(INCLS)
 all:	$(DEPS_OBJ) $(INIT)
 	$(LD) $(LD_FLAG) -o $(APP) $(DEPS_OBJ) $(INIT)
 	$(OBJCP) -O binary $(APP) $(APP:.elf=.bin)
-#	$(OBJCP) -O ihex $(APP) $(APP:.elf=.hex)
+	$(OBJCP) -O ihex $(APP) $(APP:.elf=.hex)
 .PHONY:	all
 
 clean:
 	rm -f $(DEPS_OBJ)
 	rm -f $(PROG_OBJ)
 	rm -f $(INIT)
-	rm -f $(APP) $(APP:.elf=.bin) $(APP).map
+	rm -f $(APP) $(APP:.elf=.bin) $(APP:.elf=.hex) $(APP).map
 .PHONY: clean
 
 purge:
