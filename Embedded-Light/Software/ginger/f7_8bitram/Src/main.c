@@ -224,19 +224,20 @@ int SDRAM_InitSequence(SDRAM_HandleTypeDef *hsdram)
 
 static void TFT_Snd(uint16_t x)
 {
-	HAL_Delay(2);
+	HAL_Delay(5);
 	uint16_t data = x & 0xFF00; //High byte
 	HAL_SRAM_Write_16b(&hsram1,(uint32_t*)TFT_LCD_ADDR,&data,1);
 	data = x << 8; //Low byte
-	HAL_Delay(2);
+	HAL_Delay(5);
 	HAL_SRAM_Write_16b(&hsram1,(uint32_t*)TFT_LCD_ADDR,&data,1);
 }
 
 static void TFT_Cmd(uint16_t cmd)
 {
-//	HAL_Delay(10);
+	HAL_Delay(1);
 	HAL_GPIO_WritePin(TFT_RS_GPIO_Port,TFT_RS_Pin,0);
 	TFT_Snd(cmd);
+	HAL_Delay(1);
 	HAL_GPIO_WritePin(TFT_RS_GPIO_Port,TFT_RS_Pin,1);
 }
 
@@ -348,10 +349,10 @@ int main(void)
   MPU_Config();
 
   /* Enable I-Cache-------------------------------------------------------------*/
-//  SCB_EnableICache();
+  SCB_EnableICache();
 
   /* Enable D-Cache-------------------------------------------------------------*/
-//  SCB_EnableDCache();
+  SCB_EnableDCache();
 
   /* MCU Configuration----------------------------------------------------------*/
 
@@ -401,7 +402,7 @@ int main(void)
 	  memset(tst,0,sz);
 	  send("memory nullified (bank 0)\r\n");
 
-#if 0
+#if 1
 	  int16_t x = HAL_RNG_GetRandomNumber(&hrng);
 	  snprintf(buf,sizeof(buf),"Value generated: %hd\r\n",x);
 	  send(buf);
