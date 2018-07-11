@@ -123,7 +123,7 @@ void OS_DrawChar(int col, int row, char x)
 
 	int cx = col * 9;
 	int cy = row * 6;
-
+#if 0
 	if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK)
 		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
 	else
@@ -133,6 +133,20 @@ void OS_DrawChar(int col, int row, char x)
 		HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
 	else
 		HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,0);
+#else
+	uint8_t* to = (uint8_t*)SDRAM_BANK_ADDR;
+	uint8_t* fr = OS_Font_Array+((x-33)*24);
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 6; j++) {
+			to[(cy*LCD_LINE_SIZE+cx)*3] = 0;
+			to[(cy*LCD_LINE_SIZE+cx)*3+1] = ((fr[i*3+j/2] >> ((j & 1)*4)) & 1)? 0xFF:0;
+			to[(cy*LCD_LINE_SIZE+cx)*3+2] = 0;
+			cx++;
+		}
+		cx = col * 9;
+		cy++;
+	}
+#endif
 }
 
 void OS_PrintString(char* str)

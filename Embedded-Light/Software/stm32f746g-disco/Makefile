@@ -26,7 +26,7 @@ LINKSCR := -TSTM32F746NGHx_FLASH.ld
 INIT	:= $(MNDIR)/startup_stm32f746xx.o
 
 DBG		:= -g -gdwarf-2
-OPT		:= -O0
+OPT		:= -O2
  
 CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1
 

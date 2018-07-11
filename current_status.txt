@@ -12,7 +12,7 @@ Status		OK, boots up the target OS, but have no user input.
 
 Platform	STM32F746G-DISCOVERY
 Library		HAL
-Status		Not ready. Peripherals working, screen rendering too.
+Status		OS boots up, peripherals working, screen rendering issues are detected on some boards.
 
 Platform	F7-Ginger
 Library		HAL
