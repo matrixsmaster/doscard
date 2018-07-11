@@ -2,6 +2,10 @@ Platform	Linux
 Library		glibc, SDL
 Status		OK and ready to work with. You can use XShell as example code.
 
+Platform	Windows
+Library		mingw-glibc
+Status		It compiles and runs, but crashes very often for yet unknown reason.
+
 Platform	STM32F429I-DISCOVERY
 Library		SPL
 Status		OK, boots up the target OS, but have no user input.
