@@ -112,6 +112,11 @@ uint8_t* OS_InitDisk(const char* name, uint32_t* len)
 
 void OS_DrawChar(int col, int row, char x)
 {
+	//FIXME: debug only
+	char buf[64];
+	snprintf(buf,sizeof(buf),"%02d:%02d '%c' 0x%02X\r\n",col,row,x,x);
+	HAL_UART_Transmit(&huart1,(uint8_t*)buf,strlen(buf),10);
+
 	if (x < 33 || x > 126) return;
 
 	int cx = col * 9;
@@ -148,6 +153,7 @@ void OS()
 
 	for (int l = 1, p = 0, r = 0;;) {
 		HAL_GPIO_TogglePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin);
+//		HAL_UART_Transmit(&huart1,"cyc\r\n",5,10);
 
 		r = VM86_FullStep();
 		if (r < 0) break;

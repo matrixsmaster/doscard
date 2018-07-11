@@ -69,7 +69,7 @@
 #include "usbd_cdc_if.h"
 #include "VM86conf.h"
 #include "os.h"
-//#include "dollstop.h"
+#include "faceoff2.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -81,6 +81,7 @@ FMC_SDRAM_CommandTypeDef command;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MPU_Config(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -162,6 +163,9 @@ int main(void)
 
   /* USER CODE END 1 */
 
+  /* MPU Configuration----------------------------------------------------------*/
+  MPU_Config();
+
   /* Enable I-Cache-------------------------------------------------------------*/
   SCB_EnableICache();
 
@@ -211,6 +215,8 @@ int main(void)
   HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
   BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
   HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
+  HAL_Delay(500);
 
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
@@ -223,27 +229,20 @@ int main(void)
 
   HAL_UART_Transmit(&huart1,(uint8_t*)"Loading disks...\r\n",18,100);
 //  bios_img = OS_InitDisk(OS_BIOS_FILE,&bios_len);
-//  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
 //  if (!bios_img || !fd_img) Error_Handler();
 
   char dbg[128];
   snprintf(dbg,sizeof(dbg),"Test string. Last address = 0x%08lX",OS_Last_Address);
   OS_PrintString(dbg);
+  HAL_Delay(500);
 
-  uint8_t* arr = SDRAM_PTR;//(uint8_t*)malloc(128);
-  if (!arr) Error_Handler();
-//  memset(arr,0xFF,128);
-  while ((uint32_t)arr < SDRAM_BANK_ADDR+9*1024*1024) {
-	  snprintf(dbg,sizeof(dbg),"[0x%08lX] = %i\r\n",(uint32_t)arr,*(int16_t*)&arr[0]);
-	  HAL_UART_Transmit(&huart1,(uint8_t*)dbg,strlen(dbg),100);
-	  arr += 1024;
-  }
-
-//  OS();
+  OS();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_UART_Transmit(&huart1,(uint8_t*)"stop\r\n",6,100);
   while (1)
   {
 
@@ -349,6 +348,34 @@ void SystemClock_Config(void)
 
 /* USER CODE END 4 */
 
+/* MPU Configuration */
+
+void MPU_Config(void)
+{
+  MPU_Region_InitTypeDef MPU_InitStruct;
+
+  /* Disables the MPU */
+  HAL_MPU_Disable();
+    /**Initializes and configures the Region and the memory to be protected 
+    */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+  MPU_InitStruct.BaseAddress = 0xC0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_8MB;
+  MPU_InitStruct.SubRegionDisable = 0x0;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Enables the MPU */
+  HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+
+}
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM6 interrupt took place, inside
