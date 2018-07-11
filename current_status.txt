@@ -1,0 +1,16 @@
+Platform	Linux
+Library		glibc, SDL
+Status		OK and ready to work with. You can use XShell as example code.
+
+Platform	STM32F429I-DISCOVERY
+Library		SPL
+Status		OK, boots up the target OS, but have no user input.
+
+Platform	STM32F746G-DISCOVERY
+Library		HAL
+Status		Not ready. Peripherals working, screen rendering too.
+
+Platform	F7-Ginger
+Library		HAL
+Status		Almost ready, it starts up the booting process, but hangs somewhere in the middle.
+
