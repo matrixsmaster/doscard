@@ -113,16 +113,18 @@ uint8_t* OS_InitDisk(const char* name, uint32_t* len)
 void OS_DrawChar(int col, int row, char x)
 {
 	//FIXME: debug only
+#if 0
 	char buf[64];
 	snprintf(buf,sizeof(buf),"%02d:%02d '%c' 0x%02X\r\n",col,row,x,x);
 	HAL_UART_Transmit(&huart1,(uint8_t*)buf,strlen(buf),10);
+#endif
 
 	if (x < 33 || x > 126) return;
 
 	int cx = col * 9;
 	int cy = row * 6;
 
-	if (HAL_DMA2D_PollForTransfer(&hdma2d,1) == HAL_OK)
+	if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK)
 		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
 	else
 		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,0);
@@ -135,7 +137,7 @@ void OS_DrawChar(int col, int row, char x)
 
 void OS_PrintString(char* str)
 {
-	int col = 0, row = 0;
+	int col = 0, row = 1;
 	for (unsigned i = 0; i < strlen(str); i++) {
 		OS_DrawChar(col,row,str[i]);
 		if (++col >= 80) {
@@ -147,16 +149,44 @@ void OS_PrintString(char* str)
 
 void OS()
 {
+	//FIXME: debug stuff
+	char b[80];
+#if 0
+	FIL fp;
+	UINT rb;
+	uint8_t bt = 0;
+	memset(&fp,0,sizeof(fp));
+	if (f_open(&fp,"list.bin",FA_READ) != FR_OK) {
+		snprintf(b,sizeof(b),"Unable to open list file!\r\n");
+		return;
+
+	}
+#endif
+
 	memset(SDRAM_PTR,0,LCD_SCREEN_SIZE);
 	VM86_Start(OS_Last_Address);
 	OS_PrintString("VM Init complete");
 
-	for (int l = 1, p = 0, r = 0;;) {
+	for (int cyc = 0, l = 1, p = 0, r = 0;;cyc++) {
 		HAL_GPIO_TogglePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin);
 //		HAL_UART_Transmit(&huart1,"cyc\r\n",5,10);
+#if 0
+		if (f_read(&fp,&bt,1,&rb) != FR_OK || !rb) {
+			snprintf(b,sizeof(b),"Unable to read list file! (cyc=%d)\r\n",cyc);
+			f_close(&fp);
+			break;
+		}
+		VM86_SetExpectedByte(bt);
+#endif
 
 		r = VM86_FullStep();
-		if (r < 0) break;
+		if (r < 0) {
+#if 0
+			snprintf(b,sizeof(b),"Stopped at %d. r=%d. Expecting 0x%02X, got 0x%02X\r\n",cyc,-r,bt,VM86_GetRealByte());
+			HAL_UART_Transmit(&huart1,(uint8_t*)b,strlen(b),10);
+#endif
+			break;
+		}
 
 		if (r > 0x01000000) {
 			l = (r & 0x00FF0000) >> 16;

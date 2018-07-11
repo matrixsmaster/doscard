@@ -23,7 +23,7 @@ class VM86
 {
 protected:
     uint8_t *mem, *io_ports;
-	uint8_t *opcode_stream,*regs8;
+//	uint8_t *opcode_stream,*regs8;
 	uint16_t *regs16;
 
 	uint8_t i_rm = 0, i_w = 0, i_reg = 0, i_mod = 0, i_mod_size = 0, i_d = 0, i_reg4bit = 0;
@@ -89,6 +89,9 @@ public:
 	void getResolution(int &w, int &h) const;
 	bool PullVideoData(void *data, int len);
 	void PullAudioData(void *data, uint8_t *stream, int len);
+
+	volatile uint8_t next_op; //FIXME: debug only!
+	uint8_t *opcode_stream,*regs8; //FIXME: debug only!
 };
 
 #endif /* VM86_H_ */

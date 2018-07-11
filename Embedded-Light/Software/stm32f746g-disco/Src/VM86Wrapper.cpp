@@ -9,6 +9,7 @@ using namespace std;
 VM86Wrapper::VM86Wrapper(uint32_t base_addr) :
 		membase(base_addr)
 {
+//	vm = new VM86(membase);//FIXME: debug only
 }
 
 VM86Wrapper::~VM86Wrapper()
@@ -32,11 +33,14 @@ void VM86Wrapper::PushChar(int v)
 	bufin.push_back(v);
 }
 
-bool VM86Wrapper::Loop()
+int VM86Wrapper::Loop()
 {
+	int rr = 0;//FIXME: debug only
+
 	if (!started) {
 		if (vm) delete vm;
 		vm = new VM86(membase);
+		vm->next_op = expectant; //FIXME: debug only
 		started = vm;
 		stopped = false;
 	}
@@ -49,7 +53,8 @@ bool VM86Wrapper::Loop()
 	}
 
 	for (cycles = 0; cycles < VM86W_MINCYCLES; cycles++) {
-		stopped = vm->FullStep();
+		rr = vm->FullStep();
+		stopped = rr;  //FIXME: debug only
 		if (stopped) break;
 	}
 
@@ -57,7 +62,8 @@ bool VM86Wrapper::Loop()
 	for (auto &c : out) bufout.push_back(c);
 	if (use_intscreen) UpdateScreen();
 
-	return stopped;
+//	return stopped;
+	return rr;  //FIXME: debug only
 }
 
 void VM86Wrapper::Reset()
@@ -277,7 +283,8 @@ void VM86_Start(uint32_t base_addr)
 
 int VM86_FullStep()
 {
-	if (g_VM->Loop()) return -1;
+	int r = g_VM->Loop();
+	if (r) return -r;
 	if (!g_VM->IsScreenModified()) return 0;
 
 	int cnt = 0;
@@ -311,3 +318,14 @@ void VM86_Stop()
 	free(shadow);
 	shadow = NULL;
 }
+
+//FIXME: debug only
+void VM86_SetExpectedByte(uint8_t b)
+{
+	g_VM->SetExpectedByte(b);
+}
+uint8_t VM86_GetRealByte()
+{
+	return g_VM->GetRealByte();
+}
+

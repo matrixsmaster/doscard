@@ -284,11 +284,21 @@ void VM86::Step()
 	}
 }
 
+//#include "usart.h"
 int VM86::FullStep()
 {
 	if (pause) return pause;
 	// Check the finishing condition. Terminates if CS:IP = 0:0
 	opcode_stream = mem + 16 * regs16[REG_CS] + reg_ip;
+#if 0
+	if (*opcode_stream != next_op) {
+		char b[64];
+		snprintf(b,sizeof(b),"WTF?! 0x%02X vs 0x%02X\r\n",*opcode_stream,next_op);
+		HAL_UART_Transmit(&huart1,(uint8_t*)b,strlen(b),10);
+		pause = 3;
+		return pause;
+	}
+#endif
 	if (opcode_stream == mem) pause = 2;
 	else Step(); // Do an actual step
 	return pause;

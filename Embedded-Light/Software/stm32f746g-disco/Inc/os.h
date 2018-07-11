@@ -5,7 +5,7 @@
 
 #define OS_FONT_FILE "font.txt"
 #define OS_BIOS_FILE "bios.img"
-#define OS_FLOPPY_FILE "floppy.img"
+#define OS_FLOPPY_FILE "fd.img"
 
 extern uint8_t* OS_Font_Array;
 extern uint32_t OS_Font_Array_Size, OS_Last_Address;
