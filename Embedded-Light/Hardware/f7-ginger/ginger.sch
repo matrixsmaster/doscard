@@ -360,7 +360,7 @@ L LED D4
 U 1 1 5B2FE2DC
 P 11850 3150
 F 0 "D4" H 11600 3050 50  0000 C CNN
-F 1 "RX" H 11850 3050 50  0000 C CNN
+F 1 "TX" H 11850 3050 50  0000 C CNN
 F 2 "Resistors_SMD:R_1210" H 11850 3150 50  0001 C CNN
 F 3 "" H 11850 3150 50  0000 C CNN
 	1    11850 3150
@@ -371,7 +371,7 @@ L LED D2
 U 1 1 5B2FE2DD
 P 11350 3250
 F 0 "D2" H 11350 3350 50  0000 C CNN
-F 1 "TX" H 11350 3150 50  0000 C CNN
+F 1 "RX" H 11350 3150 50  0000 C CNN
 F 2 "Resistors_SMD:R_1210" H 11350 3250 50  0001 C CNN
 F 3 "" H 11350 3250 50  0000 C CNN
 	1    11350 3250
@@ -2947,4 +2947,6 @@ Text Notes 12550 5150 0    60   ~ 0
 TODO: replace mini USB with micro USB, or even better: USB A.
 Text Notes 2100 10900 0    60   ~ 0
 TODO: segments 12 and 13 should be swapped!
+Text Notes 10950 2100 0    60   ~ 0
+RX & TX leds should be inverted, since they're showing PC side
 $EndSCHEMATC
