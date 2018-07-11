@@ -121,9 +121,9 @@ void OS_DrawChar(int col, int row, char x)
 
 	if (x < 33 || x > 126) return;
 
-	int cx = col * 9;
-	int cy = row * 6;
-#if 0
+	int cx = col * 6;
+	int cy = row * 9;
+#if 1
 	if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK)
 		HAL_GPIO_WritePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin,1);
 	else
