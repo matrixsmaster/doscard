@@ -60,6 +60,9 @@
 #include "fmc.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
+#include <string.h>
+#include "VM86conf.h"
 #include "os.h"
 /* USER CODE END Includes */
 
@@ -165,6 +168,7 @@ void send(const char* s)
 int SDRAM_InitSequence(SDRAM_HandleTypeDef *hsdram)
 {
 	FMC_SDRAM_CommandTypeDef cmd;
+#if 0
 	uint32_t tmpr = 0;
 
 	/* Step 3 --------------------------------------------------------------------*/
@@ -203,9 +207,9 @@ int SDRAM_InitSequence(SDRAM_HandleTypeDef *hsdram)
 
 	/* Step 7 --------------------------------------------------------------------*/
 	/* Program the external memory mode register */
-	tmpr = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_2          |
+	tmpr = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
 			SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
-			SDRAM_MODEREG_CAS_LATENCY_3           |
+			SDRAM_MODEREG_CAS_LATENCY_2           |
 			SDRAM_MODEREG_OPERATING_MODE_STANDARD |
 			SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
 
@@ -217,9 +221,60 @@ int SDRAM_InitSequence(SDRAM_HandleTypeDef *hsdram)
 	if (HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT) == HAL_OK) g_seg_mask = g_seg_font[8];
 	else return 1;
 
+#else
+
+	__IO uint32_t tmpmrd =0;
+	/* Step 3:  Configure a clock configuration enable command */
+	cmd.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+	cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	cmd.AutoRefreshNumber = 1;
+	cmd.ModeRegisterDefinition = 0;
+
+	/* Send the command */
+	HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT);
+
+	/* Step 4: Insert 100 us minimum delay */
+	/* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
+	HAL_Delay(1);
+
+	/* Step 5: Configure a PALL (precharge all) command */
+	cmd.CommandMode = FMC_SDRAM_CMD_PALL;
+	cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	cmd.AutoRefreshNumber = 1;
+	cmd.ModeRegisterDefinition = 0;
+
+	/* Send the command */
+	HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT);
+
+	/* Step 6 : Configure a Auto-Refresh command */
+	cmd.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+	cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	cmd.AutoRefreshNumber = 8;
+	cmd.ModeRegisterDefinition = 0;
+
+	/* Send the command */
+	HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT);
+
+	/* Step 7: Program the external memory mode register */
+	tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
+			SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+			SDRAM_MODEREG_CAS_LATENCY_2           |
+			SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+			SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+
+	cmd.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+	cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	cmd.AutoRefreshNumber = 1;
+	cmd.ModeRegisterDefinition = tmpmrd;
+
+	/* Send the command */
+	HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT);
+#endif
+
 	/* Step 8 --------------------------------------------------------------------*/
 	/* Set the refresh rate counter */
 	HAL_SDRAM_ProgramRefreshRate(hsdram,824); //7.81us * 108MHz - 20
+//	hsdram->Instance->SDRTR |= ((uint32_t)((1292)<< 1));
 	return 0;
 }
 
@@ -390,53 +445,19 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim7);
   HAL_GPIO_WritePin(TFT_RS_GPIO_Port,TFT_RS_Pin,1);
 
+  send("Alive!\r\n");
+
   HAL_GPIO_WritePin(SDRAM_DQM_GPIO_Port,SDRAM_DQM_Pin,0);
   if (SDRAM_InitSequence(&hsdram1)) {
 	  const char _s[] = "Unable to init SDRAM :(\r\n";
 	  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),10);
 	  Error_Handler();
 
-  } else {
-	  char buf[128];
-	  uint8_t* tst = (uint8_t*)SDRAM_BANK_ADDR;
-	  size_t sz = 8*1024*1024; //8 MiB
-	  memset(tst,0,sz);
-	  send("memory nullified (bank 0)\r\n");
-
-	  int16_t x = HAL_RNG_GetRandomNumber(&hrng);
-	  snprintf(buf,sizeof(buf),"Value generated: %hd\r\n",x);
-	  send(buf);
-
-	  *(int16_t*)&tst[4] = x; //aligned write access
-	  snprintf(buf,sizeof(buf),"[ALIGNED] Wrote %hd\r\n",x);
-	  send(buf);
-
-	  x = *(int16_t*)&tst[4]; //aligned read access
-	  snprintf(buf,sizeof(buf),"[ALIGNED] x = %hd\r\n",x);
-	  send(buf);
-
-	  *(int16_t*)&tst[3] = x; //unaligned write access
-	  snprintf(buf,sizeof(buf),"[UNALIGNED] Wrote %hd\r\n",x);
-	  send(buf);
-
-	  x = *(int16_t*)&tst[3]; //unaligned read access
-	  snprintf(buf,sizeof(buf),"[UNALIGNED] x = %hd\r\n",x);
-	  send(buf);
-
-	  for (size_t i = 0; i < sz; i++) tst[i] = (uint8_t)i;
-	  send("wrote some data\r\nchecking...  ");
-	  for (size_t i = 0; i < sz; i++) {
-		  if (tst[i] != (uint8_t)i) {
-			  snprintf(buf,sizeof(buf),"mismatch @ %u\r\n",i);
-			  send(buf);
-		  }
-	  }
-	  send("OK\r\n");
   }
 
-  TFT_Init();
-  Address_set(0,0,TFT_LCD_WIDTH-1,TFT_LCD_HEIGHT-1);
-  send("TFT LCD Initialization complete\r\n");
+//  TFT_Init();
+//  Address_set(0,0,TFT_LCD_WIDTH-1,TFT_LCD_HEIGHT-1);
+//  send("TFT LCD Initialization complete\r\n");
   g_frames = (uint8_t*)SDRAM_BANK_ADDR;
   const int max_frames = 1;
   memset(g_frames,0,TFT_TOTAL_BYTES);
@@ -447,116 +468,29 @@ int main(void)
   if (r != FR_OK) Error_Handler();
   send("SD mounted\r\n");
 
-#if 0
-  for (int q = 0; q < max_frames; q++) {
-	  FIL fp;
-	  UINT br;
-	  char fn[64];
-	  volatile uint8_t* hold = g_frames + q*(320*240*4);
+//  HAL_TIM_Base_Start_IT(&htim6);
 
-	  memset(&fp,0,sizeof(fp));
-	  //convert gif into bmp sequence: $ convert animation.gif -rotate 180 -flop anim.bmp
-	  snprintf(fn,sizeof(fn),"anim-%d.bmp",q);
-	  send(fn);
-	  g_seg_mask = g_seg_font[q/10];
+  OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES;
+  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+  if (!fd_img) Error_Handler();
 
-	  if (f_open(&fp,fn,FA_READ) != FR_OK) {
-		  const char _s[] = "Can't open file\r\n";
-		  HAL_UART_Transmit(&huart1,(uint8_t*)_s,strlen(_s),100);
-		  continue;
-	  }
+  char dbg[128];
+  snprintf(dbg,sizeof(dbg),"Test string. Last address = 0x%08lX",OS_Last_Address);
+  OS_PrintString(dbg);
+  HAL_Delay(500);
 
-	  f_lseek(&fp,138);
-	  uint8_t r,g,b;
-	  uint16_t x, i = 0;
-	  while (f_read(&fp,hold,4,&br) == FR_OK && br == 4) {
-		  r = hold[2] >> 3;
-		  g = hold[1] >> 2;
-		  b = hold[0] >> 3;
-		  x = ((uint16_t)r) << 11;
-		  x |= ((uint16_t)g) << 5;
-		  x |= b;
-		  hold[0] = 0;
-		  hold[1] = x >> 8;
-		  hold[2] = 0;
-		  hold[3] = x;
-		  i++;
-		  hold += 4;
-	  }
-	  f_close(&fp);
-  }
-#endif
-  HAL_TIM_Base_Start_IT(&htim6);
+  OS();
+
+  OS_PrintString("Shutdown.");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t pl = 1;
-  int n, i = 0, col = 0, row = 0;
-  for (n = 0; g_seg_font[n] > 0; n++) ;
-  if (OS_InitFloppy()) OS();
-  else Error_Handler();
-
   while (1)
   {
-
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  if (g_btn_mask & BTN_LJ_W) {
-		  if (g_frame_cnt == 0) g_frame_cnt = max_frames - 1;
-		  else g_frame_cnt--;
-
-	  } else if (g_btn_mask & BTN_LJ_E) {
-		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
-
-	  } else if (g_btn_mask & BTN_LJ_N) {
-		  g_frame_cnt = 0;
-		  pl = 0;
-
-	  } else if (g_btn_mask & BTN_LJ_S) {
-		  g_frame_cnt = max_frames - 1;
-		  pl = 0;
-
-	  } else if (g_btn_mask & BTN_LJ_C) {
-		  pl ^= 1;
-
-	  } else if (g_btn_mask & BTN_RJ_E) {
-		  i++;
-
-	  } else if (g_btn_mask & BTN_RJ_W) {
-		  i--;
-
-	  } else if (g_btn_mask & BTN_RJ_N) {
-		  i += 8;
-
-	  } else if (g_btn_mask & BTN_RJ_S) {
-		  i -= 8;
-
-	  } else if (g_btn_mask & BTN_RJ_C) {
-//		  char _s[] = "Sym = 0\r\n";
-//		  _s[6] += i;
-//		  send(_s);
-
-		  char b[128];
-		  snprintf(b,sizeof(b),"Sym = %c, col = %d, row = %d, cnt = %hu\r\n",'0'+i,col,row,g_frame_cnt);
-		  send(b);
-		  OS_DrawChar(col++,row,'0'+i);
-		  if (col >= 80) {
-			  col = 0;
-			  if (++row >= 25) row = 0;
-		  }
-	  }
-
-//	  if (pl) {
-//		  if (++g_frame_cnt >= max_frames) g_frame_cnt = 0;
-//	  }
-
-	  if (i < 0) i = 0;
-	  if (i >= n) i = n-1;
-	  g_seg_mask = g_seg_font[i];
-
-	  HAL_Delay(100);
   }
   /* USER CODE END 3 */
 
@@ -661,10 +595,10 @@ void MPU_Config(void)
   MPU_InitStruct.SubRegionDisable = 0x0;
   MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
-  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
-  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
@@ -675,7 +609,7 @@ void MPU_Config(void)
   MPU_InitStruct.BaseAddress = 0x60000000;
   MPU_InitStruct.Size = MPU_REGION_SIZE_4MB;
   MPU_InitStruct.SubRegionDisable = 0x0;
-  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;

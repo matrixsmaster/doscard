@@ -11,13 +11,12 @@
 #define VM86CONF_H_
 
 #include <inttypes.h>
-#include "main.h"
 
-#define RAM_SHIFT TFT_TOTAL_BYTES
+#define RAM_SHIFT 0
 
 #define IOBUF_MAXLEN 16
 
-#define TIMESTEP 5
+#define TIMESTEP 15
 #define AUDIOSILENCE 0x80
 
 // Emulator system constants
@@ -135,5 +134,8 @@ static const uint8_t lookup_table[20][256] = {
 	/* Table 19: FLAGS multipliers */
 	{ 0, 2, 4, 6, 7, 8, 9, 10, 11 }
 };
+
+extern uint8_t* /*bios_img,*/ fd_img;
+extern uint32_t /*bios_len,*/ fd_len;
 
 #endif /* VM86CONF_H_ */

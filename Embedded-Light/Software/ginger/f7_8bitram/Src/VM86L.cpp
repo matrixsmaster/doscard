@@ -3,7 +3,7 @@
 //
 // Revision 1.25
 //
-// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2016
+// Changed by Dmitry 'MatrixS_Master' Soloviov, 2015-2018
 //
 // This work is licensed under the MIT License. See included LICENSE.TXT.
 
@@ -57,14 +57,14 @@ void VM86::LocalOpcode()
 			CAST(int16_t,mem[SEGREG(REG_ES, REG_BX, 36+)]) = millis;
 
 		OPCODE 2: // DISK_READ
-			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < sizeof(fd_img))) {
+			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < fd_len)) {
 				diskhead = (CAST(unsigned,regs16[REG_BP]) << 9);
 				regs8[REG_AL] = sta_read(disk[regs8[REG_DL]], tmp, regs16[REG_AX]);
 			} else
 				regs8[REG_AL] = 0;
 
 		OPCODE 3: // DISK_WRITE
-			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < sizeof(fd_img))) {
+			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < fd_len)) {
 				diskhead = (CAST(unsigned,regs16[REG_BP]) << 9);
 				regs8[REG_AL] = sta_write(disk[regs8[REG_DL]], tmp, regs16[REG_AX]);
 			} else

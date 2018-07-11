@@ -37,6 +37,8 @@ private:
 	bool lwrapping = true;
 	Pnt2D scroll_wnd;
 
+	uint8_t expectant; //FIXME: debug only
+
 	void Clear();
 	bool ProcessANSIEscape(std::string in, std::string &out);
 	void CheckScroll();
@@ -49,7 +51,7 @@ public:
 	int GetCharsPending() { return bufout.size(); }
 	int PullChar();
 	void PushChar(int v);
-	bool Loop();
+	int Loop(); //FIXME: debug only, was 'bool'
 	void Reset();
 	bool IsStarted() { return started; }
 	bool IsStopped() { return stopped; }
@@ -58,6 +60,8 @@ public:
 	std::string GetLine(int n);
 	bool IsScreenModified() { return intscreen_mod; }
 	Pnt2D GetCursorPos() { return curpos_wanted; }
+	void SetExpectedByte(uint8_t b) { if (vm) vm->next_op = b; else expectant = b; } //FIXME: debug only
+	uint8_t GetRealByte() { return *(vm->opcode_stream); } //FIXME: debug only
 };
 
 extern "C" {
@@ -70,6 +74,9 @@ extern "C" {
 	char* VM86_GetShadowBuf();
 
 	void VM86_Stop();
+
+	void VM86_SetExpectedByte(uint8_t b); //FIXME: debug only
+	uint8_t VM86_GetRealByte(); //FIXME: debug only
 
 #ifdef __cplusplus
 }
