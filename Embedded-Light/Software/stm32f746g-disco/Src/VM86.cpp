@@ -9,15 +9,7 @@
 
 #include "VM86.h"
 #include "VM86macro.h"
-#include <unistd.h>
-
-//FIXME: debug sentences
-#if 0
-uint8_t* bios_img = NULL;
-uint32_t bios_len = 0;
-#else
 #include "VM86bios.h"
-#endif
 
 VM86::VM86(uint32_t base_addr)
 {

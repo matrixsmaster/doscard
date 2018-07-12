@@ -12,7 +12,7 @@ Status		OK, boots up the target OS, but have no user input.
 
 Platform	STM32F746G-DISCOVERY
 Library		HAL
-Status		OK, boots up the target OS, but have no user input.
+Status		OK and ready for testing. Have minor USB keyboard issues.
 
 Platform	F7-Ginger
 Library		HAL

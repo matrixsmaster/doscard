@@ -66,18 +66,16 @@
 /* USER CODE BEGIN Includes */
 #include <stdlib.h>
 #include <string.h>
-#include "usbh_hid_keybd.h"
 #include "VM86conf.h"
 #include "os.h"
-//#include "faceoff2.h"
+#include "faceoff2.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-FMC_SDRAM_CommandTypeDef command;
-extern USBH_HandleTypeDef hUsbHostFS;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,45 +89,40 @@ void MX_USB_HOST_Process(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-/**
-  * @brief  Perform the SDRAM external memory initialization sequence
-  * @param  hsdram: SDRAM handle
-  * @param  Command: Pointer to SDRAM command structure
-  * @retval None
-  */
-static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_CommandTypeDef *Command)
+static void SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram)
 {
   __IO uint32_t tmpmrd =0;
+  FMC_SDRAM_CommandTypeDef command;
   /* Step 3:  Configure a clock configuration enable command */
-  Command->CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
-  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
-  Command->AutoRefreshNumber = 1;
-  Command->ModeRegisterDefinition = 0;
+  command.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+  command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  command.AutoRefreshNumber = 1;
+  command.ModeRegisterDefinition = 0;
 
   /* Send the command */
-  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+  HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 
   /* Step 4: Insert 100 us minimum delay */
   /* Inserted delay is equal to 1 ms due to systick time base unit (ms) */
   HAL_Delay(1);
 
   /* Step 5: Configure a PALL (precharge all) command */
-  Command->CommandMode = FMC_SDRAM_CMD_PALL;
-  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
-  Command->AutoRefreshNumber = 1;
-  Command->ModeRegisterDefinition = 0;
+  command.CommandMode = FMC_SDRAM_CMD_PALL;
+  command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  command.AutoRefreshNumber = 1;
+  command.ModeRegisterDefinition = 0;
 
   /* Send the command */
-  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+  HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 
   /* Step 6 : Configure a Auto-Refresh command */
-  Command->CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
-  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
-  Command->AutoRefreshNumber = 8;
-  Command->ModeRegisterDefinition = 0;
+  command.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  command.AutoRefreshNumber = 8;
+  command.ModeRegisterDefinition = 0;
 
   /* Send the command */
-  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+  HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 
   /* Step 7: Program the external memory mode register */
   tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
@@ -138,32 +131,24 @@ static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_S
                      SDRAM_MODEREG_OPERATING_MODE_STANDARD |
                      SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
 
-  Command->CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
-  Command->CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
-  Command->AutoRefreshNumber = 1;
-  Command->ModeRegisterDefinition = tmpmrd;
+  command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+  command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+  command.AutoRefreshNumber = 1;
+  command.ModeRegisterDefinition = tmpmrd;
 
   /* Send the command */
-  HAL_SDRAM_SendCommand(hsdram, Command, SDRAM_TIMEOUT);
+  HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 
   /* Step 8: Set the refresh rate counter */
   /* (15.62 us x Freq) - 20 */
   /* Set the device refresh counter */
-  hsdram->Instance->SDRTR |= ((uint32_t)((1292)<< 1));
+  HAL_SDRAM_ProgramRefreshRate(hsdram,1292);
 }
 
 void send(const char* s)
 {
 	HAL_UART_Transmit(&huart1,(uint8_t*)s,strlen(s),10);
 }
-
-//void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
-//{
-//	HID_KEYBD_Info_TypeDef *inf = USBH_HID_GetKeybdInfo(phost);
-//	char s[] = "recv  \r\n";
-//	s[5] = USBH_HID_GetASCIICode(inf);
-//	send(s);
-//}
 /* USER CODE END 0 */
 
 /**
@@ -227,14 +212,10 @@ int main(void)
   if (retSD) Error_Handler();
 
   send("Alive!\r\n");
-  BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
-//  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
-//  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
+  SDRAM_Initialization_Sequence(&hsdram1);
+  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
   HAL_Delay(500);
 
-//  if (USBH_HID_KeybdInit(&hUsbHostFS) != USBH_OK) Error_Handler();
-
-#if 0
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
 
@@ -242,9 +223,9 @@ int main(void)
 
   if (OS_InitFont()) Error_Handler();
 
-  send("Test complete!\r\n",16,100);
+  send("Test complete!\r\n");
 
-  send("Loading disks...\r\n",18,100);
+  send("Loading disks...\r\n");
 //  bios_img = OS_InitDisk(OS_BIOS_FILE,&bios_len);
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
 //  if (!bios_img || !fd_img) Error_Handler();
@@ -255,36 +236,22 @@ int main(void)
   HAL_Delay(500);
 
   OS();
-#endif
+  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
+
+  while (1) {
+	  HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
+	  HAL_Delay(500);
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  send("stop\r\n");
   while (1)
   {
-
   /* USER CODE END WHILE */
     MX_USB_HOST_Process();
 
   /* USER CODE BEGIN 3 */
-//	  HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
-//	  HAL_Delay(500);
-
-	  if(USBH_HID_GetDeviceType(&hUsbHostFS) == HID_KEYBOARD) {
-//		  send("m:keyboard\r\n");
-//		  for (;;) {
-			  HID_KEYBD_Info_TypeDef *k_pinfo;
-			  k_pinfo = USBH_HID_GetKeybdInfo(&hUsbHostFS);
-			  if (k_pinfo) {
-				  char s[] = "recv  \r\n";
-				  s[5] = USBH_HID_GetASCIICode(k_pinfo);
-				  send(s);
-			  }
-//		  }
-	  } else if(USBH_HID_GetDeviceType(&hUsbHostFS) == HID_MOUSE) {
-		  send("m:mouse\r\n");
-	  }
   }
   /* USER CODE END 3 */
 
