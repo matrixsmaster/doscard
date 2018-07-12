@@ -59,17 +59,17 @@
 #include "sdmmc.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_device.h"
+#include "usb_host.h"
 #include "gpio.h"
 #include "fmc.h"
 
 /* USER CODE BEGIN Includes */
 #include <stdlib.h>
 #include <string.h>
-#include "usbd_cdc_if.h"
+#include "usbh_hid_keybd.h"
 #include "VM86conf.h"
 #include "os.h"
-#include "faceoff2.h"
+//#include "faceoff2.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -77,11 +77,13 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 FMC_SDRAM_CommandTypeDef command;
+extern USBH_HandleTypeDef hUsbHostFS;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MPU_Config(void);
+void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -148,8 +150,20 @@ static void BSP_SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_S
   /* (15.62 us x Freq) - 20 */
   /* Set the device refresh counter */
   hsdram->Instance->SDRTR |= ((uint32_t)((1292)<< 1));
-
 }
+
+void send(const char* s)
+{
+	HAL_UART_Transmit(&huart1,(uint8_t*)s,strlen(s),10);
+}
+
+//void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
+//{
+//	HID_KEYBD_Info_TypeDef *inf = USBH_HID_GetKeybdInfo(phost);
+//	char s[] = "recv  \r\n";
+//	s[5] = USBH_HID_GetASCIICode(inf);
+//	send(s);
+//}
 /* USER CODE END 0 */
 
 /**
@@ -207,17 +221,20 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_FATFS_Init();
-  MX_USB_DEVICE_Init();
   MX_LTDC_Init();
+  MX_USB_HOST_Init();
   /* USER CODE BEGIN 2 */
   if (retSD) Error_Handler();
 
-  HAL_UART_Transmit(&huart1,(uint8_t*)"Alive!\r\n",8,100);
+  send("Alive!\r\n");
   BSP_SDRAM_Initialization_Sequence(&hsdram1,&command);
-  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
-  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
+//  HAL_GPIO_WritePin(ARDUINO_D11_GPIO_Port,ARDUINO_D11_Pin,1);
+//  memcpy(SDRAM_PTR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
   HAL_Delay(500);
 
+//  if (USBH_HID_KeybdInit(&hUsbHostFS) != USBH_OK) Error_Handler();
+
+#if 0
   memset(&SDFatFS,0,sizeof(SDFatFS));
   if (f_mount(&SDFatFS,SDPath,1) != FR_OK) Error_Handler();
 
@@ -225,9 +242,9 @@ int main(void)
 
   if (OS_InitFont()) Error_Handler();
 
-  HAL_UART_Transmit(&huart1,(uint8_t*)"Test complete!\r\n",16,100);
+  send("Test complete!\r\n",16,100);
 
-  HAL_UART_Transmit(&huart1,(uint8_t*)"Loading disks...\r\n",18,100);
+  send("Loading disks...\r\n",18,100);
 //  bios_img = OS_InitDisk(OS_BIOS_FILE,&bios_len);
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
 //  if (!bios_img || !fd_img) Error_Handler();
@@ -238,19 +255,36 @@ int main(void)
   HAL_Delay(500);
 
   OS();
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_UART_Transmit(&huart1,(uint8_t*)"stop\r\n",6,100);
+  send("stop\r\n");
   while (1)
   {
 
   /* USER CODE END WHILE */
+    MX_USB_HOST_Process();
 
   /* USER CODE BEGIN 3 */
-	  HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
-	  HAL_Delay(500);
+//	  HAL_GPIO_TogglePin(ARDUINO_D12_GPIO_Port,ARDUINO_D12_Pin);
+//	  HAL_Delay(500);
+
+	  if(USBH_HID_GetDeviceType(&hUsbHostFS) == HID_KEYBOARD) {
+//		  send("m:keyboard\r\n");
+//		  for (;;) {
+			  HID_KEYBD_Info_TypeDef *k_pinfo;
+			  k_pinfo = USBH_HID_GetKeybdInfo(&hUsbHostFS);
+			  if (k_pinfo) {
+				  char s[] = "recv  \r\n";
+				  s[5] = USBH_HID_GetASCIICode(k_pinfo);
+				  send(s);
+			  }
+//		  }
+	  } else if(USBH_HID_GetDeviceType(&hUsbHostFS) == HID_MOUSE) {
+		  send("m:mouse\r\n");
+	  }
   }
   /* USER CODE END 3 */
 
@@ -409,7 +443,7 @@ void _Error_Handler(char *file, int line)
   /* User can add his own implementation to report the HAL error return state */
 	char b[128];
 	snprintf(b,sizeof(b),"Error @ %d in %s\r\n",line,file);
-	HAL_UART_Transmit(&huart1,(uint8_t*)b,strlen(b),100);
+	send(b);
 	while(1)
 	{
 		HAL_GPIO_TogglePin(ARDUINO_D13_GPIO_Port,ARDUINO_D13_Pin);

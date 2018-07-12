@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file           : usbd_desc.h
+  * @file           : usb_host.h
   * @version        : v1.0_Cube
-  * @brief          : Header for usbd_desc.c file.
+  * @brief          : Header for usb_host.c file.
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -48,92 +48,58 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USBD_DESC__H__
-#define __USBD_DESC__H__
+#ifndef __USB_HOST__H__
+#define __USB_HOST__H__
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_def.h"
+#include "stm32f7xx.h"
+#include "stm32f7xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
 
 /* USER CODE END INCLUDE */
 
-/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
+/** @addtogroup USBH_OTG_DRIVER
   * @{
   */
 
-/** @defgroup USBD_DESC USBD_DESC
-  * @brief Usb device descriptors module.
+/** @defgroup USBH_HOST USBH_HOST
+  * @brief Host file for Usb otg low level driver.
   * @{
   */
 
-/** @defgroup USBD_DESC_Exported_Defines USBD_DESC_Exported_Defines
-  * @brief Defines.
-  * @{
-  */
-
-/* USER CODE BEGIN EXPORTED_DEFINES */
-
-/* USER CODE END EXPORTED_DEFINES */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DESC_Exported_TypesDefinitions USBD_DESC_Exported_TypesDefinitions
-  * @brief Types.
-  * @{
-  */
-
-/* USER CODE BEGIN EXPORTED_TYPES */
-
-/* USER CODE END EXPORTED_TYPES */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DESC_Exported_Macros USBD_DESC_Exported_Macros
-  * @brief Aliases.
-  * @{
-  */
-
-/* USER CODE BEGIN EXPORTED_MACRO */
-
-/* USER CODE END EXPORTED_MACRO */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DESC_Exported_Variables USBD_DESC_Exported_Variables
+/** @defgroup USBH_HOST_Exported_Variables USBH_HOST_Exported_Variables
   * @brief Public variables.
   * @{
   */
 
-/** Descriptor for the Usb device. */
-extern USBD_DescriptorsTypeDef FS_Desc;
-
-/* USER CODE BEGIN EXPORTED_VARIABLES */
-
-/* USER CODE END EXPORTED_VARIABLES */
-
 /**
   * @}
   */
 
-/** @defgroup USBD_DESC_Exported_FunctionsPrototype USBD_DESC_Exported_FunctionsPrototype
-  * @brief Public functions declaration.
+/** Status of the application. */
+typedef enum {
+  APPLICATION_IDLE = 0,
+  APPLICATION_START,
+  APPLICATION_READY,
+  APPLICATION_DISCONNECT
+}ApplicationTypeDef;
+
+/** @defgroup USBH_HOST_Exported_FunctionsPrototype USBH_HOST_Exported_FunctionsPrototype
+  * @brief Declaration of public functions for Usb host.
   * @{
   */
 
-/* USER CODE BEGIN EXPORTED_FUNCTIONS */
+/* Exported functions -------------------------------------------------------*/
 
-/* USER CODE END EXPORTED_FUNCTIONS */
+/** @brief USB Host initialization function. */
+void MX_USB_HOST_Init(void);
+
+void MX_USB_HOST_Process(void);
 
 /**
   * @}
@@ -151,6 +117,6 @@ extern USBD_DescriptorsTypeDef FS_Desc;
 }
 #endif
 
-#endif /* __USBD_DESC__H__ */
+#endif /* __USB_HOST__H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

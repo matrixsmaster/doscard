@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    usbd_req.h
+  * @file    usbh_hid_parser.c 
   * @author  MCD Application Team
-  * @brief   Header file for the usbd_req.c file
+  * @brief   This file is the header file of the usbh_hid_parser.c        
   ******************************************************************************
   * @attention
   *
@@ -21,74 +21,61 @@
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_REQUEST_H
-#define __USB_REQUEST_H
+/* Define to prevent recursive -----------------------------------------------*/ 
+#ifndef __USBH_HID_PARSER_H
+#define __USBH_HID_PARSER_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include  "usbd_def.h"
+#include "usbh_hid.h"
+#include "usbh_hid_usage.h"
 
+/** @addtogroup USBH_LIB
+  * @{
+  */
 
-/** @addtogroup STM32_USB_DEVICE_LIBRARY
+/** @addtogroup USBH_CLASS
+  * @{
+  */
+
+/** @addtogroup USBH_HID_CLASS
   * @{
   */
   
-/** @defgroup USBD_REQ
-  * @brief header file for the usbd_req.c file
+/** @defgroup USBH_HID_PARSER
+  * @brief This file is the Header file for usbh_hid_parser.c
   * @{
   */ 
 
-/** @defgroup USBD_REQ_Exported_Defines
+
+/** @defgroup USBH_HID_PARSER_Exported_Types
   * @{
   */ 
-/**
-  * @}
-  */ 
+typedef struct 
+{
+  uint8_t  *data;
+  uint32_t size;
+  uint8_t  shift;
+  uint8_t  count;
+  uint8_t  sign;
+  uint32_t logical_min;  /*min value device can return*/
+  uint32_t logical_max;  /*max value device can return*/
+  uint32_t physical_min; /*min vale read can report*/
+  uint32_t physical_max; /*max value read can report*/
+  uint32_t resolution;
+} 
+HID_Report_ItemTypedef;
 
 
-/** @defgroup USBD_REQ_Exported_Types
-  * @{
-  */
-/**
-  * @}
-  */ 
+uint32_t HID_ReadItem (HID_Report_ItemTypedef *ri, uint8_t ndx);
+uint32_t HID_WriteItem(HID_Report_ItemTypedef *ri, uint32_t value, uint8_t ndx);
 
 
-
-/** @defgroup USBD_REQ_Exported_Macros
-  * @{
-  */ 
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_REQ_Exported_Variables
-  * @{
-  */ 
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_REQ_Exported_FunctionsPrototype
-  * @{
-  */ 
-
-USBD_StatusTypeDef  USBD_StdDevReq (USBD_HandleTypeDef  *pdev, USBD_SetupReqTypedef  *req);
-USBD_StatusTypeDef  USBD_StdItfReq (USBD_HandleTypeDef  *pdev, USBD_SetupReqTypedef  *req);
-USBD_StatusTypeDef  USBD_StdEPReq  (USBD_HandleTypeDef  *pdev, USBD_SetupReqTypedef  *req);
-
-
-void USBD_CtlError  (USBD_HandleTypeDef  *pdev, USBD_SetupReqTypedef *req);
-
-void USBD_ParseSetupRequest (USBD_SetupReqTypedef *req, uint8_t *pdata);
-
-void USBD_GetString         (uint8_t *desc, uint8_t *unicode, uint16_t *len);
 /**
   * @}
   */ 
@@ -97,15 +84,21 @@ void USBD_GetString         (uint8_t *desc, uint8_t *unicode, uint16_t *len);
 }
 #endif
 
-#endif /* __USB_REQUEST_H */
+#endif /* __USBH_HID_PARSER_H */
 
 /**
   * @}
   */ 
 
 /**
-* @}
-*/ 
+  * @}
+  */ 
 
+/**
+  * @}
+  */ 
 
+/**
+  * @}
+  */ 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
