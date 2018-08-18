@@ -3,6 +3,7 @@
 *.bin
 *.hex
 *.map
+*.pdf
 .mxproject
 mx.scratch
 .dep
