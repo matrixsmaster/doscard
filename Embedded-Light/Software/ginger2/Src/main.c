@@ -91,11 +91,12 @@ static void MPU_Config(void);
 /* USER CODE BEGIN 0 */
 void send(const char* s)
 {
-#if 0
+#if USB_DEBUG_EN
 	USBD_CDC_SetTxBuffer(&hUsbDeviceFS,(uint8_t*)s,strlen(s));
 	while (USBD_CDC_TransmitPacket(&hUsbDeviceFS) != USBD_OK) HAL_Delay(100);
 #else
 	HAL_UART_Transmit(&huart1,(uint8_t*)s,strlen(s),10);
+	HAL_Delay(30);
 #endif
 }
 
@@ -175,13 +176,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(600);
 
-//  while (HAL_GPIO_ReadPin(B4_GPIO_Port,B4_Pin) == GPIO_PIN_SET) ;
+#if USB_DEBUG_EN
+  while (HAL_GPIO_ReadPin(B4_GPIO_Port,B4_Pin) == GPIO_PIN_SET) ;
+#endif
   send("Alive!\r\n");
 
   if (SDRAM_InitSequence(&hsdram1)) Error_Handler();
+  HAL_Delay(500);
   if (SDRAM_Check()) Error_Handler();
   send("SDRAM OK\r\n");
 
+  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
   memset(&SDFatFS,0,sizeof(SDFatFS));
   FRESULT r = f_mount(&SDFatFS,SDPath,1);
   if (r != FR_OK) Error_Handler();
@@ -195,28 +200,22 @@ int main(void)
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
   if (!fd_img) Error_Handler();
 
-//  OS_PrintString("Hello!");
+  HAL_Delay(600);
+  HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
+  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
 
   OS();
-
   OS_PrintString("Shutdown.");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  size_t px = 0;
-  uint16_t col = 0x07E0;
   while (1)
   {
 
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-//	  g_frames[px++] = col;
-//	  if (px >= TFT_TOTAL_PIXELS) {
-//		  px = 0;
-//		  col = 0;
-//	  }
     GetCPUTemp();
   }
   /* USER CODE END 3 */

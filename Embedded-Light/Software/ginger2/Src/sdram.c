@@ -47,7 +47,7 @@ int SDRAM_InitSequence(SDRAM_HandleTypeDef *hsdram)
 	HAL_SDRAM_SendCommand(hsdram, &cmd, SDRAM_TIMEOUT);
 
 	/* Step 7: Program the external memory mode register */
-	tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1          |
+	tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1 |
 			SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
 			SDRAM_MODEREG_CAS_LATENCY_2           |
 			SDRAM_MODEREG_OPERATING_MODE_STANDARD |

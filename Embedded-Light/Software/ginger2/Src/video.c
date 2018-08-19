@@ -180,6 +180,10 @@ static void Address_set(unsigned int x0, unsigned int y0, unsigned int x1, unsig
 	LCD_WriteCommand(0x2C);
 }
 
+#if 0
+/* This function should init the secondary display connected to LTDC interface.
+ * TODO: write I2C initialisation procedure for DT022CTFT
+ */
 static void LCD_Init()
 {
 	HAL_GPIO_WritePin(LCD2_RESET_GPIO_Port,LCD2_RESET_Pin,1);
@@ -189,6 +193,7 @@ static void LCD_Init()
 	HAL_GPIO_WritePin(LCD2_RESET_GPIO_Port,LCD2_RESET_Pin,1);
 	HAL_Delay(5);
 }
+#endif
 
 void video_init()
 {
