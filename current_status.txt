@@ -1,20 +1,25 @@
-Platform	Linux
+Platform	PC
+OS		Linux
 Library		glibc, SDL
-Status		OK and ready to work with. You can use XShell as example code.
+Status		OK and ready to use. You can use the XShell project as example.
 
-Platform	Windows
+Platform	PC
+OS		Windows
 Library		mingw-glibc
 Status		It compiles and runs, but crashes very often for yet unknown reason.
 
 Platform	STM32F429I-DISCOVERY
 Library		SPL
-Status		OK, boots up the target OS, but have no user input.
+Status		OK, boots up the target OS, but have no user input. Proof of concept.
 
 Platform	STM32F746G-DISCOVERY
 Library		HAL
-Status		OK and ready for testing. Have minor USB keyboard issues.
+Status		OK and ready to use. Although have minor USB keyboard issues, it's the most complete embedded solution so far.
 
 Platform	F7-Ginger
 Library		HAL
-Status		Almost ready, still have SDRAM stability issues.
+Status		Almost ready, still have SDRAM stability issues. Deprecated (see Ginger-II).
 
+Platform	F7-Ginger-II
+Library		HAL
+Status		OK, boots up the target OS, but have no user input yet.
