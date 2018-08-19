@@ -1,0 +1,9 @@
+(fp_lib_table
+  (lib (name button_bourns)(type KiCad)(uri "$(KIPRJMOD)/button_bourns.pretty")(options "")(descr ""))
+  (lib (name psa05)(type KiCad)(uri "$(KIPRJMOD)/psa05.pretty")(options "")(descr ""))
+  (lib (name "molex sd slot 2")(type Legacy)(uri "$(KIPRJMOD)/molex sd slot 2.mod")(options "")(descr ""))
+  (lib (name tsop-54)(type Legacy)(uri "$(KIPRJMOD)/tsop-54.mod")(options "")(descr ""))
+  (lib (name TFT-WF24HTLAJDNN)(type KiCad)(uri "$(KIPRJMOD)/TFT-WF24HTLAJDNN.pretty")(options "")(descr ""))
+  (lib (name XF2M45151A)(type KiCad)(uri "$(KIPRJMOD)/XF2M45151A.pretty")(options "")(descr ""))
+  (lib (name girl)(type KiCad)(uri "$(KIPRJMOD)/girl.pretty")(options "")(descr ""))
+)
