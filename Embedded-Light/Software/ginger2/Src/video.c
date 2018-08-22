@@ -13,6 +13,7 @@
 #include "robot.h"
 
 volatile uint16_t* g_frames;
+volatile uint8_t g_max_frames = 0;
 volatile uint8_t g_frame_cnt = 0;
 
 static void TFT_Snd(uint16_t x)

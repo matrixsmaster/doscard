@@ -196,7 +196,16 @@ int main(void)
   video_init();
   send("TFT OK\r\n");
 
-  OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES;
+  g_max_frames = 2; //the second "frame" is for OSD
+  OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
+
+  char x = 33;
+  while (1) {
+	  OS_DrawLargeChar(x++);
+	  HAL_Delay(200);
+	  if (x >= 127) x = 33;
+  }
+
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
   if (!fd_img) Error_Handler();
 

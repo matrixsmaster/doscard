@@ -1,3 +1,8 @@
+/*
+ * This file is a part of the DOSCard project.
+ *
+ * (C) Copyright Dmitry 'MatrixS_Master' Soloviov, 2018
+ */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -10,13 +15,42 @@
 
 uint32_t OS_Last_Address = 0;
 
-void OS_DrawChar(int col, int row, char x)
+static void OS_DrawRect(__IO uint16_t* to, int x0, int y0, int x1, int y1, const uint16_t col)
+{
+	for (to += y0*TFT_LCD_WIDTH; y0 < y1; y0++, to += TFT_LCD_WIDTH) {
+		__IO uint16_t* ptr = to + x0;
+		for (int i = x0; i < x1; i++,ptr++) *ptr = col;
+	}
+}
+
+void OS_DrawLargeChar(char x)
 {
 	if (x < 33 || x > 126) return;
-//	char _s[] = "char x\r\n";
-//	_s[5] = x;
-//	send(_s);
 
+	g_frame_cnt = 1;
+	__IO uint16_t* buf = (__IO uint16_t*)&(g_frames[g_frame_cnt*TFT_TOTAL_PIXELS]);
+	memset((void*)buf,0,TFT_TOTAL_BYTES);
+
+	const int step = TFT_LCD_HEIGHT / 8;
+	int cx = 8*step;
+	int cy = 0;
+	for (int a,j,i = 0; i < 8; i++) {
+		uint8_t sym = font8x4[(x-33)*8+i];
+		for (j = 0; j < 4; j++) {
+			cx -= step;
+			if (sym & 0x08) OS_DrawRect(buf,cx-step,cy,cx,cy+step,OS_OSD_COLOR);
+			sym <<= 1;
+		}
+		cx = 8*step;
+		cy += step;
+	}
+}
+
+static void OS_DrawChar(int col, int row, char x)
+{
+	if (x < 33 || x > 126 || col < 0 || col > 79 || row < 0 || row > 24) return;
+
+	g_frame_cnt = 0;
 	__IO uint16_t* buf = (__IO uint16_t*)g_frames;
 	int cx = (80-col)*4;
 	int cy = row*8;
@@ -26,11 +60,8 @@ void OS_DrawChar(int col, int row, char x)
 			cx--;
 			if (sym & 0x08) {
 				a = TFT_LCD_WIDTH*cy + cx;
-				if (a >= TFT_TOTAL_BYTES) {
-					send("Achtung! CharGen eat all the memory\r\n");
-					for(;;);
-				}
-				buf[a] = 0x07E0;
+				if (a >= TFT_TOTAL_BYTES) return;
+				buf[a] = OS_FONT_COLOR;
 			}
 			sym <<= 1;
 		}

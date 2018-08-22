@@ -15,6 +15,7 @@
 #define TFT_TOTAL_BYTES							 (TFT_TOTAL_PIXELS*2)
 
 extern volatile uint16_t* g_frames;
+extern volatile uint8_t g_max_frames;
 extern volatile uint8_t g_frame_cnt;
 
 void video_init();
