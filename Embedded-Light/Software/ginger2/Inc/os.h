@@ -13,6 +13,8 @@
 #define OS_FONT_MAXCODE 126
 #define OS_VK_TIMEOUT 800
 
+typedef int (*os_callback_t)(void);
+
 extern uint32_t OS_Last_Address;
 extern uint8_t OS_VK_CurSym;
 extern uint32_t OS_VK_Timestamp;
@@ -23,6 +25,6 @@ void OS_PrintString(char* str);
 
 uint8_t* OS_InitDisk(const char* name, uint32_t* len);
 
-void OS();
+void OS(os_callback_t cb);
 
 #endif /* INC_OS_H_ */

@@ -97,10 +97,6 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-#define CPUTEMP_V25								 0.76f
-#define CPUTEMP_ASLOPE							 (2.5f / 1e3)
-#define ADC1_RESOLUTION							 (3.3f / 4096.f)
-
 void send(const char* s);
 /* USER CODE END Private defines */
 

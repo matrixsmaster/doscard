@@ -70,13 +70,14 @@
 #include "usbd_cdc.h"
 #include "os.h"
 #include "VM86conf.h"
+#include "tempsense.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+static uint32_t os_callback_cnt = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,24 +101,11 @@ void send(const char* s)
 #endif
 }
 
-int GetCPUTemp()
+int os_callback_fun()
 {
-	char str[128];
-
-	int t = 0;
-	HAL_ADC_Start(&hadc1);
-	if (HAL_ADC_PollForConversion(&hadc1,1) == HAL_OK) {
-		t = HAL_ADC_GetValue(&hadc1);
-		t = round( ((ADC1_RESOLUTION*(float)t) - CPUTEMP_V25) / CPUTEMP_ASLOPE ) + 25;
-	}
-	HAL_ADC_Stop(&hadc1);
-
-#if 1
-	snprintf(str,sizeof(str),"CPU: %d C\r\n",t);
-	send(str);
-#endif
-
-	return t;
+	if (os_callback_cnt++ % 700 == 0)
+		ShowCPUTemp();
+	return 0;
 }
 /* USER CODE END 0 */
 
@@ -174,48 +162,58 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+  //First of all, let's wait for a bit longer than half a second to settle the board
   HAL_Delay(600);
 
 #if USB_DEBUG_EN
 //  while (HAL_GPIO_ReadPin(B4_GPIO_Port,B4_Pin) == GPIO_PIN_SET) ;
-//  while (OS_VK_CurSym == OS_FONT_MINCODE) ;
-#endif
   send("Alive!\r\n");
+#endif
 
+  //The second thing is to init our SDRAM chip and check it for errors
   if (SDRAM_InitSequence(&hsdram1)) Error_Handler();
   HAL_Delay(500);
   if (SDRAM_Check()) Error_Handler();
   send("SDRAM OK\r\n");
 
+  //Now we will mount the SD card
   HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
   memset(&SDFatFS,0,sizeof(SDFatFS));
   FRESULT r = f_mount(&SDFatFS,SDPath,1);
   if (r != FR_OK) Error_Handler();
   send("SD mounted\r\n");
 
+  //Now enable the display unit
   HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,1);
   video_init();
   send("TFT OK\r\n");
 
+  //We have enabled the display unit, now we should set the RAM boundaries
+  //for other subsystems (like VM and VK)
   g_max_frames = 2; //the second "frame" is for OSD
   OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
 
+  //Now let's initialize the virtual floppy image
+  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+  if (!fd_img) Error_Handler();
+
+  //After small delay we will be ready to run the VM
+  HAL_Delay(600);
+  HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
+  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
+
+  //This will enable our buttons and VK
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
-  while (1) {
-  }
+  //And now we will run the VM
+  OS(os_callback_fun);
 
-  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
-  if (!fd_img) Error_Handler();
-
-  HAL_Delay(600);
-  HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
-  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
-
-  OS();
+  //If we're reached there, the VM has stopped.
+  send("VM shutdown\r\n");
+  memset((void*)g_frames,0,TFT_TOTAL_BYTES);
   OS_PrintString("Shutdown.");
   /* USER CODE END 2 */
 
@@ -227,7 +225,6 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    GetCPUTemp();
   }
   /* USER CODE END 3 */
 

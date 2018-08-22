@@ -16,7 +16,7 @@
 
 #define IOBUF_MAXLEN 16
 
-#define TIMESTEP 15
+#define TIMESTEP 30
 #define AUDIOSILENCE 0x80
 
 // Emulator system constants
