@@ -9,10 +9,15 @@
 #define OS_FLOPPY_FILE "fd.img"
 #define OS_FONT_COLOR 0x07E0
 #define OS_OSD_COLOR 0xF81F
+#define OS_FONT_MINCODE 33
+#define OS_FONT_MAXCODE 126
+#define OS_VK_TIMEOUT 800
 
 extern uint32_t OS_Last_Address;
+extern uint8_t OS_VK_CurSym;
+extern uint32_t OS_VK_Timestamp;
 
-void OS_DrawLargeChar(char x);
+void OS_UpdateInput(int key);
 
 void OS_PrintString(char* str);
 

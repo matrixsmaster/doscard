@@ -64,12 +64,16 @@
 
 #define B1_Pin GPIO_PIN_2
 #define B1_GPIO_Port GPIOE
+#define B1_EXTI_IRQn EXTI2_IRQn
 #define B2_Pin GPIO_PIN_3
 #define B2_GPIO_Port GPIOE
+#define B2_EXTI_IRQn EXTI3_IRQn
 #define B3_Pin GPIO_PIN_4
 #define B3_GPIO_Port GPIOE
+#define B3_EXTI_IRQn EXTI4_IRQn
 #define B4_Pin GPIO_PIN_5
 #define B4_GPIO_Port GPIOE
+#define B4_EXTI_IRQn EXTI9_5_IRQn
 #define LCD1_RESET_Pin GPIO_PIN_6
 #define LCD1_RESET_GPIO_Port GPIOH
 #define LCD2_RESET_Pin GPIO_PIN_7

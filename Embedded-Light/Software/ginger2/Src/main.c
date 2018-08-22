@@ -177,7 +177,8 @@ int main(void)
   HAL_Delay(600);
 
 #if USB_DEBUG_EN
-  while (HAL_GPIO_ReadPin(B4_GPIO_Port,B4_Pin) == GPIO_PIN_SET) ;
+//  while (HAL_GPIO_ReadPin(B4_GPIO_Port,B4_Pin) == GPIO_PIN_SET) ;
+//  while (OS_VK_CurSym == OS_FONT_MINCODE) ;
 #endif
   send("Alive!\r\n");
 
@@ -199,11 +200,12 @@ int main(void)
   g_max_frames = 2; //the second "frame" is for OSD
   OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
 
-  char x = 33;
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
   while (1) {
-	  OS_DrawLargeChar(x++);
-	  HAL_Delay(200);
-	  if (x >= 127) x = 33;
   }
 
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);

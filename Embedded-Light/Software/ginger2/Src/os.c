@@ -14,6 +14,8 @@
 #include "pfont.h"
 
 uint32_t OS_Last_Address = 0;
+uint8_t OS_VK_CurSym = OS_FONT_MINCODE;
+uint32_t OS_VK_Timestamp = 0;
 
 static void OS_DrawRect(__IO uint16_t* to, int x0, int y0, int x1, int y1, const uint16_t col)
 {
@@ -23,9 +25,9 @@ static void OS_DrawRect(__IO uint16_t* to, int x0, int y0, int x1, int y1, const
 	}
 }
 
-void OS_DrawLargeChar(char x)
+static void OS_DrawLargeChar(char x)
 {
-	if (x < 33 || x > 126) return;
+	if (x < OS_FONT_MINCODE || x > OS_FONT_MAXCODE) return;
 
 	g_frame_cnt = 1;
 	__IO uint16_t* buf = (__IO uint16_t*)&(g_frames[g_frame_cnt*TFT_TOTAL_PIXELS]);
@@ -46,9 +48,31 @@ void OS_DrawLargeChar(char x)
 	}
 }
 
+void OS_UpdateInput(int key)
+{
+	if (key) {
+		//check for timer
+		if (key > 0 || HAL_GetTick() - OS_VK_Timestamp > OS_VK_TIMEOUT) {
+			VM86_InsertKey((key > 0)? key:OS_VK_CurSym);
+			g_frame_cnt = 0; //turn off OSD immediately
+		}
+		return;
+	}
+
+	//update current selection
+	char buf[64];
+	snprintf(buf,sizeof(buf),"sym = %c\r\n",OS_VK_CurSym);
+	send(buf);
+
+	OS_DrawLargeChar(OS_VK_CurSym);
+	OS_VK_Timestamp = HAL_GetTick();
+}
+
 static void OS_DrawChar(int col, int row, char x)
 {
-	if (x < 33 || x > 126 || col < 0 || col > 79 || row < 0 || row > 24) return;
+	if (x < OS_FONT_MINCODE || x > OS_FONT_MAXCODE) return;
+	if (col < 0 || col > 79 || row < 0 || row > 24) return;
+
 
 	g_frame_cnt = 0;
 	__IO uint16_t* buf = (__IO uint16_t*)g_frames;

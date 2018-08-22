@@ -1,15 +1,14 @@
 #include <string>
 #include "VM86Wrapper.h"
 
-static VM86Wrapper* g_VM;
-static char* shadow;
+static VM86Wrapper* g_VM = NULL;
+static char* shadow = NULL;
 
 using namespace std;
 
 VM86Wrapper::VM86Wrapper(uint32_t base_addr) :
 		membase(base_addr)
 {
-//	vm = new VM86(membase);//FIXME: debug only
 }
 
 VM86Wrapper::~VM86Wrapper()
@@ -33,14 +32,11 @@ void VM86Wrapper::PushChar(int v)
 	bufin.push_back(v);
 }
 
-int VM86Wrapper::Loop()
+bool VM86Wrapper::Loop()
 {
-	int rr = 0;//FIXME: debug only
-
 	if (!started) {
 		if (vm) delete vm;
 		vm = new VM86(membase);
-		vm->next_op = expectant; //FIXME: debug only
 		started = vm;
 		stopped = false;
 	}
@@ -53,8 +49,7 @@ int VM86Wrapper::Loop()
 	}
 
 	for (cycles = 0; cycles < VM86W_MINCYCLES; cycles++) {
-		rr = vm->FullStep();
-		stopped = rr;  //FIXME: debug only
+		stopped = vm->FullStep();
 		if (stopped) break;
 	}
 
@@ -62,8 +57,7 @@ int VM86Wrapper::Loop()
 	for (auto &c : out) bufout.push_back(c);
 	if (use_intscreen) UpdateScreen();
 
-//	return stopped;
-	return rr;  //FIXME: debug only
+	return stopped;
 }
 
 void VM86Wrapper::Reset()
@@ -311,6 +305,11 @@ char* VM86_GetShadowBuf()
 	return shadow;
 }
 
+void VM86_InsertKey(int k)
+{
+	if (g_VM) g_VM->PushChar(k);
+}
+
 void VM86_Stop()
 {
 	delete g_VM;
@@ -318,14 +317,3 @@ void VM86_Stop()
 	free(shadow);
 	shadow = NULL;
 }
-
-//FIXME: debug only
-void VM86_SetExpectedByte(uint8_t b)
-{
-	g_VM->SetExpectedByte(b);
-}
-uint8_t VM86_GetRealByte()
-{
-	return g_VM->GetRealByte();
-}
-

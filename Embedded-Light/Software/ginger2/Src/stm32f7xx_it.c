@@ -38,6 +38,7 @@
 /* USER CODE BEGIN 0 */
 #include "dma2d.h"
 #include "main.h"
+#include "os.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -195,6 +196,74 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+* @brief This function handles EXTI line2 interrupt.
+*/
+void EXTI2_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI2_IRQn 0 */
+	//ASCII code input: decrement value
+	if (OS_VK_CurSym > OS_FONT_MINCODE-1) //since 32 is space, it should be allowed to enter
+		OS_VK_CurSym--;
+	else
+		OS_VK_CurSym = OS_FONT_MAXCODE;
+	OS_UpdateInput(0);
+  /* USER CODE END EXTI2_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
+  /* USER CODE BEGIN EXTI2_IRQn 1 */
+
+  /* USER CODE END EXTI2_IRQn 1 */
+}
+
+/**
+* @brief This function handles EXTI line3 interrupt.
+*/
+void EXTI3_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI3_IRQn 0 */
+	//Virtual Keyboard: Backspace
+	OS_UpdateInput(8);
+  /* USER CODE END EXTI3_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
+  /* USER CODE BEGIN EXTI3_IRQn 1 */
+
+  /* USER CODE END EXTI3_IRQn 1 */
+}
+
+/**
+* @brief This function handles EXTI line4 interrupt.
+*/
+void EXTI4_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI4_IRQn 0 */
+	//Virtual Keyboard: Enter
+	OS_UpdateInput(13);
+  /* USER CODE END EXTI4_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  /* USER CODE BEGIN EXTI4_IRQn 1 */
+
+  /* USER CODE END EXTI4_IRQn 1 */
+}
+
+/**
+* @brief This function handles EXTI line[9:5] interrupts.
+*/
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+	//ASCII code input: increment value
+	if (OS_VK_CurSym < OS_FONT_MAXCODE)
+		OS_VK_CurSym++;
+	else
+		OS_VK_CurSym = OS_FONT_MINCODE - 1; //space
+	OS_UpdateInput(0);
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
 * @brief This function handles TIM7 global interrupt.
 */
 void TIM7_IRQHandler(void)
@@ -202,6 +271,7 @@ void TIM7_IRQHandler(void)
   /* USER CODE BEGIN TIM7_IRQn 0 */
 	if (HAL_DMA2D_PollForTransfer(&hdma2d,100) == HAL_OK)
 		HAL_DMA2D_Start(&hdma2d,(uint32_t)&(g_frames[g_frame_cnt*TFT_TOTAL_PIXELS]),TFT_LCD_ADDR,TFT_LCD_WIDTH,TFT_LCD_HEIGHT);
+	OS_UpdateInput(-1);
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
