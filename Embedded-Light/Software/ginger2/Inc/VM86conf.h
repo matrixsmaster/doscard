@@ -16,7 +16,7 @@
 
 #define IOBUF_MAXLEN 16
 
-#define TIMESTEP 40 /*RTC will advance to this value of ms per instruction*/
+#define TIMESTEP 3 /*RTC will advance to this value of ms per RTC call*/
 #define AUDIOSILENCE 0x80
 
 // Emulator system constants
@@ -137,5 +137,6 @@ static const uint8_t lookup_table[20][256] = {
 
 extern uint8_t* /*bios_img,*/ fd_img;
 extern uint32_t /*bios_len,*/ fd_len;
+extern volatile uint16_t rtc_millis;
 
 #endif /* VM86CONF_H_ */

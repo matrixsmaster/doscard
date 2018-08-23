@@ -8,13 +8,14 @@
 #include <stdio.h>
 #include "main.h"
 #include "VM86Wrapper.h"
+#include "VM86conf.h"
 #include "fatfs.h"
 #include "os.h"
 #include "usart.h"
 #include "pfont.h"
 
 uint32_t OS_Last_Address = 0;
-uint8_t OS_VK_CurSym = OS_FONT_MINCODE;
+uint8_t OS_VK_CurSym = 'a';
 static uint8_t OS_VK_Enabled = 0;
 static uint8_t OS_VK_SymLoaded = 0;
 static uint32_t OS_VK_Timestamp = 0;
@@ -29,11 +30,11 @@ static void OS_DrawRect(__IO uint16_t* to, int x0, int y0, int x1, int y1, const
 
 static void OS_DrawLargeChar(char x)
 {
-	if (x < OS_FONT_MINCODE || x > OS_FONT_MAXCODE) return;
-
 	g_frame_cnt = 1;
 	__IO uint16_t* buf = (__IO uint16_t*)&(g_frames[g_frame_cnt*TFT_TOTAL_PIXELS]);
 	memset((void*)buf,0,TFT_TOTAL_BYTES);
+
+	if (x < OS_FONT_MINCODE || x > OS_FONT_MAXCODE) return;
 
 	const int step = TFT_LCD_HEIGHT / 8;
 	int cx = 8*step;
@@ -144,10 +145,17 @@ void OS(os_callback_t cb)
 {
 	memset((void*)SDRAM_BANK_ADDR,0,TFT_TOTAL_BYTES);
 	VM86_Start(OS_Last_Address);
+	uint32_t ctm,timestp = HAL_GetTick();
 	OS_PrintString("VM Init complete");
 	OS_VK_Enabled = 1;
 
 	for (int cyc = 0, l = 1, p = 0, r = 0;;cyc++) {
+//		ctm = HAL_GetTick() - timestp;
+//		if (ctm) {
+//			rtc_millis += ctm;
+//			timestp = HAL_GetTick();
+//		}
+
 		r = VM86_FullStep();
 		if (r < 0) break;
 

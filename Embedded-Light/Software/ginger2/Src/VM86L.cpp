@@ -14,9 +14,11 @@
 #include "VM86macro.h"
 #include "mthreads.h"
 
+/* Globals */
+volatile uint16_t rtc_millis = 0;
+
 /* Locals */
 static time_t seconds = 1234789;
-static uint16_t millis = 0;
 static size_t diskhead = 0;
 
 uint8_t* fd_img = NULL;
@@ -44,29 +46,28 @@ void VM86::LocalOpcode()
 	switch ((char)i_data0)
 	{
 		OPCODE_CHAIN 0: // PUTCHAR_AL
-//			if ((*regs8 == 10 || *regs8 == 13) || isprint(*regs8))
-				PushOutput(*regs8);
+			PushOutput(*regs8);
 
 		OPCODE 1: // GET_RTC
-			if (++millis >= 1000) {
-				millis = 0;
+			rtc_millis += TIMESTEP;
+			if (rtc_millis >= 1000) {
+				rtc_millis -= 1000;
 				seconds++;
-			} else
-				millis += TIMESTEP;
-			memcpy(tmp, localtime(&seconds), sizeof(seconds));
-			CAST(int16_t,mem[SEGREG(REG_ES, REG_BX, 36+)]) = millis;
+			}
+			memcpy(tmp,localtime(&seconds),sizeof(struct tm));
+			CAST(int16_t,mem[SEGREG(REG_ES, REG_BX, 36+)]) = rtc_millis;
 
 		OPCODE 2: // DISK_READ
 			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < fd_len)) {
 				diskhead = (CAST(unsigned,regs16[REG_BP]) << 9);
-				regs8[REG_AL] = sta_read(disk[regs8[REG_DL]], tmp, regs16[REG_AX]);
+				regs8[REG_AL] = sta_read(disk[regs8[REG_DL]],tmp,regs16[REG_AX]);
 			} else
 				regs8[REG_AL] = 0;
 
 		OPCODE 3: // DISK_WRITE
 			if ((disk[regs8[REG_DL]]) && ((CAST(unsigned,regs16[REG_BP]) << 9) < fd_len)) {
 				diskhead = (CAST(unsigned,regs16[REG_BP]) << 9);
-				regs8[REG_AL] = sta_write(disk[regs8[REG_DL]], tmp, regs16[REG_AX]);
+				regs8[REG_AL] = sta_write(disk[regs8[REG_DL]],tmp,regs16[REG_AX]);
 			} else
 				regs8[REG_AL] = 0;
 	}

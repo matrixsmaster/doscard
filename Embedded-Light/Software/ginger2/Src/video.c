@@ -10,11 +10,17 @@
 #include "fmc.h"
 #include "main.h"
 #include "video.h"
-//#include "robot.h"
+#include "jpeg.h"
+#include "jpeg_utils.h"
+#include "splash_screen.h"
 
 volatile uint16_t* g_frames;
 volatile uint8_t g_max_frames = 0;
 volatile uint8_t g_frame_cnt = 0;
+
+static uint32_t jpeg_in_feed = 0;
+static uint32_t jpeg_block_cnt = 0;
+static JPEG_YCbCrToRGB_Convert_Function jpeg_cnvfun = NULL;
 
 static void TFT_Snd(uint16_t x)
 {
@@ -196,18 +202,68 @@ static void LCD_Init()
 }
 #endif
 
+void HAL_JPEG_InfoReadyCallback(JPEG_HandleTypeDef *hjpeg,JPEG_ConfTypeDef *pInfo)
+{
+#if USB_DEBUG_EN
+	char buf[80];
+	snprintf(buf,sizeof(buf),"INFO : %hu %hu %lu %lu\r\n",pInfo->ColorSpace,pInfo->ImageQuality,pInfo->ImageWidth,pInfo->ImageHeight);
+	send(buf);
+
+	if (pInfo->ColorSpace == JPEG_GRAYSCALE_COLORSPACE) send("Grayscale\r\n");
+	else if (pInfo->ColorSpace == JPEG_CMYK_COLORSPACE) send("CMYK\r\n");
+	else if (pInfo->ColorSpace == JPEG_YCBCR_COLORSPACE) send("YCbCr\r\n");
+	else send("WTF?!\r\n");
+#endif
+
+	uint32_t total = 0;
+	JPEG_GetDecodeColorConvertFunc(pInfo,&jpeg_cnvfun,&total);
+
+#if USB_DEBUG_EN
+	snprintf(buf,sizeof(buf),"Total %lu blocks, function %p provided\r\n",total,jpeg_cnvfun);
+	send(buf);
+#endif
+}
+
+void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
+{
+	jpeg_in_feed += NbDecodedData;
+	if (jpeg_in_feed >= new_logo_jpg_len)
+		HAL_JPEG_ConfigInputBuffer(hjpeg,(uint8_t*)new_logo_jpg,0);
+	else
+		HAL_JPEG_ConfigInputBuffer(hjpeg,(uint8_t*)new_logo_jpg+jpeg_in_feed,new_logo_jpg_len-jpeg_in_feed);
+}
+
+void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, uint32_t OutDataLength)
+{
+	uint32_t tmp = 0;
+	jpeg_block_cnt += jpeg_cnvfun(pDataOut,(uint8_t*)g_frames,jpeg_block_cnt,OutDataLength,&tmp);
+
+#if USB_DEBUG_EN
+	char buf[80];
+	snprintf(buf,sizeof(buf),"conv: %lu, cnt = %lu\r\n",tmp,jpeg_block_cnt);
+	send(buf);
+#endif
+}
+
 void video_init()
 {
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
 	TFT_Init();
 	Address_set(0,0,TFT_LCD_WIDTH-1,TFT_LCD_HEIGHT-1);
-//	memcpy((uint32_t*)TFT_LCD_ADDR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
-
-	HAL_Delay(500);
 
 	g_frames = (volatile uint16_t*)SDRAM_BANK_ADDR;
 	memset((void*)g_frames,0,TFT_TOTAL_BYTES);
 	HAL_TIM_Base_Start_IT(&htim7);
+
+	HAL_JPEG_EnableHeaderParsing(&hjpeg);
+	if (HAL_JPEG_Decode(&hjpeg,(uint8_t*)new_logo_jpg,new_logo_jpg_len,(uint8_t*)&g_frames[TFT_TOTAL_PIXELS],TFT_TOTAL_BYTES,10000) != HAL_OK) {
+#if USB_DEBUG_EN
+		char buf[123];
+		snprintf(buf,sizeof(buf),"JPEG Err %lu\r\n",HAL_JPEG_GetError(&hjpeg));
+		send(buf);
+#endif
+	}
+	HAL_Delay(800);
 }
 
 #if 0
