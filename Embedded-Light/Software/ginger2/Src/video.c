@@ -10,7 +10,7 @@
 #include "fmc.h"
 #include "main.h"
 #include "video.h"
-#include "robot.h"
+//#include "robot.h"
 
 volatile uint16_t* g_frames;
 volatile uint8_t g_max_frames = 0;
@@ -201,7 +201,7 @@ void video_init()
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
 	TFT_Init();
 	Address_set(0,0,TFT_LCD_WIDTH-1,TFT_LCD_HEIGHT-1);
-	memcpy((uint32_t*)TFT_LCD_ADDR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
+//	memcpy((uint32_t*)TFT_LCD_ADDR,gimp_image.pixel_data,gimp_image.width*gimp_image.height*gimp_image.bytes_per_pixel);
 
 	HAL_Delay(500);
 

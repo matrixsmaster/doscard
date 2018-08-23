@@ -121,8 +121,12 @@ static uint8_t* jpeg_out;
 void HAL_JPEG_InfoReadyCallback(JPEG_HandleTypeDef *hjpeg,JPEG_ConfTypeDef *pInfo)
 {
 	char buf[80];
-	snprintf(buf,sizeof(buf),"INFO : %hu %lu %lu\r\n",pInfo->ImageQuality,pInfo->ImageWidth,pInfo->ImageHeight);
+	snprintf(buf,sizeof(buf),"INFO : %hu %hu %lu %lu\r\n",pInfo->ColorSpace,pInfo->ImageQuality,pInfo->ImageWidth,pInfo->ImageHeight);
 	send(buf);
+	if (pInfo->ColorSpace == JPEG_GRAYSCALE_COLORSPACE) send("Grayscale\r\n");
+	else if (pInfo->ColorSpace == JPEG_CMYK_COLORSPACE) send("CMYK\r\n");
+	else if (pInfo->ColorSpace == JPEG_YCBCR_COLORSPACE) send("YCbCr\r\n");
+	else send("WTF?!\r\n");
 	jpeg_inf = *pInfo;
 	uint32_t total = 0;
 	JPEG_GetDecodeColorConvertFunc(pInfo,&fun,&total);
@@ -135,7 +139,7 @@ void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
 	char buf[80];
 	snprintf(buf,sizeof(buf),"get data: %lu\r\n",NbDecodedData);
 	send(buf);
-
+#if 0
 	HAL_JPEG_Pause(hjpeg,JPEG_PAUSE_RESUME_INPUT);
 	jpeg_in_feed += NbDecodedData; //this will finally 'decode' the image
 	if (jpeg_in_feed >= new_logo_jpg_len) {
@@ -155,6 +159,16 @@ void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
 		send(buf);
 	}
 	HAL_JPEG_Resume(hjpeg,JPEG_PAUSE_RESUME_INPUT);
+#else
+	jpeg_in_feed += NbDecodedData;
+	if (jpeg_in_feed >= new_logo_jpg_len) {
+		HAL_JPEG_ConfigInputBuffer(hjpeg,jpeg_test_in,0);
+		send("\r\nlast one\r\n");
+	} else {
+		HAL_JPEG_ConfigInputBuffer(hjpeg,new_logo_jpg+jpeg_in_feed,new_logo_jpg_len-jpeg_in_feed);
+	}
+//	HAL_JPEG_ConfigInputBuffer(hjpeg,jpeg_test_in,0);
+#endif
 }
 static int jpeg_cnt = 0;
 void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, uint32_t OutDataLength)
@@ -171,7 +185,6 @@ void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, ui
 //		}
 //		if (buf[0]) send(buf);
 //	}
-
 	uint32_t fuck = 0;
 	uint32_t r = fun(pDataOut,jpeg_out,jpeg_cnt,OutDataLength,&fuck); //I hate this fucking undocumented shit from STM!
 
@@ -179,10 +192,11 @@ void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, ui
 	send(buf);
 	jpeg_cnt += r;
 //	jpeg_out += r*4;
-
+#if 0
 	HAL_JPEG_Pause(hjpeg,JPEG_PAUSE_RESUME_OUTPUT);
 	HAL_JPEG_ConfigOutputBuffer(hjpeg,jpeg_test_buf,sizeof(jpeg_test_buf));
 	HAL_JPEG_Resume(hjpeg,JPEG_PAUSE_RESUME_OUTPUT);
+#endif
 }
 void HAL_JPEG_DecodeCpltCallback(JPEG_HandleTypeDef *hjpeg)
 {
@@ -283,7 +297,8 @@ int main(void)
   if (HAL_JPEG_EnableHeaderParsing(&hjpeg) != HAL_OK) Error_Handler();
   memcpy(jpeg_test_in,new_logo_jpg,4096);
   jpeg_out = g_frames;
-  if (HAL_JPEG_Decode(&hjpeg,jpeg_test_in,4096,jpeg_test_buf,sizeof(jpeg_test_buf),100000) != HAL_OK) {
+//  if (HAL_JPEG_Decode(&hjpeg,jpeg_test_in,4096,jpeg_test_buf,sizeof(jpeg_test_buf),100000) != HAL_OK) {
+  if (HAL_JPEG_Decode(&hjpeg,(uint8_t*)new_logo_jpg,new_logo_jpg_len,(uint8_t*)&g_frames[TFT_TOTAL_PIXELS],TFT_TOTAL_BYTES,10000) != HAL_OK) {
 	  char buf[123];
 	  snprintf(buf,sizeof(buf),"JPEG Err %lu\r\n",HAL_JPEG_GetError(&hjpeg));
 	  send(buf);
