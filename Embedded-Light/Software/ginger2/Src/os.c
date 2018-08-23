@@ -15,8 +15,9 @@
 
 uint32_t OS_Last_Address = 0;
 uint8_t OS_VK_CurSym = OS_FONT_MINCODE;
-uint8_t OS_VK_SymLoaded = 0;
-uint32_t OS_VK_Timestamp = 0;
+static uint8_t OS_VK_Enabled = 0;
+static uint8_t OS_VK_SymLoaded = 0;
+static uint32_t OS_VK_Timestamp = 0;
 
 static void OS_DrawRect(__IO uint16_t* to, int x0, int y0, int x1, int y1, const uint16_t col)
 {
@@ -51,23 +52,26 @@ static void OS_DrawLargeChar(char x)
 
 void OS_UpdateInput(int key)
 {
+	if (!OS_VK_Enabled) return;
+
 	if (key) {
 		//check for timer
 		if ((key > 0) || (!OS_VK_SymLoaded && HAL_GetTick() - OS_VK_Timestamp > OS_VK_TIMEOUT)) {
 			VM86_InsertKey((key > 0)? key:OS_VK_CurSym);
 			OS_VK_SymLoaded = 1;
 		}
+
 	} else {
 		OS_VK_SymLoaded = 0;
 		//update current selection
 		OS_DrawLargeChar(OS_VK_CurSym);
-	}
 
 #if USB_DEBUG_EN
-	char buf[64];
-	snprintf(buf,sizeof(buf),"sym = %c\r\n",OS_VK_CurSym);
-	send(buf);
+		char buf[64];
+		snprintf(buf,sizeof(buf),"sym = %c\r\n",OS_VK_CurSym);
+		send(buf);
 #endif
+	}
 
 	if (key >= 0) OS_VK_Timestamp = HAL_GetTick();
 }
@@ -141,6 +145,7 @@ void OS(os_callback_t cb)
 	memset((void*)SDRAM_BANK_ADDR,0,TFT_TOTAL_BYTES);
 	VM86_Start(OS_Last_Address);
 	OS_PrintString("VM Init complete");
+	OS_VK_Enabled = 1;
 
 	for (int cyc = 0, l = 1, p = 0, r = 0;;cyc++) {
 		r = VM86_FullStep();
@@ -164,5 +169,6 @@ void OS(os_callback_t cb)
 		if (cb && cb() < 0) break;
 	}
 
+	OS_VK_Enabled = 0;
 	VM86_Stop();
 }

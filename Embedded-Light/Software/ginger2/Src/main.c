@@ -71,6 +71,8 @@
 #include "os.h"
 #include "VM86conf.h"
 #include "tempsense.h"
+#include "splash_screen.h"
+#include "jpeg_utils.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -106,6 +108,89 @@ int os_callback_fun()
 	if (os_callback_cnt++ % 700 == 0)
 		ShowCPUTemp();
 	return 0;
+}
+
+static uint8_t jpeg_test_in[4096];
+static uint8_t jpeg_test_buf[768];
+static uint32_t jpeg_in_feed = 0;//4096;
+static uint32_t jpeg_last = 0;
+static JPEG_ConfTypeDef jpeg_inf;
+static JPEG_YCbCrToRGB_Convert_Function fun = NULL;
+static uint8_t* jpeg_out;
+//static int jpg_cx = 0, jpg_cy = 0;
+void HAL_JPEG_InfoReadyCallback(JPEG_HandleTypeDef *hjpeg,JPEG_ConfTypeDef *pInfo)
+{
+	char buf[80];
+	snprintf(buf,sizeof(buf),"INFO : %hu %lu %lu\r\n",pInfo->ImageQuality,pInfo->ImageWidth,pInfo->ImageHeight);
+	send(buf);
+	jpeg_inf = *pInfo;
+	uint32_t total = 0;
+	JPEG_GetDecodeColorConvertFunc(pInfo,&fun,&total);
+	snprintf(buf,sizeof(buf),"Total %lu blocks, function %p provided\r\n",total,fun);
+	send(buf);
+}
+void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
+{
+//	send("get data\r\n");
+	char buf[80];
+	snprintf(buf,sizeof(buf),"get data: %lu\r\n",NbDecodedData);
+	send(buf);
+
+	HAL_JPEG_Pause(hjpeg,JPEG_PAUSE_RESUME_INPUT);
+	jpeg_in_feed += NbDecodedData; //this will finally 'decode' the image
+	if (jpeg_in_feed >= new_logo_jpg_len) {
+		HAL_JPEG_ConfigInputBuffer(hjpeg,jpeg_test_in,0);
+		jpeg_last = 1;
+		send("\r\nlast one\r\n");
+	} else {
+		uint32_t rem = new_logo_jpg_len - jpeg_in_feed;
+		uint32_t sz = 4096;
+		if (rem < sz) sz = rem;
+		memcpy(jpeg_test_in,new_logo_jpg+jpeg_in_feed,sz);
+		HAL_JPEG_ConfigInputBuffer(hjpeg,jpeg_test_in,sz);
+
+
+		snprintf(buf,sizeof(buf),"feed = %lu\trem = %lu, sz = %lu\r\n",jpeg_in_feed,rem,sz);
+//		jpeg_in_feed += sz;
+		send(buf);
+	}
+	HAL_JPEG_Resume(hjpeg,JPEG_PAUSE_RESUME_INPUT);
+}
+static int jpeg_cnt = 0;
+void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, uint32_t OutDataLength)
+{
+	char buf[80];
+	snprintf(buf,sizeof(buf),"data ready: %lu\r\n",OutDataLength);
+	send(buf);
+//	for (int i = 0; i < 16; i++) {
+//		memset(buf,0,sizeof(buf));
+//		for (int j = 0; j < 16; j++) {
+//			if (((uint32_t*)jpeg_test_buf)[i*16+j] != jpeg_last)
+//				snprintf(buf,sizeof(buf),"%s 0x%08lX",buf,((uint32_t*)jpeg_test_buf)[i*16+j]);
+//			jpeg_last = ((uint32_t*)jpeg_test_buf)[i*16+j];
+//		}
+//		if (buf[0]) send(buf);
+//	}
+
+	uint32_t fuck = 0;
+	uint32_t r = fun(pDataOut,jpeg_out,jpeg_cnt,OutDataLength,&fuck); //I hate this fucking undocumented shit from STM!
+
+	snprintf(buf,sizeof(buf),"conv: %lu, cnt = %i\r\n",fuck,jpeg_cnt);
+	send(buf);
+	jpeg_cnt += r;
+//	jpeg_out += r*4;
+
+	HAL_JPEG_Pause(hjpeg,JPEG_PAUSE_RESUME_OUTPUT);
+	HAL_JPEG_ConfigOutputBuffer(hjpeg,jpeg_test_buf,sizeof(jpeg_test_buf));
+	HAL_JPEG_Resume(hjpeg,JPEG_PAUSE_RESUME_OUTPUT);
+}
+void HAL_JPEG_DecodeCpltCallback(JPEG_HandleTypeDef *hjpeg)
+{
+	send("JPEG DECODE CPLT CALLBACK\r\n");
+}
+void HAL_JPEG_ErrorCallback(JPEG_HandleTypeDef *hjpeg)
+{
+	send("JPEG ERROR CALLBACK\r\n");
 }
 /* USER CODE END 0 */
 
@@ -177,11 +262,11 @@ int main(void)
   send("SDRAM OK\r\n");
 
   //Now we will mount the SD card
-  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
-  memset(&SDFatFS,0,sizeof(SDFatFS));
-  FRESULT r = f_mount(&SDFatFS,SDPath,1);
-  if (r != FR_OK) Error_Handler();
-  send("SD mounted\r\n");
+//  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
+//  memset(&SDFatFS,0,sizeof(SDFatFS));
+//  FRESULT r = f_mount(&SDFatFS,SDPath,1);
+//  if (r != FR_OK) Error_Handler();
+//  send("SD mounted\r\n");
 
   //Now enable the display unit
   HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,1);
@@ -190,8 +275,22 @@ int main(void)
 
   //We have enabled the display unit, now we should set the RAM boundaries
   //for other subsystems (like VM and VK)
-  g_max_frames = 2; //the second "frame" is for OSD
-  OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
+//  g_max_frames = 2; //the second "frame" is for OSD
+  g_max_frames = 1; //FIXME: JPEG debug only
+//  OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
+
+  //FIXME: debug only
+  if (HAL_JPEG_EnableHeaderParsing(&hjpeg) != HAL_OK) Error_Handler();
+  memcpy(jpeg_test_in,new_logo_jpg,4096);
+  jpeg_out = g_frames;
+  if (HAL_JPEG_Decode(&hjpeg,jpeg_test_in,4096,jpeg_test_buf,sizeof(jpeg_test_buf),100000) != HAL_OK) {
+	  char buf[123];
+	  snprintf(buf,sizeof(buf),"JPEG Err %lu\r\n",HAL_JPEG_GetError(&hjpeg));
+	  send(buf);
+	  Error_Handler();
+  }
+  send("DECODED\r\n");
+  for (;;);
 
   //Now let's initialize the virtual floppy image
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);

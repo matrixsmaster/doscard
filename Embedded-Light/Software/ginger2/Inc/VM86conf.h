@@ -16,7 +16,7 @@
 
 #define IOBUF_MAXLEN 16
 
-#define TIMESTEP 30
+#define TIMESTEP 40 /*RTC will advance to this value of ms per instruction*/
 #define AUDIOSILENCE 0x80
 
 // Emulator system constants

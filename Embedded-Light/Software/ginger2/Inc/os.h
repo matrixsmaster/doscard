@@ -17,7 +17,6 @@ typedef int (*os_callback_t)(void);
 
 extern uint32_t OS_Last_Address;
 extern uint8_t OS_VK_CurSym;
-extern uint32_t OS_VK_Timestamp;
 
 void OS_UpdateInput(int key);
 
