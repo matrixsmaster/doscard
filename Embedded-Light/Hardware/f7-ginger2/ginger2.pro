@@ -1,4 +1,4 @@
-update=Fri 13 Jul 2018 06:19:57 PM MSK
+update=Sun 26 Aug 2018 09:43:52 AM MSK
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,16 @@ version=1
 NetIExt=net
 [general]
 version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
 [eeschema]
 version=1
 LibDir=../f7-ginger2
@@ -62,13 +72,4 @@ LibName30=STM32F767IIT6
 LibName31=mt48lc32
 LibName32=displays
 LibName33=ft232rl
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
+LibName34=lm3671mf-fix
