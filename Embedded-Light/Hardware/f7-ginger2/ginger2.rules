@@ -11,18 +11,18 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 8071)
+    (start_pass_no 12044)
     (layer_rule F.Cu
       (active on)
       (preferred_direction horizontal)
       (preferred_direction_trace_costs 1.0)
-      (against_preferred_direction_trace_costs 2.5)
+      (against_preferred_direction_trace_costs 2.2)
     )
     (layer_rule B.Cu
       (active on)
       (preferred_direction vertical)
       (preferred_direction_trace_costs 1.0)
-      (against_preferred_direction_trace_costs 1.7)
+      (against_preferred_direction_trace_costs 1.8)
     )
   )
   (rule
@@ -63,23 +63,17 @@
     )
   )
   (class "kicad_default"
-    +3V3 GND "Net-(C13-Pad1)" "Net-(C14-Pad1)" "Net-(C19-Pad1)" "Net-(C20-Pad2)" "Net-(C21-Pad1)" "Net-(D1-Pad1)"
-    "Net-(D1-Pad2)" "Net-(D2-Pad1)" "Net-(D2-Pad2)" "Net-(D3-Pad1)" +5V "Net-(D4-Pad1)" "Net-(D4-Pad2)" "Net-(D5-Pad1)"
-    "Net-(D5-Pad2)" "Net-(D6-Pad1)" "/sdr_a4" "/sdr_a5" "/sdr_a6" "/sdr_a7" "/sdr_a8" "/sdr_a9"
+    +3V3 GND "Net-(C13-Pad1)" "Net-(C14-Pad1)" "Net-(C19-Pad1)" "Net-(C20-Pad2)" "Net-(D1-Pad1)" "Net-(D1-Pad2)"
+    "Net-(D2-Pad1)" "Net-(D2-Pad2)" "/sdr_a4" "/sdr_a5" "/sdr_a6" "/sdr_a7" "/sdr_a8" "/sdr_a9"
     "/sdr_a11" "/sdr_a12" "/sdr_cke" "/sdr_clk" "/sdr_dqmh" "/sdr_d8" "/sdr_d9" "/sdr_d10"
     "/sdr_d11" "/sdr_d12" "/sdr_d13" "/sdr_d14" "/sdr_d15" "/sdr_d0" "/sdr_d1" "/sdr_d2"
     "/sdr_d3" "/sdr_d4" "/sdr_d5" "/sdr_d6" "/sdr_d7" "/sdr_dqml" "/sdr_we" "/sdr_cas"
     "/sdr_ras" "/sdr_cs" "/sdr_ba0" "/sdr_ba1" "/sdr_a10" "/sdr_a0" "/sdr_a1" "/sdr_a2"
-    "/sdr_a3" "Net-(P1-Pad2)" "Net-(P1-Pad3)" "Net-(P2-Pad3)" "Net-(P2-Pad2)" "Net-(P3-Pad1)" "/cpu_rst" "Net-(P3-Pad4)"
-    "/sd_b2" "/sd_b3" "/sd_cmd" "/sd_clk" "/sd_b0" "/sd_b1" "Net-(R21-Pad1)" "Net-(R30-Pad2)"
-    "Net-(R31-Pad2)" "/cpu_boot" "Net-(R33-Pad2)" "Net-(R38-Pad1)" "Net-(R40-Pad2)" "Net-(R42-Pad2)" "Net-(R44-Pad2)" "Net-(R46-Pad2)"
-    "Net-(R49-Pad1)" "/tft_rd" "Net-(R51-Pad1)" "Net-(SW2-Pad2)" "Net-(SW3-Pad2)" "Net-(SW4-Pad2)" "Net-(SW5-Pad2)" "/pwm_ch1"
-    "/pwm_ch2" "Net-(U5-Pad119)" "/uart_tx" "/uart_rx" "/LCD1_LK1" "/LCD1_LK3" "/tft_fsync" "/tft_rst"
-    "/tft_cs" "/tft_wr" "/tft_rs" "/LCD2_LK1" "/LCD2_LK3" "/lcd_fsync" "Net-(R53-Pad2)" "/lcd_vs"
-    "/lcd_hs" "/lcd_g6" "/lcd_enable" "/lcd_r2" "/lcd_g4" "/lcd_b5" "/spi_ss" "/spi_clk"
-    "/spi_miso" "/spi_mosi" "/lcd_r3" "/lcd_r6" "/lcd_g5" "/lcd_rst" "/lcd_r4" "/lcd_r5"
-    "/lcd_r7" "/lcd_clk" "/lcd_g2" "/lcd_g3" "/lcd_g7" "/lcd_b2" "/lcd_b3" "/lcd_b4"
-    "/lcd_b6" "/lcd_b7"
+    "/sdr_a3" "Net-(P1-Pad2)" "Net-(P1-Pad3)" "Net-(P2-Pad3)" "Net-(P2-Pad2)" "Net-(P3-Pad1)" "/cpu_rst" "/sd_b2"
+    "/sd_b3" "/sd_cmd" "/sd_clk" "/sd_b0" "/sd_b1" "Net-(R21-Pad1)" "Net-(R31-Pad2)" "/cpu_boot"
+    "Net-(R49-Pad1)" "/tft_rd" "Net-(R51-Pad1)" "Net-(SW2-Pad2)" "Net-(SW3-Pad2)" "Net-(SW4-Pad2)" "Net-(SW5-Pad2)" "/LCD1_LK1"
+    "/tft_fsync" "/tft_rst" "/tft_cs" "/tft_wr" "/tft_rs" "Net-(P3-Pad3)" "Net-(P1-Pad1)" +5V
+    "Net-(C21-Pad1)" "Net-(C22-Pad1)" "Net-(D3-Pad1)" "Net-(L1-Pad1)" "Net-(Q1-Pad1)" "/usb_pon" "Net-(R5-Pad2)"
     (clearance_class "kicad_default")
     (via_rule kicad_default)
     (rule
