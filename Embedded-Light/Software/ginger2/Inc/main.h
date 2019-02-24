@@ -97,7 +97,9 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
+#if DEBUG_EN
 void send(const char* s);
+#endif
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

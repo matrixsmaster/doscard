@@ -7,6 +7,7 @@
 #define INC_OS_H_
 
 #define OS_FLOPPY_FILE "fd.img"
+#define OS_FLOPPY_FILE_ALT "fd3.img"
 #define OS_FONT_COLOR 0x07E0
 #define OS_OSD_COLOR 0xF81F
 #define OS_FONT_MINCODE 33

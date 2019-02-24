@@ -77,7 +77,9 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+#if USE_OS_CALLBACK
 static uint32_t os_callback_cnt = 0;
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,6 +92,7 @@ static void MPU_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+#if DEBUG_EN
 void send(const char* s)
 {
 #if USB_DEBUG_EN
@@ -100,13 +103,18 @@ void send(const char* s)
 	HAL_Delay(30);
 #endif
 }
+#else
+#define send(...)
+#endif
 
+#if USE_OS_CALLBACK
 int os_callback_fun()
 {
 	if (os_callback_cnt++ % 700 == 0)
 		ShowCPUTemp();
 	return 0;
 }
+#endif
 /* USER CODE END 0 */
 
 /**
@@ -162,6 +170,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+
   //First of all, let's wait for a bit longer than half a second to settle the board
   HAL_Delay(600);
 
@@ -194,13 +203,27 @@ int main(void)
   OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
 
   //Now let's initialize the virtual floppy image
+#if PRESENTATION_MODE
+  HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
+  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
+  if (!HAL_GPIO_ReadPin(B1_GPIO_Port,B1_Pin)) {
+	  fd_img = OS_InitDisk(OS_FLOPPY_FILE_ALT,&fd_len);
+	  HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,1);
+  } else {
+	  fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+	  HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,1);
+  }
+#else
   fd_img = OS_InitDisk(OS_FLOPPY_FILE,&fd_len);
+#endif /* PRESENTATION_MODE */
   if (!fd_img) Error_Handler();
 
   //After small delay we will be ready to run the VM
   HAL_Delay(600);
+#if !PRESENTATION_MODE
   HAL_GPIO_WritePin(LD1_GPIO_Port,LD1_Pin,0);
   HAL_GPIO_WritePin(LD2_GPIO_Port,LD2_Pin,0);
+#endif
 
   //This will enable our buttons and VK
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
@@ -209,7 +232,11 @@ int main(void)
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
   //And now we will run the VM
+#if USE_OS_CALLBACK
   OS(os_callback_fun);
+#else
+  OS(NULL);
+#endif
 
   //If we're reached there, the VM has stopped.
   send("VM shutdown\r\n");
@@ -219,6 +246,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_PWR_EnterSTANDBYMode();
   while (1)
   {
 

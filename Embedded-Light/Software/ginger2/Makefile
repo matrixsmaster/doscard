@@ -30,7 +30,7 @@ INIT	:= $(MNDIR)/startup_stm32f767xx.o
 DBG		:= -g
 OPT		:= -O2
  
-CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1 -DUSB_DEBUG_EN=0
+CC_DEFS := -D__thumb2__=1 -DRUN_FROM_FLASH=1 -DDEBUG_EN=0 -DUSB_DEBUG_EN=0 -DPRESENTATION_MODE=1 -DUSE_OS_CALLBACK=0
 
 CC_FLAG := -std=gnu99 $(CHIP) $(DBG) $(OPT) -Wall -Wextra -fno-strict-aliasing
 CC_FLAG += -fno-hosted -fmessage-length=0
