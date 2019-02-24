@@ -364,25 +364,9 @@ void VM86::IEU()
 		OPCODE 20: // MOV r/m, immed
 			R_M_OP(mem[op_from_addr], =, i_data2);
 		OPCODE 21: // IN AL/AX, DX/imm8
-			io_ports[0x20] = 0; // PIC EOI
-			io_ports[0x42] = --io_ports[0x40]; // PIT channel 0/2 read placeholder
-			io_ports[0x3DA] ^= 9; // CGA refresh
-			scratch_uint = extra ? regs16[REG_DX] : (uint8_t)i_data0;
-			scratch_uint == 0x60 && (io_ports[0x64] = 0); // Scancode read flag
-			scratch_uint == 0x3D5 && (io_ports[0x3D4] >> 1 == 7) && (io_ports[0x3D5] = ((mem[0x49E]*80 + mem[0x49D] + CAST(int16_t,mem[0x4AD])) & (io_ports[0x3D4] & 1 ? 0xFF : 0xFF00)) >> (io_ports[0x3D4] & 1 ? 0 : 8)); // CRT cursor position
-			R_M_OP(regs8[REG_AL], =, io_ports[scratch_uint]);
+			LocalVDInput();
 		OPCODE 22: // OUT DX/imm8, AL/AX
-			scratch_uint = extra ? regs16[REG_DX] : (uint8_t)i_data0;
-			R_M_OP(io_ports[scratch_uint], =, regs8[REG_AL]);
-			scratch_uint == 0x61 && (io_hi_lo = 0, spkr_en |= regs8[REG_AL] & 3); // Speaker control
-			(scratch_uint == 0x40 || scratch_uint == 0x42) && (io_ports[0x43] & 6) && (mem[0x469 + scratch_uint - (io_hi_lo ^= 1)] = regs8[REG_AL]); // PIT rate programming
-//#ifndef NO_GRAPHICS
-//			scratch_uint == 0x43 && (io_hi_lo = 0, regs8[REG_AL] >> 6 == 2) && (SDL_PauseAudio((regs8[REG_AL] & 0xF7) != 0xB6), 0); // Speaker enable
-//#endif
-			scratch_uint == 0x3D5 && (io_ports[0x3D4] >> 1 == 6) && (mem[0x4AD + !(io_ports[0x3D4] & 1)] = regs8[REG_AL]); // CRT video RAM start offset
-			scratch_uint == 0x3D5 && (io_ports[0x3D4] >> 1 == 7) && (scratch2_uint = ((mem[0x49E]*80 + mem[0x49D] + CAST(int16_t,mem[0x4AD])) & (io_ports[0x3D4] & 1 ? 0xFF00 : 0xFF)) + (regs8[REG_AL] << (io_ports[0x3D4] & 1 ? 0 : 8)) - CAST(int16_t,mem[0x4AD]), mem[0x49D] = scratch2_uint % 80, mem[0x49E] = scratch2_uint / 80); // CRT cursor position
-			scratch_uint == 0x3B5 && io_ports[0x3B4] == 1 && (graphics_x = regs8[REG_AL] * 16); // Hercules resolution reprogramming. Defaults are set in the BIOS
-			scratch_uint == 0x3B5 && io_ports[0x3B4] == 6 && (graphics_y = regs8[REG_AL] * 4);
+			LocalVDOutput();
 		OPCODE 23: // REPxx
 			rep_override_en = 2;
 			rep_mode = i_w;

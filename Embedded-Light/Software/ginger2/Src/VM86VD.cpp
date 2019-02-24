@@ -8,6 +8,60 @@
 #include "VM86macro.h"
 #include "main.h"
 
+void VM86::LocalVDInput()
+{
+	io_ports[0x20] = 0; // PIC EOI
+	io_ports[0x42] = --io_ports[0x40]; // PIT channel 0/2 read placeholder
+	io_ports[0x3DA] ^= 9; // CGA refresh
+	scratch_uint = extra ? regs16[REG_DX] : (uint8_t)i_data0;
+
+	switch (scratch_uint) {
+	case 0x60:
+		io_ports[0x64] = 0; // Scancode read flag
+		break;
+	case 0x3D5:
+		if (io_ports[0x3D4] >> 1 == 7) // CRT cursor position
+			io_ports[0x3D5] = ((mem[0x49E]*80 + mem[0x49D] + CAST(int16_t,mem[0x4AD])) & (io_ports[0x3D4] & 1 ? 0xFF : 0xFF00)) >> (io_ports[0x3D4] & 1 ? 0 : 8);
+		break;
+	}
+	R_M_OP(regs8[REG_AL], =, io_ports[scratch_uint]);
+}
+
+void VM86::LocalVDOutput()
+{
+	scratch_uint = extra ? regs16[REG_DX] : (uint8_t)i_data0;
+	R_M_OP(io_ports[scratch_uint], =, regs8[REG_AL]);
+
+	switch (scratch_uint) {
+	case 0x61:
+		io_hi_lo = 0;
+		spkr_en |= regs8[REG_AL] & 3; // Speaker control
+		break;
+	case 0x43:
+		//FIXME: add Speaker enable control
+		//scratch_uint == 0x43 && (io_hi_lo = 0, regs8[REG_AL] >> 6 == 2) && (SDL_PauseAudio((regs8[REG_AL] & 0xF7) != 0xB6), 0); // Speaker enable
+		break;
+	case 0x40:
+	case 0x42:
+		if (io_ports[0x43] & 6)
+			mem[0x469 + scratch_uint - (io_hi_lo ^= 1)] = regs8[REG_AL]; // PIT rate programming
+		break;
+	case 0x3D5:
+		if (io_ports[0x3D4] >> 1 == 6)
+			mem[0x4AD + !(io_ports[0x3D4] & 1)] = regs8[REG_AL]; // CRT video RAM start offset
+		if (io_ports[0x3D4] >> 1 == 7)
+			scratch2_uint = ((mem[0x49E]*80 + mem[0x49D] + CAST(int16_t,mem[0x4AD])) & (io_ports[0x3D4] & 1 ? 0xFF00 : 0xFF)) + (regs8[REG_AL] << (io_ports[0x3D4] & 1 ? 0 : 8)) - CAST(int16_t,mem[0x4AD]), mem[0x49D] = scratch2_uint % 80, mem[0x49E] = scratch2_uint / 80; // CRT cursor position
+		break;
+	case 0x3B5:
+		if (io_ports[0x3B4] == 1)
+			graphics_x = regs8[REG_AL] * 16; // Hercules resolution reprogramming. Defaults are set in the BIOS
+		if (io_ports[0x3B4] == 6)
+			graphics_y = regs8[REG_AL] * 4;
+		framebuf_opened = false;
+		break;
+	}
+}
+
 void VM86::LocalVideoMode()
 {
 	// Update the video graphics display every GRAPHICS_UPDATE_DELAY instructions
@@ -27,8 +81,8 @@ void VM86::LocalVideoMode()
 		for (unsigned i = 0; i < graphics_x * graphics_y / 4; i++)
 			vid_addr_lookup[i] = i / graphics_x * (graphics_x / 8) + (i / 2) % (graphics_x / 8) + 0x2000*(mem[0x4AC] ? (2 * i / graphics_x) % 2 : (4 * i / graphics_x) % 4);
 
-//		memset((void*)buf,0,TFT_TOTAL_BYTES);
-//		framebuf_opened = true;
+		memset((void*)buf,0,TFT_TOTAL_BYTES);
+		framebuf_opened = true;
 	}
 
 	// Start refreshing framebuffer from emulated graphics card video RAM
@@ -40,7 +94,7 @@ void VM86::LocalVideoMode()
 	int kx = graphics_x / 4;
 	uint8_t r,g,b;
 
-	for (int y = 0; y < TFT_LCD_HEIGHT; y++) {
+	for (int y = 0; y < graphics_y / dy; y++) {
 		int idx = y * dy * kx;
 		buf += TFT_LCD_WIDTH; //the TFT screen has a horizontal scanline reversed
 		__IO uint16_t* cbuf = buf;

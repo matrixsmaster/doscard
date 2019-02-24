@@ -69,6 +69,8 @@ protected:
 	void DAS();
 	void IEU();
 	void LocalOpcode();
+	void LocalVDInput();
+	void LocalVDOutput();
 	void LocalVideoMode();
 
 	void PushOutput(int ch);
