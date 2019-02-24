@@ -226,45 +226,8 @@ void VM86::Step()
 	if (!(++inst_counter % KEYBOARD_TIMER_UPDATE_DELAY))
 		int8_asap = 1;
 
-#if 0
-	// Update the video graphics display every GRAPHICS_UPDATE_DELAY instructions
-	if (!(inst_counter % GRAPHICS_UPDATE_DELAY))
-	{
-		// Video card in graphics mode?
-		if (io_ports[0x3B8] & 2)
-		{/*
-			// If we don't already have an SDL window open, set it up and compute color and video memory translation tables
-			if (!sdl_screen)
-			{
-				for (int i = 0; i < 16; i++)
-					pixel_colors[i] = mem[0x4AC] ? // CGA?
-						cga_colors[(i & 12) >> 2] + (cga_colors[i & 3] << 16) // CGA -> RGB332
-						: 0xFF*(((i & 1) << 24) + ((i & 2) << 15) + ((i & 4) << 6) + ((i & 8) >> 3)); // Hercules -> RGB332
-
-				for (int i = 0; i < GRAPHICS_X * GRAPHICS_Y / 4; i++)
-					vid_addr_lookup[i] = i / GRAPHICS_X * (GRAPHICS_X / 8) + (i / 2) % (GRAPHICS_X / 8) + 0x2000*(mem[0x4AC] ? (2 * i / GRAPHICS_X) % 2 : (4 * i / GRAPHICS_X) % 4);
-
-				SDL_Init(SDL_INIT_VIDEO);
-				sdl_screen = SDL_SetVideoMode(GRAPHICS_X, GRAPHICS_Y, 8, 0);
-				SDL_EnableUNICODE(1);
-				SDL_EnableKeyRepeat(500, 30);
-			}
-
-			// Refresh SDL display from emulated graphics card video RAM
-			vid_mem_base = mem + 0xB0000 + 0x8000*(mem[0x4AC] ? 1 : io_ports[0x3B8] >> 7); // B800:0 for CGA/Hercules bank 2, B000:0 for Hercules bank 1
-			for (int i = 0; i < GRAPHICS_X * GRAPHICS_Y / 4; i++)
-				((unsigned *)sdl_screen->pixels)[i] = pixel_colors[15 & (vid_mem_base[vid_addr_lookup[i]] >> 4*!(i & 1))];
-
-			SDL_Flip(sdl_screen);*/
-		}/*
-		else if (sdl_screen) // Application has gone back to text mode, so close the SDL window
-		{
-			SDL_QuitSubSystem(SDL_INIT_VIDEO);
-			sdl_screen = 0;
-		}
-		SDL_PumpEvents();*/
-	}
-#endif
+	// Update graphics display
+	if (isInVideoMode()) LocalVideoMode();
 
 	// Application has set trap flag, so fire INT 1
 	if (trap_flag) pc_interrupt(1);
@@ -328,6 +291,11 @@ std::string VM86::PullTextOutput()
 
 	minmutex_unlock(&io_lock);
 	return r;
+}
+
+bool VM86::isInVideoMode()
+{
+	return ((io_ports[0x3B8] & 2) != 0);
 }
 
 void VM86::getResolution(int &w, int &h) const

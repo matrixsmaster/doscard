@@ -47,6 +47,7 @@ protected:
 
 	minmutex io_lock;
 	std::deque<int> output_chars,input_chars;
+	bool framebuf_opened = false;
 
 	void OpenDD();
 	void CloseDD();
@@ -68,6 +69,7 @@ protected:
 	void DAS();
 	void IEU();
 	void LocalOpcode();
+	void LocalVideoMode();
 
 	void PushOutput(int ch);
 	bool PullInput(int &ch);
@@ -86,6 +88,7 @@ public:
 
 	void PushEvent(int key);
 	std::string PullTextOutput();
+	bool isInVideoMode();
 	void getResolution(int &w, int &h) const;
 	bool PullVideoData(void *data, int len);
 	void PullAudioData(void *data, uint8_t *stream, int len);

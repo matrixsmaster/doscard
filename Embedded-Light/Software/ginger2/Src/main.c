@@ -190,7 +190,7 @@ int main(void)
 
   //We have enabled the display unit, now we should set the RAM boundaries
   //for other subsystems (like VM and VK)
-  g_max_frames = 2; //the second "frame" is for OSD
+  g_max_frames = 3; //the second "frame" is for OSD, and the third is for graphics display
   OS_Last_Address = SDRAM_BANK_ADDR + TFT_TOTAL_BYTES * g_max_frames;
 
   //Now let's initialize the virtual floppy image

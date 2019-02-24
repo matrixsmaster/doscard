@@ -71,16 +71,12 @@ clean:
 
 purge:
 	find . -type f -iname '*.o' -delete
-	sudo $(STLNK_P)/st-flash erase
+	$(STLNK_P)/st-flash erase
 .PHONY: purge
 
 upload: all
-	sudo $(STLNK_P)/st-flash --reset write $(APP:.elf=.bin) 0x08000000
+	$(STLNK_P)/st-flash --reset write $(APP:.elf=.bin) 0x08000000
 .PHONY:	upload
-
-gr_upload: all
-	SUDO_ASKPASS=$(shell which ssh-askpass) sudo -A $(STLNK_P)/st-flash --reset write $(APP:.elf=.bin) 0x08000000
-.PHONY:	gr_upload
 
 %.o:	%.c
 	$(CC_INV) -c -o $@ $<
