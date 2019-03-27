@@ -22,4 +22,4 @@ Status		Almost ready, still have SDRAM stability issues. Deprecated (see Ginger-
 
 Platform	F7-Ginger-II
 Library		HAL
-Status		OK and ready to use. TODO: revert schematic to the actual state.
+Status		OK and ready to use. TODO: revert schematic & routing to the actual state of the PCB; tag'em!
