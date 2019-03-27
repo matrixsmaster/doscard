@@ -1,4 +1,4 @@
-update=Wed 27 Mar 2019 07:36:35 PM CET
+update=Wed 27 Mar 2019 09:53:27 PM CET
 version=1
 last_client=kicad
 [pcbnew]
@@ -60,3 +60,4 @@ LibName28=contrib
 LibName29=valves
 LibName30=mt48lc32
 LibName31=lm3671mf-fix
+LibName32=h743
