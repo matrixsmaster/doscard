@@ -83,47 +83,47 @@ Text Label 13650 1900 2    60   ~ 0
 sdr_a11
 Text Label 13650 2000 2    60   ~ 0
 sdr_a12
-Text Label 3550 3100 2    60   ~ 0
+Text Label 2900 3650 2    60   ~ 0
 sdr_a0
-Text Label 3550 3200 2    60   ~ 0
+Text Label 2900 3750 2    60   ~ 0
 sdr_a1
-Text Label 3550 3300 2    60   ~ 0
+Text Label 2900 3850 2    60   ~ 0
 sdr_a2
-Text Label 3550 3400 2    60   ~ 0
+Text Label 2900 3950 2    60   ~ 0
 sdr_a3
-Text Label 3550 3500 2    60   ~ 0
+Text Label 2900 4050 2    60   ~ 0
 sdr_a4
-Text Label 3550 3600 2    60   ~ 0
+Text Label 2900 4150 2    60   ~ 0
 sdr_a5
-Text Label 5350 6200 3    60   ~ 0
+Text Label 4700 6750 3    60   ~ 0
 sdr_a6
-Text Label 5650 6200 3    60   ~ 0
+Text Label 5000 6750 3    60   ~ 0
 sdr_a7
-Text Label 5750 6200 3    60   ~ 0
+Text Label 5100 6750 3    60   ~ 0
 sdr_a8
-Text Label 5850 6200 3    60   ~ 0
+Text Label 5200 6750 3    60   ~ 0
 sdr_a9
-Text Label 5950 6200 3    60   ~ 0
+Text Label 5300 6750 3    60   ~ 0
 sdr_a10
-Text Label 6050 6200 3    60   ~ 0
+Text Label 5400 6750 3    60   ~ 0
 sdr_a11
-Text Label 8050 4300 0    60   ~ 0
+Text Label 7400 4850 0    60   ~ 0
 sdr_a12
 Text Label 13650 2100 2    60   ~ 0
 sdr_ba0
 Text Label 13650 2200 2    60   ~ 0
 sdr_ba1
-Text Label 8050 4100 0    60   ~ 0
+Text Label 7400 4650 0    60   ~ 0
 sdr_ba0
-Text Label 8050 4000 0    60   ~ 0
+Text Label 7400 4550 0    60   ~ 0
 sdr_ba1
 Text Label 13650 2300 2    60   ~ 0
 sdr_dqmh
 Text Label 13650 2400 2    60   ~ 0
 sdr_dqml
-Text Label 4250 1700 1    60   ~ 0
+Text Label 3600 2250 1    60   ~ 0
 sdr_dqmh
-Text Label 4350 1700 1    60   ~ 0
+Text Label 3700 2250 1    60   ~ 0
 sdr_dqml
 Text Label 15500 800  0    60   ~ 0
 sdr_d0
@@ -157,96 +157,96 @@ Text Label 15500 2200 0    60   ~ 0
 sdr_d14
 Text Label 15500 2300 0    60   ~ 0
 sdr_d15
-Text Label 8050 4500 0    60   ~ 0
+Text Label 7400 5050 0    60   ~ 0
 sdr_d0
-Text Label 8050 4400 0    60   ~ 0
+Text Label 7400 4950 0    60   ~ 0
 sdr_d1
 $Comp
 L Crystal Y?
 U 1 1 5C9C88C3
-P 2550 4450
-F 0 "Y?" H 2550 4600 50  0000 C CNN
-F 1 "25 MHz" H 2550 4300 50  0000 C CNN
-F 2 "Crystals:Crystal_HC49-U_Vertical" H 2550 4450 50  0001 C CNN
-F 3 "" H 2550 4450 50  0000 C CNN
-	1    2550 4450
+P 1900 5000
+F 0 "Y?" H 1900 5150 50  0000 C CNN
+F 1 "25 MHz" H 1900 4850 50  0000 C CNN
+F 2 "Crystals:Crystal_HC49-U_Vertical" H 1900 5000 50  0001 C CNN
+F 3 "" H 1900 5000 50  0000 C CNN
+	1    1900 5000
 	0    1    1    0   
 $EndComp
 Text Label 15500 2700 0    60   ~ 0
 sdr_clk
-Text Label 8050 3700 0    60   ~ 0
+Text Label 7400 4250 0    60   ~ 0
 sdr_clk
-Text Label 7050 1700 1    60   ~ 0
+Text Label 6400 2250 1    60   ~ 0
 sdr_d2
-Text Label 6950 1700 1    60   ~ 0
+Text Label 6300 2250 1    60   ~ 0
 sdr_d3
-Text Label 6150 6200 3    60   ~ 0
+Text Label 5500 6750 3    60   ~ 0
 sdr_d4
-Text Label 6250 6200 3    60   ~ 0
+Text Label 5600 6750 3    60   ~ 0
 sdr_d5
-Text Label 6350 6200 3    60   ~ 0
+Text Label 5700 6750 3    60   ~ 0
 sdr_d6
-Text Label 6650 6200 3    60   ~ 0
+Text Label 6000 6750 3    60   ~ 0
 sdr_d7
-Text Label 6750 6200 3    60   ~ 0
+Text Label 6100 6750 3    60   ~ 0
 sdr_d8
-Text Label 6850 6200 3    60   ~ 0
+Text Label 6200 6750 3    60   ~ 0
 sdr_d9
-Text Label 6950 6200 3    60   ~ 0
+Text Label 6300 6750 3    60   ~ 0
 sdr_d10
-Text Label 7050 6200 3    60   ~ 0
+Text Label 6400 6750 3    60   ~ 0
 sdr_d11
-Text Label 7150 6200 3    60   ~ 0
+Text Label 6500 6750 3    60   ~ 0
 sdr_d12
-Text Label 8050 5300 0    60   ~ 0
+Text Label 7400 5850 0    60   ~ 0
 sdr_d13
-Text Label 8050 5200 0    60   ~ 0
+Text Label 7400 5750 0    60   ~ 0
 sdr_d14
-Text Label 8050 5100 0    60   ~ 0
+Text Label 7400 5650 0    60   ~ 0
 sdr_d15
 $Comp
 L C C?
 U 1 1 5C9C88C4
-P 2150 4300
-F 0 "C?" V 2000 4150 50  0000 L CNN
-F 1 "20p" V 2050 4450 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 2188 4150 50  0001 C CNN
-F 3 "" H 2150 4300 50  0000 C CNN
-	1    2150 4300
+P 1500 4850
+F 0 "C?" V 1350 4700 50  0000 L CNN
+F 1 "20p" V 1400 5000 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 1538 4700 50  0001 C CNN
+F 3 "" H 1500 4850 50  0000 C CNN
+	1    1500 4850
 	0    1    1    0   
 $EndComp
 $Comp
 L C C?
 U 1 1 5C9C88C5
-P 2150 4600
-F 0 "C?" V 2300 4500 50  0000 L CNN
-F 1 "20p" V 2300 4750 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 2188 4450 50  0001 C CNN
-F 3 "" H 2150 4600 50  0000 C CNN
-	1    2150 4600
+P 1500 5150
+F 0 "C?" V 1650 5050 50  0000 L CNN
+F 1 "20p" V 1650 5300 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 1538 5000 50  0001 C CNN
+F 3 "" H 1500 5150 50  0000 C CNN
+	1    1500 5150
 	0    1    1    0   
 $EndComp
 Text Label 15500 2600 0    60   ~ 0
 sdr_cke
-Text Label 3550 5000 2    60   ~ 0
+Text Label 2900 5550 2    60   ~ 0
 sdr_cke
-Text Label 3550 4900 2    60   ~ 0
+Text Label 2900 5450 2    60   ~ 0
 sdr_cs
 Text Label 15500 3100 0    60   ~ 0
 sdr_cs
-Text Label 3550 4700 2    60   ~ 0
+Text Label 2900 5250 2    60   ~ 0
 sdr_we
 Text Label 15500 2800 0    60   ~ 0
 sdr_we
 Text Label 15500 2900 0    60   ~ 0
 sdr_cas
-Text Label 5250 1700 1    60   ~ 0
+Text Label 4600 2250 1    60   ~ 0
 sdr_cas
 Text Label 15500 3000 0    60   ~ 0
 sdr_ras
-Text Label 5250 6200 3    60   ~ 0
+Text Label 4600 6750 3    60   ~ 0
 sdr_ras
-Text Label 5550 1700 1    60   ~ 0
+Text Label 4900 2250 1    60   ~ 0
 tft_rs
 Text Label 13650 8550 2    60   ~ 0
 sdr_d0
@@ -370,7 +370,7 @@ F 3 "" H 15550 8150 50  0000 C CNN
 $EndComp
 Text Label 14850 8050 0    60   ~ 0
 tft_rst
-Text Label 6050 1700 1    60   ~ 0
+Text Label 5400 2250 1    60   ~ 0
 tft_rst
 $Comp
 L R R?
@@ -396,11 +396,11 @@ F 3 "" H 13000 8600 50  0000 C CNN
 $EndComp
 Text Label 13650 8150 2    60   ~ 0
 tft_cs
-Text Label 8050 3300 0    60   ~ 0
+Text Label 7400 3850 0    60   ~ 0
 tft_cs
-Text Label 6650 1700 1    60   ~ 0
+Text Label 6000 2250 1    60   ~ 0
 tft_rd
-Text Label 6550 1700 1    60   ~ 0
+Text Label 5900 2250 1    60   ~ 0
 tft_wr
 Text Label 12850 8600 2    60   ~ 0
 tft_rd
@@ -412,50 +412,50 @@ NoConn ~ 13650 7750
 $Comp
 L GND #PWR?
 U 1 1 5C9C88D1
-P 7450 7150
-F 0 "#PWR?" H 7450 6900 50  0001 C CNN
-F 1 "GND" H 7450 7000 50  0000 C CNN
-F 2 "" H 7450 7150 50  0000 C CNN
-F 3 "" H 7450 7150 50  0000 C CNN
-	1    7450 7150
+P 6800 7700
+F 0 "#PWR?" H 6800 7450 50  0001 C CNN
+F 1 "GND" H 6800 7550 50  0000 C CNN
+F 2 "" H 6800 7700 50  0000 C CNN
+F 3 "" H 6800 7700 50  0000 C CNN
+	1    6800 7700
 	1    0    0    -1  
 $EndComp
 $Comp
 L +3V3 #PWR?
 U 1 1 5C9C88D2
-P 4150 750
-F 0 "#PWR?" H 4150 600 50  0001 C CNN
-F 1 "+3V3" H 4150 890 50  0000 C CNN
-F 2 "" H 4150 750 50  0000 C CNN
-F 3 "" H 4150 750 50  0000 C CNN
-	1    4150 750 
+P 3500 1300
+F 0 "#PWR?" H 3500 1150 50  0001 C CNN
+F 1 "+3V3" H 3500 1440 50  0000 C CNN
+F 2 "" H 3500 1300 50  0000 C CNN
+F 3 "" H 3500 1300 50  0000 C CNN
+	1    3500 1300
 	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR?
 U 1 1 5C9C88D3
-P 4450 1050
-F 0 "#PWR?" H 4450 800 50  0001 C CNN
-F 1 "GND" H 4450 900 50  0000 C CNN
-F 2 "" H 4450 1050 50  0000 C CNN
-F 3 "" H 4450 1050 50  0000 C CNN
-	1    4450 1050
+P 3800 1600
+F 0 "#PWR?" H 3800 1350 50  0001 C CNN
+F 1 "GND" H 3800 1450 50  0000 C CNN
+F 2 "" H 3800 1600 50  0000 C CNN
+F 3 "" H 3800 1600 50  0000 C CNN
+	1    3800 1600
 	1    0    0    -1  
 $EndComp
 $Comp
 L CONN_01X04 P?
 U 1 1 5C9C88D4
-P 8950 1300
-F 0 "P?" H 8950 1550 50  0000 C CNN
-F 1 "SWD" V 9050 1300 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x04" H 8950 1300 50  0001 C CNN
-F 3 "" H 8950 1300 50  0000 C CNN
-	1    8950 1300
+P 8300 1850
+F 0 "P?" H 8300 2100 50  0000 C CNN
+F 1 "SWD" V 8400 1850 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x04" H 8300 1850 50  0001 C CNN
+F 3 "" H 8300 1850 50  0000 C CNN
+	1    8300 1850
 	1    0    0    -1  
 $EndComp
-Text Label 3550 4600 2    60   ~ 0
+Text Label 2900 5150 2    60   ~ 0
 cpu_rst
-Text Label 8750 1450 2    60   ~ 0
+Text Label 8100 2000 2    60   ~ 0
 cpu_rst
 $Comp
 L CONN_01X08 P?
@@ -480,38 +480,38 @@ Text Label 11750 2300 2    60   ~ 0
 sd_b0
 Text Label 11750 2400 2    60   ~ 0
 sd_b1
-Text Label 7350 1700 1    60   ~ 0
+Text Label 6700 2250 1    60   ~ 0
 sd_b2
-Text Label 7250 1700 1    60   ~ 0
+Text Label 6600 2250 1    60   ~ 0
 sd_b3
-Text Label 7150 1700 1    60   ~ 0
+Text Label 6500 2250 1    60   ~ 0
 sd_clk
-Text Label 8050 3200 0    60   ~ 0
+Text Label 7400 3750 0    60   ~ 0
 sd_b0
-Text Label 8050 3100 0    60   ~ 0
+Text Label 7400 3650 0    60   ~ 0
 sd_b1
-Text Label 6850 1700 1    60   ~ 0
+Text Label 6200 2250 1    60   ~ 0
 sd_cmd
 $Comp
 L C C?
 U 1 1 5C9C88D7
-P 7450 6850
-F 0 "C?" H 7475 6950 50  0000 L CNN
-F 1 "2.2u" H 7475 6750 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 7488 6700 50  0001 C CNN
-F 3 "" H 7450 6850 50  0000 C CNN
-	1    7450 6850
+P 6800 7400
+F 0 "C?" H 6825 7500 50  0000 L CNN
+F 1 "2.2u" H 6825 7300 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 6838 7250 50  0001 C CNN
+F 3 "" H 6800 7400 50  0000 C CNN
+	1    6800 7400
 	1    0    0    -1  
 $EndComp
 $Comp
 L C C?
 U 1 1 5C9C88D8
-P 8550 2400
-F 0 "C?" V 8400 2350 50  0000 L CNN
-F 1 "2.2u" V 8700 2350 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0805" H 8588 2250 50  0001 C CNN
-F 3 "" H 8550 2400 50  0000 C CNN
-	1    8550 2400
+P 7900 2950
+F 0 "C?" V 7750 2900 50  0000 L CNN
+F 1 "2.2u" V 8050 2900 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0805" H 7938 2800 50  0001 C CNN
+F 3 "" H 7900 2950 50  0000 C CNN
+	1    7900 2950
 	0    1    1    0   
 $EndComp
 $Comp
@@ -539,58 +539,58 @@ $EndComp
 $Comp
 L LED D?
 U 1 1 5C9C88DF
-P 2750 2300
-F 0 "D?" H 2750 2400 50  0000 C CNN
-F 1 "LED1" H 2600 2400 50  0000 C CNN
-F 2 "Resistors_SMD:R_1210" H 2750 2300 50  0001 C CNN
-F 3 "" H 2750 2300 50  0000 C CNN
-	1    2750 2300
+P 2100 2850
+F 0 "D?" H 2100 2950 50  0000 C CNN
+F 1 "LED1" H 1950 2950 50  0000 C CNN
+F 2 "Resistors_SMD:R_1210" H 2100 2850 50  0001 C CNN
+F 3 "" H 2100 2850 50  0000 C CNN
+	1    2100 2850
 	1    0    0    1   
 $EndComp
 $Comp
 L LED D?
 U 1 1 5C9C88E0
-P 2300 2200
-F 0 "D?" H 2300 2300 50  0000 C CNN
-F 1 "LED0" H 2150 2300 50  0000 C CNN
-F 2 "Resistors_SMD:R_1210" H 2300 2200 50  0001 C CNN
-F 3 "" H 2300 2200 50  0000 C CNN
-	1    2300 2200
+P 1650 2750
+F 0 "D?" H 1650 2850 50  0000 C CNN
+F 1 "LED0" H 1500 2850 50  0000 C CNN
+F 2 "Resistors_SMD:R_1210" H 1650 2750 50  0001 C CNN
+F 3 "" H 1650 2750 50  0000 C CNN
+	1    1650 2750
 	1    0    0    1   
 $EndComp
 $Comp
 L R R?
 U 1 1 5C9C88E1
-P 1950 2550
-F 0 "R?" V 2030 2550 50  0000 C CNN
-F 1 "330" V 1950 2550 50  0000 C CNN
-F 2 "Resistors_SMD:R_0805" V 1880 2550 50  0001 C CNN
-F 3 "" H 1950 2550 50  0000 C CNN
-	1    1950 2550
+P 1300 3100
+F 0 "R?" V 1380 3100 50  0000 C CNN
+F 1 "330" V 1300 3100 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 1230 3100 50  0001 C CNN
+F 3 "" H 1300 3100 50  0000 C CNN
+	1    1300 3100
 	-1   0    0    -1  
 $EndComp
 $Comp
 L R R?
 U 1 1 5C9C88E2
-P 2400 2550
-F 0 "R?" V 2480 2550 50  0000 C CNN
-F 1 "330" V 2400 2550 50  0000 C CNN
-F 2 "Resistors_SMD:R_0805" V 2330 2550 50  0001 C CNN
-F 3 "" H 2400 2550 50  0000 C CNN
-	1    2400 2550
+P 1750 3100
+F 0 "R?" V 1830 3100 50  0000 C CNN
+F 1 "330" V 1750 3100 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 1680 3100 50  0001 C CNN
+F 3 "" H 1750 3100 50  0000 C CNN
+	1    1750 3100
 	-1   0    0    -1  
 $EndComp
-Text Label 4650 1700 1    60   ~ 0
+Text Label 4000 2250 1    60   ~ 0
 cpu_boot
 $Comp
 L R R?
 U 1 1 5C9C88E3
-P 4650 1150
-F 0 "R?" V 4730 1150 50  0000 C CNN
-F 1 "10k" V 4650 1150 50  0000 C CNN
-F 2 "Resistors_SMD:R_0805" V 4580 1150 50  0001 C CNN
-F 3 "" H 4650 1150 50  0000 C CNN
-	1    4650 1150
+P 4000 1700
+F 0 "R?" V 4080 1700 50  0000 C CNN
+F 1 "10k" V 4000 1700 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 3930 1700 50  0001 C CNN
+F 3 "" H 4000 1700 50  0000 C CNN
+	1    4000 1700
 	-1   0    0    1   
 $EndComp
 $Comp
@@ -976,7 +976,7 @@ Wire Wire Line
 Wire Wire Line
 	8350 10300 8350 10000
 Wire Wire Line
-	4650 1300 4650 1700
+	4000 1850 4000 2250
 Wire Wire Line
 	13650 2600 12950 2600
 Connection ~ 6850 10600
@@ -1080,23 +1080,23 @@ Wire Wire Line
 Wire Wire Line
 	5350 8950 5350 9050
 Wire Wire Line
-	1950 2700 1950 2950
+	1300 3250 1300 3500
 Wire Wire Line
-	1950 2800 2800 2800
+	1300 3350 2150 3350
 Wire Wire Line
-	2400 2700 2400 2800
+	1750 3250 1750 3350
 Wire Wire Line
-	3550 2300 2950 2300
+	2900 2850 2300 2850
 Wire Wire Line
-	2500 2200 3550 2200
+	1850 2750 2900 2750
 Wire Wire Line
-	2400 2300 2400 2400
+	1750 2850 1750 2950
 Wire Wire Line
-	2550 2300 2400 2300
+	1900 2850 1750 2850
 Wire Wire Line
-	1950 2200 1950 2400
+	1300 2750 1300 2950
 Wire Wire Line
-	2100 2200 1950 2200
+	1450 2750 1300 2750
 Connection ~ 10800 2200
 Wire Wire Line
 	11750 2200 10800 2200
@@ -1195,17 +1195,17 @@ Wire Wire Line
 	13100 7250 13650 7250
 Wire Wire Line
 	13100 6950 13100 7450
-Connection ~ 2000 4600
-Connection ~ 2550 4600
-Connection ~ 2550 4300
+Connection ~ 1350 5150
+Connection ~ 1900 5150
+Connection ~ 1900 4850
 Wire Wire Line
-	2800 4600 2800 4500
+	2150 5150 2150 5050
 Wire Wire Line
-	2300 4600 2800 4600
+	1650 5150 2150 5150
 Wire Wire Line
-	2800 4300 2300 4300
+	2150 4850 1650 4850
 Wire Wire Line
-	2800 4400 2800 4300
+	2150 4950 2150 4850
 Wire Wire Line
 	3800 9250 3800 9100
 Connection ~ 3800 9100
@@ -1214,160 +1214,160 @@ Wire Wire Line
 $Comp
 L stm32h743zit6 U?
 U 1 1 5C9C0CF1
-P 5850 4000
-F 0 "U?" H 5850 4150 60  0000 C CNN
-F 1 "stm32h743zit6" H 5850 3800 60  0000 C CNN
-F 2 "" H 3550 6100 60  0000 C CNN
-F 3 "" H 3550 6100 60  0000 C CNN
-	1    5850 4000
+P 5200 4550
+F 0 "U?" H 5200 4700 60  0000 C CNN
+F 1 "stm32h743zit6" H 5200 4350 60  0000 C CNN
+F 2 "" H 2900 6650 60  0000 C CNN
+F 3 "" H 2900 6650 60  0000 C CNN
+	1    5200 4550
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2800 4400 3550 4400
+	2150 4950 2900 4950
 Wire Wire Line
-	2800 4500 3550 4500
+	2150 5050 2900 5050
 Wire Wire Line
-	7450 6700 7450 6200
+	6800 7250 6800 6750
 Wire Wire Line
-	7450 7150 7450 7000
+	6800 7700 6800 7550
 Wire Wire Line
-	8400 2400 8050 2400
+	7750 2950 7400 2950
 $Comp
 L TEST_1P W?
 U 1 1 5C9D82A9
-P 8450 3000
-F 0 "W?" H 8450 3270 50  0000 C CNN
-F 1 "MCO" H 8450 3200 50  0000 C CNN
-F 2 "" H 8650 3000 50  0000 C CNN
-F 3 "" H 8650 3000 50  0000 C CNN
-	1    8450 3000
+P 7800 3550
+F 0 "W?" H 7800 3820 50  0000 C CNN
+F 1 "MCO" H 7800 3750 50  0000 C CNN
+F 2 "" H 8000 3550 50  0000 C CNN
+F 3 "" H 8000 3550 50  0000 C CNN
+	1    7800 3550
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	8450 3000 8050 3000
+	7800 3550 7400 3550
 Wire Wire Line
-	8050 2500 8350 2500
+	7400 3050 7700 3050
 Wire Wire Line
-	8350 2500 8350 1350
+	7700 3050 7700 1900
 Wire Wire Line
-	8350 1350 8750 1350
+	7700 1900 8100 1900
 Wire Wire Line
-	8700 2400 8700 1250
+	8050 2950 8050 1800
 Wire Wire Line
-	8700 1250 8750 1250
+	8050 1800 8100 1800
 $Comp
 L GND #PWR?
 U 1 1 5C9D87E8
-P 8900 1850
-F 0 "#PWR?" H 8900 1600 50  0001 C CNN
-F 1 "GND" H 8900 1700 50  0000 C CNN
-F 2 "" H 8900 1850 50  0000 C CNN
-F 3 "" H 8900 1850 50  0000 C CNN
-	1    8900 1850
+P 8250 2400
+F 0 "#PWR?" H 8250 2150 50  0001 C CNN
+F 1 "GND" H 8250 2250 50  0000 C CNN
+F 2 "" H 8250 2400 50  0000 C CNN
+F 3 "" H 8250 2400 50  0000 C CNN
+	1    8250 2400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8900 1850 8900 1800
+	8250 2400 8250 2350
 Wire Wire Line
-	8900 1800 8700 1800
-Connection ~ 8700 1800
+	8250 2350 8050 2350
+Connection ~ 8050 2350
 Wire Wire Line
-	7550 1700 7550 1150
+	6900 2250 6900 1700
 Wire Wire Line
-	7550 1150 8750 1150
+	6900 1700 8100 1700
 Wire Wire Line
-	4450 1050 4450 900 
+	3800 1600 3800 1450
 Wire Wire Line
-	4450 900  4650 900 
+	3800 1450 4000 1450
 Wire Wire Line
-	4650 900  4650 1000
+	4000 1450 4000 1550
 $Comp
 L R R?
 U 1 1 5C9DBAD5
-P 4150 1000
-F 0 "R?" V 4230 1000 50  0000 C CNN
-F 1 "10k" V 4150 1000 50  0000 C CNN
-F 2 "Resistors_SMD:R_0805" V 4080 1000 50  0001 C CNN
-F 3 "" H 4150 1000 50  0000 C CNN
-	1    4150 1000
+P 3500 1550
+F 0 "R?" V 3580 1550 50  0000 C CNN
+F 1 "10k" V 3500 1550 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 3430 1550 50  0001 C CNN
+F 3 "" H 3500 1550 50  0000 C CNN
+	1    3500 1550
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	4150 1150 4150 1700
+	3500 1700 3500 2250
 Wire Wire Line
-	4150 850  4150 750 
+	3500 1400 3500 1300
 $Comp
 L GND #PWR?
 U 1 1 5C9DC86B
-P 2000 4950
-F 0 "#PWR?" H 2000 4700 50  0001 C CNN
-F 1 "GND" H 2000 4800 50  0000 C CNN
-F 2 "" H 2000 4950 50  0000 C CNN
-F 3 "" H 2000 4950 50  0000 C CNN
-	1    2000 4950
+P 1350 5500
+F 0 "#PWR?" H 1350 5250 50  0001 C CNN
+F 1 "GND" H 1350 5350 50  0000 C CNN
+F 2 "" H 1350 5500 50  0000 C CNN
+F 3 "" H 1350 5500 50  0000 C CNN
+	1    1350 5500
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2000 4950 2000 4300
-Text Label 9350 3000 2    60   ~ 0
+	1350 5500 1350 4850
+Text Label 8700 3550 2    60   ~ 0
 cpu_boot
 $Comp
 L GND #PWR?
 U 1 1 5C9DD1C4
-P 9250 3100
-F 0 "#PWR?" H 9250 2850 50  0001 C CNN
-F 1 "GND" H 9250 2950 50  0000 C CNN
-F 2 "" H 9250 3100 50  0000 C CNN
-F 3 "" H 9250 3100 50  0000 C CNN
-	1    9250 3100
+P 8600 3650
+F 0 "#PWR?" H 8600 3400 50  0001 C CNN
+F 1 "GND" H 8600 3500 50  0000 C CNN
+F 2 "" H 8600 3650 50  0000 C CNN
+F 3 "" H 8600 3650 50  0000 C CNN
+	1    8600 3650
 	1    0    0    -1  
 $EndComp
 $Comp
 L CONN_01X04 P?
 U 1 1 5C9DD239
-P 9550 2950
-F 0 "P?" H 9550 3200 50  0000 C CNN
-F 1 "UART" V 9650 2950 50  0000 C CNN
-F 2 "" H 9550 2950 50  0000 C CNN
-F 3 "" H 9550 2950 50  0000 C CNN
-	1    9550 2950
+P 8900 3500
+F 0 "P?" H 8900 3750 50  0000 C CNN
+F 1 "UART" V 9000 3500 50  0000 C CNN
+F 2 "" H 8900 3500 50  0000 C CNN
+F 3 "" H 8900 3500 50  0000 C CNN
+	1    8900 3500
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9350 3100 9250 3100
+	8700 3650 8600 3650
 Wire Wire Line
-	8050 2800 9350 2800
+	7400 3350 8700 3350
 Wire Wire Line
-	9350 2900 8050 2900
+	8700 3450 7400 3450
 $Comp
 L LED D?
 U 1 1 5C9DF21C
-P 3150 2400
-F 0 "D?" H 3150 2500 50  0000 C CNN
-F 1 "LED2" H 3000 2500 50  0000 C CNN
-F 2 "Resistors_SMD:R_1210" H 3150 2400 50  0001 C CNN
-F 3 "" H 3150 2400 50  0000 C CNN
-	1    3150 2400
+P 2500 2950
+F 0 "D?" H 2500 3050 50  0000 C CNN
+F 1 "LED2" H 2350 3050 50  0000 C CNN
+F 2 "Resistors_SMD:R_1210" H 2500 2950 50  0001 C CNN
+F 3 "" H 2500 2950 50  0000 C CNN
+	1    2500 2950
 	1    0    0    1   
 $EndComp
 Wire Wire Line
-	2950 2400 2800 2400
+	2300 2950 2150 2950
 $Comp
 L R R?
 U 1 1 5C9DF465
-P 2800 2550
-F 0 "R?" V 2880 2550 50  0000 C CNN
-F 1 "330" V 2800 2550 50  0000 C CNN
-F 2 "Resistors_SMD:R_0805" V 2730 2550 50  0001 C CNN
-F 3 "" H 2800 2550 50  0000 C CNN
-	1    2800 2550
+P 2150 3100
+F 0 "R?" V 2230 3100 50  0000 C CNN
+F 1 "330" V 2150 3100 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" V 2080 3100 50  0001 C CNN
+F 3 "" H 2150 3100 50  0000 C CNN
+	1    2150 3100
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	2800 2800 2800 2700
-Connection ~ 2400 2800
+	2150 3350 2150 3250
+Connection ~ 1750 3350
 Wire Wire Line
-	3350 2400 3550 2400
+	2700 2950 2900 2950
 $Comp
 L +3V3 #PWR?
 U 1 1 5C9E02CA
@@ -1405,22 +1405,20 @@ Wire Wire Line
 	10800 9950 10800 10100
 Text Label 11250 10450 2    60   ~ 0
 cpu_rst
-Text Label 9300 9800 2    60   ~ 0
+Text Label 9700 9800 2    60   ~ 0
 backlight
-Wire Wire Line
-	9300 9800 8650 9800
 $Comp
 L GND #PWR?
 U 1 1 5C9E1EC9
-P 1950 2950
-F 0 "#PWR?" H 1950 2700 50  0001 C CNN
-F 1 "GND" H 1950 2800 50  0000 C CNN
-F 2 "" H 1950 2950 50  0000 C CNN
-F 3 "" H 1950 2950 50  0000 C CNN
-	1    1950 2950
+P 1300 3500
+F 0 "#PWR?" H 1300 3250 50  0001 C CNN
+F 1 "GND" H 1300 3350 50  0000 C CNN
+F 2 "" H 1300 3500 50  0000 C CNN
+F 3 "" H 1300 3500 50  0000 C CNN
+	1    1300 3500
 	1    0    0    -1  
 $EndComp
-Connection ~ 1950 2800
+Connection ~ 1300 3350
 $Comp
 L GND #PWR?
 U 1 1 5C9E35B0
@@ -1434,80 +1432,78 @@ F 3 "" H 13600 4200 50  0000 C CNN
 $EndComp
 Wire Wire Line
 	13600 3400 13600 4200
-Text Notes 4400 750  0    60   ~ 0
+Text Notes 3750 1300 0    60   ~ 0
 TODO: check BOOT and PDR_ON
 Text Notes 10900 2550 0    60   ~ 0
 TODO: place new uSD sym
 Text Notes 13600 6650 0    60   ~ 0
 TODO: place DT024 sym
-Text Label 4550 6200 3    60   ~ 0
+Text Label 3900 6750 3    60   ~ 0
 backlight
-Text Notes 2850 6550 0    60   ~ 0
-TODO: add simple audio amp
-Text HLabel 4950 6600 3    60   Input ~ 0
+Text HLabel 4300 7150 3    60   Input ~ 0
 CPIN9
-Text HLabel 5050 6600 3    60   Input ~ 0
+Text HLabel 4400 7150 3    60   Input ~ 0
 CPIN10
-Text HLabel 5150 6600 3    60   Input ~ 0
+Text HLabel 4500 7150 3    60   Input ~ 0
 CPIN11
 Wire Wire Line
-	4950 6600 4950 6200
+	4300 7150 4300 6750
 Wire Wire Line
-	5050 6200 5050 6600
+	4400 6750 4400 7150
 Wire Wire Line
-	5150 6600 5150 6200
-Text HLabel 3250 4100 0    60   Input ~ 0
+	4500 7150 4500 6750
+Text HLabel 2600 4650 0    60   Input ~ 0
 CPIN1
-Text HLabel 3250 4200 0    60   Input ~ 0
+Text HLabel 2600 4750 0    60   Input ~ 0
 CPIN2
 Wire Wire Line
-	3250 4100 3550 4100
+	2600 4650 2900 4650
 Wire Wire Line
-	3250 4200 3550 4200
-Text HLabel 5150 1350 1    60   Input ~ 0
+	2600 4750 2900 4750
+Text HLabel 4500 1900 1    60   Input ~ 0
 CPIN12
-Text HLabel 5050 1350 1    60   Input ~ 0
+Text HLabel 4400 1900 1    60   Input ~ 0
 CPIN13
-Text HLabel 4950 1350 1    60   Input ~ 0
+Text HLabel 4300 1900 1    60   Input ~ 0
 CPIN14
-Text HLabel 4850 1350 1    60   Input ~ 0
+Text HLabel 4200 1900 1    60   Input ~ 0
 CPIN15
-Text HLabel 4750 1350 1    60   Input ~ 0
+Text HLabel 4100 1900 1    60   Input ~ 0
 CPIN16
 Wire Wire Line
-	4750 1350 4750 1700
+	4100 1900 4100 2250
 Wire Wire Line
-	4850 1700 4850 1350
+	4200 2250 4200 1900
 Wire Wire Line
-	4950 1350 4950 1700
+	4300 1900 4300 2250
 Wire Wire Line
-	5050 1700 5050 1350
+	4400 2250 4400 1900
 Wire Wire Line
-	5150 1350 5150 1700
-Text HLabel 7250 6350 3    60   Input ~ 0
+	4500 1900 4500 2250
+Text HLabel 6600 6900 3    60   Input ~ 0
 CPIN3
-Text HLabel 7350 6350 3    60   Input ~ 0
+Text HLabel 6700 6900 3    60   Input ~ 0
 CPIN4
-Text HLabel 8150 5700 2    60   Input ~ 0
+Text HLabel 7500 6250 2    60   Input ~ 0
 CPIN5
-Text HLabel 8150 5600 2    60   Input ~ 0
+Text HLabel 7500 6150 2    60   Input ~ 0
 CPIN6
-Text HLabel 8150 5500 2    60   Input ~ 0
+Text HLabel 7500 6050 2    60   Input ~ 0
 CPIN7
-Text HLabel 8150 5400 2    60   Input ~ 0
+Text HLabel 7500 5950 2    60   Input ~ 0
 CPIN8
 Wire Wire Line
-	8050 5400 8150 5400
+	7400 5950 7500 5950
 Wire Wire Line
-	8050 5500 8150 5500
+	7400 6050 7500 6050
 Wire Wire Line
-	8050 5600 8150 5600
+	7400 6150 7500 6150
 Wire Wire Line
-	8050 5700 8150 5700
+	7400 6250 7500 6250
 Wire Wire Line
-	7250 6200 7250 6350
+	6600 6750 6600 6900
 Wire Wire Line
-	7350 6350 7350 6200
+	6700 6900 6700 6750
 $Comp
 L VDD #PWR?
 U 1 1 5C9FB60E
@@ -1616,6 +1612,190 @@ Wire Wire Line
 Wire Wire Line
 	2650 10400 2450 10400
 Connection ~ 2650 10300
-NoConn ~ 4450 1700
-NoConn ~ 4550 1700
+NoConn ~ 3800 2250
+NoConn ~ 3900 2250
+$Comp
+L SPEAKER SP?
+U 1 1 5C9C41A2
+P 11550 5100
+F 0 "SP?" H 11450 5350 50  0000 C CNN
+F 1 "SPEAKER" H 11450 4850 50  0000 C CNN
+F 2 "" H 11550 5100 50  0000 C CNN
+F 3 "" H 11550 5100 50  0000 C CNN
+	1    11550 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Q_NMOS_GSD Q?
+U 1 1 5C9C4E50
+P 11050 5550
+F 0 "Q?" H 11350 5600 50  0000 R CNN
+F 1 "FDN337N" H 11600 5500 50  0000 R CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 11250 5650 50  0001 C CNN
+F 3 "" H 11050 5550 50  0000 C CNN
+	1    11050 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1_Small C?
+U 1 1 5C9C5641
+P 10500 5550
+F 0 "C?" V 10400 5500 50  0000 L CNN
+F 1 "47u" V 10600 5500 50  0000 L CNN
+F 2 "" H 10500 5550 50  0000 C CNN
+F 3 "" H 10500 5550 50  0000 C CNN
+	1    10500 5550
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 5C9C7C17
+P 10850 5200
+F 0 "R?" V 10930 5200 50  0000 C CNN
+F 1 "20k" V 10850 5200 50  0000 C CNN
+F 2 "" V 10780 5200 50  0000 C CNN
+F 3 "" H 10850 5200 50  0000 C CNN
+	1    10850 5200
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5C9C7DFA
+P 11150 6000
+F 0 "#PWR?" H 11150 5750 50  0001 C CNN
+F 1 "GND" H 11150 5850 50  0000 C CNN
+F 2 "" H 11150 6000 50  0000 C CNN
+F 3 "" H 11150 6000 50  0000 C CNN
+	1    11150 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1_Small C?
+U 1 1 5C9C7F80
+P 11000 4750
+F 0 "C?" V 10900 4700 50  0000 L CNN
+F 1 "47u" V 11100 4700 50  0000 L CNN
+F 2 "" H 11000 4750 50  0000 C CNN
+F 3 "" H 11000 4750 50  0000 C CNN
+	1    11000 4750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	11250 5000 11150 5000
+Wire Wire Line
+	11150 5000 11150 4500
+Wire Wire Line
+	11100 4750 11150 4750
+Connection ~ 11150 4750
+Wire Wire Line
+	11250 5200 11000 5200
+Wire Wire Line
+	10700 5200 10700 5550
+Wire Wire Line
+	10600 5550 10850 5550
+Wire Wire Line
+	11150 5350 11150 5200
+Connection ~ 11150 5200
+Connection ~ 10700 5550
+Wire Wire Line
+	10900 4750 10700 4750
+Wire Wire Line
+	10700 4750 10700 4850
+$Comp
+L GND #PWR?
+U 1 1 5C9C8BBA
+P 10700 4850
+F 0 "#PWR?" H 10700 4600 50  0001 C CNN
+F 1 "GND" H 10700 4700 50  0000 C CNN
+F 2 "" H 10700 4850 50  0000 C CNN
+F 3 "" H 10700 4850 50  0000 C CNN
+	1    10700 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	11150 6000 11150 5750
+$Comp
+L VDD #PWR?
+U 1 1 5C9C90B7
+P 11150 4500
+F 0 "#PWR?" H 11150 4350 50  0001 C CNN
+F 1 "VDD" H 11150 4650 50  0000 C CNN
+F 2 "" H 11150 4500 50  0000 C CNN
+F 3 "" H 11150 4500 50  0000 C CNN
+	1    11150 4500
+	1    0    0    -1  
+$EndComp
+Text Label 3700 6750 3    60   ~ 0
+audio
+Text Label 10100 5550 0    60   ~ 0
+audio
+Wire Wire Line
+	10100 5550 10400 5550
+$Comp
+L C C?
+U 1 1 5C9CA46E
+P 9100 9800
+F 0 "C?" V 8950 9800 50  0000 L CNN
+F 1 "6800" V 9250 9750 50  0000 L CNN
+F 2 "" H 9138 9650 50  0000 C CNN
+F 3 "" H 9100 9800 50  0000 C CNN
+	1    9100 9800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8950 9800 8650 9800
+Wire Wire Line
+	9700 9800 9250 9800
+Text Notes 8650 9550 0    60   ~ 0
+TODO: check capacitance
+Wire Wire Line
+	3400 2250 3400 1350
+Wire Wire Line
+	3400 1350 3500 1350
+Connection ~ 3500 1350
+Wire Wire Line
+	4700 2250 4700 1800
+Wire Wire Line
+	4700 1800 5700 1800
+Wire Wire Line
+	5700 1700 5700 2250
+$Comp
+L +3V3 #PWR?
+U 1 1 5C9CCF73
+P 5700 1700
+F 0 "#PWR?" H 5700 1550 50  0001 C CNN
+F 1 "+3V3" H 5700 1840 50  0000 C CNN
+F 2 "" H 5700 1700 50  0000 C CNN
+F 3 "" H 5700 1700 50  0000 C CNN
+	1    5700 1700
+	1    0    0    -1  
+$EndComp
+Connection ~ 5700 1800
+Wire Wire Line
+	4800 2250 4800 1850
+Wire Wire Line
+	4800 1850 5800 1850
+Wire Wire Line
+	5800 1850 5800 2250
+$Comp
+L GND #PWR?
+U 1 1 5C9CDEF9
+P 5550 1950
+F 0 "#PWR?" H 5550 1700 50  0001 C CNN
+F 1 "GND" H 5550 1800 50  0000 C CNN
+F 2 "" H 5550 1950 50  0000 C CNN
+F 3 "" H 5550 1950 50  0000 C CNN
+	1    5550 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5550 1950 5550 1850
+Connection ~ 5550 1850
+NoConn ~ 5500 2250
+NoConn ~ 5600 2250
+NoConn ~ 5300 2250
+NoConn ~ 5200 2250
+NoConn ~ 5100 2250
+NoConn ~ 5000 2250
+NoConn ~ 6800 2250
 $EndSCHEMATC
