@@ -1,0 +1,142 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:mt48lc32
+LIBS:lm3671mf-fix
+LIBS:helga-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 3
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Sheet
+S 900  1000 3550 3350
+U 5C9C7E4B
+F0 "Top Side" 60
+F1 "top.sch" 60
+$EndSheet
+$Sheet
+S 6750 1000 3700 3350
+U 5C9C7E4E
+F0 "Bottom Side" 60
+F1 "bottom.sch" 60
+F2 "CPIN1" I L 6750 1750 60 
+F3 "CPIN2" I L 6750 1850 60 
+F4 "CPIN3" I L 6750 1950 60 
+F5 "CPIN4" I L 6750 2050 60 
+F6 "CPIN5" I L 6750 2150 60 
+F7 "CPIN6" I L 6750 2250 60 
+F8 "CPIN7" I L 6750 2350 60 
+F9 "CPIN8" I L 6750 2450 60 
+F10 "CPIN9" I L 6750 2550 60 
+F11 "CPIN10" I L 6750 2650 60 
+F12 "CPIN11" I L 6750 2750 60 
+F13 "CPIN12" I L 6750 2850 60 
+F14 "CPIN13" I L 6750 2950 60 
+F15 "CPIN14" I L 6750 3050 60 
+F16 "CPIN15" I L 6750 3150 60 
+F17 "CPIN16" I L 6750 3250 60 
+F18 "CPIN17" I L 6750 3350 60 
+F19 "CPIN18" I L 6750 3450 60 
+F20 "CPIN19" I L 6750 3550 60 
+F21 "CPIN20" I L 6750 3650 60 
+$EndSheet
+$Comp
+L CONN_01X20 P?
+U 1 1 5C9D82B3
+P 5200 2700
+F 0 "P?" H 5200 3750 50  0000 C CNN
+F 1 "TOP" V 5300 2700 50  0000 C CNN
+F 2 "" H 5200 2700 50  0000 C CNN
+F 3 "" H 5200 2700 50  0000 C CNN
+	1    5200 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X20 P?
+U 1 1 5C9D8322
+P 6000 2700
+F 0 "P?" H 6000 3750 50  0000 C CNN
+F 1 "BOTTOM" V 6100 2700 50  0000 C CNN
+F 2 "" H 6000 2700 50  0000 C CNN
+F 3 "" H 6000 2700 50  0000 C CNN
+	1    6000 2700
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	6750 1750 6200 1750
+Wire Wire Line
+	6200 1850 6750 1850
+Wire Wire Line
+	6200 1950 6750 1950
+Wire Wire Line
+	6200 2050 6750 2050
+Wire Wire Line
+	6200 2150 6750 2150
+Wire Wire Line
+	6200 2250 6750 2250
+Wire Wire Line
+	6200 2350 6750 2350
+Wire Wire Line
+	6200 2450 6750 2450
+Wire Wire Line
+	6200 2550 6750 2550
+Wire Wire Line
+	6200 2650 6750 2650
+Wire Wire Line
+	6200 2750 6750 2750
+Wire Wire Line
+	6200 2850 6750 2850
+Wire Wire Line
+	6200 2950 6750 2950
+Wire Wire Line
+	6200 3050 6750 3050
+Wire Wire Line
+	6200 3150 6750 3150
+Wire Wire Line
+	6200 3250 6750 3250
+Wire Wire Line
+	6200 3350 6750 3350
+Wire Wire Line
+	6200 3450 6750 3450
+Wire Wire Line
+	6200 3550 6750 3550
+Wire Wire Line
+	6200 3650 6750 3650
+$EndSCHEMATC
