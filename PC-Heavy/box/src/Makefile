@@ -4,7 +4,7 @@
 ## Internal name. Do not use 'libdosbox' in external projects as it may interfere with
 ## some existing code and/or libraries.
 LIBNAME	:= libdosbox
-CXX		:= g++-4.8.3
+CXX		:= g++
 MNDIR	:= $(shell pwd)
 BLDINFO := -DBUILDATE="\"$(shell date)\""
 BLDINFO += -DCOMPILERNAME="\"$(shell $(CXX) --version | head -n1)\""

@@ -2,7 +2,7 @@
 ## Copyright (C) 2013-2015 Dmitry Soloviov
 
 APP	:= xtest
-CXX	:= g++-4.8.3
+CXX	:= g++
 INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := -DBITFILE_ALTPATH=\"../libdoscard/src/libdbwrap.bc\"
 CXXFLAGS := -g -O0 -Wall -Wextra $(INCLUDES) $(DEFINES)

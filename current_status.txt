@@ -2,6 +2,7 @@ Platform	PC
 OS		Linux
 Library		glibc, SDL
 Status		OK and ready to use. You can use the XShell project as example.
+Notes		Multi-threaded version of libDosCard is not compilable anymore due to changes in recent LLVM versions. You can try to compile it against LLVM-3.4 and gcc-4.8. Single-thread version, as well as libdosbox (internal library, but could be used by other projects) are working completely fine.
 
 Platform	PC
 OS		Windows

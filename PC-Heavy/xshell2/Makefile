@@ -2,7 +2,7 @@
 ## Copyright (C) 2013-2015 Dmitry Soloviov
 
 APP	:= xshell2
-CXX	:= g++-4.8.3
+CXX	:= g++
 INCLUDES := -I. -I../box/include -I../libdoscard/include
 DEFINES := 
 CXXFLAGS := -g -O2 -Wall -Wextra $(INCLUDES) $(DEFINES)
